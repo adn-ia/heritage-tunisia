@@ -427,7 +427,7 @@
     function openChooser(level){ chLevel=level||'root'; renderChooser(); document.getElementById('chooserOv').style.display='flex'; }
     function closeChooser(){ document.getElementById('chooserOv').style.display='none'; }
     function renderChooser(){
-      document.getElementById('chTitle').innerHTML=CH_TITLES[chLevel]||uiT('Que voir ?');
+      document.getElementById('chTitle').innerHTML=uiT(CH_TITLES[chLevel]||'Que voir ?');
       document.getElementById('chBack').style.visibility = chLevel==='root' ? 'hidden' : 'visible';
       const list=document.getElementById('chList'); list.innerHTML='';
       const opt=(html,onclick,cls)=>{ const b=document.createElement('button'); b.className='ch-opt'+(cls?' '+cls:''); b.innerHTML=html; b.onclick=onclick; list.appendChild(b); };
