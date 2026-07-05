@@ -201,7 +201,7 @@ function openSheet(s){
   if(s.source) h+=`<div class="src">Source : ${esc(s.source)}</div>`;
   if(s.photo_credit) h+=`<div class="src">📷 ${esc(s.photo_credit)}</div>`;
   const en=encodeURIComponent(s.nom);
-  h+=`<div class="sh-act"><a href="index.html?route=${en}&from=liste">🗺️ Situer sur la carte</a><a href="itineraire.html?picks=${en}&from=liste">➕ Nouvel itinéraire</a><a class="sec" href="itineraire.html?picks=${en}&add=1&from=liste">➕ Ajouter au parcours</a><a class="sec" id="sh-pc" href="javascript:void(0)">🖼️ ${uiT('Carte postale')}</a></div>`;
+  h+=`<div class="sh-act"><a href="index.html?route=${en}&from=liste">🗺️ Situer sur la carte</a><a href="itineraire.html?picks=${en}&from=liste">➕ Nouvel itinéraire</a><a class="sec" href="itineraire.html?picks=${en}&add=1&from=liste">➕ Ajouter au parcours</a></div>`;
   h+=`</div>`;
   document.getElementById('sheet').innerHTML=h; var _sp=document.getElementById('sh-pc'); if(_sp)_sp.onclick=function(){if(window.THEPostcard)THEPostcard.open(s.nom,s.gouvernorat||'');};
   if(window.THEi18n&&!THEi18n.isFr()&&THEi18n.applyUI) THEi18n.applyUI(document.getElementById('sheet'));
