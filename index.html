@@ -531,7 +531,7 @@
         '<h2>'+(p.nom||'Sans nom')+'</h2><div class="site-meta">'+meta+'</div>'+dist+photo+
         '<p>'+_desc+'</p>'+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
-        '<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>'+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ Carte postale</button>';
+        '<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>'+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ ${uiT('Carte postale')}</button>';
       var _pcb=document.getElementById('site-pc-btn');if(_pcb)_pcb.onclick=function(){if(window.THEPostcard)THEPostcard.open(p.nom,p.gouvernorat||'');}; add.style.display='block'; setAddBtn(hasPick(p.nom));
       document.getElementById('siteOv').style.display='flex';
     }
