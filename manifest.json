@@ -1,0 +1,18 @@
+{
+  "name": "THE — Tunisia Heritage Experience",
+  "short_name": "THE",
+  "description": "Découvrir, comprendre et garder un souvenir du patrimoine tunisien — sites, itinéraires et carnet de voyage, hors-ligne.",
+  "id": "/?app=the",
+  "start_url": "bienvenue.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2b2318",
+  "theme_color": "#2b2318",
+  "lang": "fr",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "logo-the.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

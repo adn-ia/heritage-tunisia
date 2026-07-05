@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="THE">
+<meta name="theme-color" content="#26201a">
+<title>THE — La Tunisie, carrefour des civilisations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);background:var(--ivory);line-height:1.6;}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(38,32,26,0.96);color:var(--ivory);padding:11px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(0,0,0,.25);}
+.topbar a.back{color:var(--gold-soft);text-decoration:none;font-size:13px;letter-spacing:1px;}
+.topbar .t{flex:1;font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:3px;font-size:17px;}
+
+.hero{position:relative;height:78vh;min-height:440px;display:flex;align-items:flex-end;color:#fff;
+  background:linear-gradient(180deg,rgba(20,15,10,.15) 0%,rgba(20,15,10,.75) 100%),url('img/Tunisie_Carthage_Ruines_08.jpg') center/cover;}
+.hero .inner{padding:30px 22px 40px;max-width:720px;margin:0 auto;width:100%;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(34px,8vw,60px);line-height:1.02;margin:0 0 10px;text-shadow:0 2px 18px rgba(0,0,0,.5);}
+.hero p{font-size:clamp(16px,4.5vw,21px);font-style:italic;color:#f3e8d6;margin:0;max-width:560px;text-shadow:0 1px 10px rgba(0,0,0,.6);}
+.hero .scroll{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-soft);margin-top:18px;}
+
+main{max-width:720px;margin:0 auto;padding:8px 22px 60px;}
+.lead{font-size:19px;line-height:1.65;color:#3a3023;margin:30px 0;}
+.lead:first-letter{font-family:'Cormorant Garamond',serif;font-size:58px;float:left;line-height:.8;padding:6px 10px 0 0;color:var(--gold);}
+
+section{margin:40px 0;}
+.kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:30px;line-height:1.05;margin:0 0 6px;}
+.years{font-size:13px;color:var(--stone);font-style:italic;margin-bottom:12px;}
+section p{font-size:17px;margin:12px 0;color:#332a1d;}
+figure{margin:18px 0;}
+figure img{width:100%;border-radius:4px;display:block;box-shadow:0 6px 22px rgba(43,35,24,.18);}
+figcaption{font-size:12px;color:var(--stone);font-style:italic;margin-top:6px;}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:36px 0;}
+
+.cta{background:#26201a;color:var(--ivory);border-radius:6px;padding:26px 22px;text-align:center;margin-top:44px;}
+.cta h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;margin:0 0 8px;}
+.cta p{color:var(--gold-soft);font-size:15px;margin:0 0 16px;}
+.cta a{display:inline-block;background:var(--gold);color:#2b2318;text-decoration:none;padding:11px 22px;border-radius:6px;font-size:15px;letter-spacing:1px;}
+.note{font-size:12px;color:var(--stone);font-style:italic;border-top:1px solid var(--line);padding-top:14px;margin-top:34px;}
+
+/* Narration vocale */
+.topbar .listen{appearance:none;-webkit-appearance:none;border:1px solid var(--gold);background:transparent;
+  color:var(--gold-soft);font-family:inherit;font-size:13px;letter-spacing:.5px;padding:5px 13px;border-radius:20px;
+  cursor:pointer;white-space:nowrap;transition:all .15s;}
+.topbar .listen.on{background:var(--gold);color:#2b2318;border-color:var(--gold);}
+section.reading,.lead.reading{background:rgba(168,136,79,.10);box-shadow:-3px 0 0 var(--gold);
+  border-radius:2px;transition:background .3s;}
+.lead.reading{padding:6px 0 6px 14px;margin-left:-14px;}
+
+/* Choix de fin (plutôt qu'un saut direct vers la carte) */
+.choices{margin-top:46px;}
+.choices .ask{text-align:center;margin-bottom:22px;}
+.choices .ask h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:27px;margin:0 0 4px;}
+.choices .ask p{color:var(--stone);font-size:15px;margin:0;}
+.choice{display:flex;align-items:center;gap:16px;background:var(--paper);border:1px solid var(--line);
+  border-radius:6px;padding:16px 18px;text-decoration:none;color:var(--ink);margin-bottom:12px;
+  box-shadow:0 4px 16px rgba(43,35,24,.10);transition:transform .15s;}
+.choice:active{transform:scale(.99);}
+.choice .ic{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:22px;background:#f1e7d5;border:1px solid var(--line);}
+.choice.nat .ic{background:#e8efe2;}
+.choice .tx{flex:1;}
+.choice .tt{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;line-height:1.1;}
+.choice .ds{font-size:13.5px;color:var(--stone);margin-top:2px;line-height:1.35;}
+.choice .ar{color:var(--gold);font-size:20px;}
+
+/* Menu des portes d'entrée — en haut, à côté du texte */
+.intro-row{display:flex;gap:26px;align-items:flex-start;}
+.intro-row .lead{flex:1;margin:30px 0;}
+.sidemenu{flex:0 0 214px;margin-top:34px;background:var(--paper);border:1px solid var(--line);
+  border-radius:8px;padding:14px 14px 12px;box-shadow:0 4px 16px rgba(43,35,24,.09);}
+.sm-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:19px;margin-bottom:8px;}
+.sm-item{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);
+  padding:9px;border-radius:6px;font-size:15px;transition:background .12s;}
+.sm-item:hover{background:#f1e7d5;}
+.sm-item .i{font-size:19px;flex:0 0 auto;}
+.sm-item .t{font-weight:600;line-height:1.15;}
+.sm-item .t small{display:block;font-weight:400;font-size:11px;color:var(--stone);margin-top:1px;}
+.sm-item.primary{background:#26201a;color:var(--ivory);margin-bottom:4px;}
+.sm-item.primary:hover{background:#33291d;}
+.sm-item.primary .t small{color:var(--gold-soft);}
+.sm-item.soon{opacity:.6;}
+.sm-item.soon .t{color:var(--stone);font-weight:500;}
+.sm-item .dev{display:inline-block;font-size:10px;letter-spacing:.5px;color:#b07a3a;
+  border:1px solid var(--line);border-radius:3px;padding:1px 5px;margin-left:5px;vertical-align:middle;}
+.sm-note{font-size:12px;color:var(--stone);font-style:italic;margin-top:9px;
+  border-top:1px solid var(--line);padding-top:9px;line-height:1.4;}
+html{scroll-behavior:smooth;}
+section[id]{scroll-margin-top:64px;}
+@media(max-width:640px){
+  .intro-row{flex-direction:column;gap:0;}
+  .intro-row .lead{margin:20px 0 0;}
+  .sidemenu{flex-basis:auto;width:100%;order:-1;margin-top:22px;}
+}
+@media (prefers-reduced-motion:reduce){section.reading,.lead.reading{scroll-behavior:auto;}}
+</style>
+  <script src="the-i18n.js"></script>
+</head>
+<body>
+<div class="topbar"><a class="back" href="bienvenue.html">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" aria-label="Écouter le récit">🔊 Écouter</button></div>
+
+<div class="hero"><div class="inner">
+  <h1>La Tunisie,<br>carrefour des civilisations</h1>
+  <p>Un petit pays qui a donné son nom à un continent entier.</p>
+  <div class="scroll">↓ Faites défiler</div>
+</div></div>
+
+<main>
+  <div class="intro-row">
+    <p class="lead"><b>C'est ici qu'est né le mot « Afrique ».</b> Pour les Romains, l'<i>Africa</i> était d'abord — selon l'étymologie la plus admise — « la terre des <b>Afri</b> », un peuple <b>berbère, autochtone</b>, installé autour de Carthage. De cette petite province, le nom a fini par recouvrir <b>tout le continent</b> : sans doute le seul au monde à porter celui d'un peuple local (là où l'Amérique tient le sien d'un explorateur européen). Et ce n'est qu'une strate : en trois mille ans, entre la mer et le désert, presque toutes les puissances de la Méditerranée ont passé par cette terre — chacune y laissant ses pierres, ses mots, ses goûts, superposés comme les strates d'un même récit. Voici, en bref, l'histoire de cette terre, et la nature qui la porte.</p>
+    <aside class="sidemenu">
+      <div class="sm-title">Le menu</div>
+      <a class="sm-item primary" href="#recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
+      <a class="sm-item" href="itineraire.html"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
+      <a class="sm-item" href="index.html"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
+      <a class="sm-item" href="liste.html"><span class="i">📋</span><span class="t">Tous les lieux (liste)<small>parcourir sans la carte</small></span></a>
+      <a class="sm-item" href="liste.html?around=1"><span class="i">📍</span><span class="t">Autour de moi<small>ce qu'il y a à voir près de vous</small></span></a>
+      <a class="sm-item" href="voyage.html"><span class="i">🎞️</span><span class="t">Voyage immersif</span></a>
+      <a class="sm-item" href="rome-immersion.html"><span class="i">🏛️</span><span class="t">Rome en Afrique<small>immersion narrée</small></span></a>
+      <a class="sm-item soon" href="musee/"><span class="i">🏛️</span><span class="t">Scanner au musée <span class="dev">en développement</span></span></a>
+      <a class="sm-item soon" href="webar/"><span class="i">✨</span><span class="t">Réalité augmentée <span class="dev">en développement</span></span></a>
+      <a class="sm-item" href="premium.html"><span class="i">✨</span><span class="t">Le Premium<small>bientôt — fonctions en plus</small></span></a>
+      <a class="sm-item" href="soutien.html"><span class="i">🔒</span><span class="t">Confidentialité &amp; soutien</span></a>
+      <a class="sm-item" href="sources-credits.html"><span class="i">📑</span><span class="t">Sources &amp; crédits<small>données &amp; photos sourcées</small></span></a>
+      <div class="sm-note">📍 Activez la localisation pour vous situer parmi les sites.</div>
+    </aside>
+  </div>
+
+  <section id="recit">
+    <div class="kicker">Aux origines</div>
+    <h2>Berbères et Numides</h2>
+    <div class="years">Préhistoire — Antiquité</div>
+    <p>Avant les empires, il y a les hommes de la culture capsienne, chasseurs des steppes il y a plus de huit mille ans, puis les Berbères (Amazighs), peuple autochtone organisé en royaumes numides. Leurs villages perchés et leur langue subsistent encore aujourd'hui dans le Sud, à Chenini, Douiret ou Tamezret.</p>
+    <figure><img src="img/Chenini-stegop-04.jpg" alt="Chenini" loading="lazy"><figcaption>Le village berbère perché de Chenini, dans le Dahar — Stegop, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">L'empire de la mer</div>
+    <h2>Carthage la punique</h2>
+    <div class="years">IXe — IIe siècle av. J.-C.</div>
+    <p>Fondée par les Phéniciens venus de Tyr, Carthage devient la grande puissance maritime de la Méditerranée occidentale. Ses ports, ses comptoirs et sa flotte défient Rome lors des guerres puniques — jusqu'à Hannibal et ses éléphants. En 146 av. J.-C., Rome rase la cité. Mais d'autres villes puniques, comme Kerkouane, nous sont parvenues presque intactes.</p>
+    <figure><img src="img/Carthage-1958-PortsPuniques.jpg" alt="Ports puniques de Carthage" loading="lazy"><figcaption>Les ports puniques de Carthage, cœur de la puissance maritime — Unknown authorUnknown author, Public domain, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Rome</div>
+    <h2>Le grenier de l'Empire</h2>
+    <div class="years">146 av. J.-C. — 439 apr. J.-C.</div>
+    <p>Sur les ruines de Carthage, Rome bâtit l'Africa proconsulaire : l'une des provinces les plus riches de l'Empire, qui exporte blé et huile d'olive vers la capitale. Théâtres, capitoles, thermes et amphithéâtres parsèment le pays — Dougga, Sbeïtla, Bulla Regia, et le colossal amphithéâtre d'El Jem. C'est aussi une grande terre des débuts du christianisme, celle de l'évêque et théologien Cyprien de Carthage.</p>
+    <figure><img src="img/Amphi_El_Jem.jpg" alt="Amphithéâtre d'El Jem" loading="lazy"><figcaption>L'amphithéâtre romain d'El Jem (Thysdrus) — Cimoi, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Une terre de foi</div>
+    <h2>Les premiers chrétiens d'Afrique</h2>
+    <div class="years">IIe — Ve siècle</div>
+    <p>Dès le IIe siècle, l'Afrique romaine devient l'un des plus grands foyers du christianisme. C'est ici qu'écrit Tertullien, premier grand auteur chrétien de langue latine ; ici que sont martyrisées à Carthage, en 203, les saintes Perpétue et Félicité, dont le récit nous est parvenu ; ici qu'enseigne l'évêque Cyprien. Le pays se couvre de basiliques et de baptistères — à Carthage, Sbeïtla ou Haïdra — et connaît de vifs débats, comme la querelle donatiste.</p>
+    <figure><img src="img/Damous_el_Karita_vue_ouest__Carthage_.jpg" alt="Basilique de Damous El Karita" loading="lazy"><figcaption>La basilique paléochrétienne de Damous El Karita, à Carthage — Pascal Radigue, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Entre deux mondes</div>
+    <h2>Vandales et Byzance</h2>
+    <div class="years">439 — 698 apr. J.-C.</div>
+    <p>En 439, le roi vandale Genséric s'empare de Carthage et en fait la capitale d'un royaume germanique qui domine la Méditerranée occidentale et pille Rome elle-même en 455. Un siècle plus tard, l'empereur byzantin Justinien envoie son général Bélisaire reconquérir l'Afrique (533) : Carthage devient un exarchat de l'Empire d'Orient. De cette époque datent les puissantes forteresses byzantines qui couronnent encore Haïdra, Sbeïtla ou Aïn Tounga — derniers remparts avant l'arrivée des Arabes.</p>
+    <figure><img src="img/Haidra_Tunisie.jpg" alt="Forteresse byzantine de Haïdra" loading="lazy"><figcaption>La forteresse byzantine de Haïdra (Ammaedara) — Astiosaurus, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">L'Islam et les dynasties</div>
+    <h2>Kairouan et les califats</h2>
+    <div class="years">VIIe — XVIe siècle</div>
+    <p>En 670, la conquête arabe fonde Kairouan, première grande ville musulmane du Maghreb et foyer spirituel. Se succèdent ensuite les Aghlabides (qui édifient la Grande Mosquée et les bassins), les Fatimides partis de Mahdia conquérir l'Égypte, les Zirides, puis les Hafsides qui font de Tunis une capitale. Des Andalous chassés d'Espagne repeuplent Testour et le Nord.</p>
+    <p>Mais l'Ifriqiya ne regarde pas que vers le désert : elle se tourne aussi vers la mer. En 827, depuis le port de Sousse, les Aghlabides lancent la conquête de la <strong>Sicile</strong> ; suivront <strong>Malte</strong> et des têtes de pont dans le <strong>sud de l'Italie</strong> (l'éphémère émirat de Bari, des raids jusqu'aux portes de Rome). Pendant deux siècles, la Sicile musulmane — gouvernée depuis Kairouan puis par les Kalbides pour le compte des Fatimides — rayonne par son agriculture, ses savants et ses villes, avant de passer aux Normands. C'est l'un des grands moments où la Tunisie a projeté sa puissance par-delà la Méditerranée.</p>
+    <figure><img src="img/Grande_Mosqu_e_de_Kairouan__vue_d_ensemble.jpg" alt="Grande Mosquée de Kairouan" loading="lazy"><figcaption>La Grande Mosquée de Kairouan, l'un des plus anciens sanctuaires de l'Islam — weetoon66, CC BY-SA 2.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Un changement sur des siècles</div>
+    <h2>Une islamisation lente</h2>
+    <div class="years">VIIe — XIIe siècle</div>
+    <p>La conquête de 670 n'efface pas d'un coup le christianisme d'Afrique — celui de Tertullien, de Cyprien et de saint Augustin. L'islamisation se fait <strong>sur des siècles</strong> : la grande vague de conversions se situe entre <strong>800 et 1000</strong> (selon l'historien R. W. Bulliet). Les évêques se raréfient au IX<sup>e</sup> siècle ; le christianisme subsiste en îlots aux X<sup>e</sup>-XI<sup>e</sup> ; le <strong>dernier évêque de Carthage</strong> est attesté vers <strong>1076</strong>, et l'Église locale s'éteint vers <strong>1159</strong>, à la prise de Tunis par l'almohade Abd al-Mu'min — beaucoup des derniers chrétiens ayant alors émigré en Sicile à la faveur de la campagne normande (1146-1153). Une disparition <strong>lente et sans persécution marquée</strong> plutôt qu'une rupture brutale. <em>À nuancer : les sources latines, fragmentaires, laissent la chronologie débattue.</em></p>
+  </section>
+
+  <section>
+    <div class="kicker">Pas un islam, mais des courants</div>
+    <h2>Plusieurs islams en Ifriqiya</h2>
+    <div class="years">VIIIe — XVIe siècle</div>
+    <p>Le pays n'a pas connu un islam unique. Très tôt, le <strong>kharidjisme</strong> et sa branche modérée l'<strong>ibadisme</strong> portent la contestation berbère face au pouvoir arabe : les Ibadites prennent même Kairouan en 758 — ce courant <strong>survit aujourd'hui à Djerba</strong>. Puis s'impose le <strong>malikisme</strong> sunnite, introduit par Asad ibn al-Furat et façonné par les juristes de <strong>Kairouan</strong> (autour de Sahnun) ; il deviendra la tradition majoritaire. Au X<sup>e</sup> siècle, le <strong>chiisme ismaélien</strong> des <strong>Fatimides</strong> renverse les Ibadites (909) et fait de <strong>Mahdia</strong> sa capitale avant de partir conquérir l'Égypte. Plus tard, l'époque ottomane introduit le <strong>hanafisme</strong>, qui coexiste avec le malikisme. Aujourd'hui le malikisme domine, l'ibadisme djerbien en restant le témoin minoritaire.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Le grand bouleversement</div>
+    <h2>Les Hilaliens et l'arabisation des campagnes</h2>
+    <div class="years">XIe siècle — à partir de 1050</div>
+    <p>Vers 1048, les Zirides de Kairouan rompent avec les Fatimides chiites du Caire et reviennent à l'obédience sunnite de Bagdad. En représailles, l'Égypte fatimide lance vers l'ouest les tribus bédouines des <strong>Banū Hilāl</strong> et des Banū Sulaym. Vainqueurs des Zirides à la bataille de Haydarān (1052), les Hilaliens mettent <strong>Kairouan à sac en 1057</strong> : la dynastie se réfugie à Mahdia, sur la côte, et l'Ifriqiya se fragmente en principautés rivales.</p>
+    <p>Au-delà des batailles, leur arrivée marque surtout un changement de fond : la diffusion de la langue et des modes de vie <strong>arabes dans les campagnes</strong>, jusque-là largement berbérophones — un basculement durable du pays. Le souvenir s'en est transmis par une grande épopée orale, la <em>Sīrat Banī Hilāl</em> (la « Taghrība »), aujourd'hui inscrite au patrimoine immatériel de l'UNESCO. <em>À nuancer :</em> Ibn Khaldoun les a dépeints comme une nuée dévastatrice, mais les historiens actuels y voient un processus plus lent et plus complexe que la seule destruction.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Un bref interlude</div>
+    <h2>Le royaume normand d'Afrique</h2>
+    <div class="years">1148 — 1160</div>
+    <p>Au XIIe siècle, profitant de l'affaiblissement des Zirides, les Normands de Sicile, sous Roger II, s'emparent de Mahdia en 1148 et d'une partie du littoral — Sousse, Sfax, Gabès. Pendant une douzaine d'années existe un éphémère « royaume normand d'Afrique », avant que les Almohades ne reprennent ces villes en 1160. Curieux retour des choses : la Sicile, jadis conquise depuis l'Ifriqiya, lui rendit brièvement la pareille.</p>
+    <figure><img src="img/Mahdia_des_de_la_Torre_Obscura.jpg" alt="Mahdia" loading="lazy"><figcaption>Mahdia, prise par les Normands de Sicile en 1148 — Jaume Ollé, CC BY 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Les croisades</div>
+    <h2>Saint Louis devant Tunis</h2>
+    <div class="years">1270</div>
+    <p>En 1270, le roi de France Louis IX — Saint Louis — débarque sur le rivage de Carthage à la tête de la huitième croisade, espérant rallier le sultan hafside. Mais une épidémie ravage son camp et le roi y meurt en août 1270. La croisade tourne court et un traité est signé avec Tunis. Une chapelle élevée plus tard sur la colline de Byrsa — l'actuel acropolium — en garde le souvenir.</p>
+    <figure><img src="img/Acropolium.jpg" alt="Acropolium de Carthage" loading="lazy"><figcaption>L'acropolium (ancienne cathédrale Saint-Louis) sur la colline de Byrsa, à Carthage — Niels Elgaard Larsen - (WT-en) Elgaard at English Wikivoyage, CC BY-SA 4.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Une figure universelle</div>
+    <h2>Ibn Khaldoun, né à Tunis</h2>
+    <div class="years">1332 — 1406</div>
+    <p>C'est dans la médina de Tunis que naît en 1332 Abderrahmane Ibn Khaldoun. Historien, juriste et voyageur, il écrit la <em>Muqaddima</em>, une introduction à l'histoire universelle où il analyse la naissance et la chute des dynasties, le rôle de la cohésion de groupe (l'<em>asabiyya</em>) et les lois qui régissent les sociétés. Beaucoup le considèrent comme l'un des pères de la sociologie et de l'histoire scientifique modernes — des siècles avant l'Europe.</p>
+    <figure><img src="img/Terrasses_de_la_m_dina_de_Tunis.jpg" alt="Médina de Tunis" loading="lazy"><figcaption>Les terrasses de la médina de Tunis, où naquit Ibn Khaldoun — Raspail, Public domain, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Un court intermède</div>
+    <h2>Charles Quint contre Barberousse</h2>
+    <div class="years">1535 — 1574</div>
+    <p>La Tunisie devient un enjeu du grand duel entre l'Espagne de Charles Quint et l'Empire ottoman. En 1534, le corsaire Khayr ad-Din Barberousse prend Tunis au nom du sultan ; l'année suivante, Charles Quint la lui reprend par une expédition retentissante et installe un présidio espagnol à La Goulette, avec un Hafside vassal. Pendant une quarantaine d'années, l'Espagne tient le verrou du golfe de Tunis — jusqu'à la conquête ottomane définitive de 1574.</p>
+    <figure><img src="img/Caracca_Goulette.jpg" alt="Fort de La Goulette" loading="lazy"><figcaption>Le fort de La Goulette (la Karraka), verrou espagnol puis ottoman du golfe de Tunis — M.Rais, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">La Régence de Tunis</div>
+    <h2>Ottomans, beys et corsaires</h2>
+    <div class="years">1574 — 1881</div>
+    <p>En 1574, les Ottomans mettent fin aux Hafsides et font de la Tunisie une régence — gouvernée d'abord par des deys et des pachas, puis par des beys qui prennent peu à peu leur autonomie. En 1705 s'installe la dynastie husseinite, qui régnera jusqu'au milieu du XXe siècle, semant palais, médersas et médinas.</p>
+    <p>C'est l'âge des <strong>corsaires barbaresques</strong> : depuis La Goulette, Bizerte et Ghar el Melh (Porto Farina), des navires écument la Méditerranée, capturant marchandises et équipages européens rançonnés ou réduits en esclavage — une « course » qui fait la richesse et la peur des côtes pendant des siècles.</p>
+    <p>Vers le sud, d'autres routes comptent : les <strong>caravanes transsahariennes</strong> relient Tunis au Bilad es-Soudan, rapportant or, plumes, cuirs — et des <strong>esclaves d'Afrique subsaharienne</strong>, vendus jusque sur le marché de Tunis. Il faut le dire sans détour. L'esclavage sera aboli en Tunisie par <strong>Ahmed Ier Bey en 1846</strong> — l'une des toutes premières abolitions du monde méditerranéen et musulman, avant même la France.</p>
+    <figure><img src="img/VieuxPortEtArsenal.jpg" alt="Vieux port corsaire de Ghar el Melh" loading="lazy"><figcaption>Le vieux port et l'arsenal de Ghar el Melh (Porto Farina), repaire corsaire — Citizen59, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Protectorat et nation</div>
+    <h2>La France, puis l'indépendance</h2>
+    <div class="years">1881 — 1956</div>
+    <p>En 1881, la France impose son protectorat. Tunis se double d'une ville européenne aux larges avenues ; ports, chemins de fer et mines de phosphate transforment le pays. La société coloniale est cosmopolite : aux Tunisiens — <strong>musulmans et juifs</strong>, présents de longue date — s'ajoutent les communautés <strong>européennes</strong> (Italiens, Maltais, Français) ; mais elle reste profondément inégalitaire. Très vite naît un mouvement national, porté par le Destour puis par Habib Bourguiba, qui mène à l'<strong>indépendance proclamée en 1956</strong>.</p>
+    <figure><img src="img/Sidi_Bou_Said_01.jpg" alt="Sidi Bou Saïd" loading="lazy"><figcaption>Sidi Bou Saïd, village d'inspiration andalouse au-dessus du golfe de Tunis — Rene Cortin, CC BY-SA 4.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Seconde Guerre mondiale</div>
+    <h2>La campagne de Tunisie</h2>
+    <div class="years">1942 — 1943</div>
+    <p>Dernier acte de la guerre en Afrique du Nord, la campagne de Tunisie oppose les Alliés aux forces de l'Axe retranchées dans une tête de pont. Les combats sont rudes : la passe de Kasserine, où Rommel inflige un sévère revers aux Américains en février 1943 ; la ligne Mareth dans le Sud ; Medjez el-Bab et la colline de Longstop sur la route de Tunis ; El Guettar et l'oued Akarit. En mai 1943, Tunis et Bizerte tombent, et près de 250 000 soldats de l'Axe capitulent. De nombreux cimetières militaires — du Commonwealth, allemands — en gardent la mémoire.</p>
+    <p>Mais les Tunisiens n'ont pas seulement vu la guerre venir à eux : ils sont aussi partis la faire ailleurs. Dans les deux conflits mondiaux, des dizaines de milliers de <strong>tirailleurs tunisiens</strong> sont envoyés combattre en Europe sous l'uniforme français — sur le front de 1914-1918, puis dans la campagne d'Italie (le Monte Cassino) et la libération de la Provence en 1944. Beaucoup ne sont jamais revenus.</p>
+    <figure><img src="img/Cross_Medjez_el-Bab_War_Cemetery.jpg" alt="Cimetière militaire de Medjez el-Bab" loading="lazy"><figcaption>Le cimetière militaire du Commonwealth de Medjez el-Bab — Verity Cridland, CC BY 2.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Une mosaïque de fois</div>
+    <h2>Une présence juive millénaire</h2>
+    <div class="years">Antiquité — aujourd'hui</div>
+    <p>Les Juifs de Tunisie comptent parmi les plus anciennes communautés de la diaspora : la tradition fait remonter la synagogue de la Ghriba, à Djerba, à l'Antiquité. Au fil des siècles s'ajoutent des Juifs venus d'Espagne après 1492, puis les « Grana » livournais à l'époque ottomane. Présents dans la hara de Tunis comme dans les bourgs du Sud — artisans, commerçants, lettrés et orfèvres — ils forment une part vivante du pays. La communauté s'est largement dispersée au XXe siècle, mais le pèlerinage annuel de la Ghriba en perpétue la mémoire.</p>
+    <figure><img src="img/L_entr_e_principale.jpg" alt="Synagogue de la Ghriba" loading="lazy"><figcaption>La synagogue de la Ghriba, à Djerba, l'une des plus anciennes du monde — Noomen9, CC BY-SA 4.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Une mosaïque de peuples</div>
+    <h2>Les Italiens de Tunisie</h2>
+    <div class="years">XIXe — XXe siècle</div>
+    <p>Avant même les Français, ce sont les Italiens — Siciliens, Sardes, Livournais — qui forment la plus grande communauté européenne de Tunisie. Pêcheurs de La Goulette, maçons, commerçants, médecins, artistes : longtemps plus nombreux que les colons français, ils marquent durablement la cuisine, l'architecture et le parler de Tunis, et donnent à la capitale son air méditerranéen et cosmopolite.</p>
+    <figure><img src="img/La_Goulette_Port..jpg" alt="La Goulette" loading="lazy"><figcaption>La Goulette, port et faubourg longtemps peuplé d'Italiens, aux portes de Tunis — Jorge Andrade, CC BY 2.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Notre temps</div>
+    <h2>La République et 2011</h2>
+    <div class="years">1957 — aujourd'hui</div>
+    <p>Devenue république, la Tunisie connaît modernisation et tensions. En 2011, partie de Sidi Bouzid, une révolution renverse le régime et donne le signal des « printemps arabes » dans toute la région — l'un des grands événements de notre époque. Le pays poursuit depuis une histoire qui s'écrit encore.</p>
+  </section>
+
+  <div class="rule"></div>
+
+  <section>
+    <div class="kicker">Au-delà des pierres</div>
+    <h2>Une nature à découvrir</h2>
+    <p>La Tunisie tient dans un mouchoir trois mondes. Au nord, la Méditerranée, ses caps et la forêt humide de Kroumirie. Au centre, la Dorsale tunisienne et ses sommets. Au sud, le Sahara : le grand erg, les oasis de montagne de Chebika et Tamerza, les chotts salés qui scintillent comme des miroirs. Entre les deux, le lac Ichkeul, halte mondiale des oiseaux migrateurs.</p>
+    <figure><img src="img/Dune__Grand_erg_pr_s_de_Ksar_Ghilane__Tunisien__2004.jpg" alt="Grand Erg Oriental" loading="lazy"><figcaption>Les dunes du Grand Erg Oriental, porte du Sahara — The original uploader was Elcèd77 at French Wikipedia., CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+    <p>Ses ressources racontent aussi le pays : l'olivier, présent depuis l'Antiquité ; les dattes deglet nour des palmeraies du Djérid ; les phosphates du bassin de Gafsa ; la pêche des îles Kerkennah et Kuriat. Une terre frugale et généreuse à la fois.</p>
+    <figure><img src="img/Parc_national_de_l_Ichkeul27.jpg" alt="Parc national de l'Ichkeul" loading="lazy"><figcaption>Le parc national de l'Ichkeul, zone humide inscrite à l'UNESCO — Touzrimounir, CC BY-SA 3.0, Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <div class="rule"></div>
+  <p style="text-align:center;color:var(--stone);font-style:italic;margin:8px 0 0;">Vous avez l'essentiel en tête — le menu vous attend en haut de page pour passer à la pratique.</p>
+
+  <p class="note">Aperçu général à vocation pédagogique. Les dates et faits relèvent de l'histoire établie ; les détails précis de chaque lieu sont sourcés dans les fiches de la carte. Photographies : Wikimedia Commons (licences libres).</p>
+</main>
+
+<script>
+  // ---- Narration vocale du récit (synthèse vocale du navigateur) ----
+  const synth = window.speechSynthesis;
+  const btn = document.getElementById('listen');
+  let chunks = [], idx = 0, state = 'idle'; // idle | playing | paused
+
+  function buildChunks(){
+    chunks = [];
+    const lead = document.querySelector('main .lead');
+    if (lead) chunks.push({ el: lead, text: lead.textContent.trim() });
+    document.querySelectorAll('main section').forEach(sec => {
+      const h2 = sec.querySelector('h2');
+      const ps = [...sec.querySelectorAll(':scope > p')]; // exclut les légendes (dans <figure>)
+      const text = ((h2 ? h2.textContent.trim() + '. ' : '') + ps.map(p => p.textContent.trim()).join(' ')).trim();
+      if (text) chunks.push({ el: sec, text });
+    });
+  }
+  function frVoice(){
+    const vs = synth.getVoices();
+    return vs.find(v => /^fr[-_]FR/i.test(v.lang)) || vs.find(v => /^fr/i.test(v.lang)) || null;
+  }
+  function clearHighlight(){ document.querySelectorAll('.reading').forEach(e => e.classList.remove('reading')); }
+  function highlight(el){
+    clearHighlight(); el.classList.add('reading');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  function setUI(){
+    if (state === 'playing'){ btn.textContent = '⏸ Pause'; btn.classList.add('on'); }
+    else if (state === 'paused'){ btn.textContent = '▶ Reprendre'; btn.classList.add('on'); }
+    else { btn.textContent = uiT('🔊 Écouter'); btn.classList.remove('on'); }
+  }
+  function stop(){ synth.cancel(); state = 'idle'; idx = 0; clearHighlight(); setUI(); }
+  function speakIdx(){
+    if (idx >= chunks.length){ stop(); return; }
+    const { el, text } = chunks[idx];
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'fr-FR'; u.rate = 0.96; u.pitch = 1;
+    const v = frVoice(); if (v) u.voice = v;
+    u.onstart = () => highlight(el);
+    u.onend = () => { if (state === 'playing'){ idx++; speakIdx(); } };
+    synth.speak(u);
+  }
+  btn.addEventListener('click', () => {
+    if (!('speechSynthesis' in window)){ btn.textContent = uiT('🔇 Indisponible'); btn.disabled = true; return; }
+    if (state === 'idle'){ buildChunks(); idx = 0; state = 'playing'; setUI(); speakIdx(); }
+    else if (state === 'playing'){ synth.pause(); state = 'paused'; setUI(); }
+    else if (state === 'paused'){ synth.resume(); state = 'playing'; setUI(); }
+  });
+  if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
+  window.addEventListener('beforeunload', () => synth.cancel());
+  window.addEventListener('pagehide', () => synth.cancel());
+</script>
+<script src="the-footer.js" defer></script>
+  <script src="analytics.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+img/
+photos/
+musee/
+*.png
+*.jpg
+*.jpeg
+*.mp3
+*.zip
+.DS_Store

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26201a">
+<title>THE — La Médina de Tunis</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="THE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;--green:#5c7a52;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);background:var(--ivory);line-height:1.6;}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(38,32,26,0.96);color:var(--ivory);padding:11px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(0,0,0,.25);}
+.topbar a.back{color:var(--gold-soft);text-decoration:none;font-size:13px;letter-spacing:1px;}
+.topbar .t{flex:1;font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:3px;font-size:17px;}
+.topbar .prem{font-size:11px;letter-spacing:1px;color:#2b2318;background:var(--gold-soft);border-radius:999px;padding:3px 10px;font-weight:600;}
+
+.hero{position:relative;height:74vh;min-height:420px;display:flex;align-items:flex-end;color:#fff;
+  background:linear-gradient(180deg,rgba(20,15,10,.15) 0%,rgba(20,15,10,.8) 100%),url('img/Terrasses_de_la_m_dina_de_Tunis.jpg') center/cover;}
+.hero .inner{padding:30px 22px 40px;max-width:720px;margin:0 auto;width:100%;}
+.hero .kick{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(34px,8vw,58px);line-height:1.02;margin:0 0 10px;text-shadow:0 2px 18px rgba(0,0,0,.5);}
+.hero p{font-size:clamp(16px,4.5vw,21px);font-style:italic;color:#f3e8d6;margin:0;max-width:560px;text-shadow:0 1px 10px rgba(0,0,0,.6);}
+.hero .scroll{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-soft);margin-top:18px;}
+
+main{max-width:720px;margin:0 auto;padding:8px 22px 60px;}
+.lead{font-size:19px;line-height:1.65;color:#3a3023;margin:30px 0;}
+.lead:first-letter{font-family:'Cormorant Garamond',serif;font-size:58px;float:left;line-height:.8;padding:6px 10px 0 0;color:var(--gold);}
+.lead strong{color:var(--ink);}
+section{margin:40px 0;}
+.kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:29px;line-height:1.06;margin:0 0 10px;}
+section p{font-size:17px;margin:12px 0;color:#332a1d;}
+section p strong{color:var(--ink);}
+figure{margin:18px 0;}
+figure img{width:100%;border-radius:4px;display:block;box-shadow:0 6px 22px rgba(43,35,24,.18);}
+figcaption{font-size:12px;color:var(--stone);font-style:italic;margin-top:6px;}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:36px 0;}
+
+/* choix des parcours */
+.choices{margin-top:30px;}
+.choices .ask{text-align:center;margin-bottom:22px;}
+.choices .ask h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:27px;margin:0 0 4px;}
+.choices .ask p{color:var(--stone);font-size:15px;margin:0;}
+.circ{display:flex;align-items:center;gap:16px;background:var(--paper);border:1px solid var(--line);
+  border-radius:8px;padding:16px 18px;text-decoration:none;color:var(--ink);margin-bottom:12px;
+  box-shadow:0 4px 16px rgba(43,35,24,.10);transition:transform .15s;}
+.circ:active{transform:scale(.99);}
+.circ .ic{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;background:#f1e7d5;border:1px solid var(--line);}
+.circ .tx{flex:1;}
+.circ .tt{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:19px;line-height:1.1;}
+.circ .ds{font-size:13.5px;color:var(--stone);margin-top:2px;line-height:1.35;}
+.circ .dur{font-size:12px;color:var(--gold);letter-spacing:.5px;margin-top:3px;}
+.circ .ar{color:var(--gold);font-size:20px;}
+.note{font-size:12px;color:var(--stone);font-style:italic;border-top:1px solid var(--line);padding-top:14px;margin-top:30px;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+</style>
+<script src="the-i18n.js"></script>
+</head>
+<body>
+<div class="topbar"><a class="back" href="decouvrir.html">‹ Découvrir</a><span class="t">LA MÉDINA</span><span class="prem">✦ Premium</span></div>
+
+<div class="hero"><div class="inner">
+  <div class="kick">Patrimoine mondial UNESCO · 1979</div>
+  <h1>La Médina<br>de Tunis</h1>
+  <p>Mille ans de vie dans un labyrinthe de pierre.</p>
+  <div class="scroll">↓ Faites défiler</div>
+</div></div>
+
+<main>
+  <p class="lead">La médina de Tunis n'est pas un musée : c'est une <strong>ville vivante</strong>, où l'on prie, travaille, marchande et flâne comme il y a mille ans. Derrière ses portes discrètes se cachent quelque <strong>700 monuments</strong> — mosquées, palais, médersas, mausolées et fontaines — et, surtout, une âme qui ne se laisse pas saisir d'un seul regard.</p>
+
+  <section>
+    <div class="kicker">Aux origines</div>
+    <h2>Autour de la Zitouna</h2>
+    <p>Tout commence autour de la <strong>Grande Mosquée Zitouna</strong>, fondée aux premiers siècles de l'islam — la plus ancienne université du monde musulman encore en activité, dont les 184 colonnes proviennent des ruines de Carthage. La ville s'organise en cercles concentriques autour d'elle.</p>
+    <p>Au <strong>XIIIᵉ siècle</strong>, les Hafsides font de Tunis leur capitale : c'est l'âge d'or, celui des palais, des médersas et des souks florissants.</p>
+    <figure><img src="img/MinaretMosqueeZitounaTunis.jpg" alt="Minaret de la mosquée Zitouna" loading="lazy"><figcaption>Le minaret de la Zitouna, cœur spirituel de la médina — Wikimedia Commons</figcaption></figure>
+  </section>
+
+  <section>
+    <div class="kicker">Les strates du temps</div>
+    <h2>Un palimpseste de pierre</h2>
+    <p>La médina se lit comme un manuscrit réécrit mille fois. Sur le fond <strong>arabo-musulman et hafside</strong> se superpose l'élégance <strong>ottomane</strong> — les beys, les faïences, les marbres du Tourbet El Bey —, puis la frange <strong>cosmopolite</strong> de l'époque coloniale. Chaque mur, chaque porte garde la mémoire d'une époque.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Une ville-organisme</div>
+    <h2>Les souks par métier</h2>
+    <p>Rien n'est laissé au hasard. Autour de la Zitouna se tiennent les métiers <strong>« propres »</strong> — parfumeurs du Souk El Attarine, bijoutiers du Souk El Berka, fabricants de chéchias —, tandis que les métiers bruyants ou salissants (forgerons, teinturiers, selliers) sont repoussés vers les portes.</p>
+    <p>Entre les souks, les quartiers résidentiels cachent leurs <strong>dars</strong>, ces maisons à patio d'une beauté secrète : façades sobres au-dehors, fontaines de marbre et plafonds peints au-dedans.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Son âme</div>
+    <h2>Une médina vivante</h2>
+    <p>C'est là sa force : la médina de Tunis est restée <strong>authentique</strong>, moins touristique que ses cousines de Fès ou Marrakech. On y croise les derniers artisans de la chéchia, on boit un thé aux pignons dans un café vieux de quatre siècles, on goûte le lablabi fumant.</p>
+    <p>Et le soir — surtout pendant le <strong>Ramadan</strong> — elle s'embrase : lanternes, parfums d'oud et de jasmin, malouf et chants soufis, zlabia encore chaude. Bab Souika et ses cafés chantants, la place Halfaouine immortalisée par le cinéma… la médina de la nuit est une autre médina.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Ce qu'on y voit</div>
+    <h2>Quelques trésors</h2>
+    <p>La Zitouna et ses colonnes antiques ; les <strong>médersas</strong> aux cours peintes de noir et blanc ; les <strong>palais</strong> (Dar Ben Abdallah, Dar Hussein, Dar Othman) ; le <strong>Tourbet El Bey</strong> et ses faïences royales ; la <strong>place Halfaouine</strong> ; <strong>Bab Souika</strong> et la <strong>Hafsia</strong> avec son marché de la fripe. Et mille détails qu'on ne voit <em>qu'en se perdant</em>.</p>
+  </section>
+
+  <div class="rule"></div>
+
+  <div class="choices">
+    <div class="ask">
+      <h3>Choisissez votre parcours</h3>
+      <p>Selon votre envie et votre temps — tout se fait à pied.</p>
+    </div>
+    <a class="circ" href="itineraire.html?tour=medina-classique">
+      <div class="ic">🏛️</div>
+      <div class="tx"><div class="tt">Le cœur classique</div><div class="ds">Zitouna, souks, médersas, Dar Ben Abdallah, Tourbet El Bey.</div><div class="dur">½ journée</div></div>
+      <div class="ar">›</div>
+    </a>
+    <a class="circ" href="itineraire.html?tour=medina-nord">
+      <div class="ic">🎬</div>
+      <div class="tx"><div class="tt">La médina populaire — Bab Souika & Halfaouine</div><div class="ds">Cafés chantants, place animée, marché de la fripe.</div><div class="dur">½ journée</div></div>
+      <div class="ar">›</div>
+    </a>
+    <a class="circ" href="itineraire.html?tour=medina-musees">
+      <div class="ic">🖼️</div>
+      <div class="tx"><div class="tt">Palais & musées</div><div class="ds">L'art de vivre tunisois derrière les murs.</div><div class="dur">½ journée</div></div>
+      <div class="ar">›</div>
+    </a>
+    <a class="circ" href="itineraire.html?tour=medina-nuit">
+      <div class="ic">🌙</div>
+      <div class="tx"><div class="tt">La médina by night & Ramadan</div><div class="ds">Cafés, lanternes, malouf et soirées de fête.</div><div class="dur">en soirée</div></div>
+      <div class="ar">›</div>
+    </a>
+    <a class="circ" href="itineraire.html?tour=medina-jour">
+      <div class="ic">🗺️</div>
+      <div class="tx"><div class="tt">La médina en une journée</div><div class="ds">Le meilleur du cœur classique et du nord populaire.</div><div class="dur">1 journée</div></div>
+      <div class="ar">›</div>
+    </a>
+    <div class="note">Contenu vérifié et sourcé (UNESCO · Wikipédia · INP · guides locaux). Médiation pédagogique, pas spectacle. Les adresses (cafés, restaurants) sont indicatives et à vérifier sur place.</div>
+  </div>
+</main>
+<script src="the-footer.js" defer></script>
+  <script src="analytics.js"></script>
+</body>
+</html>

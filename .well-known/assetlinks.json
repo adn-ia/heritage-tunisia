@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.threshold_analytics.heritage.twa",
+        "sha256_cert_fingerprints": ["A3:F9:85:F3:BE:63:3D:9D:49:24:23:31:43:B3:A8:A0:54:E8:61:7E:66:89:04:AE:EF:8B:6C:ED:AA:5A:CE:43"]
+      }
+    }]

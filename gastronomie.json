@@ -1,0 +1,30 @@
+{
+  "_note": "Spécialités culinaires par gouvernorat — pilote sourcé (2026-06). Sources : Wikipédia (Cuisine tunisienne) ; generationvoyage.fr ; nessma.tv cuisine ; leaders.com.tn ; djerba.holiday (agenda). À compléter/vérifier sur place. Saisons : Tunisie = climat méditerranéen/saharien.",
+  "_national": {
+    "plats": ["couscous (plat national)", "brik à l'œuf", "lablabi (pois chiches, cumin, harissa)", "kefteji (légumes frits, œuf)", "ojja (œufs, tomate, merguez/poisson)", "tajine tunisien (omelette au four)", "chakchouka", "slata mechouia"],
+    "note": "Ces plats se trouvent un peu partout en Tunisie.",
+    "source": "Wikipédia (Cuisine tunisienne) ; generationvoyage.fr"
+  },
+  "_juive": {
+    "titre": "Cuisine judéo-tunisienne",
+    "plats": ["pkaïla / t'fina (bœuf, épinards confits, haricots blancs — plat de Roch Hachana)", "msoki (ragoût d'agneau et légumes nouveaux — Pessah, le printemps)", "osbène (saucisse de tripes, épinards, riz, herbes)", "boulou (pain brioché aux amandes)", "madfouna"],
+    "note": "Patrimoine vivant des communautés juives de Tunisie — surtout à Djerba (autour de la Ghriba) et dans la hara de Tunis.",
+    "source": "196flavors.com ; tunisie.co ; Wikipédia (Cuisine tunisienne)"
+  },
+  "regions": {
+    "Bizerte":   { "plats": ["lablabi (pois chiches, cumin, harissa, thon/sardines)"], "source": "nessma.tv ; generationvoyage.fr" },
+    "Jendouba":  { "plats": ["chakhchoukha au poulet (kesra émiettée, sauce relevée)"], "source": "nessma.tv" },
+    "Kairouan":  { "plats": ["makroudh (semoule, pâte de dattes, miel/sirop)"], "festivals": [], "source": "generationvoyage.fr ; nessma.tv" },
+    "Le Kef":    { "plats": ["Borzguène", "Rfissa (semoule fine, huile d'olive)"], "source": "nessma.tv" },
+    "Sfax":      { "plats": ["charmoula (sucré-salé : oignons, raisins secs, épices — Aïd el-Fitr)", "hout melah (poisson salé)", "couscous au poisson"], "source": "nessma.tv" },
+    "Gabès":     { "plats": ["mloukhia (corète longuement mijotée, viande)", "couscous au poisson"], "fruits": ["dattes (oasis de Gabès)", "henné"], "source": "nessma.tv ; Leaders (oasis : corète/mloukhia)" },
+    "Gafsa":     { "plats": ["barkoukech (gros couscous berbère, légumes de saison, sucré-salé — saison des récoltes)"], "source": "nessma.tv" },
+    "Médenine":  { "plats": ["malthouth sbares (poisson 'pataclet' + malthouth, légumes — Djerba)", "couscous au poisson", "poisson grillé & fruits de mer (Djerba, Zarzis)"], "fruits": ["dattes"], "source": "nessma.tv" },
+    "Tataouine": { "plats": ["corne de gazelle (kab el ghzal)"], "fruits": ["dattes Deglet Nour"], "source": "Wikipédia (Corne de gazelle ; Deglet Nour) ; usage local (Helmy)" },
+    "Zaghouan":  { "plats": ["kaak warka (couronne d'amandes — la spécialité de Zaghouan)", "eau de fleur d'oranger / distillats"], "source": "usage local (Helmy) ; à confirmer" },
+    "Tozeur":    { "fruits": ["dattes Deglet Nour (oasis du Djérid)"], "plats": ["plats d'oasis (légumes, dattes)"], "source": "Wikipédia (Deglet Nour) ; Leaders" },
+    "Kébili":    { "fruits": ["dattes Deglet Nour (1ʳᵉ région productrice ~58 %)"], "festivals": [ { "nom": "Festival des dattes de Kébili", "periode": "octobre–novembre (récolte)", "source": "djerba.holiday (agenda) ; Leaders" } ], "source": "Wikipédia (Deglet Nour) ; Leaders" },
+    "Tunis":     { "plats": ["couscous, briks et fricassés des gargotes de la médina", "pâtisseries (baklawa, kaak warka)"], "source": "generationvoyage.fr (à compléter)" },
+    "Nabeul":    { "plats": ["harissa de Nabeul (Cap Bon)", "poisson & fruits de mer"], "fruits": ["agrumes / oranges du Cap Bon (hiver)", "piments"], "source": "à vérifier (Cap Bon agrumes & harissa)" }
+  }
+}

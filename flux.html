@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="THE">
+<title>THE — Schéma des flux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=EB+Garamond&display=swap" rel="stylesheet">
+<style>
+  :root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;--green:#5c7a52;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);
+    background:linear-gradient(160deg,#2b2318,#3a2f22 40%,#5a4a33);padding:24px 14px 70px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-family:'Cormorant Garamond',serif;text-align:center;color:var(--ivory);font-size:30px;letter-spacing:3px;margin:0 0 4px;}
+  .sub{text-align:center;color:#ece1cf;font-style:italic;margin:0 0 26px;}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 18px 22px;margin-bottom:20px;box-shadow:0 8px 26px rgba(0,0,0,.22);}
+  .card > h2{font-family:'Cormorant Garamond',serif;font-size:22px;margin:0 0 4px;color:var(--ink);}
+  .card > .lead{font-size:13.5px;color:var(--stone);margin:0 0 16px;}
+
+  .row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;}
+  .col{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .box{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:14px;
+    text-align:center;min-width:84px;line-height:1.25;}
+  .box .t{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:15px;display:block;}
+  .box small{color:var(--stone);font-size:11.5px;}
+  .box.start{background:var(--ink);color:var(--ivory);border-color:var(--ink);}
+  .box.start .t{color:var(--ivory);}
+  .box.gold{background:#f7efde;border-color:var(--gold-soft);}
+  .box.green{background:#e8efe2;border-color:#9db58f;}
+  .box.opt{border-style:dashed;background:#fbf6ec;}
+  .arr{color:var(--gold);font-size:20px;line-height:1;padding:0 2px;}
+  .arrd{color:var(--gold);font-size:20px;line-height:1;}
+  .stage-lbl{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);text-align:center;margin:14px 0 6px;}
+  .fan{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
+  .note{font-size:12.5px;color:#6b5a39;background:#fbf3e8;border:1px solid #e8d6b4;border-left:4px solid var(--gold);
+    border-radius:6px;padding:9px 11px;margin-top:14px;line-height:1.5;}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;color:#ece1cf;font-size:12.5px;margin-top:6px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .sw{width:22px;height:14px;border-radius:3px;border:1px solid var(--line);display:inline-block;}
+  .foot{text-align:center;color:var(--gold-soft);font-size:11.5px;margin-top:18px;line-height:1.7;}
+  @media(max-width:560px){ .arr{transform:rotate(90deg);} }
+</style>
+  <script src="the-i18n.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <h1>THE — SCHÉMA DES FLUX</h1>
+  <p class="sub">Prototype carto-historique · vue d'ensemble du parcours utilisateur</p>
+
+  <div class="legend">
+    <span><i class="sw" style="background:#2b2318"></i> écran / page</span>
+    <span><i class="sw" style="background:#f7efde"></i> histoire</span>
+    <span><i class="sw" style="background:#e8efe2"></i> nature</span>
+    <span><i class="sw" style="background:#fbf6ec;border-style:dashed"></i> optionnel</span>
+    <span>🔒 reste sur l'appareil</span>
+  </div>
+
+  <!-- A. NAVIGATION -->
+  <div class="card" style="margin-top:18px">
+    <h2>A · Navigation générale</h2>
+    <p class="lead">Du splash au menu, puis vers les grandes entrées.</p>
+    <div class="row">
+      <div class="box start"><span class="t">Bienvenue</span><small>splash</small></div>
+      <span class="arr">→</span>
+      <div class="box start"><span class="t">Accueil</span><small>le menu</small></div>
+      <span class="arr">→</span>
+      <div class="col">
+        <div class="box gold"><span class="t">🧭 Créer un itinéraire</span><small>en tête de menu</small></div>
+        <div class="box"><span class="t">🗺️ Carte du patrimoine</span><small>index.html · 408 + 142 lieux</small></div>
+        <div class="box"><span class="t">📖 Découvrir</span><small>récit des civilisations</small></div>
+        <div class="box"><span class="t">🎬 Voyage immersif</span></div>
+        <div class="box"><span class="t">🏛️ Musée</span><small>scan QR → fiche objet</small></div>
+        <div class="box"><span class="t">📜 Sources &amp; crédits</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. ITINERAIRE -->
+  <div class="card">
+    <h2>B · Créer un itinéraire <small style="font-weight:400;color:var(--stone);font-size:13px">(le cœur)</small></h2>
+    <p class="lead">Un entonnoir de choix → un itinéraire réel (lieux sourcés), ordonné par proximité.</p>
+
+    <div class="stage-lbl">l'entonnoir — 5 questions</div>
+    <div class="row">
+      <div class="box"><span class="t">1 · Départ</span><small>📍 GPS ou gouvernorat</small></div>
+      <span class="arr">→</span>
+      <div class="box"><span class="t">2 · Durée</span><small>½ j → 2 sem.</small></div>
+      <span class="arr">→</span>
+      <div class="box"><span class="t">3 · Périmètre</span><small>ville / région / pays</small></div>
+      <span class="arr">→</span>
+      <div class="box"><span class="t">4 · Thème</span><small>12 thèmes ou 🎲</small></div>
+      <span class="arr">→</span>
+      <div class="box"><span class="t">5 · Genre</span><small>villes / monuments / musées / nature</small></div>
+      <span class="arr">→</span>
+      <div class="box"><span class="t">6 · Forme</span><small>aller simple / boucle / aller-retour</small></div>
+    </div>
+
+    <div class="stage-lbl">— ou — un circuit prêt</div>
+    <div class="row">
+      <div class="box gold"><span class="t">✨ Circuits prêts</span><small>tours.json · curés + pépites épinglées<br>ex. « Sur les pas de Rome »</small></div>
+    </div>
+
+    <div class="arrd" style="text-align:center;margin:6px 0">↓</div>
+
+    <div class="row">
+      <div class="box gold" style="min-width:200px"><span class="t">🧭 Résultat = l'itinéraire</span>
+        <small>résumé (étapes · km · durée <i>indicative</i>) + carte Leaflet (étapes numérotées + tracé) + fiches d'étapes avec source</small></div>
+    </div>
+
+    <div class="stage-lbl">sur chaque tronçon</div>
+    <div class="row">
+      <div class="box green" style="min-width:260px"><span class="t">🛣️ À voir en chemin</span><small>pépites sourcées proches de la route + détour ≈ min → « + Ajouter » · (épinglées dans les presets, complétées en auto)</small></div>
+    </div>
+
+    <div class="stage-lbl">depuis le résultat — actions</div>
+    <div class="fan">
+      <div class="box opt"><span class="t">➕ Ajouter un lieu</span><small>nos données ou géocodage OSM</small></div>
+      <div class="box opt"><span class="t">📷 Carnet photo</span><small>par étape · 🔒 local</small></div>
+      <div class="box opt"><span class="t">📔 Album souvenir</span><small>→ section C</small></div>
+      <div class="box opt"><span class="t">🖨️ Imprimer / PDF</span><small>format visuel exportable</small></div>
+      <div class="box opt"><span class="t">🗺️ Voir sur la grande carte</span><small>→ section D</small></div>
+      <div class="box opt"><span class="t">↻ Recommencer</span></div>
+    </div>
+    <div class="note">🔒 <b>Local-first :</b> itinéraire, photos et légendes restent sur l'appareil. Rien n'est envoyé sans une action de partage explicite.</div>
+  </div>
+
+  <!-- C. SOUVENIR -->
+  <div class="card">
+    <h2>C · Souvenir : carnet → album → partage</h2>
+    <p class="lead">Transformer les photos du voyage en souvenir structuré, rattaché aux étapes sourcées.</p>
+    <div class="row">
+      <div class="box opt"><span class="t">📷 Photos par étape</span><small>IndexedDB · 🔒 local</small></div>
+      <span class="arr">→</span>
+      <div class="box gold"><span class="t">📔 Album</span><small>style 🧭 Baroudeur<br>ou 🛂 Passeport<br>+ légende éditable</small></div>
+      <span class="arr">→</span>
+      <div class="col">
+        <div class="box"><span class="t">🖨️ PDF / Imprimer</span></div>
+        <div class="box"><span class="t">🟢 WhatsApp</span><small>texte</small></div>
+        <div class="box"><span class="t">✉️ E-mail</span><small>texte</small></div>
+        <div class="box"><span class="t">📱 Partage natif</span><small>+ fichiers photos</small></div>
+        <div class="box opt"><span class="t">🌍 Publier sur le site</span><small>opt-in explicite — à venir</small></div>
+      </div>
+    </div>
+    <div class="note">⚖️ Les sorties partagent par défaut le <b>texte</b> de l'itinéraire. Les photos ne quittent l'appareil que via le partage natif du téléphone ou une publication <b>sur accord explicite</b>.</div>
+  </div>
+
+  <!-- D. CARTE -->
+  <div class="card">
+    <h2>D · Aller-retour itinéraire ⇄ grande carte</h2>
+    <p class="lead">La carte des 550 lieux est illisible « à froid » → on l'ouvre filtrée sur l'itinéraire.</p>
+    <div class="row">
+      <div class="box gold"><span class="t">🧭 Itinéraire</span></div>
+      <span class="arr">→</span>
+      <div class="box"><span class="t">🗺️ Grande carte</span><small>index.html?route=…<br>uniquement vos lieux + cadrage</small></div>
+      <span class="arr">→</span>
+      <div class="box opt"><span class="t">« Voir toute la carte »</span><small>enlève le filtre → 550 lieux</small></div>
+    </div>
+    <div class="note">La grande carte garde ses propres filtres (Histoire / Nature · gouvernorat · période · autour de moi) ; toucher un filtre sort du mode itinéraire.</div>
+  </div>
+
+  <div class="foot">
+    THE · Tunisia Heritage Experience — schéma indicatif du prototype web.<br>
+    Méthode : du plus simple qui marche vers le complet · non-hallucination / sourçage strict.
+  </div>
+</div>
+  <script src="analytics.js"></script>
+</body>
+</html>

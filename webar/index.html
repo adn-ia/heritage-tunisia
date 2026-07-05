@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="THE">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#26201a">
+  <title>THE — Reconstitution AR (V1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root { --ivory:#f6f0e4; --paper:#fffdf8; --ink:#2b2318; --stone:#8a7c66; --gold:#a8884f; --gold-soft:#c9ad79; --line:#e3d8c4; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:'EB Garamond',Georgia,serif; color:var(--ink); background:var(--ivory); }
+    header { background:#26201a; color:var(--ivory); padding:14px 18px 11px; }
+    header .title { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:21px; letter-spacing:4px; }
+    header .sub { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--gold-soft); margin-top:3px; }
+    .rule { height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin-top:9px; }
+    main { max-width:620px; margin:0 auto; padding:18px; }
+
+    .lead { font-size:17px; line-height:1.5; color:#3a3023; }
+    .lead .tag { display:inline-block; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); border:1px solid var(--line); border-radius:2px; padding:2px 9px; margin-bottom:10px; }
+
+    .viewer { position:relative; width:100%; aspect-ratio:4/3; background:#1a1510; border:1px solid var(--line); border-radius:4px; overflow:hidden; margin:14px 0 6px; box-shadow:0 6px 24px rgba(43,35,24,0.18); }
+    .viewer iframe { width:100%; height:100%; border:0; }
+    .credit { font-size:11px; color:var(--stone); font-style:italic; }
+    .credit a { color:var(--gold); }
+
+    .steps { background:var(--paper); border:1px solid var(--line); border-radius:4px; padding:14px 16px; margin:16px 0; }
+    .steps h2 { font-family:'Cormorant Garamond',serif; font-weight:700; font-size:19px; margin:0 0 8px; }
+    .steps ol { margin:0; padding-left:20px; }
+    .steps li { font-size:15px; line-height:1.55; margin:5px 0; }
+    .note { font-size:13px; color:var(--stone); line-height:1.5; border-top:1px solid var(--line); padding-top:12px; margin-top:16px; }
+    .note b { color:var(--ink); }
+    a.back { color:var(--gold); text-decoration:none; font-size:13px; letter-spacing:.5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">THE</div>
+    <div class="sub">Reconstitution AR — démonstration V1</div>
+    <div class="rule"></div>
+  </header>
+
+  <main>
+    <p class="lead">
+      <span class="tag">Preuve de concept — V1</span><br>
+      Voici un <b>vrai vestige tunisien scanné en 3D</b> que tu peux faire apparaître <b>en réalité augmentée chez toi ou sur le terrain</b>, directement depuis le navigateur — sans application, sans iPad.
+    </p>
+
+    <div class="viewer">
+      <iframe title="Pierre tombale de Gemellus (Carthage)"
+        src="https://sketchfab.com/models/ca349ace9809483c853e06369d635d39/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0"
+        allow="autoplay; fullscreen; xr-spatial-tracking"
+        allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"
+        xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share>
+      </iframe>
+    </div>
+    <p class="credit">
+      Modèle : « Gemellus Carthage Tombstone » (Carthage, Ier–IIe s., British Museum) par
+      <a href="https://sketchfab.com/artfletch" target="_blank" rel="noopener">artfletch</a> —
+      licence <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>,
+      via <a href="https://sketchfab.com" target="_blank" rel="noopener">Sketchfab</a>.
+    </p>
+
+    <div class="steps">
+      <h2>Pour le voir en réalité augmentée</h2>
+      <ol>
+        <li>Ouvre cette page sur ton <b>téléphone</b> (pas l'ordinateur).</li>
+        <li>Dans le visualiseur ci-dessus, touche l'icône <b>« AR »</b> (en bas à droite du lecteur).</li>
+        <li>Bouge lentement le téléphone : l'objet se <b>pose dans la pièce</b> ou sur le sol. Tu peux tourner autour.</li>
+      </ol>
+    </div>
+
+    <p class="note">
+      <b>Ce que ça prouve.</b> Toute la chaîne fonctionne sur le web, à 0 € : un scan réel de patrimoine tunisien (licence libre) → affiché en AR sur un simple téléphone. C'est la <b>V1 « miroir temporel »</b> du corpus, en version la plus simple.<br><br>
+      <b>Limite honnête.</b> Ici c'est un <b>objet</b> (stèle), pas encore un <b>monument reconstitué à l'échelle</b> posé sur une ruine. L'étape suivante (reconstituer l'Arc de Haïdra par-dessus le site réel) demande un modèle 3D du monument + un ancrage sur le terrain — c'est là qu'interviennent ton iPad/LiDAR et Reality Composer. Mais le principe, lui, est validé dès maintenant.
+    </p>
+
+    <p style="margin-top:18px"><a class="back" href="../index.html">‹ Retour à la carte</a></p>
+  </main>
+</body>
+</html>

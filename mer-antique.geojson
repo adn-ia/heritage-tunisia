@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "_note": "TRACE SCHEMATIQUE ET INDICATIF — PAS scientifiquement exact. A remplacer par un trait de cote antique source (etudes du delta de la Medjerda). Sert seulement a illustrer le principe du calque 'mer antique' autour d'Utique.",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nom": "Mer antique (extension presumee, schematique)",
+        "note": "Tracé indicatif à affiner avec sources géomorphologiques"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [10.066, 37.052],
+          [10.052, 37.095],
+          [10.090, 37.160],
+          [10.150, 37.185],
+          [10.230, 37.180],
+          [10.255, 37.120],
+          [10.215, 37.060],
+          [10.140, 37.030],
+          [10.085, 37.035],
+          [10.066, 37.052]
+        ]]
+      }
+    }
+  ]
+}

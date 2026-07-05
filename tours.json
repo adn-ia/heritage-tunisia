@@ -1,0 +1,869 @@
+{
+ "rome": {
+  "id": "rome",
+  "titre": "Sur les pas de Rome en Afrique",
+  "soustitre": "Les grandes cités romaines, par Le Kef",
+  "duree": "4 jours / 3 nuits",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Tunis",
+   "coord": [
+    10.181,
+    36.806
+   ]
+  },
+  "forme": "oneway",
+  "note": "Réaliste : ne pas tout enchaîner. Combiner Bulla Regia + Dougga (avec une halte à Béja) le 1er jour est faisable mais long — partez tôt de Tunis (vers 7h). Le soir, dodo au Kef.",
+  "etapes": [
+   {
+    "nom": "Bulla Regia",
+    "note": "Le matin : les villas souterraines et leurs mosaïques. Déjeuner possible à Béja en chemin."
+   },
+   {
+    "nom": "Dougga (Thugga)",
+    "note": "L'après-midi. Site vaste (2h minimum) : combiné avec Bulla Regia le même jour, la journée est chargée."
+   },
+   {
+    "nom": "Le Kef (kasbah et medina)",
+    "nuit": true,
+    "sejour": "2 nuits — gardez une journée pleine pour Le Kef",
+    "ville": "Le Kef",
+    "note": "Dodo au Kef (obligatoire). Médina, kasbah, Sicca Veneria, musées : une vraie journée d'exploration."
+   },
+   {
+    "nom": "Hammam Mellegue (thermes romains)",
+    "note": "Excursion depuis Le Kef : thermes romains au bord de l'oued Mellègue. Accessible en voiture de tourisme par une petite route/piste — prudence par temps de pluie."
+   },
+   {
+    "nom": "Sbeitla (Sufetula)",
+    "nuit": true,
+    "sejour": "1 nuit (Sbeïtla / Kasserine)",
+    "ville": "Sbeitla",
+    "note": "Route depuis Le Kef ; arrivée pour le temple capitolin en fin de journée."
+   },
+   {
+    "nom": "Amphitheatre d'El Jem (Thysdrus)",
+    "note": "Dernière étape avant le retour : l'amphithéâtre, l'un des mieux conservés au monde."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Arc de Gordien III (Musti / El Krib)",
+    "via": "Dougga (Thugga)",
+    "note": "À deux pas de Dougga : l'arc monumental de l'antique Musti, sur la grande voie Carthage–Theveste."
+   },
+   {
+    "nom": "Marche romain (macellum) de Musti / El Krib",
+    "via": "Dougga (Thugga)",
+    "note": "Le marché (macellum) de Musti, encore lisible. Le bourg actuel d'El Krib tient toujours marché (jour à vérifier sur place)."
+   }
+  ]
+ },
+ "carthage": {
+  "id": "carthage",
+  "titre": "Carthage la punique",
+  "soustitre": "De Byrsa aux ports : la cité d'Hannibal",
+  "duree": "une demi-journée",
+  "echelle": "ville",
+  "depart": {
+   "label": "Carthage (colline de Byrsa)",
+   "coord": [
+    10.323,
+    36.852
+   ]
+  },
+  "forme": "oneway",
+  "etapes": [
+   "Byrsa",
+   "Tophet de Carthage",
+   "Ports puniques de Carthage",
+   "Thermes d'Antonin"
+  ],
+  "pepites": [
+   {
+    "nom": "Quartier Hannibal (Carthage)",
+    "via": "Byrsa",
+    "note": "Maisons puniques à flanc de Byrsa : l'urbanisme de la cité avant 146 av. J.-C."
+   },
+   {
+    "nom": "Musee national de Carthage",
+    "via": "Byrsa",
+    "note": "Sur la colline de Byrsa : stèles, sarcophages et mobilier punique."
+   }
+  ]
+ },
+ "ksour": {
+  "id": "ksour",
+  "titre": "Sud berbère & ksour",
+  "soustitre": "Villages perchés et greniers fortifiés de Tataouine",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "region",
+  "depart": {
+   "label": "Tataouine",
+   "coord": [
+    10.451,
+    32.929
+   ]
+  },
+  "forme": "boucle",
+  "etapes": [
+   "Chenini (ksar et village)",
+   {
+    "nom": "Douiret (ksar et village)",
+    "nuit": true,
+    "sejour": "1 nuit dans le Sud",
+    "ville": "Tataouine",
+    "note": "Beaucoup de gîtes berbères et chambres d'hôte autour de Tataouine — l'occasion d'une nuit en ksar restauré."
+   },
+   "Ksar Ouled Soltane",
+   "Guermessa (ksar et village)"
+  ],
+  "pepites": [
+   {
+    "nom": "Ksar Hadada",
+    "via": "Guermessa (ksar et village)",
+    "note": "Ksar restauré au nord de Tataouine — aussi décor de Star Wars (Épisode I)."
+   }
+  ]
+ },
+ "cinema": {
+  "id": "cinema",
+  "titre": "Tatooine : la Tunisie de Star Wars",
+  "soustitre": "Décors de cinéma du Sud, du Chott aux ksour",
+  "duree": "2 à 3 jours",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Tozeur",
+   "coord": [
+    8.134,
+    33.919
+   ]
+  },
+  "forme": "oneway",
+  "etapes": [
+   {
+    "nom": "Ong Jmel / Mos Espa (decor Star Wars)",
+    "note": "Tôt le matin pour la lumière et la fraîcheur (plein désert)."
+   },
+   "Ferme des Lars / dome (Chott el-Djerid, pres de Nefta)",
+   {
+    "nom": "Hotel Sidi Driss (decor Star Wars, ferme des Lars)",
+    "nuit": true,
+    "sejour": "1 nuit à Matmata",
+    "ville": "Matmata",
+    "note": "On peut dormir dans l'hôtel troglodyte lui-même (la ferme des Lars du film) ou dans une maison d'hôte de Matmata."
+   },
+   "Ksar Hadada"
+  ],
+  "pepites": [
+   {
+    "nom": "Chenini (ksar et village)",
+    "via": "Ksar Hadada",
+    "note": "Village berbère perché spectaculaire, l'un des plus photogéniques du Sud."
+   }
+  ]
+ },
+ "tozeur": {
+  "id": "tozeur",
+  "titre": "Tozeur et le Djérid",
+  "soustitre": "Médina de brique, oasis et mer de sel, au départ de Tozeur",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Tozeur",
+   "coord": [
+    8.139,
+    33.921
+   ]
+  },
+  "forme": "boucle",
+  "note": "La fraîcheur du matin pour le Chott el-Djerid (lumières et mirages) ; l'après-midi à l'ombre des palmeraies. Eau, chapeau et plein d'essence avant le désert.",
+  "etapes": [
+   {
+    "nom": "Ouled el Hadef (medina de Tozeur)",
+    "note": "Le vieux quartier aux façades de brique ocre à motifs géométriques — à parcourir à pied."
+   },
+   {
+    "nom": "Degache",
+    "note": "Oasis traditionnelle aux portes du Chott, sur la route de Kébili."
+   },
+   {
+    "nom": "Ferme des Lars / dome (Chott el-Djerid, pres de Nefta)",
+    "nuit": true,
+    "sejour": "1 nuit à Tozeur ou Nefta",
+    "ville": "Tozeur",
+    "note": "La grande mer de sel ; le dôme de cinéma près de Nefta. Superbe au coucher du soleil — puis nuit à Tozeur ou Nefta."
+   },
+   {
+    "nom": "Ong Jmel / Mos Espa (decor Star Wars)",
+    "note": "Jour 2, tôt le matin : plein désert au nord-ouest, le décor de Mos Espa. Accès piste — 4×4 ou excursion conseillés."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Hazoua",
+    "via": "Ferme des Lars / dome (Chott el-Djerid, pres de Nefta)",
+    "note": "Oasis frontalière à l'extrême ouest, au bord du chott — bout du monde paisible."
+   }
+  ]
+ },
+ "douz": {
+  "id": "douz",
+  "titre": "Douz, porte du Sahara",
+  "soustitre": "Oasis sahariennes et grand erg, au départ de Douz",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Douz",
+   "coord": [
+    9.02,
+    33.466
+   ]
+  },
+  "forme": "oneway",
+  "note": "Le grand rendez-vous saharien est le Festival international du Sahara de Douz (généralement fin décembre — vérifiez les dates de l'année) : courses de dromadaires, poésie, musique. Pour le désert (méharées, bivouac), partez avec un guide local. Eau et soleil : prudence.",
+  "etapes": [
+   {
+    "nom": "Zaafrane",
+    "nuit": true,
+    "sejour": "1 nuit à Douz (hôtel) ou bivouac dans les dunes",
+    "ville": "Douz",
+    "note": "Le départ des méharées vers les dunes, à l'ouest de Douz. Soir : coucher de soleil sur l'erg, puis bivouac sous les étoiles ou hôtel à Douz."
+   },
+   {
+    "nom": "Sabria",
+    "note": "Oasis saharienne paisible, au cœur des sables."
+   },
+   {
+    "nom": "El Faouar",
+    "note": "Dernière oasis avant le grand erg, ambiance bout du monde."
+   },
+   {
+    "nom": "Jemna",
+    "note": "Oasis traditionnelle sur la route remontant vers Kébili."
+   },
+   {
+    "nom": "Blidet",
+    "note": "Petite oasis sur le pourtour du chott."
+   },
+   {
+    "nom": "Kebili",
+    "note": "Vieux chef-lieu oasien du Nefzaoua, marchés et palmeraies."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Tisavar (Ksar Rhilane)",
+    "via": "El Faouar",
+    "note": "Fortin romain en plein désert, au bord de l'erg — accès 4×4 et guide indispensables."
+   }
+  ]
+ },
+ "gafsa": {
+  "id": "gafsa",
+  "titre": "Gafsa, du Capsien au bassin minier",
+  "soustitre": "Oasis antique, préhistoire et épopée minière",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Gafsa",
+   "coord": [
+    8.785,
+    34.415
+   ]
+  },
+  "forme": "oneway",
+  "note": "Gafsa a donné son nom au Capsien, grande culture préhistorique. L'après-midi, cap sur le bassin minier et les gorges de Seldja avec le train du Lézard Rouge (vérifiez les horaires de circulation).",
+  "etapes": [
+   {
+    "nom": "Piscines romaines de Gafsa",
+    "note": "Les bassins antiques alimentés par les sources, au cœur de la ville."
+   },
+   {
+    "nom": "Grande Mosquee de Gafsa",
+    "note": "À deux pas des piscines, dans la vieille ville."
+   },
+   {
+    "nom": "Musee archeologique de Gafsa",
+    "note": "Mosaïques et collections de la région."
+   },
+   {
+    "nom": "Gisement prehistorique d'El Mekta (Capsien)",
+    "nuit": true,
+    "sejour": "1 nuit à Gafsa",
+    "ville": "Gafsa",
+    "note": "Site éponyme du Capsien, au nord de Gafsa. Dodo à Gafsa ; demain, cap sur le bassin minier."
+   },
+   {
+    "nom": "Metlaoui",
+    "note": "Jour 2 : capitale historique du phosphate, point de départ du train minier."
+   },
+   {
+    "nom": "Le Lezard Rouge (train historique de Metlaoui)",
+    "note": "Le train beylical restauré traverse les gorges de Seldja — horaires à vérifier."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "El Guettar",
+    "via": "Piscines romaines de Gafsa",
+    "note": "Oasis à l'est, à la fois site préhistorique et champ de bataille de 1943."
+   },
+   {
+    "nom": "Redeyef",
+    "via": "Metlaoui",
+    "note": "Au cœur du bassin minier, ville de la mémoire ouvrière (révolte de 2008)."
+   }
+  ]
+ },
+ "kef": {
+  "id": "kef",
+  "titre": "Le Kef, balcon des hautes plaines",
+  "soustitre": "Kasbah, Sicca Veneria et thermes romains",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "region",
+  "depart": {
+   "label": "Le Kef",
+   "coord": [
+    8.715,
+    36.182
+   ]
+  },
+  "forme": "boucle",
+  "note": "La ville se parcourt à pied (montées) ; gardez l'excursion de Hammam Mellègue pour la demi-journée, par beau temps.",
+  "etapes": [
+   {
+    "nom": "Le Kef (kasbah et medina)",
+    "note": "La médina perchée et ses ruelles, point de vue sur les plaines."
+   },
+   {
+    "nom": "Kasbah du Kef",
+    "note": "La forteresse ottomane qui domine la ville."
+   },
+   {
+    "nom": "Sicca Veneria (Le Kef antique)",
+    "note": "Vestiges de la cité numide puis romaine, sous la ville actuelle."
+   },
+   {
+    "nom": "Basilique Saint-Pierre (Dar El Kous, Le Kef)",
+    "note": "Église paléochrétienne remarquablement conservée."
+   },
+   {
+    "nom": "Zaouia de Sidi Bou Makhlouf",
+    "nuit": true,
+    "sejour": "1 nuit au Kef",
+    "ville": "Le Kef",
+    "note": "Sanctuaire aux coupoles, joyau de l'art religieux local. Nuit au Kef ; demain, l'excursion de Hammam Mellègue."
+   },
+   {
+    "nom": "Hammam Mellegue (thermes romains)",
+    "note": "Jour 2, excursion à l'ouest : thermes romains au bord de l'oued. Route/piste — prudence par temps de pluie."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Althiburos (El Medeina)",
+    "via": "Hammam Mellegue (thermes romains)",
+    "note": "Cité numide et romaine au sud du Kef, théâtre et mosaïques."
+   },
+   {
+    "nom": "Musti (Mustis)",
+    "via": "Sicca Veneria (Le Kef antique)",
+    "note": "Ville-étape sur la voie vers Dougga, arcs et huileries."
+   }
+  ]
+ },
+ "djerba": {
+  "id": "djerba",
+  "titre": "Djerba, l'île des mosquées et des souks",
+  "soustitre": "Houmt Souk, la Ghriba, Djerbahood et villages ibadites",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "region",
+  "depart": {
+   "label": "Houmt Souk (Djerba)",
+   "coord": [
+    10.85,
+    33.86
+   ]
+  },
+  "forme": "boucle",
+  "note": "L'île se visite en boucle tranquille ; vélo ou voiture. Pèlerinage de la Ghriba au printemps (dates variables). Respect des lieux de culte (tenue, silence).",
+  "etapes": [
+   {
+    "nom": "Houmt Souk (Djerba)",
+    "note": "La capitale de l'île : souks, fondouks et anciens entrepôts."
+   },
+   {
+    "nom": "Borj El Kebir (Borj Ghazi Mustapha, Djerba)",
+    "note": "Le fort hispano-ottoman sur le port de Houmt Souk."
+   },
+   {
+    "nom": "Erriadh (Hara Seghira, Djerba)",
+    "note": "Ancien quartier juif, devenu le village d'art mural « Djerbahood »."
+   },
+   {
+    "nom": "Synagogue de la Ghriba (Djerba)",
+    "nuit": true,
+    "sejour": "1 nuit à Djerba",
+    "ville": "Houmt Souk",
+    "note": "L'une des plus anciennes synagogues du monde, à Erriadh. Nuit à Djerba (Houmt Souk ou la zone de Midoun)."
+   },
+   {
+    "nom": "Mosquee Fadhloun (Djerba)",
+    "note": "Jour 2 : mosquée ibadite trapue et blanche, typique de l'île."
+   },
+   {
+    "nom": "Guellala (Djerba)",
+    "note": "Le village des potiers, au sud de l'île."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Ajim (Djerba)",
+    "via": "Guellala (Djerba)",
+    "note": "Port des éponges au sud-ouest — aussi Mos Eisley dans Star Wars."
+   },
+   {
+    "nom": "El Kantara (Djerba)",
+    "via": "Guellala (Djerba)",
+    "note": "La chaussée romaine qui relie l'île au continent."
+   }
+  ]
+ },
+ "zarzis": {
+  "id": "zarzis",
+  "titre": "Zarzis, Gightis et les ksour de Médenine",
+  "soustitre": "Du golfe de Bou Ghrara aux greniers fortifiés",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Zarzis",
+   "coord": [
+    11.117,
+    33.5
+   ]
+  },
+  "forme": "oneway",
+  "note": "Matinée littorale (oliveraies et lagune), après-midi vers l'intérieur et les ksour. La région frontalière du Sud peut comporter des zones réglementées — renseignez-vous localement.",
+  "etapes": [
+   {
+    "nom": "Zarzis (Gergis)",
+    "note": "Ville côtière au milieu des oliveraies, sur le site de l'antique Gergis."
+   },
+   {
+    "nom": "Gightis (Gigthis)",
+    "note": "Grand port romain sur le golfe de Bou Ghrara, forum et thermes."
+   },
+   {
+    "nom": "Boughrara",
+    "nuit": true,
+    "sejour": "1 nuit à Zarzis",
+    "ville": "Zarzis",
+    "note": "Au bord de la lagune, à deux pas de Gightis et de la chaussée de Djerba. Retour dormir à Zarzis (ou Djerba toute proche)."
+   },
+   {
+    "nom": "Medenine (ville et ksour)",
+    "note": "Jour 2 : la ville des ksour, anciens greniers collectifs à étages."
+   },
+   {
+    "nom": "Metameur (ksar)",
+    "note": "Ksar fortifié bien conservé, à l'ouest de Médenine."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Ksar Ouled Brahim (Medenine)",
+    "via": "Medenine (ville et ksour)",
+    "note": "Autre grenier fortifié de la région, aux ghorfas alignées."
+   }
+  ]
+ },
+ "sousse": {
+  "id": "sousse",
+  "titre": "Sousse, la perle du Sahel",
+  "soustitre": "Médina, ribat et catacombes d'Hadrumète",
+  "duree": "une journée",
+  "echelle": "region",
+  "depart": {
+   "label": "Sousse (médina)",
+   "coord": [
+    10.639,
+    35.828
+   ]
+  },
+  "forme": "oneway",
+  "note": "Le cœur de la médina (ribat, Grande Mosquée, kasbah) se fait à pied en une matinée ; l'après-midi pour les catacombes et, si le temps le permet, une escapade dans le Sahel.",
+  "etapes": [
+   {
+    "nom": "Medina de Sousse",
+    "note": "Cité médiévale fortifiée inscrite à l'UNESCO."
+   },
+   {
+    "nom": "Ribat de Sousse",
+    "note": "Le monastère-forteresse aghlabide, montée à la tour de guet."
+   },
+   {
+    "nom": "Grande Mosquee de Sousse",
+    "note": "Mosquée austère du IXe siècle, allure de citadelle."
+   },
+   {
+    "nom": "Kasbah de Sousse (tour du Khalef)",
+    "note": "La citadelle qui abrite le musée et ses mosaïques."
+   },
+   {
+    "nom": "Musée archéologique de Sousse",
+    "note": "Dans la kasbah : l'une des plus belles collections de mosaïques du pays."
+   },
+   {
+    "nom": "Catacombes de Sousse",
+    "note": "Galeries paléochrétiennes creusées sous la ville."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Hergla (Horrea Caelia)",
+    "via": "Grande Mosquee de Sousse",
+    "note": "Joli village blanc sur sa falaise, au nord, sur le site d'un entrepôt romain."
+   },
+   {
+    "nom": "Takrouna",
+    "via": "Grande Mosquee de Sousse",
+    "note": "Village berbère perché sur son piton au nord-ouest, vue immense sur le Sahel."
+   }
+  ]
+ },
+ "hammamet": {
+  "id": "hammamet",
+  "titre": "Hammamet et le Cap Bon",
+  "soustitre": "Kasbah, sites romains et Kerkouane la punique",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "tunisie",
+  "depart": {
+   "label": "Hammamet",
+   "coord": [
+    10.612,
+    36.394
+   ]
+  },
+  "forme": "oneway",
+  "note": "La kasbah et la vieille ville le matin ; remontez le Cap Bon vers Nabeul puis Kerkouane, joyau punique, en fin de parcours (prévoyez la demi-journée pour y aller).",
+  "etapes": [
+   {
+    "nom": "Kasbah de Hammamet",
+    "note": "Le fort sur la mer et les ruelles blanches de la médina."
+   },
+   {
+    "nom": "Musée Dar Khadija (Hammamet)",
+    "note": "Demeure traditionnelle restaurée, art de vivre du Cap Bon."
+   },
+   {
+    "nom": "Pupput",
+    "note": "Site romain entre Hammamet et Nabeul, nécropole et mosaïques."
+   },
+   {
+    "nom": "Neapolis (Nabeul)",
+    "note": "L'antique cité punique puis romaine, ateliers de salaisons."
+   },
+   {
+    "nom": "Musee de Nabeul",
+    "nuit": true,
+    "sejour": "1 nuit à Hammamet ou Nabeul",
+    "ville": "Hammamet",
+    "note": "Collections puniques et romaines de la région. Nuit sur la côte (Hammamet / Nabeul) ; demain, cap au nord vers Kerkouane."
+   },
+   {
+    "nom": "Kerkouane",
+    "note": "Jour 2 : unique ville punique parvenue intacte — classée UNESCO. Le clou du circuit."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Fort de Kelibia (Borj el-Kebir)",
+    "via": "Kerkouane",
+    "note": "Forteresse dominant la mer, des origines romaines aux Hafsides."
+   },
+   {
+    "nom": "Sanctuaire de Thinissut",
+    "via": "Neapolis (Nabeul)",
+    "note": "Lieu de culte punico-romain, d'où provient la fameuse statue de Baal."
+   }
+  ]
+ },
+ "monastir": {
+  "id": "monastir",
+  "titre": "Monastir et les ribats du Sahel",
+  "soustitre": "Ribat, mausolée de Bourguiba et l'antique Leptiminus",
+  "duree": "2 jours / 1 nuit",
+  "echelle": "region",
+  "depart": {
+   "label": "Monastir",
+   "coord": [
+    10.833,
+    35.776
+   ]
+  },
+  "forme": "boucle",
+  "note": "Le ribat et la vieille ville le matin ; descendez ensuite vers Lamta (l'antique Leptiminus) et son musée. Les ribats de Monastir et Sousse se répondent d'un bout à l'autre du Sahel.",
+  "etapes": [
+   {
+    "nom": "Ribat de Monastir",
+    "note": "Le plus ancien ribat du Maghreb, vues superbes depuis le nador."
+   },
+   {
+    "nom": "Grande Mosquee de Monastir",
+    "note": "Mosquée sobre accolée au ribat."
+   },
+   {
+    "nom": "Remparts de Monastir",
+    "note": "Les murailles médiévales de la vieille ville."
+   },
+   {
+    "nom": "Mausolee de Bourguiba (Monastir)",
+    "note": "Le mausolée doré du premier président, dans le cimetière du Sidi El Mezri."
+   },
+   {
+    "nom": "Koubba de Sidi El Mezri (Monastir)",
+    "nuit": true,
+    "sejour": "1 nuit à Monastir",
+    "ville": "Monastir",
+    "note": "Sanctuaire et nécropole attenants au mausolée. Nuit à Monastir ; demain, Lamta et l'antique Leptiminus."
+   },
+   {
+    "nom": "Ribat de Lamta",
+    "note": "Jour 2 : à Lamta (Leptiminus), ribat aghlabide au sud de Monastir."
+   },
+   {
+    "nom": "Musee archeologique de Lamta",
+    "note": "Collections de l'antique Leptiminus, port punique puis romain."
+   }
+  ],
+  "pepites": [
+   {
+    "nom": "Thapsus (Ras Dimass, Bekalta)",
+    "via": "Ribat de Lamta",
+    "note": "Site de la bataille de Thapsus (46 av. J.-C.) entre César et les pompéiens."
+   },
+   {
+    "nom": "Synagogue de Moknine",
+    "via": "Ribat de Lamta",
+    "note": "Témoin de la communauté juive du Sahel, à Moknine."
+   }
+  ]
+ },
+ "medina-classique": {
+  "id": "medina-classique",
+  "titre": "La Médina de Tunis — le cœur classique",
+  "soustitre": "Zitouna, souks et palais, à pied au fil des ruelles",
+  "duree": "une demi-journée (à pied)",
+  "echelle": "ville",
+  "depart": {
+   "label": "Bab el Bhar (Porte de France)",
+   "coord": [
+    10.1737,
+    36.7986
+   ]
+  },
+  "forme": "boucle",
+  "note": "Parcours à pied — comptez ~3 h en flânant. La médina est un labyrinthe : se perdre fait partie du plaisir, les plus belles trouvailles sont dans les ruelles secondaires. Matins en semaine = moins de monde. À goûter en chemin : brik (œuf-thon frit), lablabi (pois chiches, harissa, cumin), makroud (semoule-dattes-miel), bambalouni (beignet). Adresses réputées, à vérifier sur place : Dar Slah, El Ali, Ouled Ahmed (lablabi).",
+  "etapes": [
+   {
+    "nom": "Souk El Attarine",
+    "coord": [
+     10.1701,
+     36.7975
+    ],
+    "type": "Souk",
+    "note": "Les parfumeurs : eau de fleur d'oranger, jasmin, eau de rose. L'un des plus anciens souks, sur le chemin de la Zitouna."
+   },
+   "Mosquée Zitouna (Grande Mosquée de Tunis)",
+   "Médersa Slimania",
+   {
+    "nom": "Souk des Chéchias",
+    "coord": [
+     10.1702,
+     36.7969
+    ],
+    "type": "Souk",
+    "note": "Les bonnets de feutre rouge, artisanat vieux de plusieurs siècles — gestes encore visibles en atelier."
+   },
+   {
+    "nom": "Café El M'rabet",
+    "coord": [
+     10.1706,
+     36.7975
+    ],
+    "type": "Café historique",
+    "note": "Café depuis le XVIIe siècle (~1630), terrasse avec vue sur le minaret de la Zitouna : le moment thé à la menthe. Horaires à vérifier sur place."
+   },
+   "Dar Ben Abdallah",
+   "Tourbet El Bey"
+  ],
+  "pepites": [
+   {
+    "nom": "Dar Hussein",
+    "via": "Mosquée Zitouna (Grande Mosquée de Tunis)",
+    "note": "Palais beylical à patio, l'un des plus raffinés de la médina (siège de l'INP)."
+   },
+   {
+    "nom": "Dar Lasram",
+    "via": "Souk El Attarine",
+    "note": "Grande demeure du XVIIIe, aujourd'hui maison de la médina — superbe enfilade de salles."
+   }
+  ],
+  "premium": true
+ },
+ "medina-nord": {
+  "id": "medina-nord",
+  "titre": "La Médina populaire — Bab Souika & Halfaouine",
+  "soustitre": "Cafés chantants, place animée et marché de la fripe",
+  "duree": "une demi-journée (à pied)",
+  "echelle": "ville",
+  "depart": {
+   "label": "Bab Souika",
+   "coord": [
+    10.16822,
+    36.80513
+   ]
+  },
+  "forme": "boucle",
+  "note": "Le nord populaire de la médina — l'âme vivante de Tunis, loin des circuits touristiques. Bab Souika fut le haut lieu des « cafés chantants » et du chant soufi (ensemble Sulâmiyya) ; la place Halfaouine, immortalisée par le cinéma de Boughedir, vibre de ses souks ; la Hafsia, ancien quartier juif, abrite le marché de la fripe. Le quartier se vit surtout le soir — magique pendant le Ramadan (« Layali Bab Souika », concerts gratuits en plein air, zlabia chaude). À goûter : lablabi, fricassé, et la zlabia des nuits de Ramadan.",
+  "etapes": [
+   "Bab Souika",
+   "Place Halfaouine",
+   "Mosquée Saheb Ettabaa",
+   {
+    "nom": "Souk El Halfaouine",
+    "coord": [
+     10.16735,
+     36.8079
+    ],
+    "type": "Souk",
+    "note": "L'un des deux souks qui animent la place Halfaouine — épices, produits du quotidien, ambiance populaire."
+   },
+   "Hafsia"
+  ],
+  "pepites": [
+   {
+    "nom": "Bab El Assel",
+    "via": "Bab Souika",
+    "note": "Quartier voisin au nom lié au miel (la « Rue du Miel ») et à la mosquée El Borj."
+   }
+  ],
+  "premium": true
+ },
+ "medina-musees": {
+  "id": "medina-musees",
+  "titre": "Médina — palais & musées",
+  "soustitre": "L'art de vivre tunisois derrière les murs",
+  "duree": "une demi-journée (à pied)",
+  "echelle": "ville",
+  "forme": "boucle",
+  "depart": {
+   "label": "Dar Lasram",
+   "coord": [
+    10.16812,
+    36.80207
+   ]
+  },
+  "note": "Pousser les portes discrètes des grandes demeures de la médina : derrière des façades sobres se cachent patios de marbre, plafonds peints et stucs ciselés. Les palais ne se visitent pas tous, mais plusieurs sont ouverts (musées, maisons de la médina, sièges culturels).",
+  "etapes": [
+   "Dar Lasram",
+   "Dar Hussein",
+   "Dar Ben Abdallah",
+   "Tourbet El Bey"
+  ],
+  "pepites": [
+   {
+    "nom": "Place de la Kasbah",
+    "via": "Dar Hussein",
+    "note": "L'ensemble officiel (Primature, mosquée de la Kasbah) : ne se visite pas, mais beau de l'extérieur."
+   }
+  ],
+  "premium": true
+ },
+ "medina-nuit": {
+  "id": "medina-nuit",
+  "titre": "La Médina by night & Ramadan",
+  "soustitre": "Cafés, lanternes, malouf et soirées de fête",
+  "duree": "en soirée",
+  "echelle": "ville",
+  "forme": "boucle",
+  "depart": {
+   "label": "Mosquée Zitouna (Grande Mosquée de Tunis)",
+   "coord": [
+    10.17111,
+    36.79722
+   ]
+  },
+  "note": "La médina se vit aussi la nuit. Ruelles éclairées de lanternes, parfums d'oud et de jasmin, cafés où l'on s'attarde autour d'un thé. Pendant le Ramadan, elle s'embrase : malouf, tarab et chants soufis, zlabia chaude, et le Festival de la Médina (30 soirées de concerts dans les palais, dont les nuits « Layali Slimania » à la Médersa). À vivre de préférence un soir de Ramadan.",
+  "etapes": [
+   {
+    "nom": "Rue Sidi Ben Arous",
+    "coord": [
+     10.1707,
+     36.798
+    ],
+    "type": "Rue / cafés",
+    "note": "Une des rues emblématiques des cafés du soir, près de la Zitouna."
+   },
+   {
+    "nom": "Café El M'rabet",
+    "coord": [
+     10.1706,
+     36.7975
+    ],
+    "type": "Café historique",
+    "note": "Café depuis ~1630 : terrasse vue minaret, narguilé et musique andalouse le week-end."
+   },
+   "Médersa Slimania",
+   "Bab Souika"
+  ],
+  "pepites": [
+   {
+    "nom": "Place Halfaouine",
+    "via": "Bab Souika",
+    "note": "Place vivante le soir, à deux pas de Bab Souika."
+   }
+  ],
+  "premium": true
+ },
+ "medina-jour": {
+  "id": "medina-jour",
+  "titre": "La Médina en une journée",
+  "soustitre": "Le meilleur du cœur classique et du nord populaire",
+  "duree": "une journée (à pied)",
+  "echelle": "ville",
+  "forme": "boucle",
+  "depart": {
+   "label": "Bab el Bhar (Porte de France)",
+   "coord": [
+    10.1737,
+    36.7986
+   ]
+  },
+  "note": "Une journée complète pour embrasser la médina sans courir : le matin, le cœur classique (Zitouna, souks, palais) ; l'après-midi, le nord populaire (Bab Souika, Halfaouine, Hafsia). Prévoir une pause déjeuner (lablabi, brik) et un thé en terrasse.",
+  "etapes": [
+   "Mosquée Zitouna (Grande Mosquée de Tunis)",
+   "Médersa Slimania",
+   "Dar Ben Abdallah",
+   "Tourbet El Bey",
+   "Bab Souika",
+   "Place Halfaouine",
+   "Mosquée Saheb Ettabaa",
+   "Hafsia"
+  ],
+  "pepites": [
+   {
+    "nom": "Dar Hussein",
+    "via": "Mosquée Zitouna (Grande Mosquée de Tunis)",
+    "note": "Palais beylical raffiné (INP)."
+   },
+   {
+    "nom": "Bab El Assel",
+    "via": "Bab Souika",
+    "note": "Le quartier du miel et la mosquée El Borj."
+   }
+  ],
+  "premium": true
+ }
+}

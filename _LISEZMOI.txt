@@ -1,0 +1,5 @@
+VERSION MULTILINGUE (FR / EN / IT / DE / AR)
+=> C'est CELLE-CI qu'on publie sur heritage.threshold-analytics.com
+Téléversez TOUT le contenu de ce dossier sur one.com (écrase l'ancien).
+Contient le module the-i18n.js + le dossier i18n/ (traductions).
+Choix de la langue : sur la page d'accueil uniquement (drapeaux).
