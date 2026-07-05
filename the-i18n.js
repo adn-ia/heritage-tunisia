@@ -49,12 +49,14 @@
       nodes.forEach(function(t){
         var raw=t.nodeValue, key=raw.replace(/ /g,' ').trim();
         if(key.length>1 && UI[key]) t.nodeValue=raw.replace(raw.trim(), UI[key]);
+        ['Description :','Données :','Photo :','Source —','Source :'].forEach(function(pre){ if(t.nodeValue.indexOf(pre)>=0 && UI[pre]) t.nodeValue=t.nodeValue.split(pre).join(UI[pre]); });
       });
       root.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(function(el){
         var k=(el.getAttribute('placeholder')||'').replace(/ /g,' ').trim(); if(UI[k]) el.setAttribute('placeholder',UI[k]); });
       root.querySelectorAll('[title]').forEach(function(el){
         var k=(el.getAttribute('title')||'').replace(/ /g,' ').trim(); if(UI[k]) el.setAttribute('title',UI[k]); });
     }catch(e){}
+    try{ if(document.title){ document.title=document.title.split(/\s+[\u2014\u2013]\s+/).map(function(p){var k=p.replace(/\u00a0/g,' ').trim(); return UI[k]||p;}).join(' \u2014 '); } }catch(e){}
   }
 
   // chargement (contenu + interface) avant rendu

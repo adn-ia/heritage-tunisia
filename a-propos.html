@@ -174,7 +174,7 @@ html{scroll-behavior:smooth;}
     fetch('sites-nature.geojson').then(r=>r.json()).catch(()=>({features:[]}))
   ]).then(([h,n])=>{
     const tot=(h.features?.length||0)+(n.features?.length||0);
-    if(tot>=100){ const floor=Math.floor(tot/100)*100; document.getElementById('count').textContent='plus de '+floor; }
+    if(tot>=100){ const floor=Math.floor(tot/100)*100; document.getElementById('count').textContent=((window.THEi18n&&THEi18n.ui('plus de '))||'plus de ')+floor; }
   }).catch(()=>{});
 
   // ---- Narration vocale (synthèse vocale du navigateur) ----
