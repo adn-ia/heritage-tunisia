@@ -15,7 +15,7 @@
 (function(){
   var KEY='the_pass';
   var DAYS={ semaine:7, mois:30 };
-  var PRICE={ semaine:'2,90 €', mois:'6,90 €' };
+  var PRICE={ semaine:'4,90 €', mois:'9,90 €' };
   var CHECKOUT={ semaine:'', mois:'' };   // ← Helmy : colle tes 2 URLs Lemon Squeezy ici
   var DAY=86400000;
 
