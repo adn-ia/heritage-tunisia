@@ -105,6 +105,7 @@ section[id]{scroll-margin-top:64px;}
 @media (prefers-reduced-motion:reduce){section.reading,.lead.reading{scroll-behavior:auto;}}
 </style>
   <script src="the-i18n.js"></script>
+  <script src="the-pass.js"></script>
 </head>
 <body>
 <div class="topbar"><a class="back" href="bienvenue.html">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" aria-label="Écouter le récit">🔊 Écouter</button></div>
@@ -307,56 +308,99 @@ section[id]{scroll-margin-top:64px;}
 </main>
 
 <script>
-  // ---- Narration vocale du récit (synthèse vocale du navigateur) ----
+  /* ---- Narration « découvrir » ----
+     Premium  : narration pro complète (MP3 voix mature, par langue) → voix/decouvrir-<lang>.mp3
+     Gratuit  : extrait de ~60 s, puis invitation au Premium.
+     Repli    : si la langue n'a pas de MP3 (ou échec), voix de synthèse du navigateur.
+     Tous les libellés passent par uiT() (règle i18n). */
   const synth = window.speechSynthesis;
   const btn = document.getElementById('listen');
-  let chunks = [], idx = 0, state = 'idle'; // idle | playing | paused
+  const TEASER = 62;                 // secondes offertes en gratuit
+  let audio = null, mode = 'idle';   // idle | playing | paused
+  let usingTTS = false;
 
+  function curLang(){ try{ return (localStorage.getItem('the_lang')||'fr').slice(0,2); }catch(e){ return 'fr'; } }
+  function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : false; }catch(e){ return false; } }
+  function mp3url(){ return 'voix/decouvrir-' + curLang() + '.mp3'; }
+
+  function setUI(){
+    if (mode === 'playing'){ btn.textContent = uiT('⏸ Pause'); btn.classList.add('on'); }
+    else if (mode === 'paused'){ btn.textContent = uiT('▶ Reprendre'); btn.classList.add('on'); }
+    else { btn.textContent = uiT('🔊 Écouter'); btn.classList.remove('on'); }
+  }
+  function showGate(){
+    try{
+      if (document.getElementById('audio-gate')) return;
+      const d = document.createElement('div'); d.id = 'audio-gate';
+      d.style.cssText = 'margin:12px 0;padding:12px 14px;border-radius:10px;background:#f3eefb;border-left:3px solid #8a6fb0;font-size:14px;line-height:1.55';
+      d.innerHTML = '✨ ' + uiT('Aperçu terminé.') + ' <a href="premium.html" style="color:#7a5fb0;font-weight:700;text-decoration:underline">' + uiT('Écouter toute la narration (Premium)') + '</a>';
+      const tb = btn.closest('.topbar'); (tb && tb.parentNode ? tb.parentNode : document.body).insertBefore(d, tb ? tb.nextSibling : null);
+    }catch(e){}
+  }
+
+  // ---------- MP3 pro (chemin principal) ----------
+  function startMP3(){
+    audio = new Audio(mp3url()); audio.preload = 'metadata';
+    const premium = isPremium();
+    audio.addEventListener('timeupdate', () => {
+      if (!premium && audio.currentTime >= TEASER){ audio.pause(); mode = 'idle'; setUI(); showGate(); }
+    });
+    audio.addEventListener('ended', () => { mode = 'idle'; setUI(); });
+    audio.addEventListener('error', fallbackTTS);            // pas de MP3 pour cette langue → voix navigateur
+    audio.play().then(() => { mode = 'playing'; setUI(); }).catch(fallbackTTS);
+  }
+  function toggleMP3(){
+    if (mode === 'playing'){ audio.pause(); mode = 'paused'; setUI(); }
+    else if (mode === 'paused'){ audio.play(); mode = 'playing'; setUI(); }
+  }
+
+  // ---------- Repli : synthèse vocale du navigateur ----------
+  let chunks = [], idx = 0, ttsState = 'idle';
   function buildChunks(){
     chunks = [];
     const lead = document.querySelector('main .lead');
     if (lead) chunks.push({ el: lead, text: lead.textContent.trim() });
     document.querySelectorAll('main section').forEach(sec => {
       const h2 = sec.querySelector('h2');
-      const ps = [...sec.querySelectorAll(':scope > p')]; // exclut les légendes (dans <figure>)
+      const ps = [...sec.querySelectorAll(':scope > p')];
       const text = ((h2 ? h2.textContent.trim() + '. ' : '') + ps.map(p => p.textContent.trim()).join(' ')).trim();
       if (text) chunks.push({ el: sec, text });
     });
   }
-  function frVoice(){
-    const vs = synth.getVoices();
-    return vs.find(v => /^fr[-_]FR/i.test(v.lang)) || vs.find(v => /^fr/i.test(v.lang)) || null;
-  }
-  function clearHighlight(){ document.querySelectorAll('.reading').forEach(e => e.classList.remove('reading')); }
-  function highlight(el){
-    clearHighlight(); el.classList.add('reading');
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-  function setUI(){
-    if (state === 'playing'){ btn.textContent = '⏸ Pause'; btn.classList.add('on'); }
-    else if (state === 'paused'){ btn.textContent = '▶ Reprendre'; btn.classList.add('on'); }
-    else { btn.textContent = uiT('🔊 Écouter'); btn.classList.remove('on'); }
-  }
-  function stop(){ synth.cancel(); state = 'idle'; idx = 0; clearHighlight(); setUI(); }
+  function pickVoice(){ const lg = curLang(); const vs = synth.getVoices(); return vs.find(v => new RegExp('^' + lg, 'i').test(v.lang)) || null; }
+  function clearHi(){ document.querySelectorAll('.reading').forEach(e => e.classList.remove('reading')); }
+  function hi(el){ clearHi(); el.classList.add('reading'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   function speakIdx(){
-    if (idx >= chunks.length){ stop(); return; }
+    if (idx >= chunks.length){ ttsStop(); return; }
     const { el, text } = chunks[idx];
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'fr-FR'; u.rate = 0.96; u.pitch = 1;
-    const v = frVoice(); if (v) u.voice = v;
-    u.onstart = () => highlight(el);
-    u.onend = () => { if (state === 'playing'){ idx++; speakIdx(); } };
+    u.lang = ({ fr:'fr-FR', en:'en-GB', it:'it-IT', de:'de-DE', ar:'ar-SA' })[curLang()] || 'fr-FR';
+    u.rate = 0.96; const v = pickVoice(); if (v) u.voice = v;
+    u.onstart = () => hi(el);
+    u.onend = () => { if (ttsState === 'playing'){ idx++; speakIdx(); } };
     synth.speak(u);
   }
-  btn.addEventListener('click', () => {
+  function ttsStop(){ synth.cancel(); ttsState = 'idle'; idx = 0; clearHi(); mode = 'idle'; setUI(); }
+  function fallbackTTS(){
+    if (usingTTS) return;
     if (!('speechSynthesis' in window)){ btn.textContent = uiT('🔇 Indisponible'); btn.disabled = true; return; }
-    if (state === 'idle'){ buildChunks(); idx = 0; state = 'playing'; setUI(); speakIdx(); }
-    else if (state === 'playing'){ synth.pause(); state = 'paused'; setUI(); }
-    else if (state === 'paused'){ synth.resume(); state = 'playing'; setUI(); }
+    usingTTS = true; buildChunks(); idx = 0; ttsState = 'playing'; mode = 'playing'; setUI(); speakIdx();
+  }
+  function toggleTTS(){
+    if (ttsState === 'playing'){ synth.pause(); ttsState = 'paused'; mode = 'paused'; setUI(); }
+    else if (ttsState === 'paused'){ synth.resume(); ttsState = 'playing'; mode = 'playing'; setUI(); }
+  }
+
+  btn.addEventListener('click', () => {
+    if (mode === 'idle'){ usingTTS = false; startMP3(); }
+    else if (usingTTS){ toggleTTS(); }
+    else { toggleMP3(); }
   });
   if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
-  window.addEventListener('beforeunload', () => synth.cancel());
-  window.addEventListener('pagehide', () => synth.cancel());
+  function stopAll(){ try{ synth.cancel(); if (audio) audio.pause(); }catch(e){} }
+  window.addEventListener('beforeunload', stopAll);
+  window.addEventListener('pagehide', stopAll);
+  setUI();
 </script>
 <script src="the-footer.js" defer></script>
   <script src="analytics.js"></script>
