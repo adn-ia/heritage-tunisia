@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26201a">
+<meta name="robots" content="noindex">
+<title>THE — Confidentialité</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);background:var(--ivory);line-height:1.6;}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(38,32,26,0.96);color:var(--ivory);padding:11px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(0,0,0,.25);}
+.topbar a.back{color:var(--gold-soft);text-decoration:none;font-size:13px;letter-spacing:1px;}
+.topbar .t{flex:1;font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:3px;font-size:16px;}
+main{max-width:720px;margin:0 auto;padding:22px 22px 70px;}
+h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(26px,6vw,36px);line-height:1.08;margin:6px 0 4px;}
+.upd{font-size:12.5px;color:var(--stone);font-style:italic;margin:0 0 18px;}
+.draft{background:#fbe9e4;border:1px solid #e3a08e;border-left:5px solid #c0492e;border-radius:8px;padding:12px 14px;font-size:14px;color:#7a2c1a;margin:0 0 20px;}
+.draft b{color:#8a2010;}
+section{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:12px 0;box-shadow:0 4px 14px rgba(43,35,24,.06);}
+section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin:0 0 8px;}
+section p,li{font-size:15px;margin:7px 0;color:#332a1d;}
+ul{margin:6px 0;padding-left:20px;}
+.ph{background:#fbf0e2;border:1px dashed #e0b88c;border-radius:4px;padding:1px 5px;font-size:13px;color:#9a5a2a;font-style:normal;}
+.avocat{background:#eef3fb;border:1px dashed #8fb0da;border-radius:4px;padding:1px 6px;font-size:12.5px;color:#2f5a9a;}
+a.txtlink{color:var(--gold);}
+</style>
+<script src="the-i18n.js"></script>
+</head>
+<body>
+<div class="topbar"><a class="back" href="premium.html">‹ Premium</a><span class="t">CONFIDENTIALITÉ</span></div>
+<main>
+<h1>Politique de confidentialité (RGPD)</h1>
+<p class="upd">Dernière mise à jour : <span class="ph">[DATE]</span> — Éditeur : <span class="ph">[RAISON SOCIALE]</span></p>
+<div class="draft">⚠️ <b>BROUILLON — non validé juridiquement.</b> Ce texte est un modèle de travail, en attente de validation par un avocat. Il n'a aucune valeur contractuelle en l'état.</div>
+
+<section><h2>1. Responsable</h2><p>[RAISON SOCIALE], [EMAIL CONTACT].</p></section>
+<section><h2>2. Minimisation</h2><p>L'app fonctionne sans compte. Itinéraires, carnet et préférences sont stockés <b>localement sur votre appareil</b> — nous n'y avons pas accès.</p></section>
+<section><h2>3. Données traitées</h2><ul>
+<li><b>Paiement</b> : e-mail et facturation collectés et détenus par <b>Lemon Squeezy</b> ; nous ne recevons qu'une confirmation d'achat, jamais de coordonnées bancaires.</li>
+<li><b>Audience</b> : Cloudflare Web Analytics, sans cookie, agrégé/anonymisé.</li>
+<li><b>Contact</b> : e-mail et message si vous nous écrivez.</li></ul></section>
+<section><h2>4. Bases légales & durées</h2><p>Exécution du service, gestion de l'abonnement, intérêt légitime (audience/contact). Conservation limitée aux finalités. <span class="avocat">🔺 AVOCAT : durées précises</span></p></section>
+<section><h2>5. Sous-traitants & transferts</h2><p>Lemon Squeezy, Cloudflare, [HÉBERGEUR] — certains hors UE. <span class="avocat">🔺 AVOCAT : clauses de transfert / DPA</span></p></section>
+<section><h2>6. Vos droits</h2><p>Accès, rectification, effacement, opposition, portabilité via [EMAIL CONTACT]. Réclamation auprès de [AUTORITÉ : APD/CNIL/INPDP].</p></section>
+
+</main>
+<script src="the-footer.js" defer></script>
+<script src="analytics.js"></script>
+</body>
+</html>
