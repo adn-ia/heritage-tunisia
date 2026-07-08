@@ -40,13 +40,13 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
 <body>
 <div class="topbar"><a class="back" href="decouvrir.html">‹ Menu</a><span class="t">LE PREMIUM</span></div>
 <main>
-  <h1>Le Premium <span class="soon">Bientôt</span></h1>
-  <p class="lead">Toute l'application est déjà complète et gratuite. Le Premium, en préparation, ajoutera des fonctions « plus » pour les voyageurs passionnés.</p>
+  <h1>Le Premium <span class="soon" id="soonBadge">Bientôt</span></h1>
+  <p class="lead">Le cœur de l'application est déjà complet et gratuit. Le Premium ajoute des fonctions « plus » pour les voyageurs passionnés.</p>
 
   <section>
-    <h2>✨ Ce que le Premium ajoutera</h2>
+    <h2>✨ Ce que débloque le Premium</h2>
     <div class="feat"><span class="ic">📔</span><div><div class="ft">Album souvenir &amp; passeport-livre</div><div class="fs">Exportez votre voyage en passeport illustré, album et PDF — un vrai carnet de route.</div></div></div>
-    <div class="feat"><span class="ic">🎧</span><div><div class="ft">Guide audio des lieux</div><div class="fs">Écoutez la narration des sites pendant la visite.</div></div></div>
+    <div class="feat"><span class="ic">🎧</span><div><div class="ft">Narration audio des récits</div><div class="fs">La voix pro qui raconte « Découvrir » en entier, dans votre langue.</div></div></div>
     <div class="feat"><span class="ic">🧭</span><div><div class="ft">Itinéraires sur mesure</div><div class="fs">Composez des parcours 100&nbsp;% personnalisés, sans limite.</div></div></div>
     <div class="feat"><span class="ic">🔗</span><div><div class="ft">Lien partageable</div><div class="fs">Partagez vos itinéraires d'un simple lien.</div></div></div>
     <div class="feat"><span class="ic">🍽️</span><div><div class="ft">Thème Gastronomie</div><div class="fs">Un fil rouge dédié aux saveurs et adresses du pays.</div></div></div>
@@ -54,16 +54,29 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     <div class="feat"><span class="ic">📖</span><div><div class="ft">Focus thématiques</div><div class="fs">Des dossiers approfondis sur les grands thèmes (dynasties, patrimoine juif, légendes…).</div></div></div>
   </section>
 
-  <section>
-    <h2>💛 Tarifs envisagés</h2>
-    <p class="price"><b>4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b>9,90 €</b> / <span>mois</span></p>
-    <p class="fs" style="color:#5a4d3a">Pensés pour la durée d'un voyage — pas d'engagement.</p>
-    <div class="note">⏳ Le Premium <b>n'est pas encore activé</b>. En attendant, tout le cœur de l'application reste <b>gratuit</b>. Laissez-nous votre e-mail pour être prévenu du lancement.</div>
-    <a class="btn" id="notifyBtn" href="#">Me prévenir du lancement ✉️</a>
-    <a class="btn ghost ios-hide" href="soutien.html">☕ Soutenir le projet en attendant</a>
+  <section class="ios-hide" id="offer">
+    <h2>💛 Passez au Premium</h2>
+    <p class="price"><b id="pw">4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b id="pm">9,90 €</b> / <span>mois</span></p>
+    <p class="fs" style="color:#5a4d3a">Pensé pour la durée d'un voyage — sans engagement.</p>
+
+    <div id="buybox" style="display:none">
+      <button class="btn" id="buyWeek" type="button">Passe 1 semaine — <span class="pwk">4,90 €</span></button>
+      <button class="btn" id="buyMonth" type="button" style="margin-left:8px">Passe 1 mois — <span class="pmo">9,90 €</span></button>
+      <p class="fineprint">Paiement sécurisé via Lemon Squeezy · activation immédiate au retour.</p>
+    </div>
+
+    <div id="soonbox">
+      <div class="note">⏳ Le Premium <b>arrive bientôt</b>. En attendant, tout le cœur de l'application reste <b>gratuit</b>. Laissez-nous votre e-mail pour être prévenu du lancement.</div>
+      <a class="btn" id="notifyBtn" href="#">Me prévenir du lancement ✉️</a>
+    </div>
+
+    <div id="activebox" style="display:none"></div>
+
+    <a class="btn ghost" href="soutien.html" style="margin-top:12px">☕ Soutenir le projet</a>
   </section>
 </main>
 <script src="the-i18n.js"></script>
+<script src="the-pass.js"></script>
 <script>
   var CONTACT_EMAIL='support@threshold-analytics.com';
   function uiT(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }
@@ -80,6 +93,37 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
   }
   var nb=document.getElementById('notifyBtn');
   if(nb) nb.onclick=function(e){ e.preventDefault(); safeMailto('THE — Prévenez-moi du lancement du Premium', uiT("Prévenez-moi dès que le Premium sera disponible. Merci !")); };
+
+  /* État de l'offre — piloté par the-pass.js. Bascule automatiquement quand les
+     liens Lemon Squeezy sont renseignés (CHECKOUT), sans re-toucher cette page. */
+  (function(){
+    var P = window.THEPass;
+    if(P && P.PRICE){
+      var pw=document.getElementById('pw'), pm=document.getElementById('pm');
+      if(pw) pw.textContent=P.PRICE.semaine; if(pm) pm.textContent=P.PRICE.mois;
+      Array.prototype.forEach.call(document.querySelectorAll('.pwk'), function(e){ e.textContent=P.PRICE.semaine; });
+      Array.prototype.forEach.call(document.querySelectorAll('.pmo'), function(e){ e.textContent=P.PRICE.mois; });
+    }
+    var live = !!(P && P.CHECKOUT && (P.CHECKOUT.semaine || P.CHECKOUT.mois));
+    var active = !!(P && P.isActive && P.isActive());
+    var badge=document.getElementById('soonBadge');
+    var soonbox=document.getElementById('soonbox'), buybox=document.getElementById('buybox'), activebox=document.getElementById('activebox');
+    if(active){
+      if(soonbox) soonbox.style.display='none';
+      if(buybox) buybox.style.display='none';
+      if(badge) badge.style.display='none';
+      if(activebox){ var inf=P.info(); activebox.style.display='block';
+        activebox.innerHTML='<div class="note">✅ '+uiT('Premium actif')+((inf&&inf.daysLeft!=null)?(' — '+inf.daysLeft+' '+uiT('jours restants')):'')+'</div>'; }
+    } else if(live){
+      if(soonbox) soonbox.style.display='none';
+      if(buybox) buybox.style.display='block';
+      if(badge) badge.style.display='none';
+      var bw=document.getElementById('buyWeek'), bm=document.getElementById('buyMonth');
+      if(bw) bw.onclick=function(){ P.buy('semaine'); };
+      if(bm) bm.onclick=function(){ P.buy('mois'); };
+    }
+    /* sinon : soonbox visible + badge « Bientôt » (état par défaut, pas encore en vente) */
+  })();
 </script>
   <script>/* App Store 3.1.1 : masquer tout paiement externe (don/soutien) quand on tourne sur iOS */
   (function(){var u=navigator.userAgent||'';var i=/iPad|iPhone|iPod/.test(u)||((/Mac/.test(u)||navigator.platform==='MacIntel'||navigator.platform==='iPad')&&(navigator.maxTouchPoints>1||'ontouchend' in document));if(i){var e=document.querySelectorAll('.ios-hide');for(var k=0;k<e.length;k++)e[k].style.display='none';}})();</script>
