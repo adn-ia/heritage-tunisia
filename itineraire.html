@@ -1187,7 +1187,7 @@
   // ---------- Le passe (freemium « généreux ») ----------
   function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : (localStorage.getItem('the_premium')==='1'); }catch(e){ return false; } }
   let _passOk=null;
-  function requirePass(feat, onOk){ if(isPremium()){ onOk(); return; }
+  function requirePass(feat, onOk){ if(isPremium() || (window.THEPass&&THEPass.hasFeature&&THEPass.hasFeature(feat))){ onOk(); return; }
     var _live=window.THEPass && (THEPass.checkoutURL('semaine')||THEPass.checkoutURL('mois'));
     if(!_live){ try{ localStorage.setItem('the_feat', feat); }catch(e){} location.href='premium.html'; return; }
     _passOk=onOk;

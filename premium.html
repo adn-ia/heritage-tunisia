@@ -54,6 +54,14 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     <div class="feat"><span class="ic">📖</span><div><div class="ft">Focus thématiques</div><div class="fs">Des dossiers approfondis sur les grands thèmes (dynasties, patrimoine juif, légendes…).</div></div></div>
   </section>
 
+  <section class="ios-hide" id="creator" style="display:flex;gap:15px;align-items:flex-start">
+    <div style="font-size:30px;line-height:1;flex:0 0 auto">🩺</div>
+    <div>
+      <h2 style="margin:0 0 8px">Le mot du créateur</h2>
+      <p class="fs" style="font-size:15px;color:#5a4d3a;margin:0">Médecin, plus de 25 ans sur le terrain humanitaire — négociation d'accès en zones de conflit et urgences complexes. J'ai appris le code en autodidacte et je développe seul ces applications : une passion personnelle, rendre le patrimoine lisible, sourcé et accessible. Le cœur reste gratuit à vie ; vos pourboires servent seulement à couvrir l'infrastructure et les dépenses de base (hébergement, données, sources).</p>
+    </div>
+  </section>
+
   <section class="ios-hide" id="offer">
     <h2>💛 Passez au Premium</h2>
     <p class="price"><b id="pw">4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b id="pm">9,90 €</b> / <span>mois</span></p>
@@ -73,6 +81,24 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     <div id="activebox" style="display:none"></div>
 
     <a class="btn ghost" href="soutien.html" style="margin-top:12px">☕ Soutenir le projet</a>
+  </section>
+
+  <section class="ios-only" id="offer-ios" style="display:none">
+    <h2>💛 Passez au Premium</h2>
+    <p class="price"><b class="pw-ios">4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b class="pm-ios">9,90 €</b> / <span>mois</span></p>
+    <p class="fs" style="color:#5a4d3a">Pensé pour la durée d'un voyage — sans engagement.</p>
+
+    <div id="buybox-ios" style="display:none">
+      <button class="btn" id="buyWeekIOS" type="button">Continuer avec Apple — 1 semaine</button>
+      <button class="btn" id="buyMonthIOS" type="button" style="margin-left:8px">Continuer avec Apple — 1 mois</button>
+      <p class="fineprint">Achat sécurisé via l'App Store — activation immédiate.</p>
+    </div>
+
+    <div id="soonbox-ios">
+      <div class="note">⏳ Le Premium arrive bientôt sur iOS.</div>
+    </div>
+
+    <div id="activebox-ios" style="display:none"></div>
   </section>
 </main>
 <script src="the-i18n.js"></script>
@@ -124,9 +150,36 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     }
     /* sinon : soonbox visible + badge « Bientôt » (état par défaut, pas encore en vente) */
   })();
+
 </script>
-  <script>/* App Store 3.1.1 : masquer tout paiement externe (don/soutien) quand on tourne sur iOS */
-  (function(){var u=navigator.userAgent||'';var i=/iPad|iPhone|iPod/.test(u)||((/Mac/.test(u)||navigator.platform==='MacIntel'||navigator.platform==='iPad')&&(navigator.maxTouchPoints>1||'ontouchend' in document));if(i){var e=document.querySelectorAll('.ios-hide');for(var k=0;k<e.length;k++)e[k].style.display='none';}})();</script>
+  <script>/* App Store 3.1.1 : sur iOS on masque le paiement web (Lemon Squeezy + don externe)
+     ET on révèle le chemin d'achat Apple (StoreKit, via the-pass.js). */
+  (function(){
+    var P=window.THEPass;
+    var i = P&&P.isIOS ? P.isIOS() : (function(){var u=navigator.userAgent||'';return /iPad|iPhone|iPod/.test(u)||((/Mac/.test(u)||navigator.platform==='MacIntel'||navigator.platform==='iPad')&&(navigator.maxTouchPoints>1||'ontouchend' in document));})();
+    if(!i) return;
+    var hide=document.querySelectorAll('.ios-hide'); for(var k=0;k<hide.length;k++) hide[k].style.display='none';
+    var only=document.querySelectorAll('.ios-only'); for(var j=0;j<only.length;j++) only[j].style.display='';
+    if(!P) return;
+    var pw=document.querySelector('.pw-ios'), pm=document.querySelector('.pm-ios');
+    if(P.PRICE){ if(pw)pw.textContent=P.PRICE.semaine; if(pm)pm.textContent=P.PRICE.mois; }
+    var active = P.isActive && P.isActive();
+    var bridge = P.hasIAPBridge && P.hasIAPBridge();
+    var soon=document.getElementById('soonbox-ios'), buy=document.getElementById('buybox-ios'),
+        actb=document.getElementById('activebox-ios'), badge=document.getElementById('soonBadge');
+    if(active){
+      if(soon)soon.style.display='none'; if(buy)buy.style.display='none'; if(badge)badge.style.display='none';
+      if(actb){var inf=P.info();actb.style.display='block';
+        actb.innerHTML='<div class="note">✅ '+uiT('Premium actif')+((inf&&inf.daysLeft!=null)?(' — '+inf.daysLeft+' '+uiT('jours restants')):'')+'</div>';}
+    } else if(bridge){
+      if(soon)soon.style.display='none'; if(buy)buy.style.display='block'; if(badge)badge.style.display='none';
+      var bw=document.getElementById('buyWeekIOS'), bm=document.getElementById('buyMonthIOS');
+      if(bw)bw.onclick=function(){ P.buyIOS('semaine'); };
+      if(bm)bm.onclick=function(){ P.buyIOS('mois'); };
+    }
+    /* sinon : soonbox-ios visible (« bientôt sur iOS ») tant que le natif StoreKit n'est pas présent */
+    window.__thePassOnUnlock=function(){ try{ location.reload(); }catch(e){} };
+  })();</script>
   <script src="analytics.js"></script>
 </body>
 </html>

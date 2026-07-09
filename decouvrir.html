@@ -103,12 +103,26 @@ section[id]{scroll-margin-top:64px;}
   .sidemenu{flex-basis:auto;width:100%;order:-1;margin-top:22px;}
 }
 @media (prefers-reduced-motion:reduce){section.reading,.lead.reading{scroll-behavior:auto;}}
+.narrbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;gap:10px;justify-content:center;align-items:center;background:rgba(38,32,26,.97);padding:9px 10px calc(9px + env(safe-area-inset-bottom));box-shadow:0 -2px 14px rgba(0,0,0,.3);}
+.narrbar[hidden]{display:none;}
+body.narr-on{padding-bottom:76px;}
+.narrbar .nb{appearance:none;-webkit-appearance:none;border:1px solid var(--gold);background:transparent;color:var(--gold-soft);font-size:16px;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.narrbar .nb-main{width:50px;height:50px;font-size:22px;background:var(--gold);color:#2b2318;border-color:var(--gold);}
+.narrbar .nb:active{transform:scale(.94);}
 </style>
   <script src="the-i18n.js"></script>
   <script src="the-pass.js"></script>
 </head>
 <body>
 <div class="topbar"><a class="back" href="bienvenue.html">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" aria-label="Écouter le récit">🔊 Écouter</button></div>
+
+<div class="narrbar" id="narrbar" hidden aria-label="Commandes de la narration">
+  <button class="nb" id="nb-restart" type="button" title="Repartir du début" aria-label="Repartir du début">⏮</button>
+  <button class="nb" id="nb-back" type="button" title="Reculer de 15 secondes" aria-label="Reculer de 15 secondes">⏪</button>
+  <button class="nb nb-main" id="nb-play" type="button" title="Lecture / Pause" aria-label="Lecture ou pause">⏸</button>
+  <button class="nb" id="nb-fwd" type="button" title="Avancer de 15 secondes" aria-label="Avancer de 15 secondes">⏩</button>
+  <button class="nb" id="nb-stop" type="button" title="Arrêter" aria-label="Arrêter la narration">⏹</button>
+</div>
 
 <div class="hero"><div class="inner">
   <h1>La Tunisie,<br>carrefour des civilisations</h1>
@@ -322,11 +336,19 @@ section[id]{scroll-margin-top:64px;}
   function curLang(){ try{ return (localStorage.getItem('the_lang')||'fr').slice(0,2); }catch(e){ return 'fr'; } }
   function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : false; }catch(e){ return false; } }
   function mp3url(){ return 'voix/decouvrir-' + curLang() + '.mp3'; }
+  // Traduction des libellés (manquait -> setUI plantait et bloquait la lecture). FR = tel quel.
+  function uiT(fr){ try{ return (window.THEi18n && THEi18n.ui && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
 
   function setUI(){
-    if (mode === 'playing'){ btn.textContent = uiT('⏸ Pause'); btn.classList.add('on'); }
+    var playing = mode === 'playing';
+    if (playing){ btn.textContent = uiT('⏸ Pause'); btn.classList.add('on'); }
     else if (mode === 'paused'){ btn.textContent = uiT('▶ Reprendre'); btn.classList.add('on'); }
     else { btn.textContent = uiT('🔊 Écouter'); btn.classList.remove('on'); }
+    var nbp = document.getElementById('nb-play'); if (nbp) nbp.textContent = playing ? '⏸' : '▶';
+    var bar = document.getElementById('narrbar'); if (bar) bar.hidden = (mode === 'idle');
+    document.body.classList.toggle('narr-on', mode !== 'idle');
+    var seekable = !usingTTS;
+    ['nb-back','nb-fwd'].forEach(function(id){ var b=document.getElementById(id); if(b){ b.style.opacity = seekable?'1':'.35'; b.disabled = !seekable; } });
   }
   function showGate(){
     try{
@@ -340,7 +362,9 @@ section[id]{scroll-margin-top:64px;}
 
   // ---------- MP3 pro (chemin principal) ----------
   function startMP3(){
+    if (audio){ try{ audio.pause(); }catch(e){} audio = null; }   // pas de 2e piste (double-clic)
     audio = new Audio(mp3url()); audio.preload = 'metadata';
+    mode = 'playing'; setUI();                                    // état posé tout de suite
     const premium = isPremium();
     audio.addEventListener('timeupdate', () => {
       if (!premium && audio.currentTime >= TEASER){ audio.pause(); mode = 'idle'; setUI(); showGate(); }
@@ -391,11 +415,34 @@ section[id]{scroll-margin-top:64px;}
     else if (ttsState === 'paused'){ synth.resume(); ttsState = 'playing'; mode = 'playing'; setUI(); }
   }
 
-  btn.addEventListener('click', () => {
+  function playToggle(){
     if (mode === 'idle'){ usingTTS = false; startMP3(); }
     else if (usingTTS){ toggleTTS(); }
     else { toggleMP3(); }
-  });
+  }
+  btn.addEventListener('click', playToggle);
+
+  // ---------- barre de transport (⏮ ⏪ ⏯ ⏩ ⏹) ----------
+  function narrRestart(){
+    if (usingTTS){ synth.cancel(); idx = 0; ttsState = 'playing'; mode = 'playing'; setUI(); speakIdx(); return; }
+    if (!audio){ usingTTS = false; startMP3(); return; }
+    audio.currentTime = 0; audio.play(); mode = 'playing'; setUI();
+  }
+  function narrSeek(delta){
+    if (usingTTS || !audio) return;
+    var t = (audio.currentTime || 0) + delta;
+    if (t < 0) t = 0;
+    if (audio.duration && t > audio.duration) t = audio.duration - 0.3;
+    audio.currentTime = t;
+  }
+  function narrStop(){
+    try{ if (audio){ audio.pause(); audio.currentTime = 0; } synth.cancel(); }catch(e){}
+    usingTTS = false; ttsState = 'idle'; idx = 0; clearHi(); mode = 'idle'; setUI();
+  }
+  (function wireBar(){
+    var m = { 'nb-restart':narrRestart, 'nb-back':function(){ narrSeek(-15); }, 'nb-fwd':function(){ narrSeek(15); }, 'nb-stop':narrStop, 'nb-play':playToggle };
+    Object.keys(m).forEach(function(id){ var b=document.getElementById(id); if(b) b.onclick = m[id]; });
+  })();
   if ('speechSynthesis' in window) synth.onvoiceschanged = () => {};
   function stopAll(){ try{ synth.cancel(); if (audio) audio.pause(); }catch(e){} }
   window.addEventListener('beforeunload', stopAll);

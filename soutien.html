@@ -45,6 +45,7 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
 #rateComment{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:inherit;font-size:15px;resize:vertical;margin-bottom:8px;background:#fffdf8;}
 </style>
   <script src="the-i18n.js"></script>
+  <script src="the-pass.js"></script>
 </head>
 <body>
 <div class="topbar"><a class="back" href="decouvrir.html">‹ Menu</a><span class="t">CONFIDENTIALITÉ &amp; SOUTIEN</span></div>
@@ -135,7 +136,8 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
   var LEMON_URL = '';                 // ex : https://votreboutique.lemonsqueezy.com/checkout/...
   var CONTACT_EMAIL = 'support@threshold-analytics.com';   // support Threshold-Analytics
   var tip=document.getElementById('tipBtn');
-  if(LEMON_URL) tip.href=LEMON_URL; else tip.onclick=function(e){ e.preventDefault(); alert(uiT('Lien de pourboire à configurer (Lemon Squeezy).')); };
+  if(LEMON_URL){ tip.href=LEMON_URL; tip.addEventListener('click', function(){ try{ localStorage.setItem('the_tip_pending','1'); }catch(e){} }); }
+  else tip.onclick=function(e){ e.preventDefault(); alert(uiT('Lien de pourboire à configurer (Lemon Squeezy).')); };
   var fb=document.getElementById('feedbackBtn');
   fb.onclick=function(e){ if(!CONTACT_EMAIL){ e.preventDefault(); alert(uiT('Adresse de contact à configurer.')); return; }
     e.preventDefault(); location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('THE — Avis / suggestion'); };

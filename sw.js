@@ -1,9 +1,9 @@
-/* build 2026-07-05 THE 4 langues propres (EN/IT/DE/AR) */
+/* build 2026-07-09 THE — teaser Premium sur page de garde (i18n 5 langues) */
 /* THE — service worker : rend l'app utilisable hors-ligne.
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'the-v72';
+const VERSION = 'the-v73';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 const TILES   = 'the-tiles-' + VERSION;
