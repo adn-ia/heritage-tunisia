@@ -83,6 +83,32 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     <a class="btn ghost" href="soutien.html" style="margin-top:12px">☕ Soutenir le projet</a>
   </section>
 
+  <section class="ios-hide" id="codebox">
+    <h2>🎟️ J'ai un code d'accès</h2>
+    <p class="fs" style="color:#5a4d3a">Un code offert vous donne le Premium complet.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input id="codeInput" type="text" autocapitalize="characters" spellcheck="false" placeholder="THE-XXXX-XXXX"
+             style="flex:1;min-width:170px;padding:11px 12px;border:1px solid #cdbb95;border-radius:8px;font:inherit;letter-spacing:1px;text-transform:uppercase">
+      <button class="btn" id="codeBtn" type="button">Activer</button>
+    </div>
+    <p id="codeMsg" class="fineprint" style="min-height:1.1em;margin-top:8px"></p>
+  </section>
+  <script>(function(){
+    var inp=document.getElementById('codeInput'), btn=document.getElementById('codeBtn'), msg=document.getElementById('codeMsg');
+    if(!btn) return;
+    var uiT=function(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } };
+    function go(){
+      var v=(inp.value||'').trim(); if(!v) return;
+      msg.textContent=uiT('Vérification…'); btn.disabled=true;
+      (window.THEPass?THEPass.redeem(v):Promise.resolve(false)).then(function(ok){
+        if(ok){ msg.textContent='🎉 '+uiT('Accès Premium activé !'); try{localStorage.setItem('the_invite_ok','1');}catch(e){} setTimeout(function(){ location.href='index.html'; },900); }
+        else { msg.textContent='❌ '+uiT('Code invalide.'); btn.disabled=false; }
+      });
+    }
+    btn.onclick=go;
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
+  })();</script>
+
   <section class="ios-only" id="offer-ios" style="display:none">
     <h2>💛 Passez au Premium</h2>
     <p class="price"><b class="pw-ios">4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b class="pm-ios">9,90 €</b> / <span>mois</span></p>

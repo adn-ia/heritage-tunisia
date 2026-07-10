@@ -1855,5 +1855,12 @@
 "🧭 Ouvrir l'itinéraire dans…": "🧭 فتح المسار في…",
 "🧭 Résultat = l'itinéraire": "🧭 النتيجة = مسار الرحلة",
 "🧭 Votre itinéraire — ": "🧭 مسارك —",
-"🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 تفتح ميزة «التنقل» مسارك في التطبيق الذي تختاره (Google Maps، OpenStreetMap، Apple Maps، Waze) أو في"
+"🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 تفتح ميزة «التنقل» مسارك في التطبيق الذي تختاره (Google Maps، OpenStreetMap، Apple Maps، Waze) أو في",
+"J'ai un code d'accès": "لديّ رمز دخول",
+"Un code offert vous donne le Premium complet.": "رمز الهدية يفتح النسخة المميزة كاملة.",
+"Activer": "تفعيل",
+"Vérification…": "جارٍ التحقق…",
+"Accès Premium activé !": "تم تفعيل الوصول المميز!",
+"Code invalide.": "رمز غير صالح.",
+"Accès Premium offert — activé. Bon voyage !": "تم فتح الوصول المميز — رحلة سعيدة!"
 }
