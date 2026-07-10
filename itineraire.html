@@ -1425,7 +1425,7 @@
         '</div><button class="rm-step" type="button" title="Retirer cette étape">✕</button></div>'+
         '<div class="times">'+(walking?'🚶':'🚗')+' '+uiT('trajet')+' ~'+fmtDur(s._tv)+' · 🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
         nightHtml+
-        (desc?'<p>'+ (desc.length>320?desc.slice(0,320)+'…':desc) +'</p>':'')+
+        (desc?'<p>'+ (desc.length>320?desc.slice(0,320)+'…':desc) +'</p>'+(window.THEFicheAudio&&s.genre!=='perso'?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):''):'')+
         (Lav?'<div class="kv"><b>'+LBL('avoir')+'</b> '+Lav+'</div>':'')+
         (Lcons?'<div class="kv"><b>'+LBL('conseil')+'</b> '+Lcons+'</div>':'')+
         (Lhor?'<div class="kv"><b>'+LBL('horaires')+'</b> '+Lhor+'</div>':'')+
@@ -2014,5 +2014,6 @@
   <script src="analytics.js"></script>
 <script src="the-postcard.js" defer></script>
 <script src="the-carnet.js" defer></script>
+<script src="the-fiche-audio.js" defer></script>
 </body>
 </html>

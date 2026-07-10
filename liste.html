@@ -190,7 +190,7 @@ function openSheet(s){
   let h=`<button class="sh-close" onclick="closeSheet()">✕</button>${img}<div class="sh-bd">`;
   if(s.sous_titre) h+=`<div class="sh-st">${esc(s.sous_titre)}</div>`;
   h+=`<h2>${esc(s.nom)}</h2><div class="sh-mt">${esc(mt)}</div>`;
-  const desc=(tr&&tr.d)||s.description; if(desc) h+=`<p class="desc">${desc}</p>`;
+  const desc=(tr&&tr.d)||s.description; if(desc){ h+=`<p class="desc">${desc}</p>`; if(window.THEFicheAudio) h+=THEFicheAudio.html(s.vkey,uiT('Écouter ce lieu')); }
   const av=(tr&&tr.a)||s.a_voir; if(av) h+=`<p class="info">👁️ <b>${lblI('avoir')}</b> : ${av}</p>`;
   const cons=(tr&&tr.c)||s.conseil; if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
   if(s.acces) h+=`<div class="warn">⚠️ ${esc(s.acces)}</div>`;
@@ -239,5 +239,6 @@ if(new URLSearchParams(location.search).get('around')==='1') activateAround();
 </script>
   <script src="analytics.js"></script>
 <script src="the-postcard.js" defer></script>
+<script src="the-fiche-audio.js" defer></script>
 </body>
 </html>

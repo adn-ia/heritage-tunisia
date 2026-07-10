@@ -301,7 +301,7 @@
       const picked=hasPick(p.nom);
       const pkBtn=`<button class="pk-add${picked?' on':''}" data-nom="${(p.nom||'').replace(/"/g,'&quot;')}">${picked?uiT('✓ Dans mon itinéraire — retirer'):uiT('➕ Ajouter à mon itinéraire')}</button>`;
       const trp=trSite(p); const desc=(trp&&trp.d)||p.description||'';
-      return `<div class="popup-card"><h3>${p.nom||uiT('Sans nom')}</h3><div class="meta${isNat?' nat':''}">${meta}</div>${distHtml}${photoHtml}<p>${desc}</p>${infoBlock(p)}${pkBtn}<div class="source"><span>Source —</span> ${p.source||uiT('non renseignée')}</div></div>`;
+      return `<div class="popup-card"><h3>${p.nom||uiT('Sans nom')}</h3><div class="meta${isNat?' nat':''}">${meta}</div>${distHtml}${photoHtml}<p>${desc}</p>${desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):''}${infoBlock(p)}${pkBtn}<div class="source"><span>Source —</span> ${p.source||uiT('non renseignée')}</div></div>`;
     }
 
     // Couche unique + filtres (categorie / periode / gouvernorat)
@@ -529,9 +529,9 @@
       const photo=p.photo?'<img class="site-img" src="'+p.photo+'" alt="" loading="lazy">'+(p.photo_credit?'<div class="site-credit">'+p.photo_credit+'</div>':''):'';
       body.innerHTML='<div class="site-kick">'+(isNat?'🌿 '+uiT('Nature & paysage'):'🏛️ '+uiT('Patrimoine'))+'</div>'+
         '<h2>'+(p.nom||'Sans nom')+'</h2><div class="site-meta">'+meta+'</div>'+dist+photo+
-        '<p>'+_desc+'</p>'+infoBlock(p)+
+        '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'')+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
-        '<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>'+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ ${uiT('Carte postale')}</button>';
+        '<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>'+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ '+uiT('Carte postale')+'</button>';
       var _pcb=document.getElementById('site-pc-btn');if(_pcb)_pcb.onclick=function(){if(window.THEPostcard)THEPostcard.open(p.nom,p.gouvernorat||'');}; add.style.display='block'; setAddBtn(hasPick(p.nom));
       document.getElementById('siteOv').style.display='flex';
     }
@@ -818,5 +818,6 @@
   <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
   <script src="analytics.js"></script>
 <script src="the-postcard.js" defer></script>
+<script src="the-fiche-audio.js" defer></script>
 </body>
 </html>
