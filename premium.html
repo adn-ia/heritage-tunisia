@@ -21,7 +21,7 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
 .topbar .t{flex:1;font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:3px;font-size:17px;}
 main{max-width:680px;margin:0 auto;padding:24px 22px 60px;}
 h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(28px,7vw,40px);line-height:1.05;margin:6px 0 4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.soon{font-family:'EB Garamond',serif;font-size:13px;font-weight:400;letter-spacing:1px;text-transform:uppercase;background:var(--gold);color:#fff;border-radius:20px;padding:3px 12px;}
+.badge{font-family:'EB Garamond',serif;font-size:13px;font-weight:400;letter-spacing:1px;text-transform:uppercase;background:var(--green);color:#fff;border-radius:20px;padding:3px 12px;}
 .lead{font-style:italic;color:var(--stone);margin:0 0 22px;font-size:16.5px;}
 section{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px;margin:14px 0;box-shadow:0 4px 14px rgba(43,35,24,.06);}
 section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px;margin:0 0 12px;}
@@ -29,63 +29,69 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
 .feat .ic{font-size:25px;flex:0 0 auto;line-height:1.2;}
 .feat .ft{font-weight:600;font-size:16px;}
 .feat .fs{font-size:14.5px;color:#5a4d3a;}
-.price{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--ink);}
-.price b{color:var(--gold);}
-.btn{display:inline-block;background:var(--gold);color:#fff;text-decoration:none;border:none;padding:12px 20px;border-radius:8px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;}
+.price{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;color:var(--ink);margin:4px 0 2px;}
+.price span{font-size:18px;color:var(--stone);}
+.btn{display:inline-block;background:var(--gold);color:#fff;text-decoration:none;border:none;padding:13px 22px;border-radius:8px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;margin-top:10px;}
 .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
-.fineprint{font-size:12.5px;color:var(--stone);font-style:italic;margin-top:10px;}
+.btn.big{display:block;width:100%;text-align:center;font-size:17px;}
+.fineprint{font-size:12px;color:var(--stone);font-style:normal;margin-top:12px;line-height:1.5;}
+.fineprint a{color:var(--gold);}
 .note{background:#fbf3e8;border-left:3px solid var(--gold-soft);padding:10px 13px;border-radius:6px;font-size:14.5px;margin-top:8px;}
+.wall{background:#2b2318;color:#f6f0e4;border:none;}
+.wall h2{color:#f6f0e4;}
 </style>
 </head>
 <body>
-<div class="topbar"><a class="back" href="decouvrir.html">‹ Menu</a><span class="t">LE PREMIUM</span></div>
+<div class="topbar"><a class="back" href="decouvrir.html" id="backLink">‹ Menu</a><span class="t">LE PREMIUM</span></div>
 <main>
-  <h1>Le Premium <span class="soon" id="soonBadge">Bientôt</span></h1>
-  <p class="lead">Le cœur de l'application est déjà complet et gratuit. Le Premium ajoute des fonctions « plus » pour les voyageurs passionnés.</p>
+  <h1>Le Premium <span class="badge" id="stateBadge" style="display:none"></span></h1>
+  <p class="lead" id="lead">Tout THE, sans limite — récits, audio, itinéraires, thèmes et circuits.</p>
 
+  <!-- ═══ ÉTAT / MUR (piloté par the-pass.js) ═══ -->
+  <section id="statebox" style="display:none"></section>
+
+  <!-- ═══ L'OFFRE ═══ -->
+  <section id="offer">
+    <h2>💛 Passez au Premium</h2>
+    <p class="price"><b id="priceVal">14,99 €</b> <span>/ an</span></p>
+    <p class="fs" id="offerSub" style="color:#5a4d3a">Essai gratuit de 2 semaines, puis 14,99 €/an. Sans engagement, annulable à tout moment.</p>
+
+    <!-- iOS : achat via Apple -->
+    <div id="buyIos" style="display:none">
+      <button class="btn big" id="buyBtn" type="button">Essayer 2 semaines gratuitement</button>
+      <button class="btn ghost" id="restoreBtn" type="button" style="margin-top:8px">Restaurer un achat</button>
+      <p class="fineprint" id="disclosure">Abonnement annuel <b>auto-renouvelable</b> de 14,99 €/an, précédé de 2 semaines d'essai gratuit. Le paiement est débité de votre compte Apple à la confirmation. Il se renouvelle automatiquement sauf annulation au moins 24 h avant la fin de la période en cours ; gérez ou annulez dans les Réglages de votre compte App Store après l'achat. En continuant, vous acceptez les <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Conditions d'utilisation (EULA)</a> et la <a href="confidentialite.html">politique de confidentialité</a>.</p>
+    </div>
+
+    <!-- web : portes de paiement (Lemon Squeezy / App Store / café) — remplies par JS -->
+    <div id="buyWeb" style="display:none"></div>
+  </section>
+
+  <!-- ═══ CE QUE C'EST ═══ -->
   <section>
-    <h2>✨ Ce que débloque le Premium</h2>
+    <h2>✨ Tout ce que vous avez</h2>
     <div class="feat"><span class="ic">📔</span><div><div class="ft">Album souvenir &amp; passeport-livre</div><div class="fs">Exportez votre voyage en passeport illustré, album et PDF — un vrai carnet de route.</div></div></div>
     <div class="feat"><span class="ic">🎧</span><div><div class="ft">Narration audio des récits</div><div class="fs">La voix pro qui raconte « Découvrir » en entier, dans votre langue.</div></div></div>
     <div class="feat"><span class="ic">🧭</span><div><div class="ft">Itinéraires sur mesure</div><div class="fs">Composez des parcours 100&nbsp;% personnalisés, sans limite.</div></div></div>
     <div class="feat"><span class="ic">🔗</span><div><div class="ft">Lien partageable</div><div class="fs">Partagez vos itinéraires d'un simple lien.</div></div></div>
     <div class="feat"><span class="ic">🍽️</span><div><div class="ft">Thème Gastronomie</div><div class="fs">Un fil rouge dédié aux saveurs et adresses du pays.</div></div></div>
     <div class="feat"><span class="ic">🗺️</span><div><div class="ft">Tous les circuits prêts</div><div class="fs">Accédez à l'ensemble des circuits clés en main.</div></div></div>
-    <div class="feat"><span class="ic">📖</span><div><div class="ft">Focus thématiques</div><div class="fs">Des dossiers approfondis sur les grands thèmes (dynasties, patrimoine juif, légendes…).</div></div></div>
+    <div class="feat"><span class="ic">📖</span><div><div class="ft">Focus thématiques</div><div class="fs">Des dossiers approfondis sur les grands thèmes (dynasties, patrimoine, légendes…).</div></div></div>
   </section>
 
+  <!-- ═══ MOT DU CRÉATEUR (masqué sur iOS : évoque le soutien externe) ═══ -->
   <section class="ios-hide" id="creator" style="display:flex;gap:15px;align-items:flex-start">
     <div style="font-size:30px;line-height:1;flex:0 0 auto">🩺</div>
     <div>
       <h2 style="margin:0 0 8px">Le mot du créateur</h2>
-      <p class="fs" style="font-size:15px;color:#5a4d3a;margin:0">Médecin, plus de 25 ans sur le terrain humanitaire — négociation d'accès en zones de conflit et urgences complexes. J'ai appris le code en autodidacte et je développe seul ces applications : une passion personnelle, rendre le patrimoine lisible, sourcé et accessible. Le cœur reste gratuit à vie ; vos pourboires servent seulement à couvrir l'infrastructure et les dépenses de base (hébergement, données, sources).</p>
+      <p class="fs" style="font-size:15px;color:#5a4d3a;margin:0">Médecin, plus de 25 ans sur le terrain humanitaire — négociation d'accès en zones de conflit et urgences complexes. J'ai appris le code en autodidacte et je développe seul ces applications : une passion personnelle, rendre le patrimoine lisible, sourcé et accessible. L'abonnement sert à couvrir l'infrastructure et les dépenses de base (hébergement, données, sources).</p>
     </div>
   </section>
 
-  <section class="ios-hide" id="offer">
-    <h2>💛 Passez au Premium</h2>
-    <p class="price"><b id="pw">4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b id="pm">9,90 €</b> / <span>mois</span></p>
-    <p class="fs" style="color:#5a4d3a">Pensé pour la durée d'un voyage — sans engagement.</p>
-
-    <div id="buybox" style="display:none">
-      <button class="btn" id="buyWeek" type="button">Passe 1 semaine — <span class="pwk">4,90 €</span></button>
-      <button class="btn" id="buyMonth" type="button" style="margin-left:8px">Passe 1 mois — <span class="pmo">9,90 €</span></button>
-      <p class="fineprint">Paiement sécurisé via Lemon Squeezy · activation immédiate au retour.</p>
-    </div>
-
-    <div id="soonbox">
-      <div class="note">⏳ Le Premium <b>arrive bientôt</b>. En attendant, tout le cœur de l'application reste <b>gratuit</b>. Laissez-nous votre e-mail pour être prévenu du lancement.</div>
-      <a class="btn" id="notifyBtn" href="#">Me prévenir du lancement ✉️</a>
-    </div>
-
-    <div id="activebox" style="display:none"></div>
-
-    <a class="btn ghost" href="soutien.html" style="margin-top:12px">☕ Soutenir le projet</a>
-  </section>
-
+  <!-- ═══ CODE D'ACCÈS (web uniquement — règle Apple 3.1.1) ═══ -->
   <section class="ios-hide" id="codebox">
-    <h2>🎟️ J'ai un code d'accès</h2>
-    <p class="fs" style="color:#5a4d3a">Un code offert vous donne le Premium complet.</p>
+    <h2>🎟️ J'ai un code ou une clé</h2>
+    <p class="fs" style="color:#5a4d3a">Un code offert ou une clé d'achat (reçue par e-mail) débloque le Premium complet, sur n'importe quel appareil.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input id="codeInput" type="text" autocapitalize="characters" spellcheck="false" placeholder="THE-XXXX-XXXX"
              style="flex:1;min-width:170px;padding:11px 12px;border:1px solid #cdbb95;border-radius:8px;font:inherit;letter-spacing:1px;text-transform:uppercase">
@@ -93,119 +99,95 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     </div>
     <p id="codeMsg" class="fineprint" style="min-height:1.1em;margin-top:8px"></p>
   </section>
-  <script>(function(){
-    var inp=document.getElementById('codeInput'), btn=document.getElementById('codeBtn'), msg=document.getElementById('codeMsg');
-    if(!btn) return;
-    var uiT=function(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } };
-    function go(){
-      var v=(inp.value||'').trim(); if(!v) return;
-      msg.textContent=uiT('Vérification…'); btn.disabled=true;
-      (window.THEPass?THEPass.redeem(v):Promise.resolve(false)).then(function(ok){
-        if(ok){ msg.textContent='🎉 '+uiT('Accès Premium activé !'); try{localStorage.setItem('the_invite_ok','1');}catch(e){} setTimeout(function(){ location.href='index.html'; },900); }
-        else { msg.textContent='❌ '+uiT('Code invalide.'); btn.disabled=false; }
-      });
-    }
-    btn.onclick=go;
-    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
-  })();</script>
 
-  <section class="ios-only" id="offer-ios" style="display:none">
-    <h2>💛 Passez au Premium</h2>
-    <p class="price"><b class="pw-ios">4,90 €</b> / <span>semaine</span> &nbsp;·&nbsp; <b class="pm-ios">9,90 €</b> / <span>mois</span></p>
-    <p class="fs" style="color:#5a4d3a">Pensé pour la durée d'un voyage — sans engagement.</p>
-
-    <div id="buybox-ios" style="display:none">
-      <button class="btn" id="buyWeekIOS" type="button">Continuer avec Apple — 1 semaine</button>
-      <button class="btn" id="buyMonthIOS" type="button" style="margin-left:8px">Continuer avec Apple — 1 mois</button>
-      <p class="fineprint">Achat sécurisé via l'App Store — activation immédiate.</p>
-    </div>
-
-    <div id="soonbox-ios">
-      <div class="note">⏳ Le Premium arrive bientôt sur iOS.</div>
-    </div>
-
-    <div id="activebox-ios" style="display:none"></div>
-  </section>
 </main>
+
 <script src="the-i18n.js"></script>
 <script src="the-pass.js"></script>
-<script>
-  var CONTACT_EMAIL='support@threshold-analytics.com';
-  function uiT(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }
-  function safeMailto(subject, body){
-    if(!CONTACT_EMAIL){ alert(uiT('Adresse de contact à configurer.')); return; }
-    var blurred=false, ob=function(){ blurred=true; };
-    window.addEventListener('blur', ob);
-    location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-    setTimeout(function(){ window.removeEventListener('blur', ob); if(!blurred){
-      var msg=uiT('Aucune appli e-mail détectée. Écrivez-nous à')+' '+CONTACT_EMAIL;
-      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(CONTACT_EMAIL).then(function(){ alert(msg+' '+uiT('(adresse copiée)')); }, function(){ alert(msg); }); }
-      else alert(msg);
-    } }, 1200);
+<script>(function(){
+  var P=window.THEPass; if(!P) return;
+  function uiT(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
+
+  /* iOS ? On masque les éléments de soutien/code externes et on privilégie l'achat Apple. */
+  var isIOS = P.isIOS && P.isIOS();
+  if(isIOS){ var h=document.querySelectorAll('.ios-hide'); for(var k=0;k<h.length;k++) h[k].style.display='none'; }
+
+  /* Prix dynamique */
+  var pv=document.getElementById('priceVal'); if(pv && P.PRICE) pv.textContent=P.PRICE.an;
+
+  /* Où peut-on acheter ? Apple seulement si le pont StoreKit est présent (app iOS). */
+  var canApple = P.hasIAPBridge && P.hasIAPBridge();
+  document.getElementById(canApple ? 'buyIos' : 'buyWeb').style.display='block';
+  if(canApple){
+    var bb=document.getElementById('buyBtn'), rb=document.getElementById('restoreBtn');
+    if(bb) bb.onclick=function(){ var r=P.buyIOS('an'); if(r==='no-bridge') alert(uiT('Achat indisponible ici. Réessayez depuis l’application.')); };
+    if(rb) rb.onclick=function(){ P.restoreIOS(); };
+  } else {
+    /* WEB : jusqu'à 3 portes selon ce qui est configuré (Lemon Squeezy / App Store / café). */
+    var web=document.getElementById('buyWeb'), parts=[];
+    var lemon = !!(P.CHECKOUT && P.CHECKOUT.an);
+    if(lemon) parts.push('<button class="btn big" id="buyLS" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' / '+uiT('an')+'</button>'
+      +'<p class="fineprint">'+uiT('Paiement sécurisé via Lemon Squeezy · activation immédiate au retour.')+'</p>');
+    if(P.APPSTORE_URL) parts.push('<a class="btn ghost" href="'+P.APPSTORE_URL+'" target="_blank" rel="noopener">📱 '+uiT('Aussi sur l’App Store')+'</a>');
+    // café / pourboire (web only) — petit cadeau surprise
+    parts.push('<a class="btn ghost" href="soutien.html" style="margin-top:8px">☕ '+uiT('Payer un café (soutien)')+'</a>');
+    if(!lemon && !P.APPSTORE_URL) parts.unshift('<div class="note">📱 '+uiT('L’abonnement arrive bientôt. En attendant, entrez un')+' <b>'+uiT('code d’accès')+'</b> '+uiT('ci-dessous, ou offrez un café.')+'</div>');
+    web.innerHTML=parts.join('');
+    var bLS=document.getElementById('buyLS'); if(bLS) bLS.onclick=function(){ P.buy('an'); };
   }
-  var nb=document.getElementById('notifyBtn');
-  if(nb) nb.onclick=function(e){ e.preventDefault(); safeMailto('THE — Prévenez-moi du lancement du Premium', uiT("Prévenez-moi dès que le Premium sera disponible. Merci !")); };
 
-  /* État de l'offre — piloté par the-pass.js. Bascule automatiquement quand les
-     liens Lemon Squeezy sont renseignés (CHECKOUT), sans re-toucher cette page. */
-  (function(){
-    var P = window.THEPass;
-    if(P && P.PRICE){
-      var pw=document.getElementById('pw'), pm=document.getElementById('pm');
-      if(pw) pw.textContent=P.PRICE.semaine; if(pm) pm.textContent=P.PRICE.mois;
-      Array.prototype.forEach.call(document.querySelectorAll('.pwk'), function(e){ e.textContent=P.PRICE.semaine; });
-      Array.prototype.forEach.call(document.querySelectorAll('.pmo'), function(e){ e.textContent=P.PRICE.mois; });
-    }
-    var live = !!(P && P.CHECKOUT && (P.CHECKOUT.semaine || P.CHECKOUT.mois));
-    var active = !!(P && P.isActive && P.isActive());
-    var badge=document.getElementById('soonBadge');
-    var soonbox=document.getElementById('soonbox'), buybox=document.getElementById('buybox'), activebox=document.getElementById('activebox');
-    if(active){
-      if(soonbox) soonbox.style.display='none';
-      if(buybox) buybox.style.display='none';
-      if(badge) badge.style.display='none';
-      if(activebox){ var inf=P.info(); activebox.style.display='block';
-        activebox.innerHTML='<div class="note">✅ '+uiT('Premium actif')+((inf&&inf.daysLeft!=null)?(' — '+inf.daysLeft+' '+uiT('jours restants')):'')+'</div>'; }
-    } else if(live){
-      if(soonbox) soonbox.style.display='none';
-      if(buybox) buybox.style.display='block';
-      if(badge) badge.style.display='none';
-      var bw=document.getElementById('buyWeek'), bm=document.getElementById('buyMonth');
-      if(bw) bw.onclick=function(){ P.buy('semaine'); };
-      if(bm) bm.onclick=function(){ P.buy('mois'); };
-    }
-    /* sinon : soonbox visible + badge « Bientôt » (état par défaut, pas encore en vente) */
-  })();
+  /* État courant : essai en cours / abonné / expiré (mur) */
+  var inf=P.info();
+  var badge=document.getElementById('stateBadge');
+  var sb=document.getElementById('statebox');
+  var offerSub=document.getElementById('offerSub');
+  var lead=document.getElementById('lead');
+  var buyBtn=document.getElementById('buyBtn');
 
-</script>
-  <script>/* App Store 3.1.1 : sur iOS on masque le paiement web (Lemon Squeezy + don externe)
-     ET on révèle le chemin d'achat Apple (StoreKit, via the-pass.js). */
-  (function(){
-    var P=window.THEPass;
-    var i = P&&P.isIOS ? P.isIOS() : (function(){var u=navigator.userAgent||'';return /iPad|iPhone|iPod/.test(u)||((/Mac/.test(u)||navigator.platform==='MacIntel'||navigator.platform==='iPad')&&(navigator.maxTouchPoints>1||'ontouchend' in document));})();
-    if(!i) return;
-    var hide=document.querySelectorAll('.ios-hide'); for(var k=0;k<hide.length;k++) hide[k].style.display='none';
-    var only=document.querySelectorAll('.ios-only'); for(var j=0;j<only.length;j++) only[j].style.display='';
-    if(!P) return;
-    var pw=document.querySelector('.pw-ios'), pm=document.querySelector('.pm-ios');
-    if(P.PRICE){ if(pw)pw.textContent=P.PRICE.semaine; if(pm)pm.textContent=P.PRICE.mois; }
-    var active = P.isActive && P.isActive();
-    var bridge = P.hasIAPBridge && P.hasIAPBridge();
-    var soon=document.getElementById('soonbox-ios'), buy=document.getElementById('buybox-ios'),
-        actb=document.getElementById('activebox-ios'), badge=document.getElementById('soonBadge');
-    if(active){
-      if(soon)soon.style.display='none'; if(buy)buy.style.display='none'; if(badge)badge.style.display='none';
-      if(actb){var inf=P.info();actb.style.display='block';
-        actb.innerHTML='<div class="note">✅ '+uiT('Premium actif')+((inf&&inf.daysLeft!=null)?(' — '+inf.daysLeft+' '+uiT('jours restants')):'')+'</div>';}
-    } else if(bridge){
-      if(soon)soon.style.display='none'; if(buy)buy.style.display='block'; if(badge)badge.style.display='none';
-      var bw=document.getElementById('buyWeekIOS'), bm=document.getElementById('buyMonthIOS');
-      if(bw)bw.onclick=function(){ P.buyIOS('semaine'); };
-      if(bm)bm.onclick=function(){ P.buyIOS('mois'); };
+  if(inf.active && inf.trial){
+    badge.style.display='inline-block'; badge.textContent=uiT('Essai en cours'); badge.style.background='#5c7a52';
+    sb.style.display='block';
+    sb.innerHTML='<div class="note">🎁 '+uiT('Essai Premium en cours — il vous reste')+' <b>'+inf.daysLeft+' '+uiT('jour(s)')+'</b>. '+uiT('Tout est débloqué. Abonnez-vous dès maintenant pour continuer sans interruption.')+'</div>';
+    if(buyBtn) buyBtn.textContent=uiT('M’abonner maintenant — 14,99 €/an');
+  } else if(inf.active && inf.paid){
+    badge.style.display='inline-block'; badge.textContent=uiT('Premium actif'); badge.style.background='#5c7a52';
+    sb.style.display='block';
+    var keyHint = isIOS ? '' : (' '+uiT('Sur un autre appareil, collez la clé reçue par e-mail dans « J’ai un code ou une clé » ci-dessous.'));
+    sb.innerHTML='<div class="note">✅ '+uiT('Premium actif')+((inf.daysLeft!=null)?(' — '+inf.daysLeft+' '+uiT('jour(s) restants')):'')+'.'+keyHint+'</div>';
+    document.getElementById('offer').style.display='none';
+  } else if(inf.active && inf.invite){
+    badge.style.display='inline-block'; badge.textContent=uiT('Accès offert'); badge.style.background='#a8884f';
+    sb.style.display='block';
+    sb.innerHTML='<div class="note">🎟️ '+uiT('Accès Premium offert — actif.')+'</div>';
+    document.getElementById('offer').style.display='none';
+  } else {
+    /* MUR : essai terminé, rien d'actif */
+    if(inf.trialUsed){
+      sb.className='wall'; sb.style.display='block';
+      sb.innerHTML='<h2>⏳ '+uiT('Votre essai est terminé')+'</h2><p style="margin:0;color:#e9e0cf">'+uiT('Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.')+'</p>';
+      if(lead) lead.style.display='none';
     }
-    /* sinon : soonbox-ios visible (« bientôt sur iOS ») tant que le natif StoreKit n'est pas présent */
-    window.__thePassOnUnlock=function(){ try{ location.reload(); }catch(e){} };
-  })();</script>
-  <script src="analytics.js"></script>
+  }
+
+  /* Code d'accès (web) */
+  var inp=document.getElementById('codeInput'), cbtn=document.getElementById('codeBtn'), msg=document.getElementById('codeMsg');
+  if(cbtn){
+    var go=function(){
+      var v=(inp.value||'').trim(); if(!v) return;
+      msg.textContent=uiT('Vérification…'); cbtn.disabled=true;
+      // 1) code offert (hors-ligne) ; 2) sinon clé de licence Lemon Squeezy (en ligne)
+      P.redeem(v).then(function(ok){ return ok ? true : (P.redeemLicense ? P.redeemLicense(v) : false); }).then(function(ok){
+        if(ok){ msg.textContent='🎉 '+uiT('Accès Premium activé !'); try{localStorage.setItem('the_invite_ok','1');}catch(e){} setTimeout(function(){ location.href='bienvenue.html'; },900); }
+        else { msg.textContent='❌ '+uiT('Code ou clé invalide.'); cbtn.disabled=false; }
+      });
+    };
+    cbtn.onclick=go;
+    inp.addEventListener('keydown',function(e){ if(e.key==='Enter') go(); });
+  }
+
+  /* Rechargement après déverrouillage natif (StoreKit) */
+  window.__thePassOnUnlock=function(){ try{ location.reload(); }catch(e){} };
+})();</script>
+<script src="analytics.js"></script>
 </body>
 </html>

@@ -71,6 +71,7 @@
     @media (prefers-reduced-motion:reduce){*{animation:none !important;}}
   </style>
   <script src="the-i18n.js"></script>
+  <script src="the-pass.js"></script>
 </head>
 <body>
   <div class="stage">
@@ -85,7 +86,7 @@
       <p class="lede">Apprendre à lire ce que le pays ne montre plus.</p>
       <p>Sites antiques, monuments et paysages de Tunisie — <b style="color:#ece1cf">expliqués, géolocalisés et sourcés</b>. Composez votre itinéraire, gardez une trace de vos visites en photos et notes, et exportez vos souvenirs — <b style="color:#ece1cf">le tout reste sur votre appareil</b>.</p>
       <p class="more"><a href="a-propos.html">À quoi sert cette application&nbsp;? ›</a></p>
-      <p class="promo"><a href="premium.html"><span class="promo-star">✨</span> <span class="promo-t">L'essentiel est gratuit — voir ce que le Premium ajoute</span> ›</a></p>
+      <p class="promo"><a href="premium.html"><span class="promo-star">✨</span> <span class="promo-t" id="promoT">2 semaines de Premium offertes — puis 14,99 €/an</span> ›</a></p>
     </div>
 
     <div class="actions">
@@ -133,6 +134,16 @@
     });
   </script>
   <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
+  <script>/* accroche Premium dynamique : montre les jours d'essai / l'état réel */
+  (function(){ try{
+    var P=window.THEPass, el=document.getElementById('promoT');
+    if(!P||!el||!P.info) return;
+    var uiT=function(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; };
+    var inf=P.info();
+    if(inf.active && inf.trial) el.textContent='🎁 '+uiT('Essai Premium — il vous reste')+' '+inf.daysLeft+' '+uiT('jour(s)');
+    else if(inf.active && (inf.paid||inf.invite)) el.textContent='✅ '+uiT('Premium actif');
+    /* sinon (web libre / essai non démarré) : garde le texte statique « 2 semaines offertes » */
+  }catch(e){} })();</script>
   <script src="the-footer.js" defer></script>
   <script src="analytics.js"></script>
 </body>

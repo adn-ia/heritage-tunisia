@@ -1,33 +1,25 @@
-/* THE — module « passe » (freemium daté).
-   Gère l'activation, la DURÉE (7 / 30 j) et l'EXPIRATION du passe.
-   Règle d'or : à l'expiration, le passe se désactive MAIS aucune donnée
-   créée par l'utilisateur (itinéraires, carnet) n'est touchée — jamais.
-
-   ┌─ À BRANCHER PLUS TARD (Lemon Squeezy) ─────────────────────────────┐
-   │ Colle ici les 2 liens de paiement (checkout) de tes produits.      │
-   │ Tant qu'ils sont vides, le bouton fait une ACTIVATION DÉMO locale  │
-   │ (pratique pour tester). Dès qu'une URL est renseignée, le bouton   │
-   │ redirige vers le vrai paiement.                                    │
-   │ Au retour, configure l'URL de redirection de Lemon Squeezy vers :  │
-   │   https://TON-SITE/itineraire.html?pass=semaine   (ou ?pass=mois)  │
-   │ (ou laisse le succès LS + le plan en attente faire le travail).    │
-   └────────────────────────────────────────────────────────────────────┘ */
+/* THE — module « passe » (essai daté → paywall, modèle 2026-07).
+   ┌─ LE MODÈLE ─────────────────────────────────────────────────────────┐
+   │ • ESSAI 2 SEMAINES : tout le Premium, gratuit.                       │
+   │     · iOS  : essai NATIF Apple (offre d'intro de l'abonnement).      │
+   │     · Web  : essai géré par l'app (14 j), démarré 1 seule fois.      │
+   │ • PASS 1 AN : 14,99 €/an, AUTO-RENOUVELABLE (abonnement Apple).      │
+   │   Achat via l'App Store (StoreKit). Lemon Squeezy dormant (web).     │
+   │ • CODES offerts : déverrouillent le Premium complet (~10 ans).       │
+   │ • VERROU GLOBAL : sans essai/abonnement/code actif, toute page       │
+   │   renvoie vers premium.html (le mur = l'écran d'achat).              │
+   │ Règle d'or : à l'expiration, le Premium se coupe MAIS aucune donnée  │
+   │ créée par l'utilisateur (itinéraires, carnet) n'est touchée. Jamais. │
+   └──────────────────────────────────────────────────────────────────────┘ */
 (function(){
-  var KEY='the_pass';
-  var DAYS={ semaine:7, mois:30 };
-  var PRICE={ semaine:'4,90 €', mois:'9,90 €' };
-  /* ═══ L'INTERRUPTEUR UNIQUE ═══ Tant que ces 2 liens sont VIDES : freemium, premium
-     en « Bientôt », rien à vendre, pourboire = simple don. Dès que tu colles tes URLs
-     Lemon Squeezy : le premium se vend (payé → tout) ET le pourboire offre une option. */
-  var CHECKOUT={ semaine:'', mois:'' };   // ← Helmy : colle tes 2 URLs Lemon Squeezy ici
-  function premiumLive(){ return !!(CHECKOUT.semaine||CHECKOUT.mois); }
   var DAY=86400000;
 
-  /* ─── Accès offert « code » (déverrouille le FULL premium, même en freemium) ─
-     La personne saisit un CODE (ou ouvre ?code=<code>). Aucun e-mail ici : on ne
-     stocke que les empreintes SHA-256 des codes ; on compare le hash du code reçu.
-     Correspondance code→personne = doc privé de Helmy, hors app. Durée ~10 ans. */
-  var INVITE_HASHES=[
+  /* ═══════════════════════════════════════════════════════════════════════
+     CONFIG PAR ÉDITION — SEULS CES 2 BLOCS CHANGENT D'UN PAYS À L'AUTRE.
+     (le reste du fichier est strictement identique dans toutes les éditions)
+     ═══════════════════════════════════════════════════════════════════════ */
+  var IAP_PREFIX='the';                    // → produit App Store : the_pass_an
+  var INVITE_HASHES=[                       // codes offerts (SHA-256), propres à THE
     '05784113a6edb6b845007d07f3f3b5547ee521bdb69d3910957a9686ec210801',
     'ddcfce828248f7108fab7bb31035c9e81f1fc526dfbd25a156989dd475db2fba',
     '12b912a8a9cb23d2b58acaf25d862418c6c84507bed7488ba3abcc3c4b8d231f',
@@ -39,7 +31,43 @@
     '9543e8d702b8a64c1414b6bcedb9ba7cc522644cce32a47f183919d81fe702f4',
     '58333aea61f2343b92278aa1181e7099a09c5209c0843e1e7fffb3e005ee2cb8'
   ];
-  var INVITE_KEY='the_invite';
+  /* ═══════════════════════════════════════════════════════════════════════ */
+
+  /* ─── L'offre unique : le pass 1 an (abonnement annuel auto-renouvelable) ─── */
+  var PLAN='an';
+  var DAYS={ an:365 };
+  var PRICE={ an:'14,99 €' };               // affiché « 14,99 €/an »
+  var PERIOD='an';
+  var TRIAL_DAYS=14;                         // essai gratuit (web) — 2 semaines, comme l'essai natif iOS
+  var GIFT_DAYS=3;                           // café/pourboire (web) → petit cadeau surprise : accès complet N jours
+  var IAP_PRODUCT={ an: IAP_PREFIX+'_sub_annual' };  // abonnement auto-renouvelable, groupe « Premium »
+
+  /* Lemon Squeezy en sommeil (web). Vide = pas de vente web ; l'achat se fait
+     via l'App Store (Apple). Le jour où tu actives la vente web, colle l'URL. */
+  var CHECKOUT={ an:'https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed' };          // ← URL de checkout Lemon Squeezy (web) ; vide = pas de vente web
+  var APPSTORE_URL='';             // ← lien App Store de CETTE app (à coller une fois publiée) ; vide = masqué
+  function premiumLive(){ return !!CHECKOUT.an; }
+
+  /* ═══ OÙ le premium est-il PAYANT ? ═══
+     Le mur (et l'essai daté) ne s'activent QUE là où l'achat est possible :
+       • dans l'app iOS quand le pont StoreKit est présent (hasIAPBridge), OU
+       • sur le web si la vente Lemon Squeezy est activée (premiumLive).
+     Sinon = site web gratuit : tout reste ouvert, aucun mur (vitrine + acquisition).
+     Conséquence : tant que le code natif iOS n'est pas livré, il n'y a de mur
+     NULLE PART — l'upload web est donc sans risque. */
+  function paywallActive(){ return hasIAPBridge() || premiumLive(); }
+
+  var KEY='the_pass';                       // le passe payé
+  var TRIAL_KEY='the_trial';                // l'essai en cours
+  var TRIAL_FLAG='the_trial_started';       // garde : essai déjà consommé (même expiré)
+  var INVITE_KEY='the_invite';              // accès offert par code
+
+  /* ─── Passe payé ────────────────────────────────────────────────────── */
+  function read(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+  function write(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
+  function paidActive(){ var p=read(); return !!(p && p.expires && p.expires>Date.now()); }
+
+  /* ─── Accès offert « code » (SHA-256, aucune donnée perso stockée) ───── */
   function inviteRead(){ try{ return JSON.parse(localStorage.getItem(INVITE_KEY)||'null'); }catch(e){ return null; } }
   function inviteActive(){ var i=inviteRead(); return !!(i && i.exp && i.exp>Date.now()); }
   function sha256hex(str){
@@ -58,64 +86,106 @@
     });
   }
 
-  function read(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
-  function write(o){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
-  function legacy(){ try{ return localStorage.getItem('the_premium')==='1'; }catch(e){ return false; } }
+  /* ─── Clé de licence Lemon Squeezy (achat web) — validée EN LIGNE, multi-appareils ─
+     La personne colle la clé reçue par mail après l'achat ; on l'active via l'API
+     publique de Lemon Squeezy (CORS OK, AUCUN serveur requis). Débloque le Premium
+     1 an sur cet appareil. La limite d'appareils est réglée côté produit LS. */
+  function deviceName(){
+    try{ var d=localStorage.getItem('the_device');
+      if(!d){ d='web-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6).toString(36); localStorage.setItem('the_device', d); }
+      return d; }catch(e){ return 'web'; }
+  }
+  function redeemLicense(key){
+    key=String(key||'').trim();
+    if(!key) return Promise.resolve(false);
+    return fetch('https://api.lemonsqueezy.com/v1/licenses/activate', {
+      method:'POST', headers:{ 'Accept':'application/json', 'Content-Type':'application/json' },
+      body: JSON.stringify({ license_key:key, instance_name: deviceName() })
+    }).then(function(r){ return r.json(); }).then(function(j){
+      if(j && j.activated){
+        try{ localStorage.setItem('the_license', JSON.stringify({ key:key, instance:(j.instance&&j.instance.id)||null, ts:Date.now() })); }catch(e){}
+        activate('an', { order:'ls-license' });   // 1 an d'accès
+        return true;
+      }
+      return false;
+    }).catch(function(){ return false; });
+  }
 
+  /* ─── Essai (démarré automatiquement, une seule fois) ─── voir TRIAL_DAYS ─── */
+  function trialRead(){ try{ return JSON.parse(localStorage.getItem(TRIAL_KEY)||'null'); }catch(e){ return null; } }
+  function trialStartedTs(){ try{ return parseInt(localStorage.getItem(TRIAL_FLAG)||'0',10)||0; }catch(e){ return 0; } }
+  function trialActive(){ var t=trialRead(); return !!(t && t.expires && t.expires>Date.now()); }
+  // Démarre l'essai UNE seule fois. Si déjà consommé (même expiré) → jamais réarmé.
+  function trialMaybeStart(){
+    if(!paywallActive()) return false;            // plateforme gratuite : pas d'essai daté
+    if(trialStartedTs()) return false;            // déjà utilisé une fois
+    if(paidActive() || inviteActive()) return false; // déjà premium : inutile
+    var now=Date.now();
+    try{
+      localStorage.setItem(TRIAL_FLAG, String(now));
+      localStorage.setItem(TRIAL_KEY, JSON.stringify({ start:now, expires: now + TRIAL_DAYS*DAY }));
+      localStorage.setItem('the_trial_new','1');  // pour le petit bandeau de bienvenue
+    }catch(e){}
+    return true;
+  }
+
+  /* ─── L'état premium global ─── */
   function isActive(){
-    if(inviteActive()) return true;   // accès offert (invité) → full premium, même en freemium
-    if(!CHECKOUT.semaine && !CHECKOUT.mois) return false; /* Premium pas encore en vente -> personne n'est premium, on ignore tout drapeau */ if(legacy()) return true;                       // ancien drapeau démo (compat)
-    var p=read(); return !!(p && p.expires && p.expires > Date.now());
+    if(!paywallActive()) return true;   // plateforme gratuite (web sans vente) → tout ouvert
+    return inviteActive() || paidActive() || trialActive();
   }
+
   function activate(plan, meta){
-    var d=DAYS[plan]||7, now=Date.now(), cur=read();
+    var d=DAYS[plan]||DAYS.an, now=Date.now(), cur=read();
+    var wasActive=!!(cur && cur.expires && cur.expires>now);
     // si un passe est encore valide, on PROLONGE à partir de sa fin (cumul équitable)
-    var base=(cur && cur.expires && cur.expires>now) ? cur.expires : now;
-    var rec={ plan:plan, start:now, expires: base + d*DAY, order:(meta&&meta.order)||null, ts:now };
-    write(rec); return rec;
+    var base=wasActive ? cur.expires : now;
+    var rec={ plan:plan||PLAN, start:now, expires: base + d*DAY, order:(meta&&meta.order)||null, ts:now };
+    write(rec);
+    // 1re activation (pas une simple ré-assertion iOS au lancement) → ouvrir l'album par défaut.
+    if(!wasActive){ try{ localStorage.setItem('the_open_album','1'); }catch(e){} }
+    return rec;
   }
-  function deactivate(){ try{ localStorage.removeItem(KEY); localStorage.removeItem('the_premium'); }catch(e){} }
+  function deactivate(){ try{ localStorage.removeItem(KEY); }catch(e){} }
 
   function info(){
-    var now=Date.now();
-    if(legacy()) return { active:true, plan:'démo', daysLeft:null, expires:null };
-    var p=read();
-    if(!p || !p.expires || p.expires<=now) return { active:false };
-    return { active:true, plan:p.plan, expires:p.expires, daysLeft:Math.max(0, Math.ceil((p.expires-now)/DAY)) };
+    var now=Date.now(), p=read();
+    if(p && p.expires && p.expires>now)
+      return { active:true, plan:p.plan||PLAN, paid:true, expires:p.expires, daysLeft:Math.max(0,Math.ceil((p.expires-now)/DAY)) };
+    if(inviteActive()){ var i=inviteRead();
+      return { active:true, plan:'code', invite:true, expires:i.exp, daysLeft:Math.max(0,Math.ceil((i.exp-now)/DAY)) }; }
+    if(trialActive()){ var t=trialRead();
+      return { active:true, plan:'essai', trial:true, expires:t.expires, daysLeft:Math.max(0,Math.ceil((t.expires-now)/DAY)) }; }
+    return { active:false, trialUsed: !!trialStartedTs() };
   }
 
+  /* ─── Achat web (Lemon Squeezy — dormant pour l'instant) ─────────────── */
   function checkoutURL(plan){ return CHECKOUT[plan]||''; }
-  // Lance l'achat. Retour : 'checkout' (redirigé vers LS) ou 'demo' (activé localement).
+  // Retour : 'checkout' (redirigé LS) ou 'soon' (vente web pas encore active).
   function buy(plan){
-    if(!DAYS[plan]) return null;
+    plan=plan||PLAN; if(!DAYS[plan]) return null;
     var url=checkoutURL(plan);
-    if(url){
-      try{ localStorage.setItem('the_pass_pending', plan); }catch(e){}
-      location.href=url;
-      return 'checkout';
-    }
-    activate(plan, {order:'demo'});
-    return 'demo';
+    if(url){ try{ localStorage.setItem('the_pass_pending', plan); }catch(e){} location.href=url; return 'checkout'; }
+    return 'soon';   // pas de démo silencieuse : sur le web, l'achat se fait via l'App Store
   }
 
-  // Au retour de paiement : active le passe selon l'URL (?pass=…) ou le plan en attente.
+  // Au retour de paiement (LS) ou lien : active selon ?pass=… / plan en attente / code.
   function handleReturn(){
     try{
       var q=new URLSearchParams(location.search);
       var inv=q.get('code')||q.get('invite');
       if(inv){ redeem(inv).then(function(ok){ try{ if(ok) localStorage.setItem('the_invite_ok','1'); }catch(e){} clean(); if(ok) location.reload(); }); return 'invite'; }
       var plan=q.get('pass');
-        if(plan==='off'){ deactivate(); clean(); return 'off'; }   // ?pass=off → retour gratuit, sans console
+      if(plan==='off'){ deactivate(); clean(); return 'off'; }
       var success=q.get('ls_success')||q.get('success')||q.get('checkout');
       var pending=null; try{ pending=localStorage.getItem('the_pass_pending'); }catch(e){}
       if(plan && DAYS[plan]){ activate(plan,{order:q.get('order_id')||q.get('order')||null}); clean(); try{localStorage.removeItem('the_pass_pending');}catch(e){} return plan; }
       if(success && pending && DAYS[pending]){ activate(pending,{order:q.get('order_id')||null}); clean(); try{localStorage.removeItem('the_pass_pending');}catch(e){} return pending; }
       // Cadeau pourboire (web) : au retour d'un pourboire réussi → UNE feature offerte au hasard.
-      // (uniquement si le Premium est en vente ; sinon le pourboire est un simple don.)
       var tipPending=null; try{ tipPending=localStorage.getItem('the_tip_pending'); }catch(e){}
       if(premiumLive() && (q.get('tip')==='ok' || (success && tipPending))){
-        var gift=giftRandom();
-        try{ localStorage.removeItem('the_tip_pending'); if(gift) localStorage.setItem('the_gift_new', gift); }catch(e){}
+        giftAccess();   // café/pourboire → petit cadeau surprise : quelques jours de Premium
+        try{ localStorage.removeItem('the_tip_pending'); localStorage.setItem('the_gift_new', String(GIFT_DAYS)); }catch(e){}
         clean(); return 'tip';
       }
     }catch(e){}
@@ -123,42 +193,40 @@
   }
   function clean(){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
 
-  /* ─── Cadeau « pourboire » (web-only) ────────────────────────────────────
-     Chaque pourboire réussi OFFRE une feature au hasard (surprise, non annoncée).
-     Ça ne débloque PAS tout le Premium — juste cette feature-là, via hasFeature()
-     honoré par requirePass(). Le pool tire des features « fun » et autonomes. */
+  /* ─── Cadeau « pourboire » (web-only) — inchangé ─────────────────────── */
+  // Petit cadeau surprise du pourboire (web) : quelques jours d'accès complet.
+  function giftAccess(){
+    var now=Date.now(), cur=read();
+    var base=(cur && cur.expires && cur.expires>now) ? cur.expires : now;   // prolonge si déjà actif
+    write({ plan:'cadeau', start:now, expires: base + GIFT_DAYS*DAY, order:'tip-gift', ts:now });
+  }
   var GIFT_POOL=['Thème Gastronomie','Mythes & Légendes','Décors de cinéma'];
   function readFeats(){ try{ return JSON.parse(localStorage.getItem('the_feats')||'[]'); }catch(e){ return []; } }
   function grantFeature(feat){ if(!feat) return; try{ var s=readFeats(); if(s.indexOf(feat)<0){ s.push(feat); localStorage.setItem('the_feats', JSON.stringify(s)); } }catch(e){} }
   function hasFeature(feat){ if(isActive()) return true; return readFeats().indexOf(feat)>=0; }
   function giftRandom(){ var pool=GIFT_POOL.filter(function(f){ return readFeats().indexOf(f)<0; }); if(!pool.length) pool=GIFT_POOL; var f=pool[Math.floor(Math.random()*pool.length)]; grantFeature(f); return f; }
-  // Révèle le cadeau une seule fois (petit bandeau) sur la page d'atterrissage après le pourboire.
   function showGiftToast(){
     var g; try{ g=localStorage.getItem('the_gift_new'); }catch(e){}
     if(!g) return; try{ localStorage.removeItem('the_gift_new'); }catch(e){}
-    var uiT=function(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; };
-    var add=function(){
-      var d=document.createElement('div'); d.setAttribute('role','status');
-      d.style.cssText='position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9999;max-width:92%;background:#2b2318;color:#f6f0e4;padding:13px 18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.35);font-family:inherit;font-size:14.5px;line-height:1.4;border:1px solid #a8884f';
-      d.innerHTML='🎁 '+uiT('Merci pour votre pourboire ! On vous offre :')+' <b>'+(uiT(g))+'</b>';
-      document.body.appendChild(d);
-      setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); },500); }, 6500);
-    };
-    if(document.body) add(); else document.addEventListener('DOMContentLoaded', add);
+    toast('🎁 '+uiT('Merci pour votre café ! On vous offre')+' <b>'+g+' '+uiT('jours de Premium')+'</b>.');
   }
 
-  /* ─── Chemin d'achat iOS (Apple In-App Purchase / StoreKit) ──────────────
-     Sur iPhone, on ne redirige JAMAIS vers Lemon Squeezy (règle Apple 3.1.1).
-     Le web ne fait qu'APPELER le pont natif ; c'est le code Swift StoreKit de
-     la coquille PWABuilder qui lance l'achat Apple, puis rappelle iapUnlock().
-     ┌─ À BRANCHER CÔTÉ NATIF (projet Xcode / build Codemagic) ──────────────┐
-     │ 1. Créer les abonnements dans App Store Connect :                     │
-     │      the_premium_semaine  ·  the_premium_mois                         │
-     │ 2. Recevoir postMessage sur le handler « iap », lancer StoreKit.      │
-     │ 3. Au succès : webView.evaluateJavaScript(                            │
-     │      "THEPass.iapUnlock('semaine','<txId>')" )                        │
+  /* ─── Achat iOS (Apple In-App Purchase / StoreKit) ───────────────────────
+     Sur iPhone, on ne redirige JAMAIS vers un paiement web (règle Apple 3.1.1).
+     Le web APPELLE le pont natif ; le code Swift StoreKit de la coquille lance
+     l'achat/restaure Apple, puis rappelle iapUnlock / iapExpire.
+     ┌─ À BRANCHER CÔTÉ NATIF (Xcode / build Codemagic) ─────────────────────┐
+     │ 1. App Store Connect → « Abonnements auto-renouvelables » :           │
+     │      Groupe « Premium » → produit  the_sub_annual  (1 an, 14,99 €)    │
+     │      + Offre d'introduction : ESSAI GRATUIT 2 SEMAINES.               │
+     │ 2. Au LANCEMENT, interroger l'entitlement StoreKit courant :         │
+     │      · abonné/essai actif → evaluateJavaScript("THEPass.iapUnlock('an')")│
+     │      · sinon              → evaluateJavaScript("THEPass.iapExpire()")  │
+     │ 3. Recevoir postMessage { action:'buy'|'restore' } sur le handler     │
+     │    « iap », lancer StoreKit (purchase / restoreCompletedTransactions).│
+     │ 4. Au succès d'achat/restore : "THEPass.iapUnlock('an','<txId>')".    │
+     │  (l'essai natif Apple compte comme « actif » → l'app est déverrouillée)│
      └───────────────────────────────────────────────────────────────────────┘ */
-  var IAP_PRODUCT={ semaine:'the_premium_semaine', mois:'the_premium_mois' };
   function isIOS(){
     var u=navigator.userAgent||'';
     return /iPad|iPhone|iPod/.test(u) ||
@@ -166,48 +234,123 @@
        (navigator.maxTouchPoints>1||'ontouchend' in document));
   }
   function hasIAPBridge(){ try{ return !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.iap); }catch(e){ return false; } }
-  // Lance l'achat Apple. Retour : 'iap' (envoyé au natif) ou 'no-bridge' (coquille sans StoreKit).
+  // Lance l'achat Apple. Retour : 'iap' (envoyé au natif) ou 'no-bridge'.
   function buyIOS(plan){
-    if(!DAYS[plan]) return null;
+    plan=plan||PLAN; if(!DAYS[plan]) return null;
     if(!hasIAPBridge()) return 'no-bridge';
     try{ localStorage.setItem('the_pass_pending', plan); }catch(e){}
     try{ window.webkit.messageHandlers.iap.postMessage({ action:'buy', plan:plan, product:IAP_PRODUCT[plan] }); }catch(e){ return 'no-bridge'; }
     return 'iap';
   }
-  // Appelée par le code natif au succès d'un achat App Store (ou au restore).
+  // Restaurer un achat (obligation Apple). Le natif rappelle iapUnlock au succès.
+  function restoreIOS(){
+    if(!hasIAPBridge()) return 'no-bridge';
+    try{ window.webkit.messageHandlers.iap.postMessage({ action:'restore', product:IAP_PRODUCT[PLAN] }); }catch(e){ return 'no-bridge'; }
+    return 'iap';
+  }
+  // Appelée par le natif au succès d'un achat/restore OU au lancement si entitlement actif.
   function iapUnlock(plan, txId){
     if(!DAYS[plan]){ try{ plan=localStorage.getItem('the_pass_pending'); }catch(e){} }
-    if(!DAYS[plan]) return false;
+    if(!DAYS[plan]) plan=PLAN;
     activate(plan, { order: txId||'ios-iap' });
     try{ localStorage.removeItem('the_pass_pending'); }catch(e){}
     try{ if(typeof window.__thePassOnUnlock==='function') window.__thePassOnUnlock(plan); }catch(e){}
     return true;
   }
+  // Appelée par le natif au lancement si l'abonnement n'est PLUS actif (annulé/expiré).
+  // Coupe le cache local du passe payé (les données utilisateur ne sont jamais touchées).
+  function iapExpire(){ deactivate(); return true; }
 
-  window.THEPass={ isActive:isActive, activate:activate, deactivate:deactivate, info:info,
-                   buy:buy, checkoutURL:checkoutURL, handleReturn:handleReturn,
-                   isIOS:isIOS, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, iapUnlock:iapUnlock,
-                   IAP_PRODUCT:IAP_PRODUCT,
-                   grantFeature:grantFeature, hasFeature:hasFeature, giftRandom:giftRandom, GIFT_POOL:GIFT_POOL,
-                   premiumLive:premiumLive, redeem:redeem, inviteActive:inviteActive,
-                   DAYS:DAYS, PRICE:PRICE, CHECKOUT:CHECKOUT };
-
-  // Bandeau de bienvenue quand un accès offert vient d'être activé (une fois).
-  function inviteToast(){
-    var ok; try{ ok=localStorage.getItem('the_invite_ok'); }catch(e){}
-    if(!ok) return; try{ localStorage.removeItem('the_invite_ok'); }catch(e){}
-    var uiT=function(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; };
+  /* ─── Petits bandeaux (toasts) ───────────────────────────────────────── */
+  function uiT(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
+  function toast(html, ms){
     var add=function(){
       var d=document.createElement('div'); d.setAttribute('role','status');
       d.style.cssText='position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9999;max-width:92%;background:#2b2318;color:#f6f0e4;padding:13px 18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.35);font-family:inherit;font-size:14.5px;line-height:1.4;border:1px solid #a8884f';
-      d.innerHTML='🎁 '+uiT('Accès Premium offert — activé. Bon voyage !');
-      document.body.appendChild(d);
-      setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); },500); }, 6500);
+      d.innerHTML=html; document.body.appendChild(d);
+      setTimeout(function(){ d.style.transition='opacity .5s'; d.style.opacity='0'; setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); },500); }, ms||6500);
     };
     if(document.body) add(); else document.addEventListener('DOMContentLoaded', add);
   }
 
-  handleReturn();   // traite un éventuel retour de paiement / lien invité dès le chargement
-  showGiftToast();  // révèle un éventuel cadeau pourboire
-  inviteToast();    // bienvenue accès offert
+  /* ─── Sauvegarde des souvenirs : rappel avant le mur + album à l'abonnement ───
+     Les photos/souvenirs ne sont JAMAIS retenus ni supprimés (carnet local). On
+     évite juste que quelqu'un se fasse surprendre par le mur : dans les 3 derniers
+     jours d'essai, un rappel (1×/jour) invite à enregistrer l'album. Et à la 1re
+     activation, l'album s'ouvre par défaut (openAlbumIfFlagged, via le drapeau posé
+     par activate()). */
+  function trialEndNudge(){
+    try{
+      if(!trialActive()) return;
+      var t=trialRead(); var left=Math.max(0, Math.ceil((t.expires-Date.now())/DAY));
+      if(left>3) return;
+      if(/premium\.html|itineraire\.html/i.test(location.pathname)) return;   // déjà sur l'album / le paywall
+      var bucket=String(Math.floor(Date.now()/DAY)), seen=null;
+      try{ seen=localStorage.getItem('the_nudge_day'); }catch(e){}
+      if(seen===bucket) return;                                               // 1 rappel par jour max
+      try{ localStorage.setItem('the_nudge_day', bucket); }catch(e){}
+      toast('⏳ '+uiT('Votre essai se termine dans')+' <b>'+left+' '+uiT('jour(s)')+'</b>. '
+        +'<a href="itineraire.html" style="color:#c9ad79;text-decoration:underline">'+uiT('Enregistrez votre album souvenir')+'</a>', 12000);
+    }catch(e){}
+  }
+  function openAlbumIfFlagged(){
+    try{
+      if(!/itineraire\.html/i.test(location.pathname)) return;
+      var f=null; try{ f=localStorage.getItem('the_open_album'); }catch(e){}
+      if(!f) return; try{ localStorage.removeItem('the_open_album'); }catch(e){}
+      if(!isActive()) return;
+      var open=function(){ var b=document.getElementById('albumbtn'); if(b){ try{ b.click(); }catch(e){} } };
+      if(document.readyState!=='loading') setTimeout(open,600);
+      else document.addEventListener('DOMContentLoaded', function(){ setTimeout(open,600); });
+    }catch(e){}
+  }
+  function trialToast(){
+    var n; try{ n=localStorage.getItem('the_trial_new'); }catch(e){}
+    if(!n) return; try{ localStorage.removeItem('the_trial_new'); }catch(e){}
+    toast('🎁 '+uiT('Premium offert pendant 2 semaines — profitez-en !'));
+  }
+  function inviteToast(){
+    var ok; try{ ok=localStorage.getItem('the_invite_ok'); }catch(e){}
+    if(!ok) return; try{ localStorage.removeItem('the_invite_ok'); }catch(e){}
+    toast('🎁 '+uiT('Accès Premium offert — activé. Bon voyage !'));
+  }
+
+  window.THEPass={ isActive:isActive, activate:activate, deactivate:deactivate, info:info,
+                   buy:buy, checkoutURL:checkoutURL, handleReturn:handleReturn,
+                   isIOS:isIOS, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, restoreIOS:restoreIOS,
+                   iapUnlock:iapUnlock, iapExpire:iapExpire, IAP_PRODUCT:IAP_PRODUCT,
+                   grantFeature:grantFeature, hasFeature:hasFeature, giftRandom:giftRandom, GIFT_POOL:GIFT_POOL,
+                   premiumLive:premiumLive, redeem:redeem, redeemLicense:redeemLicense, inviteActive:inviteActive,
+                   trialActive:trialActive, trialUsed:function(){ return !!trialStartedTs(); },
+                   PLAN:PLAN, PERIOD:PERIOD, TRIAL_DAYS:TRIAL_DAYS, GIFT_DAYS:GIFT_DAYS,
+                   DAYS:DAYS, PRICE:PRICE, CHECKOUT:CHECKOUT, APPSTORE_URL:APPSTORE_URL };
+
+  /* ═══ VERROU GLOBAL ═══
+     Sans essai/abonnement/code actif, toute page « contenu » renvoie vers le
+     paywall (premium.html). On laisse toujours ouvertes : le paywall lui-même,
+     le soutien, et les pages légales/aide (exigées par Apple près de l'achat).
+     Placé tôt (the-pass.js est chargé en <head>) → pas de contenu qui clignote. */
+  function gateAllow(path){
+    return /(?:^|\/)(bienvenue|premium|soutien|cgu|cgv|confidentialite|mentions-legales|remboursement|a-propos|sources-credits|credits-photos)\.html?$/i.test(path)
+        || /\/$/.test(path);   // racine « / » = bienvenue (vitrine toujours libre, toutes langues)
+  }
+  function gate(){
+    try{
+      if(!paywallActive()) return;               // site gratuit (web sans vente) → aucun mur
+      if(gateAllow(location.pathname)) return;
+      if(isActive()) return;
+      // Laisse passer le retour de code (?code=…) que handleReturn traite en asynchrone.
+      if(/[?&](code|invite|pass)=/.test(location.search)) return;
+      location.replace('premium.html');
+    }catch(e){}
+  }
+
+  handleReturn();       // retour paiement / lien invité
+  trialMaybeStart();    // démarre l'essai (une seule fois)
+  gate();               // ← MUR : après l'essai, tout renvoie au paywall SAUF bienvenue (vitrine libre)
+  openAlbumIfFlagged(); // à la 1re activation : ouvre l'album par défaut
+  trialEndNudge();      // rappel « enregistrez votre album » dans les 3 derniers jours
+  showGiftToast();      // cadeau pourboire éventuel
+  trialToast();         // bienvenue essai
+  inviteToast();        // bienvenue accès offert
 })();

@@ -75,6 +75,7 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
 .sheet .sh-act a{flex:1;text-align:center;text-decoration:none;background:var(--gold);color:#fff;padding:11px;border-radius:8px;font-weight:600;font-size:14px;}
 .sheet .sh-act a.sec{background:#efe6d4;color:var(--ink);}
 </style>
+  <script src="the-pass.js"></script>
 </head>
 <body>
 <div class="topbar"><a class="back" href="decouvrir.html">‹ Menu</a><span class="t">TOUS LES LIEUX</span><a class="map" href="index.html">🗺️ Carte</a></div>
@@ -110,7 +111,6 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
 <div class="sheet-ov" id="sheetOv"><div class="sheet" id="sheet" style="position:relative;"></div></div>
 
 <script src="the-i18n.js"></script>
-<script src="the-pass.js"></script>
 <script>
 function isPremium(){ try{return window.THEPass ? THEPass.isActive() : false;}catch(e){return false;} }
 let ALL=[];
