@@ -115,15 +115,24 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
   /* Prix dynamique */
   var pv=document.getElementById('priceVal'); if(pv && P.PRICE) pv.textContent=P.PRICE.an;
 
-  /* Où peut-on acheter ? Apple seulement si le pont StoreKit est présent (app iOS). */
-  var canApple = P.hasIAPBridge && P.hasIAPBridge();
-  document.getElementById(canApple ? 'buyIos' : 'buyWeb').style.display='block';
-  if(canApple){
-    var bb=document.getElementById('buyBtn'), rb=document.getElementById('restoreBtn');
-    if(bb) bb.onclick=function(){ var r=P.buyIOS('an'); if(r==='no-bridge') alert(uiT('Achat indisponible ici. Réessayez depuis l’application.')); };
-    if(rb) rb.onclick=function(){ P.restoreIOS(); };
+  /* ⚠️ CONFORMITÉ APPLE (règle 3.1.1) : sur iOS (app OU Safari), on n'affiche JAMAIS
+     Lemon Squeezy ni le café. L'achat iOS passe par Apple (StoreKit). Le web
+     (desktop/Android) a les 3 portes. On décide sur isIOS, PAS sur le pont —
+     ainsi une app publiée sans StoreKit ne montrera jamais Lemon Squeezy. */
+  if(isIOS){
+    document.getElementById('buyIos').style.display='block';
+    var bridge = P.hasIAPBridge && P.hasIAPBridge();
+    if(bridge){
+      var bb=document.getElementById('buyBtn'), rb=document.getElementById('restoreBtn');
+      if(bb) bb.onclick=function(){ var r=P.buyIOS('an'); if(r==='no-bridge') alert(uiT('Achat indisponible ici. Réessayez depuis l’application.')); };
+      if(rb) rb.onclick=function(){ P.restoreIOS(); };
+    } else {
+      /* app iOS sans StoreKit (ou Safari sur iPhone) : PAS de Lemon Squeezy. Message neutre. */
+      document.getElementById('buyIos').innerHTML='<div class="note">🍎 '+uiT('L’abonnement Premium arrive sur iOS — bientôt disponible dans l’application.')+'</div>';
+    }
   } else {
-    /* WEB : jusqu'à 3 portes selon ce qui est configuré (Lemon Squeezy / App Store / café). */
+    /* WEB (desktop/Android) : jusqu'à 3 portes (Lemon Squeezy / App Store / café). */
+    document.getElementById('buyWeb').style.display='block';
     var web=document.getElementById('buyWeb'), parts=[];
     var lemon = !!(P.CHECKOUT && P.CHECKOUT.an);
     if(lemon) parts.push('<button class="btn big" id="buyLS" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' / '+uiT('an')+'</button>'

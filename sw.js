@@ -3,7 +3,7 @@
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'the-v79-20260720-rgpd';
+const VERSION = 'the-v80-20260720-ios-safe';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 const TILES   = 'the-tiles-' + VERSION;
