@@ -85,6 +85,7 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
     <div class="seg" id="genreSeg"><button data-g="all" class="on">Tout</button><button data-g="histoire">Histoire</button><button data-g="nature">Nature</button></div>
     <select id="region"><option value="">Toutes les régions</option></select>
     <select id="type"><option value="">Tous les types</option></select>
+    <select id="theme"><option value="">Tous les thèmes</option></select>
     <label class="chk"><input type="checkbox" id="withPhoto"> avec photo</label>
     <label class="chk"><input type="checkbox" id="withLeg"> 🐉 légendes</label>
     <button id="aroundBtn" class="seg" style="padding:9px 12px;cursor:pointer;color:var(--ink)">📍 Autour de moi</button>
@@ -152,14 +153,19 @@ Promise.all([
   const rsel=document.getElementById('region'); regs.forEach(r=>rsel.add(new Option(r,r)));
   const typs=[...new Set(ALL.map(s=>s.type).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
   const tsel=document.getElementById('type'); typs.forEach(t=>tsel.add(new Option(trCat(t),t)));
+  // Thème transversal (aligné socle) : chaque option n'apparaît que si la categorie a des données
+  const THEMES=[['patrimoine','Patrimoine'],['musee','Musées'],['marche','Marchés & souks'],['festival','Festivals & événements'],['nature','Nature & balades']];
+  const _present=new Set(ALL.map(s=>s.categorie).filter(Boolean));
+  const thsel=document.getElementById('theme'); THEMES.forEach(([c,lab])=>{ if(_present.has(c)) thsel.add(new Option(uiT(lab),c)); });
   render();
 });
-let F={g:'all',q:'',region:'',type:'',photo:false,legonly:false,around:false,center:null,radius:30};
+let F={g:'all',q:'',region:'',type:'',theme:'',photo:false,legonly:false,around:false,center:null,radius:30};
 function hav(a,b){ const R=6371,r=Math.PI/180,x=Math.sin((b[1]-a[1])*r/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin((b[0]-a[0])*r/2)**2; return 2*R*Math.asin(Math.sqrt(x)); }
 function pass(s){
   if(F.g!=='all' && gen(s)!==F.g) return false;
   if(F.region && s.gouvernorat!==F.region) return false;
   if(F.type && s.type!==F.type) return false;
+  if(F.theme && s.categorie!==F.theme) return false;   // transversal (aligné socle)
   if(F.photo && !(s.photo||'').startsWith('img/')) return false;
   if(F.legonly && !(s.legende||s.anecdote)) return false;
   if(F.around && F.center){ if(!s._c) return false; if(hav(F.center,s._c)>F.radius) return false; }
@@ -211,6 +217,7 @@ document.getElementById('sheetOv').onclick=e=>{if(e.target.id==='sheetOv')closeS
 document.getElementById('q').oninput=e=>{F.q=e.target.value;render();};
 document.getElementById('region').onchange=e=>{F.region=e.target.value;render();};
 document.getElementById('type').onchange=e=>{F.type=e.target.value;render();};
+document.getElementById('theme').onchange=e=>{F.theme=e.target.value;render();};
 document.getElementById('withPhoto').onchange=e=>{F.photo=e.target.checked;render();};
 document.getElementById('withLeg').onchange=e=>{ if(!isPremium()){ e.target.checked=false; location.href='premium.html'; return; } F.legonly=e.target.checked;render();};
 [...document.querySelectorAll('#genreSeg button')].forEach(b=>b.onclick=()=>{
