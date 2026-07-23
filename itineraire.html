@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta name="pc-brand" content="TUNISIA HERITAGE">
+  <script src="heritage.config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#26201a">
@@ -10,7 +10,6 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="THE">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1520,7 +1519,7 @@
     } else {
       // 2) sinon géocodage par le nom (OpenStreetMap, Tunisie) — d'où l'orthographe à respecter
       try{
-        const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=fr&countrycodes=tn&q='+encodeURIComponent(q));
+        const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=fr&countrycodes='+((window.HConf&&HConf.iso)||'tn')+'&q='+encodeURIComponent(q));
         const j=await r.json();
         if(!j.length){ msg.textContent=uiT('Lieu introuvable — vérifiez l\'orthographe.'); return; }
         stop={ c:[parseFloat(j[0].lon),parseFloat(j[0].lat)], layer:'perso', genre:'perso',
@@ -1778,7 +1777,7 @@
     const wpts=LASTRES.route.map(s=>{ const p=s.p, [lon,lat]=s.c;
       return '  <wpt lat="'+lat+'" lon="'+lon+'"><name>'+xe(p.nom)+'</name>'+(p.gouvernorat||p.type?'<desc>'+xe([p.gouvernorat,p.type,p.epoque].filter(Boolean).join(' · '))+'</desc>':'')+'</wpt>'; }).join('\n');
     const rtepts=LASTRES.route.map(s=>{ const [lon,lat]=s.c; return '    <rtept lat="'+lat+'" lon="'+lon+'"><name>'+xe(s.p.nom)+'</name></rtept>'; }).join('\n');
-    const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="THE — Tunisia Heritage Experience" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>'+xe(name)+'</name></metadata>\n'+wpts+'\n  <rte><name>'+xe(name)+'</name>\n'+rtepts+'\n  </rte>\n</gpx>\n';
+    const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="'+((window.HConf&&HConf.marque)||"Tunisia Heritage Experience")+'" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>'+xe(name)+'</name></metadata>\n'+wpts+'\n  <rte><name>'+xe(name)+'</name>\n'+rtepts+'\n  </rte>\n</gpx>\n';
     const blob=new Blob([gpx],{type:'application/gpx+xml'});
     const url=URL.createObjectURL(blob), a=document.createElement('a');
     a.href=url; a.download=(name.replace(/[^\w\-]+/g,'-').replace(/^-+|-+$/g,'')||'itineraire')+'.gpx';
@@ -2014,6 +2013,8 @@
   <script src="analytics.js"></script>
 <script src="the-postcard.js" defer></script>
 <script src="the-carnet.js" defer></script>
+<script src="roadtrip-plus.js" defer></script>
+<script src="roadtrip-plan.js" defer></script>
 <script src="the-souvenir.js" defer></script>
 <script src="the-print.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>

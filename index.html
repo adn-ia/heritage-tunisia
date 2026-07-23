@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta name="pc-brand" content="TUNISIA HERITAGE">
+  <script src="heritage.config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#26201a">
@@ -10,7 +10,6 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="THE">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -226,8 +225,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const DEFAULT_CENTER = [34.5, 9.5];
-    const DEFAULT_ZOOM = 7;
+    const DEFAULT_CENTER = (window.HConf&&HConf.carte) ? [HConf.carte.lat, HConf.carte.lon] : [34.5, 9.5];
+    const DEFAULT_ZOOM = (window.HConf&&HConf.carte&&HConf.carte.zoom) || 7;
     const REVEAL_DISTANCE = 300; // m
 
     const map = L.map('map', { zoomControl:false }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);

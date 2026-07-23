@@ -2,7 +2,7 @@
 // ▶ Pour ACTIVER : coller le token du domaine (Cloudflare → Web Analytics → ton site → token) entre les guillemets.
 //   Vide = désactivé (rien ne charge, aucun suivi).
 (function(){
-  var TOKEN = "de37166feb0649ccb405647109e25906";   // <-- coller le token ici
+  var TOKEN = (window.HConf && HConf.cloudflare) || "de37166feb0649ccb405647109e25906";   // <-- coller le token ici
   if(!TOKEN) return;
   var s=document.createElement('script'); s.defer=true;
   s.src='https://static.cloudflareinsights.com/beacon.min.js';

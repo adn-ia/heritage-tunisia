@@ -1,0 +1,32 @@
+═══════════════════════════════════════════════════════════════════
+  ⚠️ TODO OUVERT — ALIGNER THE SUR LES 4 THÈMES TRANSVERSAUX
+  Décidé DIFFÉRÉ le 2026-07-23 (Helmy). NE PAS oublier.
+═══════════════════════════════════════════════════════════════════
+
+CONTEXTE
+  Structure commune décidée pour toutes les éditions Heritage =
+  4 thèmes TRANSVERSAUX dynamiques : NATURE · MUSÉE · FESTIVAL/ÉVÉNEMENT · MARCHÉ/BROCANTE.
+  (Les 6+ catégories DÉRIVÉES restent propres à chaque pays — divergence assumée.)
+
+ÉTAT DE THE
+  ✅ Nature : déjà présent (chooser « Nature & balades » + categorie=nature).
+  ⬜ Musée / Festival / Marché : ABSENTS de la carte.
+  • Liste : OK dynamique (menu types bruts → tout type ajouté en DATA apparaît seul,
+    il faut juste sa traduction `cat` par langue → lancer audit_types_i18n.py).
+  • Carte (index.html) : chirurgie requise = puce fMusee + état catFilter + branche
+    passes() + option chooser. ⚠️ options du chooser EN DUR FR (i18n de THE GELÉ).
+  • THE a 0 musée/festival/marché → toute greffe serait INVISIBLE aujourd'hui.
+
+QUAND LE FAIRE (passe de convergence délibérée, pas à la va-vite)
+  Déclencheur = l'un de :
+   (a) on DÉGÈLE/REFAIT l'i18n de THE  → sortir Musée/Festival/Marché en CLÉS (pas en dur),
+   (b) THE reçoit enfin de la DATA transversale (musées TN, festivals, souks/brocantes).
+  Alors : porter les 4 transversaux à la carte de THE proprement (référence =
+  Estonia index.html : option chooser dynamique `categorie==='musee'` + EMOJI + passes).
+
+RÉFÉRENCE
+  Implémentation modèle = Estonia (musées) : ~/Desktop/Estonie-Heritage-Experience/
+    index.html (chooser 🖼️) + liste.html (CAT_DEFS) + .enrichissement/gen_museum_desc.py
+    + audit_types_i18n.py (garde-fou anti-fuite `cat`).
+  Mémoire : heritage-themes-transversaux-vs-pays.md
+═══════════════════════════════════════════════════════════════════
