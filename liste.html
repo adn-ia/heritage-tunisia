@@ -157,6 +157,7 @@ Promise.all([
   const THEMES=[['patrimoine','Patrimoine'],['musee','Musées'],['marche','Marchés & souks'],['festival','Festivals & événements'],['nature','Nature & balades']];
   const _present=new Set(ALL.map(s=>s.categorie).filter(Boolean));
   const thsel=document.getElementById('theme'); THEMES.forEach(([c,lab])=>{ if(_present.has(c)) thsel.add(new Option(uiT(lab),c)); });
+  if(ALL.some(s=>s.danger===true)) thsel.add(new Option('🚨 '+uiT('Patrimoine en danger'),'danger'));
   render();
 });
 let F={g:'all',q:'',region:'',type:'',theme:'',photo:false,legonly:false,around:false,center:null,radius:30};
@@ -165,7 +166,7 @@ function pass(s){
   if(F.g!=='all' && gen(s)!==F.g) return false;
   if(F.region && s.gouvernorat!==F.region) return false;
   if(F.type && s.type!==F.type) return false;
-  if(F.theme && s.categorie!==F.theme) return false;   // transversal (aligné socle)
+  if(F.theme==='danger'){ if(s.danger!==true) return false; } else if(F.theme && s.categorie!==F.theme) return false;   // transversal (aligné socle)
   if(F.photo && !(s.photo||'').startsWith('img/')) return false;
   if(F.legonly && !(s.legende||s.anecdote)) return false;
   if(F.around && F.center){ if(!s._c) return false; if(hav(F.center,s._c)>F.radius) return false; }
