@@ -478,6 +478,8 @@
       // 'all' = tout afficher (tous filtres neutres)
       [fTout,fHist,fNat].forEach(b=>b.classList.remove('active'));
       var _cb=({tout:fTout,hist:fHist,nat:fNat})[catFilter]; if(_cb)_cb.classList.add('active');
+      // zone libre « Patrimoine en danger » : ouvre toutes les fonctions tant qu'on est dans ce thème
+      try{ if(catFilter==='danger') localStorage.setItem('the_free_zone','danger'); else localStorage.removeItem('the_free_zone'); }catch(e){}
       applyFilters(); closeChooser();
     }
     function showPicksOnMap(){
@@ -488,6 +490,7 @@
     }
     function resetMap(){
       selectionActive=false; catFilter='tout'; govFilter='all'; perFilter='all'; aroundOn=false; aroundCenter=null;
+      try{ localStorage.removeItem('the_free_zone'); }catch(e){}
       const selGov=document.getElementById('selGov'), selPer=document.getElementById('selPer');
       selGov.value='all'; selGov.disabled=false; selPer.value='all'; selPer.disabled=false;
       fAround.classList.remove('active'); selRad.style.display='none';

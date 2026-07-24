@@ -218,7 +218,7 @@ document.getElementById('sheetOv').onclick=e=>{if(e.target.id==='sheetOv')closeS
 document.getElementById('q').oninput=e=>{F.q=e.target.value;render();};
 document.getElementById('region').onchange=e=>{F.region=e.target.value;render();};
 document.getElementById('type').onchange=e=>{F.type=e.target.value;render();};
-document.getElementById('theme').onchange=e=>{F.theme=e.target.value;render();};
+document.getElementById('theme').onchange=e=>{F.theme=e.target.value; try{ if(F.theme==='danger') localStorage.setItem('the_free_zone','danger'); else localStorage.removeItem('the_free_zone'); }catch(_){} render();};
 document.getElementById('withPhoto').onchange=e=>{F.photo=e.target.checked;render();};
 document.getElementById('withLeg').onchange=e=>{ if(!isPremium()){ e.target.checked=false; location.href='premium.html'; return; } F.legonly=e.target.checked;render();};
 [...document.querySelectorAll('#genreSeg button')].forEach(b=>b.onclick=()=>{
