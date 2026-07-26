@@ -13,6 +13,8 @@
     carte:        { lat: 34.5, lon: 9.5, zoom: 7 },
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
+    iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
+    checkout:     "https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed",  // Lemon Squeezy (web) ; vide = pas de vente web
     ref:          "THE-v81"
   };
   window.HConf = C;

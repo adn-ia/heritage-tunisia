@@ -18,7 +18,7 @@
      CONFIG PAR ÉDITION — SEULS CES 2 BLOCS CHANGENT D'UN PAYS À L'AUTRE.
      (le reste du fichier est strictement identique dans toutes les éditions)
      ═══════════════════════════════════════════════════════════════════════ */
-  var IAP_PREFIX='the';                    // → produit App Store : the_pass_an
+  var IAP_PREFIX=(window.HConf&&HConf.iapPrefix)||'';   // → produit App Store (via HConf ; ex. the_sub_annual)
   var INVITE_HASHES=[                       // codes offerts (SHA-256), propres à THE
     '05784113a6edb6b845007d07f3f3b5547ee521bdb69d3910957a9686ec210801',
     'ddcfce828248f7108fab7bb31035c9e81f1fc526dfbd25a156989dd475db2fba',
@@ -44,7 +44,7 @@
 
   /* Lemon Squeezy en sommeil (web). Vide = pas de vente web ; l'achat se fait
      via l'App Store (Apple). Le jour où tu actives la vente web, colle l'URL. */
-  var CHECKOUT={ an:'https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed' };          // ← URL de checkout Lemon Squeezy (web) ; vide = pas de vente web
+  var CHECKOUT={ an:(window.HConf&&HConf.checkout)||'' };          // ← URL de checkout Lemon Squeezy (web) via HConf ; vide = pas de vente web
   var APPSTORE_URL='';             // ← lien App Store de CETTE app (à coller une fois publiée) ; vide = masqué
   function premiumLive(){ return !!CHECKOUT.an; }
 
