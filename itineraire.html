@@ -1581,7 +1581,7 @@
     const isDep = albumTemplate==='depliant';
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
     const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-    const coverHtml='<div class="album-cover"><div class="ac-brand">THE · TUNISIA HERITAGE</div>'+
+    const coverHtml='<div class="album-cover"><div class="ac-brand">'+(((window.HConf&&HConf.marque)||'Heritage Experience').toUpperCase())+'</div>'+
       '<h2>'+(theme?theme.ic+' '+theme.label:'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
       (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+'</div>';
