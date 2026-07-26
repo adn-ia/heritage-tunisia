@@ -538,7 +538,7 @@
       const meta=[p.gouvernorat,trCat(p.type),trCat(p.epoque)].filter(Boolean).join(' · ');
       const dist=userPos?'<div class="site-dist">◎ '+uiT('à')+' '+fmtDist(distanceM(userPos,[lat,lon]))+'</div>':'';
       const photo=p.photo?'<img class="site-img" src="'+p.photo+'" alt="" loading="lazy">'+(p.photo_credit?'<div class="site-credit">'+p.photo_credit+'</div>':''):'';
-      body.innerHTML='<div class="site-kick">'+(isNat?'🌿 '+uiT('Nature & paysage'):'🏛️ '+uiT('Patrimoine'))+'</div>'+
+      body.innerHTML='<div class="site-kick">'+(p.danger?'🚨 '+uiT('Patrimoine en danger'):({nature:'🌿 '+uiT('Nature & paysage'),musee:'🏛️ '+uiT('Musées'),marche:'🛒 '+uiT('Marchés & souks'),festival:'🎭 '+uiT('Festivals & événements')}[p.categorie]||'🏛️ '+uiT('Patrimoine')))+'</div>'+
         '<h2>'+(p.nom||'Sans nom')+'</h2><div class="site-meta">'+meta+'</div>'+dist+photo+
         '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'')+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
