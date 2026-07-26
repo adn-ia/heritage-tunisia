@@ -87,7 +87,7 @@
       '<div class="thf-in">'
         +'<img src="logo-threshold.png" alt="Threshold-Analytics" class="thf-logo" loading="lazy">'
         +'<div class="thf-txt">Édité par <b>Threshold-Analytics</b> · © 2026 — Tous droits réservés.'
-          +'<br><span class="thf-sub">THE — Tunisia Heritage Experience · <a href="sources-credits.html">Sources &amp; crédits</a> · <span id="thf-pass"></span></span></div>'
+          +'<br><span class="thf-sub">'+((window.HConf&&HConf.marque)||'Heritage Experience')+' · <a href="sources-credits.html">Sources &amp; crédits</a> · <span id="thf-pass"></span></span></div>'
       +'</div>'
       + downloadHTML()
       +'<div id="the-update"><span>🔄 Nouvelle version disponible</span><button type="button" id="thf-upd-btn">Mettre à jour</button></div>';

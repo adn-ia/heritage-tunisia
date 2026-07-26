@@ -79,7 +79,7 @@ a.exit{position:fixed;top:16px;left:16px;z-index:40;color:var(--gold);text-decor
   // Récit liminaire + séquence (lieux RÉELS de la base, dans un ordre narratif).
   // Sous-titres = descriptions sourcées (chargées depuis sites.geojson). Narratif de liaison = histoire établie.
   const INTROS = [
-    { type:'text', mark:'Tunisia Heritage — Immersion', titre:'Rome en Afrique',
+    { type:'text', mark:((window.HConf&&HConf.marqueCourte)||'Heritage')+' — Immersion', titre:'Rome en Afrique',
       texte:'Un voyage à travers l\'Africa romaine, telle que la Tunisie la porte encore — de la mer au seuil du désert.' },
     { type:'text', mark:'146 av. J.-C. — 439 apr. J.-C.', titre:'L\'Africa Proconsulaire',
       texte:'Après la destruction de Carthage en 146 av. J.-C., Rome fonde la province d\'Africa, bientôt dite « proconsulaire ». Terre du blé et de l\'huile d\'olive, elle devient l\'un des greniers et l\'une des provinces les plus riches de l\'Empire — pavée de routes, semée de cités.' },

@@ -1321,7 +1321,7 @@
     const durLabel = tour ? dur.lib : ('≈ '+plan.dayCount+' jour'+(plan.dayCount>1?'s':''));
     // en-tête visible seulement à l'impression / export PDF
     document.getElementById('printhead').innerHTML=
-      '<div class="b">THE</div><div class="s">Mon itinéraire patrimonial — Tunisia Heritage · '+
+      '<div class="b">THE</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
       new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>';
     const hasNature=route.some(s=>s.genre==='nature');
     rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+theme.label:uiT('🧭 Itinéraire libre')))+'</h2>'+
@@ -1567,7 +1567,7 @@
     const {route,theme}=LASTRES;
     const head=(theme?theme.ic+' '+theme.label:'🧭 Mon itinéraire')+' — Tunisie';
     const lines=route.map((s,i)=>(i+1)+'. '+s.p.nom+(s.p.gouvernorat?' ('+s.p.gouvernorat+')':''));
-    return head+'\n'+lines.join('\n')+'\n\nComposé avec THE · Tunisia Heritage';
+    return head+'\n'+lines.join('\n')+'\n\nComposé avec THE · '+((window.HConf&&HConf.marqueCourte)||'Heritage');
   }
 
   async function renderAlbum(){
@@ -1777,7 +1777,7 @@
     const wpts=LASTRES.route.map(s=>{ const p=s.p, [lon,lat]=s.c;
       return '  <wpt lat="'+lat+'" lon="'+lon+'"><name>'+xe(p.nom)+'</name>'+(p.gouvernorat||p.type?'<desc>'+xe([p.gouvernorat,p.type,p.epoque].filter(Boolean).join(' · '))+'</desc>':'')+'</wpt>'; }).join('\n');
     const rtepts=LASTRES.route.map(s=>{ const [lon,lat]=s.c; return '    <rtept lat="'+lat+'" lon="'+lon+'"><name>'+xe(s.p.nom)+'</name></rtept>'; }).join('\n');
-    const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="'+((window.HConf&&HConf.marque)||"Tunisia Heritage Experience")+'" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>'+xe(name)+'</name></metadata>\n'+wpts+'\n  <rte><name>'+xe(name)+'</name>\n'+rtepts+'\n  </rte>\n</gpx>\n';
+    const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="'+((window.HConf&&HConf.marque)||"Heritage Experience")+'" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>'+xe(name)+'</name></metadata>\n'+wpts+'\n  <rte><name>'+xe(name)+'</name>\n'+rtepts+'\n  </rte>\n</gpx>\n';
     const blob=new Blob([gpx],{type:'application/gpx+xml'});
     const url=URL.createObjectURL(blob), a=document.createElement('a');
     a.href=url; a.download=(name.replace(/[^\w\-]+/g,'-').replace(/^-+|-+$/g,'')||'itineraire')+'.gpx';

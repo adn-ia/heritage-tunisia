@@ -45,4 +45,16 @@
     pb.setAttribute("content", C.marqueCourte);
     // Cloudflare : géré par analytics.js (lit HConf.cloudflare).
   } catch (e) {}
+  // Marque affichée (hero + <title>) : remplie depuis HConf après parse du DOM.
+  // Les éléments portent un repli NEUTRE en dur ; le loader y pose la marque du pays.
+  function _fillBrand() {
+    try {
+      var els = document.querySelectorAll("[data-brand]");
+      for (var i = 0; i < els.length; i++) els[i].textContent = C.marque;
+      var tt = document.querySelector("title[data-brand-title]");
+      if (tt) document.title = C.marque;
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _fillBrand);
+  else _fillBrand();
 })();
