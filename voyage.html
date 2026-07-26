@@ -83,7 +83,7 @@ function show(i){
   const f=pool[i]; if(!f) return; const p=f.properties;
   const div=document.createElement('div'); div.className='slide';
   div.innerHTML=`<div class="bg" style="background-image:url('${big(p.photo)}')"></div><div class="shade"></div>
-    <div class="txt"><div class="kick">${p.gouvernorat||'Tunisie'}</div><div class="ttl">${esc(p.nom)}</div>
+    <div class="txt"><div class="kick">${p.gouvernorat||''}</div><div class="ttl">${esc(p.nom)}</div>
     <div class="desc">${esc(p.description||'')}</div>
     ${p.a_voir?`<div class="avoir"><b>À voir</b> — ${esc(p.a_voir)}</div>`:''}</div>
     <div class="credit">${esc(p.photo_credit||'Wikimedia Commons')}</div>`;

@@ -1519,7 +1519,7 @@
     } else {
       // 2) sinon géocodage par le nom (OpenStreetMap, Tunisie) — d'où l'orthographe à respecter
       try{
-        const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=fr&countrycodes='+((window.HConf&&HConf.iso)||'tn')+'&q='+encodeURIComponent(q));
+        const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=fr&countrycodes='+((window.HConf&&HConf.iso)||'')+'&q='+encodeURIComponent(q));
         const j=await r.json();
         if(!j.length){ msg.textContent=uiT('Lieu introuvable — vérifiez l\'orthographe.'); return; }
         stop={ c:[parseFloat(j[0].lon),parseFloat(j[0].lat)], layer:'perso', genre:'perso',
@@ -1631,7 +1631,7 @@
           if(idx===0) mainTag=tag; else extraTags+=tag;
           if(ph.audio){ const aurl=URL.createObjectURL(ph.audio); ALBUM_URLS.push(aurl); audioTags+='<audio controls src="'+aurl+'"></audio>'; }
         });
-        const place=(p.gouvernorat||'Tunisie');
+        const place=(p.gouvernorat||'');
         const vdate=photos.length?new Date(photos[0].ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):dateStr;
         el=document.createElement('div'); el.className='pp-page';
         el.innerHTML=

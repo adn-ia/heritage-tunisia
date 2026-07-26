@@ -133,7 +133,7 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
 </main>
 <script>
   // Placeholders à configurer par l'éditeur :
-  var LEMON_URL = 'https://boutique.threshold-analytics.com/checkout/buy/3987d8ab-b0cb-4833-b110-a4d6893dd264';                 // ex : https://votreboutique.lemonsqueezy.com/checkout/...
+  var LEMON_URL = (window.HConf&&HConf.tip)||'';                 // ex : https://votreboutique.lemonsqueezy.com/checkout/...
   var CONTACT_EMAIL = 'support@threshold-analytics.com';   // support Threshold-Analytics
   var tip=document.getElementById('tipBtn');
   if(LEMON_URL){ tip.href=LEMON_URL; tip.addEventListener('click', function(){ try{ localStorage.setItem('the_tip_pending','1'); }catch(e){} }); }
@@ -215,6 +215,11 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
 <script src="the-footer.js" defer></script>
   <script src="analytics.js"></script>
   <script>/* App Store 3.1.1 : masquer tout paiement externe (pourboire/don) quand on tourne sur iOS */
-  (function(){var u=navigator.userAgent||'';var i=/iPad|iPhone|iPod/.test(u)||((/Mac/.test(u)||navigator.platform==='MacIntel'||navigator.platform==='iPad')&&(navigator.maxTouchPoints>1||'ontouchend' in document));if(i){var e=document.querySelectorAll('.ios-hide');for(var k=0;k<e.length;k++)e[k].style.display='none';}})();</script>
+  /* Apps de store (Apple 3.1.1 / Google Play) : masquer tout paiement externe (pourboire LS) sur iOS ET Android. Aligné socle. */
+  (function(){var u=navigator.userAgent||'';
+   var iOS=/iPad|iPhone|iPod/.test(u)||((/Mac/.test(u)||navigator.platform==='MacIntel'||navigator.platform==='iPad')&&(navigator.maxTouchPoints>1||'ontouchend' in document));
+   var andr=/Android/.test(u)&&((new URLSearchParams(location.search)).get('app')==='play'||(document.referrer||'').indexOf('android-app://')===0||(function(){try{return sessionStorage.getItem('the_store_app')==='1';}catch(e){return false;}})());
+   if(andr){try{sessionStorage.setItem('the_store_app','1');}catch(e){}}
+   if(iOS||andr){var e=document.querySelectorAll('.ios-hide');for(var k=0;k<e.length;k++)e[k].style.display='none';}})();</script>
 </body>
 </html>

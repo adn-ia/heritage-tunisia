@@ -20,6 +20,7 @@
     appStoreId:   "6785249427",   // id App Store (deep-link go.html / apps.html) — propre à l'édition
     iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
     checkout:     "https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed",  // Lemon Squeezy (web) ; vide = pas de vente web
+    tip:          "https://boutique.threshold-analytics.com/checkout/buy/3987d8ab-b0cb-4833-b110-a4d6893dd264",  // pourboire/soutien (web) ; vide = pas de bouton
     invites:      [   // codes offerts (SHA-256), propres à l'édition
       "05784113a6edb6b845007d07f3f3b5547ee521bdb69d3910957a9686ec210801",
       "ddcfce828248f7108fab7bb31035c9e81f1fc526dfbd25a156989dd475db2fba",

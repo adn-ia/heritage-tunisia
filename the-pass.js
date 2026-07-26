@@ -225,6 +225,22 @@
        (navigator.maxTouchPoints>1||'ontouchend' in document));
   }
   function hasIAPBridge(){ try{ return !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.iap); }catch(e){ return false; } }
+  /* ─── App Android (Play/TWA) : masquer LS/café comme sur iOS (Google Play Billing) ───
+     Détection TWA : referrer 'android-app://…' au lancement OU marqueur ?app=play
+     (posé dans le start_url du package Android). Persisté en sessionStorage (ne
+     FUIT PAS vers le navigateur Chrome : session séparée). */
+  function isAndroidApp(){
+    try{
+      if(sessionStorage.getItem('the_store_app')==='1') return true;
+      var u=navigator.userAgent||''; if(!/Android/.test(u)) return false;
+      var marker=(new URLSearchParams(location.search)).get('app')==='play'
+                 || (document.referrer||'').indexOf('android-app://')===0;
+      if(marker){ try{ sessionStorage.setItem('the_store_app','1'); }catch(e){} return true; }
+    }catch(e){}
+    return false;
+  }
+  // Dans une APP de store (iOS OU Android) : on masque Lemon Squeezy + café (règles Apple 3.1.1 / Google Play Billing).
+  function isStoreApp(){ return isIOS() || isAndroidApp(); }
   // Lance l'achat Apple. Retour : 'iap' (envoyé au natif) ou 'no-bridge'.
   function buyIOS(plan){
     plan=plan||PLAN; if(!DAYS[plan]) return null;
@@ -308,7 +324,7 @@
 
   window.THEPass={ isActive:isActive, activate:activate, deactivate:deactivate, info:info,
                    buy:buy, checkoutURL:checkoutURL, handleReturn:handleReturn,
-                   isIOS:isIOS, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, restoreIOS:restoreIOS,
+                   isIOS:isIOS, isAndroidApp:isAndroidApp, isStoreApp:isStoreApp, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, restoreIOS:restoreIOS,
                    iapUnlock:iapUnlock, iapExpire:iapExpire, IAP_PRODUCT:IAP_PRODUCT,
                    grantFeature:grantFeature, hasFeature:hasFeature, giftRandom:giftRandom, GIFT_POOL:GIFT_POOL,
                    premiumLive:premiumLive, redeem:redeem, redeemLicense:redeemLicense, inviteActive:inviteActive,

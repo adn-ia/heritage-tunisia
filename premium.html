@@ -108,27 +108,29 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
   var P=window.THEPass; if(!P) return;
   function uiT(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
 
-  /* iOS ? On masque les éléments de soutien/code externes et on privilégie l'achat Apple. */
+  /* App de store (iOS OU Android) ? On masque les portes de paiement externes (LS, café, code)
+     et l'achat passe par le store natif. Aligné socle : isStoreApp. */
   var isIOS = P.isIOS && P.isIOS();
-  if(isIOS){ var h=document.querySelectorAll('.ios-hide'); for(var k=0;k<h.length;k++) h[k].style.display='none'; }
+  var isStoreApp = P.isStoreApp ? P.isStoreApp() : isIOS;
+  if(isStoreApp){ var h=document.querySelectorAll('.ios-hide'); for(var k=0;k<h.length;k++) h[k].style.display='none'; }
 
   /* Prix dynamique */
   var pv=document.getElementById('priceVal'); if(pv && P.PRICE) pv.textContent=P.PRICE.an;
 
-  /* ⚠️ CONFORMITÉ APPLE (règle 3.1.1) : sur iOS (app OU Safari), on n'affiche JAMAIS
-     Lemon Squeezy ni le café. L'achat iOS passe par Apple (StoreKit). Le web
-     (desktop/Android) a les 3 portes. On décide sur isIOS, PAS sur le pont —
-     ainsi une app publiée sans StoreKit ne montrera jamais Lemon Squeezy. */
-  if(isIOS){
+  /* ⚠️ CONFORMITÉ STORES (Apple 3.1.1 / Google Play) : dans une app de store (iOS OU Android),
+     on n'affiche JAMAIS Lemon Squeezy ni le café ni le store concurrent. L'achat passe par le
+     store natif (iOS StoreKit ; Android Play Billing à venir). SEUL le web a les 3 portes.
+     On décide sur isStoreApp, PAS sur le pont — une app publiée sans billing ne montre jamais LS. */
+  if(isStoreApp){
     document.getElementById('buyIos').style.display='block';
-    var bridge = P.hasIAPBridge && P.hasIAPBridge();
+    var bridge = isIOS && P.hasIAPBridge && P.hasIAPBridge();
     if(bridge){
       var bb=document.getElementById('buyBtn'), rb=document.getElementById('restoreBtn');
       if(bb) bb.onclick=function(){ var r=P.buyIOS('an'); if(r==='no-bridge') alert(uiT('Achat indisponible ici. Réessayez depuis l’application.')); };
       if(rb) rb.onclick=function(){ P.restoreIOS(); };
     } else {
-      /* app iOS sans StoreKit (ou Safari sur iPhone) : PAS de Lemon Squeezy. Message neutre. */
-      document.getElementById('buyIos').innerHTML='<div class="note">🍎 '+uiT('L’abonnement Premium arrive sur iOS — bientôt disponible dans l’application.')+'</div>';
+      /* app Android (Play à venir) ou iOS sans StoreKit : PAS de Lemon Squeezy ni store concurrent. Message neutre. */
+      document.getElementById('buyIos').innerHTML='<div class="note">🛍️ '+uiT('L’abonnement Premium arrive sur iOS — bientôt disponible dans l’application.')+'</div>';
     }
   } else {
     /* WEB (desktop/Android) : jusqu'à 3 portes (Lemon Squeezy / App Store / café). */

@@ -171,7 +171,7 @@
     return out;
   }
   function geocode(q){
-    var _iso=(window.HConf&&HConf.iso)||"ee";
+    var _iso=(window.HConf&&HConf.iso)||"";
     return fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes="+_iso+"&q="+encodeURIComponent(q),
       {headers:{"Accept":"application/json"}}).then(function(r){return r.json();}).catch(function(){return [];});
   }
