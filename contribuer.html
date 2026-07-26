@@ -162,7 +162,7 @@ textarea{resize:vertical;min-height:70px;}
   function uiT(k){ try{ return (window.THEi18n && THEi18n.ui(k)) || k; }catch(e){ return k; } }
 
   /* Adresse de réception — PLACEHOLDER : à remplacer par l'adresse dédiée (Helmy la crée) + l'adresse de validation. */
-  var CONTACT_EMAIL = '';   // ← coller l'adresse dédiée ici
+  var CONTACT_EMAIL = (window.HConf && HConf.patrimoineEmail) || '';   // adresse de veille (via HConf, valeur pays) ; vide = formulaire inactif
 
   var mode='update';
   var tabU=document.getElementById('tabUpdate'), tabN=document.getElementById('tabNew');
