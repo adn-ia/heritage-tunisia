@@ -3,7 +3,7 @@
    (remplace l'enregistrement inline du service worker). */
 (function(){
   // ---------- config par édition (liens stores ; VIDE = badge masqué) ----------
-  var APPSTORE_URL  = '';   // ex. MHE : https://apps.apple.com/app/…/id…
+  var APPSTORE_URL  = (window.HConf&&HConf.appStore)||'';   // lien App Store via HConf ; vide = badge masqué
   var PLAYSTORE_URL = '';   // rempli seulement quand publié sur Google Play
 
   // ---------- styles (injectés une fois) ----------
