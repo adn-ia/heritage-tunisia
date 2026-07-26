@@ -1955,5 +1955,7 @@
  "patrimoine.err.nomlieu": "Name and location are required.",
  "patrimoine.err.mail": "Delivery address to be set up (placeholder).",
  "patrimoine.credit.via": "via THE (Endangered Heritage)",
- "patrimoine.sent.ok": "Email prepared. If it doesn&#x27;t open, please email"
+ "patrimoine.sent.ok": "Email prepared. If it doesn&#x27;t open, please email",
+ "patrimoine.menu.item": "Heritage at risk<small>citizen monitoring · free access for all</small>",
+ "patrimoine.cta.btn": "🚨 Get involved · Help look after a heritage site"
 }

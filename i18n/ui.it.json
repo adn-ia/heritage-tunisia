@@ -1955,5 +1955,7 @@
  "patrimoine.err.nomlieu": "Il nome e la località sono campi obbligatori.",
  "patrimoine.err.mail": "Indirizzo di ricezione da configurare (segnaposto).",
  "patrimoine.credit.via": "tramite THE (Patrimonio in pericolo)",
- "patrimoine.sent.ok": "E-mail inviata. Se non si apre, scrivete a"
+ "patrimoine.sent.ok": "E-mail inviata. Se non si apre, scrivete a",
+ "patrimoine.menu.item": "Patrimonio in pericolo<small>vigilanza civica · accesso libero a tutti</small>",
+ "patrimoine.cta.btn": "🚨 Contribuire · prendersi cura di un sito del patrimonio culturale"
 }

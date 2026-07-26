@@ -1955,5 +1955,7 @@
  "patrimoine.err.nomlieu": "Name und Ort sind Pflichtangaben.",
  "patrimoine.err.mail": "Empfangsadresse muss noch konfiguriert werden (Platzhalter).",
  "patrimoine.credit.via": "via THE (Gefährdetes Kulturerbe)",
- "patrimoine.sent.ok": "E-Mail wurde vorbereitet. Falls sie sich nicht öffnen lässt, schreiben Sie bitte an"
+ "patrimoine.sent.ok": "E-Mail wurde vorbereitet. Falls sie sich nicht öffnen lässt, schreiben Sie bitte an",
+ "patrimoine.menu.item": "Gefährdetes Kulturerbe<small>Bürgerbeobachtung · freier Zugang für alle</small>",
+ "patrimoine.cta.btn": "🚨 Mitwirken · Eine Kulturerbestätte schützen"
 }
