@@ -15,6 +15,7 @@
     carte:        { lat: 34.5, lon: 9.5, zoom: 7 },
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
+    description:  "Découvrir, comprendre et garder un souvenir du patrimoine tunisien — sites, itinéraires et carnet de voyage, hors-ligne.",   // manifest PWA/SEO
     appStoreId:   "6785249427",   // id App Store (deep-link go.html / apps.html) — propre à l'édition
     iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
     checkout:     "https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed",  // Lemon Squeezy (web) ; vide = pas de vente web
@@ -47,6 +48,25 @@
     if (!pb) { pb = document.createElement("meta"); pb.setAttribute("name", "pc-brand"); document.head.appendChild(pb); }
     pb.setAttribute("content", C.marqueCourte);
     // Cloudflare : géré par analytics.js (lit HConf.cloudflare).
+
+    // manifest PWA DYNAMIQUE (depuis HConf) — le manifest.json statique reste NEUTRE.
+    var _lang = "fr"; try { _lang = localStorage.getItem("the_lang") || "fr"; } catch (e) {}
+    document.documentElement.lang = _lang;
+    var mf = {
+      name: C.marque, short_name: C.marqueCourte, description: C.description || "",
+      id: "/?app=heritage", start_url: "bienvenue.html", scope: "./",
+      display: "standalone", orientation: "portrait",
+      background_color: "#2b2318", theme_color: "#2b2318", lang: _lang,
+      icons: [
+        { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+        { src: "logo-the.png", sizes: "512x512", type: "image/png", purpose: "any" },
+        { src: "icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }
+      ]
+    };
+    var mfUrl = URL.createObjectURL(new Blob([JSON.stringify(mf)], { type: "application/manifest+json" }));
+    var mfLink = document.querySelector('link[rel="manifest"]');
+    if (!mfLink) { mfLink = document.createElement("link"); mfLink.rel = "manifest"; document.head.appendChild(mfLink); }
+    mfLink.href = mfUrl;
   } catch (e) {}
   // Marque affichée (hero + <title>) : remplie depuis HConf après parse du DOM.
   // Les éléments portent un repli NEUTRE en dur ; le loader y pose la marque du pays.

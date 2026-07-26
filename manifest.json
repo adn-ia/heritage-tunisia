@@ -1,8 +1,8 @@
 {
-  "name": "THE — Tunisia Heritage Experience",
-  "short_name": "THE",
-  "description": "Découvrir, comprendre et garder un souvenir du patrimoine tunisien — sites, itinéraires et carnet de voyage, hors-ligne.",
-  "id": "/?app=the",
+  "name": "Heritage Experience",
+  "short_name": "Heritage",
+  "description": "",
+  "id": "/?app=heritage",
   "start_url": "bienvenue.html",
   "scope": "./",
   "display": "standalone",
