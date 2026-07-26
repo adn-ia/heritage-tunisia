@@ -13,6 +13,7 @@
     carte:        { lat: 34.5, lon: 9.5, zoom: 7 },
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
+    appStoreId:   "6785249427",   // id App Store (deep-link go.html / apps.html) — propre à l'édition
     iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
     checkout:     "https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed",  // Lemon Squeezy (web) ; vide = pas de vente web
     invites:      [   // codes offerts (SHA-256), propres à l'édition
@@ -51,6 +52,8 @@
     try {
       var els = document.querySelectorAll("[data-brand]");
       for (var i = 0; i < els.length; i++) els[i].textContent = C.marque;
+      var sh = document.querySelectorAll("[data-brand-short]");
+      for (var j = 0; j < sh.length; j++) sh[j].textContent = C.marqueCourte;
       var tt = document.querySelector("title[data-brand-title]");
       if (tt) document.title = C.marque;
     } catch (e) {}
