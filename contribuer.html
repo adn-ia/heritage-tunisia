@@ -115,7 +115,7 @@ textarea{resize:vertical;min-height:70px;}
     <p class="hint" data-i18n="patrimoine.u.source.hint">·</p>
   </section>
 
-  <!-- ═══ MODE B — NOUVEAU SITE (INP) ═══ -->
+  <!-- ═══ MODE B — NOUVEAU SITE (à valider) ═══ -->
   <section id="formNew" class="hidden">
     <h2 data-i18n="patrimoine.n.h2">·</h2>
     <div class="note" data-i18n-html="patrimoine.n.note">·</div>
@@ -161,7 +161,7 @@ textarea{resize:vertical;min-height:70px;}
 (function(){
   function uiT(k){ try{ return (window.THEi18n && THEi18n.ui(k)) || k; }catch(e){ return k; } }
 
-  /* Adresse de réception — PLACEHOLDER : à remplacer par l'adresse dédiée (Helmy la crée) + l'adresse INP de validation. */
+  /* Adresse de réception — PLACEHOLDER : à remplacer par l'adresse dédiée (Helmy la crée) + l'adresse de validation. */
   var CONTACT_EMAIL = '';   // ← coller l'adresse dédiée ici
 
   var mode='update';
@@ -202,17 +202,19 @@ textarea{resize:vertical;min-height:70px;}
       if(!val('uSite')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.site'); return; }
       if(!val('uSource')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.source'); return; }
       var _ref=(SITES[val('uSite')]&&SITES[val('uSite')].source)||'—';
-      subject='[EN DANGER] MàJ — '+val('uSite');
-      body='TYPE : MàJ site existant (public)\nSITE : '+val('uSite')+'\nRÉFÉRENCE : '+_ref
-        +'\nÉTAT : '+(val('uEtat')||'—')+'\nPÉRIODE : '+(val('uPeriode')||'—')+'\nREMARQUE : '+(val('uNote')||'—')
-        +'\nSOURCE : '+val('uSource')+'\nPHOTO : (jointe le cas échéant, droits cédés)'+credit+'\n\n→ Relecture communauté puis validation INP.';
+      subject=uiT('patrimoine.mail.subj.update')+' '+val('uSite');
+      body=uiT('patrimoine.mail.u.type')
+        +'\n'+uiT('patrimoine.mail.f.site')+' '+val('uSite')+'\n'+uiT('patrimoine.mail.f.ref')+' '+_ref
+        +'\n'+uiT('patrimoine.mail.f.etat')+' '+(val('uEtat')||'—')+'\n'+uiT('patrimoine.mail.f.periode')+' '+(val('uPeriode')||'—')+'\n'+uiT('patrimoine.mail.f.remarque')+' '+(val('uNote')||'—')
+        +'\n'+uiT('patrimoine.mail.f.source')+' '+val('uSource')+'\n'+uiT('patrimoine.mail.u.photo')+credit+'\n\n'+uiT('patrimoine.mail.u.footer');
     } else {
       if(!val('nNom')||!val('nLieu')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.nomlieu'); return; }
       if(!val('nSource')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.source'); return; }
-      subject='[EN DANGER] Nouveau site — '+val('nNom');
-      body='TYPE : nouveau site (à valider INP)\nNOM : '+val('nNom')+'\nLIEU : '+val('nLieu')
-        +'\nCOORDONNÉES : '+(val('nCoords')||'—')+'\nPÉRIODE : '+(val('nPeriode')||'—')+'\nÉTAT : '+(val('nEtat')||'—')
-        +'\nDESCRIPTION : '+(val('nNote')||'—')+'\nSOURCE : '+val('nSource')+'\nRATTACHEMENT INP : '+(val('nAffil')||'—')+credit+'\n\n→ À valider par l’INP.';
+      subject=uiT('patrimoine.mail.subj.new')+' '+val('nNom');
+      body=uiT('patrimoine.mail.n.type')
+        +'\n'+uiT('patrimoine.mail.f.nom')+' '+val('nNom')+'\n'+uiT('patrimoine.mail.f.lieu')+' '+val('nLieu')
+        +'\n'+uiT('patrimoine.mail.f.coords')+' '+(val('nCoords')||'—')+'\n'+uiT('patrimoine.mail.f.periode')+' '+(val('nPeriode')||'—')+'\n'+uiT('patrimoine.mail.f.etat')+' '+(val('nEtat')||'—')
+        +'\n'+uiT('patrimoine.mail.f.desc')+' '+(val('nNote')||'—')+'\n'+uiT('patrimoine.mail.f.source')+' '+val('nSource')+'\n'+uiT('patrimoine.mail.f.rattach')+' '+(val('nAffil')||'—')+credit+'\n\n'+uiT('patrimoine.mail.n.footer');
     }
     if(!CONTACT_EMAIL){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.mail'); return; }
     location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);

@@ -1,10 +1,11 @@
-/* THE — pied de page commun : copyright Threshold-Analytics, statut du passe, mise à jour.
+/* Heritage — pied de page commun : copyright Threshold-Analytics, statut du passe, mise à jour.
    À inclure en bas de page : <script src="the-footer.js" defer></script>
    (remplace l'enregistrement inline du service worker). */
 (function(){
+  function T(k){ try{ return (window.THEi18n&&THEi18n.ui(k))||k; }catch(e){ return k; } }
   // ---------- config par édition (liens stores ; VIDE = badge masqué) ----------
-  var APPSTORE_URL  = (window.HConf&&HConf.appStore)||'';   // lien App Store via HConf ; vide = badge masqué
-  var PLAYSTORE_URL = '';   // rempli seulement quand publié sur Google Play
+  var APPSTORE_URL  = (window.HConf&&HConf.appStore)||'';   // lien App Store (via HConf) ; vide = badge masqué
+  var PLAYSTORE_URL = (window.HConf&&HConf.playStore)||'';  // lien Google Play (via HConf) ; vide = badge masqué
 
   // ---------- styles (injectés une fois) ----------
   var css = ''
@@ -12,8 +13,9 @@
    + '  display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;font-family:inherit;}'
    + '#the-footer .thf-in{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;}'
    + '#the-footer .thf-logo{height:34px;width:auto;background:#fff;border-radius:7px;padding:5px 8px;box-shadow:0 2px 8px rgba(43,35,24,.12);}'
-   + '#the-footer .thf-txt{font-size:12.5px;line-height:1.5;color:#6b5e49;text-align:left;}'
+   + '#the-footer .thf-txt{font-size:12.5px;line-height:1.5;color:#6b5e49;text-align:left;text-wrap:pretty;}'
    + '#the-footer .thf-sub{font-size:11.5px;color:#8a7c66;}'
+   + '#the-footer .thf-passline{display:block;margin-top:3px;white-space:nowrap;font-weight:600;color:#7a6a4e;}'
    + '#the-footer a{color:#9a6a2e;text-decoration:underline;cursor:pointer;}'
    + '#the-update{display:none;align-items:center;gap:10px;background:#2b2318;color:#f5ecd8;'
    + '  padding:8px 14px;border-radius:999px;font-size:13px;box-shadow:0 4px 14px rgba(43,35,24,.3);}'
@@ -36,12 +38,12 @@
     var el=document.getElementById('thf-pass'); if(!el) return;
     var i=passInfo();
     if(i.active){
-      var lbl='✦ Passe actif'+(i.plan && i.plan!=='démo' ? ' ('+i.plan+(i.daysLeft!=null?', '+i.daysLeft+' j':'')+')' : '');
-      el.innerHTML=lbl+' · <a id="thf-reset">revenir au gratuit (test)</a>';
-      var r=document.getElementById('thf-reset');
-      if(r) r.onclick=function(){ try{ localStorage.removeItem('the_premium'); localStorage.removeItem('the_pass'); }catch(e){} location.reload(); };
+      // Modèle essai 2 sem. → paywall → abonnement : pas de « version gratuite » où revenir,
+      // donc on n'affiche QUE le statut/décompte (plus de lien « revenir au gratuit », qui n'a plus de sens).
+      var lbl=T('footer.passe.actif')+(i.plan && i.plan!=='démo' ? ' ('+i.plan+(i.daysLeft!=null?', '+i.daysLeft+' j':'')+')' : '');
+      el.textContent=lbl;
     } else {
-      el.textContent='Version gratuite';
+      el.textContent=T('footer.version.gratuite');
     }
   }
 
@@ -66,7 +68,7 @@
     var l=_lang();
     if(_ios()){                                       // iOS web : lien TEXTE App Store seulement (jamais Play, jamais badge)
       if(!APPSTORE_URL) return '';
-      var t={en:'Available on the App Store',it:'Disponibile su App Store',de:'Im App Store verfügbar',ar:'متوفّر على App Store'}[l]||'Disponible sur l’App Store';
+      var t=T('footer.badge.appstore');
       return '<div class="thf-dl"><a class="thf-txtlink" href="'+APPSTORE_URL+'" target="_blank" rel="noopener">'+t+'</a></div>';
     }
     // Navigateur web non-iOS : badges officiels selon les URLs renseignées.
@@ -86,11 +88,12 @@
     f.innerHTML =
       '<div class="thf-in">'
         +'<img src="logo-threshold.png" alt="Threshold-Analytics" class="thf-logo" loading="lazy">'
-        +'<div class="thf-txt">Édité par <b>Threshold-Analytics</b> · © 2026 — Tous droits réservés.'
-          +'<br><span class="thf-sub">'+((window.HConf&&HConf.marque)||'Heritage Experience')+' · <a href="sources-credits.html">Sources &amp; crédits</a> · <span id="thf-pass"></span></span></div>'
+        +'<div class="thf-txt">'+T('footer.copyright')
+          +'<br><span class="thf-sub">'+((window.HConf&&HConf.marque)||'Heritage Experience')+' · <a href="sources-credits.html">'+T('footer.sources.credits')+'</a> · <a href="confidentialite.html">'+T('footer.confidentialite')+'</a></span>'
+          +'<span class="thf-sub thf-passline" id="thf-pass"></span></div>'
       +'</div>'
       + downloadHTML()
-      +'<div id="the-update"><span>🔄 Nouvelle version disponible</span><button type="button" id="thf-upd-btn">Mettre à jour</button></div>';
+      +'<div id="the-update"><span>'+T('footer.nouvelle.version')+'</span><button type="button" id="thf-upd-btn">'+T('footer.mettre.a.jour')+'</button></div>';
     document.body.appendChild(f);
     var b=document.getElementById('thf-upd-btn'); if(b) b.onclick=function(){ location.reload(); };
     renderPassStatus();
@@ -116,6 +119,13 @@
     });
   }
 
-  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', buildFooter);
-  else buildFooter();
+  // On construit le footer APRÈS que l'i18n a chargé l'UI (sinon T('footer.marque') renvoie la
+  // clé brute — les libellés concaténés hors <a> ne sont pas rattrapés par le balayage a posteriori).
+  function bootFooter(){
+    var t=window.THEi18n;
+    if(t && t.ready && t.ready.then){ t.ready.then(buildFooter); }
+    else { buildFooter(); }   // pas d'i18n → build direct (repli sûr)
+  }
+  if(document.readyState==='loading') window.addEventListener('DOMContentLoaded', bootFooter);
+  else bootFooter();
 })();
