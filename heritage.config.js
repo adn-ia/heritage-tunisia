@@ -10,6 +10,7 @@
     domaine:      "heritage.threshold-analytics.com",
     marque:       "Tunisia Heritage Experience",
     marqueCourte: "Tunisia Heritage",
+    marqueMark:   "Tunisia&nbsp;Heritage<br>Experience",   // marque du LOGO (HTML, <br> permis) — data-brand-mark
     carte:        { lat: 34.5, lon: 9.5, zoom: 7 },
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
@@ -50,12 +51,11 @@
   // Les éléments portent un repli NEUTRE en dur ; le loader y pose la marque du pays.
   function _fillBrand() {
     try {
-      var els = document.querySelectorAll("[data-brand]");
-      for (var i = 0; i < els.length; i++) els[i].textContent = C.marque;
-      var sh = document.querySelectorAll("[data-brand-short]");
-      for (var j = 0; j < sh.length; j++) sh[j].textContent = C.marqueCourte;
-      var tt = document.querySelector("title[data-brand-title]");
-      if (tt) document.title = C.marque;
+      var el, i;
+      el = document.querySelectorAll("[data-brand]");       for (i = 0; i < el.length; i++) el[i].textContent = C.marque;
+      el = document.querySelectorAll("[data-brand-short]"); for (i = 0; i < el.length; i++) el[i].textContent = C.marqueCourte;
+      el = document.querySelectorAll("[data-brand-mark]");  for (i = 0; i < el.length; i++) el[i].innerHTML  = C.marqueMark || C.marque;
+      var tt = document.querySelector("title[data-brand-title]"); if (tt) document.title = C.marque;
     } catch (e) {}
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", _fillBrand);
