@@ -16,6 +16,7 @@
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
     description:  "Découvrir, comprendre et garder un souvenir du patrimoine tunisien — sites, itinéraires et carnet de voyage, hors-ligne.",   // manifest PWA/SEO
+    appStore:     "https://apps.apple.com/app/id6785249427",   // lien App Store (badge pied de page) — vide = masqué
     appStoreId:   "6785249427",   // id App Store (deep-link go.html / apps.html) — propre à l'édition
     iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
     checkout:     "https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed",  // Lemon Squeezy (web) ; vide = pas de vente web
