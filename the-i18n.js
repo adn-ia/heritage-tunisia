@@ -38,10 +38,15 @@
   }
 
   function applyUI(root){
-    if(lang==='fr'||!UI) return;
+    if(!UI) return;   // FR inclus dès qu'un ui.fr.json est présent (aligné socle) ; sinon UI=null → no-op (pages FR inchangées)
     root=(root && root.querySelectorAll)?root:document.body; if(!root) return;   // robuste si appelé via un event
-    // 1) éléments explicitement tagués
+    // 1) éléments explicitement tagués (clés abstraites — méthode socle, zéro texte en dur)
     root.querySelectorAll('[data-i18n]').forEach(function(el){ var k=el.getAttribute('data-i18n'); if(UI[k]) el.textContent=UI[k]; });
+    root.querySelectorAll('[data-i18n-html]').forEach(function(el){ var k=el.getAttribute('data-i18n-html'); if(UI[k]) el.innerHTML=UI[k]; });
+    root.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){ var k=el.getAttribute('data-i18n-placeholder'); if(UI[k]) el.setAttribute('placeholder',UI[k]); });
+    root.querySelectorAll('[data-i18n-title]').forEach(function(el){ var k=el.getAttribute('data-i18n-title'); if(UI[k]) el.setAttribute('title',UI[k]); });
+    root.querySelectorAll('[data-i18n-aria]').forEach(function(el){ var k=el.getAttribute('data-i18n-aria'); if(UI[k]) el.setAttribute('aria-label',UI[k]); });
+    try{ var _t=document.querySelector('title[data-i18n]'); if(_t){ var _k=_t.getAttribute('data-i18n'); if(UI[_k]) document.title=UI[_k]; } }catch(e){}
     // 2) balayage des nœuds de texte (interface statique : boutons, labels, options, hints…)
     try{
       var w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), nodes=[], n;
@@ -59,13 +64,14 @@
     try{ if(document.title){ document.title=document.title.split(/\s+[\u2014\u2013]\s+/).map(function(p){var k=p.replace(/\u00a0/g,' ').trim(); return UI[k]||p;}).join(' \u2014 '); } }catch(e){}
   }
 
-  // chargement (contenu + interface) avant rendu
-  var ready = (lang==='fr') ? Promise.resolve() : Promise.all([
-    fetch('i18n/'+lang+'.json').then(function(r){return r.json();}).then(function(d){DATA=d;}).catch(function(){}),
+  // chargement (contenu + interface) avant rendu — ui.<lang>.json chargé pour TOUTES les langues (FR inclus).
+  // Le contenu des fiches (i18n/<lang>.json) reste FR-source (pas de fr.json).
+  var ready = Promise.all([
+    (lang==='fr') ? Promise.resolve() : fetch('i18n/'+lang+'.json').then(function(r){return r.json();}).then(function(d){DATA=d;}).catch(function(){}),
     fetch('i18n/ui.'+lang+'.json').then(function(r){return r.json();}).then(function(d){UI=d;}).catch(function(){})
   ]);
   function startObserver(){
-    if(lang==='fr'||!UI||!window.MutationObserver) return;
+    if(!UI||!window.MutationObserver) return;
     try{
       var obs=new MutationObserver(function(muts){
         for(var i=0;i<muts.length;i++){ var a=muts[i].addedNodes;

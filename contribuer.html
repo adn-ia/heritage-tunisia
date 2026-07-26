@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="heritage.config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26201a">
+<title data-i18n="patrimoine.title">·</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;--green:#5c7a52;--danger:#a23b2d;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);background:var(--ivory);line-height:1.6;}
+.nav{position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:13px 18px;}
+.nav a{color:#fff;text-decoration:none;font-size:13px;letter-spacing:1px;text-shadow:0 1px 8px rgba(0,0,0,.6);}
+.nav .logo{height:30px;width:auto;background:rgba(255,255,255,.92);border-radius:7px;padding:4px 7px;box-shadow:0 2px 10px rgba(0,0,0,.25);}
+.hero{position:relative;min-height:62vh;display:flex;align-items:flex-end;color:#fff;
+  background:linear-gradient(180deg,rgba(20,15,10,.25) 0%,rgba(20,15,10,.30) 42%,rgba(20,15,10,.82) 100%),url('img/Amphi_El_Jem.jpg') center/cover;}
+.hero .inner{padding:34px 22px 34px;max-width:720px;margin:0 auto;width:100%;}
+.hero .mark{font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:2px;font-size:clamp(15px,3.6vw,19px);color:var(--gold-soft);margin:0 0 6px;text-shadow:0 2px 12px rgba(0,0,0,.6);}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,7.5vw,52px);line-height:1.04;margin:0 0 10px;text-shadow:0 2px 18px rgba(0,0,0,.55);}
+.hero p{font-size:clamp(15px,4.3vw,20px);font-style:italic;color:#f3e8d6;margin:0;max-width:560px;text-shadow:0 1px 10px rgba(0,0,0,.6);}
+.hero .badge{display:inline-block;margin-top:14px;background:rgba(92,122,82,.92);color:#fff;font-style:normal;font-size:13px;letter-spacing:.5px;border-radius:20px;padding:5px 14px;text-shadow:none;}
+main{max-width:680px;margin:0 auto;padding:22px 22px 60px;}
+.intro{font-size:16px;color:#4a3f2e;margin:6px 0 4px;}
+section{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px;margin:14px 0;box-shadow:0 4px 14px rgba(43,35,24,.06);}
+section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;margin:0 0 8px;display:flex;align-items:center;gap:8px;}
+p{font-size:15.5px;margin:8px 0;color:#332a1d;}
+.note{background:#fbf3e8;border-left:3px solid var(--gold-soft);padding:11px 14px;border-radius:6px;font-size:14.5px;margin:12px 0;}
+.note.civic{background:#eef3ea;border-left-color:var(--green);}
+label{display:block;font-weight:600;font-size:14.5px;margin:12px 0 4px;}
+label .req{color:var(--danger);font-weight:700;}
+input[type=text],input[type=email],select,textarea{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:15px;background:#fffdf8;}
+textarea{resize:vertical;min-height:70px;}
+.hint{font-size:12.5px;color:var(--stone);margin:3px 0 0;}
+.btn{display:inline-block;background:var(--gold);color:#2b2318;text-decoration:none;border:none;padding:13px 22px;border-radius:8px;font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px;}
+.btn.big{display:block;width:100%;text-align:center;}
+.mode-tabs{display:flex;gap:8px;margin:6px 0 4px;flex-wrap:wrap;}
+.mode-tabs button{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:11px;font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;}
+.mode-tabs button.on{background:#26201a;color:var(--ivory);border-color:#26201a;}
+.cur{background:#f2ece0;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:6px;font-size:14px;color:#5a4d3a;}
+.hidden{display:none;}
+.fineprint{font-size:12px;color:var(--stone);font-style:italic;margin-top:10px;}
+.photo-note{font-size:12.5px;color:#6b5e49;background:#f6f0e4;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-top:8px;}
+</style>
+  <script src="the-i18n.js"></script>
+  <script src="the-pass.js"></script>
+</head>
+<body>
+
+<div class="hero">
+  <div class="nav">
+    <a href="liste.html?theme=danger" data-i18n="patrimoine.nav.back">·</a>
+    <img class="logo" src="logo-the.png" alt="Tunisia Heritage">
+  </div>
+  <div class="inner">
+    <div class="mark"><span aria-label="Tunisie">🇹🇳</span> <span data-brand-mark>·</span></div>
+    <h1 data-i18n-html="patrimoine.hero.h1">·</h1>
+    <p data-i18n="patrimoine.hero.sub">·</p>
+    <span class="badge" data-i18n="patrimoine.hero.badge">·</span>
+  </div>
+</div>
+
+<main>
+  <p class="intro" data-i18n-html="patrimoine.intro">·</p>
+  <div class="note civic" data-i18n-html="patrimoine.note.civic">·</div>
+
+  <section>
+    <h2 data-i18n="patrimoine.q.title">·</h2>
+    <div class="mode-tabs">
+      <button type="button" id="tabUpdate" class="on" data-i18n="patrimoine.mode.update">·</button>
+      <button type="button" id="tabNew" data-i18n="patrimoine.mode.new">·</button>
+    </div>
+    <div class="note civic" style="margin-top:8px" data-i18n-html="patrimoine.note.allINP">·</div>
+    <p class="hint" id="modeHint" data-i18n-html="patrimoine.hint.update">·</p>
+  </section>
+
+  <!-- ═══ MODE A — MISE À JOUR (public) ═══ -->
+  <section id="formUpdate">
+    <h2 data-i18n="patrimoine.u.h2">·</h2>
+    <label><span data-i18n="patrimoine.u.site.label">·</span> <span class="req">*</span></label>
+    <input type="text" id="uSite" list="sitesList" data-i18n-placeholder="patrimoine.u.site.ph" autocomplete="off">
+    <datalist id="sitesList"></datalist>
+    <div class="cur hidden" id="uCurrent"></div>
+    <p class="hint" data-i18n="patrimoine.u.site.hint">·</p>
+
+    <label data-i18n="patrimoine.u.etat.label">·</label>
+    <select id="uEtat">
+      <option value="" data-i18n="patrimoine.u.etat.opt0">·</option>
+      <option data-i18n="patrimoine.u.etat.bon">·</option>
+      <option data-i18n="patrimoine.u.etat.degrade">·</option>
+      <option data-i18n="patrimoine.u.etat.mauvais">·</option>
+      <option data-i18n="patrimoine.u.etat.immediat">·</option>
+      <option data-i18n="patrimoine.u.etat.bonne">·</option>
+    </select>
+
+    <label data-i18n="patrimoine.u.periode.label">·</label>
+    <input type="text" id="uPeriode" data-i18n-placeholder="patrimoine.u.periode.ph">
+    <p class="hint" data-i18n="patrimoine.u.periode.hint">·</p>
+
+    <label data-i18n="patrimoine.u.note.label">·</label>
+    <textarea id="uNote" data-i18n-placeholder="patrimoine.u.note.ph"></textarea>
+
+    <label data-i18n="patrimoine.u.photo.label">·</label>
+    <div class="photo-note" data-i18n-html="patrimoine.u.photo.note">·</div>
+
+    <label><span data-i18n="patrimoine.source.label">·</span> <span class="req">*</span></label>
+    <input type="text" id="uSource" data-i18n-placeholder="patrimoine.u.source.ph">
+    <p class="hint" data-i18n="patrimoine.u.source.hint">·</p>
+  </section>
+
+  <!-- ═══ MODE B — NOUVEAU SITE (INP) ═══ -->
+  <section id="formNew" class="hidden">
+    <h2 data-i18n="patrimoine.n.h2">·</h2>
+    <div class="note" data-i18n-html="patrimoine.n.note">·</div>
+
+    <label><span data-i18n="patrimoine.n.nom.label">·</span> <span class="req">*</span></label>
+    <input type="text" id="nNom" data-i18n-placeholder="patrimoine.n.nom.ph">
+    <label><span data-i18n="patrimoine.n.lieu.label">·</span> <span class="req">*</span></label>
+    <input type="text" id="nLieu" data-i18n-placeholder="patrimoine.n.lieu.ph">
+    <label data-i18n="patrimoine.n.coords.label">·</label>
+    <input type="text" id="nCoords" data-i18n-placeholder="patrimoine.n.coords.ph">
+    <label data-i18n="patrimoine.n.periode.label">·</label>
+    <input type="text" id="nPeriode" data-i18n-placeholder="patrimoine.n.periode.ph">
+    <label data-i18n="patrimoine.n.etat.label">·</label>
+    <select id="nEtat">
+      <option value="" data-i18n="patrimoine.n.etat.opt0">·</option>
+      <option data-i18n="patrimoine.u.etat.bon">·</option><option data-i18n="patrimoine.u.etat.degrade">·</option><option data-i18n="patrimoine.u.etat.mauvais">·</option>
+    </select>
+    <label data-i18n="patrimoine.n.desc.label">·</label>
+    <textarea id="nNote" data-i18n-placeholder="patrimoine.n.desc.ph"></textarea>
+    <label><span data-i18n="patrimoine.source.label">·</span> <span class="req">*</span></label>
+    <input type="text" id="nSource" data-i18n-placeholder="patrimoine.n.source.ph">
+    <label data-i18n="patrimoine.n.affil.label">·</label>
+    <input type="text" id="nAffil" data-i18n-placeholder="patrimoine.n.affil.ph">
+  </section>
+
+  <!-- ═══ CONTRIBUTEUR (nominatif) ═══ -->
+  <section>
+    <h2 data-i18n="patrimoine.c.h2">·</h2>
+    <p class="hint" data-i18n-html="patrimoine.c.hint">·</p>
+    <label><span data-i18n="patrimoine.c.nom.label">·</span> <span class="req">*</span></label>
+    <input type="text" id="cNom" data-i18n-placeholder="patrimoine.c.nom.ph">
+    <label data-i18n="patrimoine.c.mail.label">·</label>
+    <input type="email" id="cMail" data-i18n-placeholder="patrimoine.c.mail.ph">
+    <p class="fineprint" data-i18n-html="patrimoine.c.fineprint">·</p>
+  </section>
+
+  <button class="btn big" id="sendBtn" type="button" data-i18n="patrimoine.send.btn">·</button>
+  <p class="fineprint" id="sendMsg" style="text-align:center"></p>
+  <p class="fineprint" style="text-align:center" data-i18n="patrimoine.send.fineprint">·</p>
+</main>
+<script src="the-footer.js" defer></script>
+<script>
+(function(){
+  function uiT(k){ try{ return (window.THEi18n && THEi18n.ui(k)) || k; }catch(e){ return k; } }
+
+  /* Adresse de réception — PLACEHOLDER : à remplacer par l'adresse dédiée (Helmy la crée) + l'adresse INP de validation. */
+  var CONTACT_EMAIL = '';   // ← coller l'adresse dédiée ici
+
+  var mode='update';
+  var tabU=document.getElementById('tabUpdate'), tabN=document.getElementById('tabNew');
+  var fU=document.getElementById('formUpdate'), fN=document.getElementById('formNew'), hint=document.getElementById('modeHint');
+  function setMode(m){ mode=m;
+    tabU.classList.toggle('on', m==='update'); tabN.classList.toggle('on', m==='new');
+    fU.classList.toggle('hidden', m!=='update'); fN.classList.toggle('hidden', m!=='new');
+    hint.innerHTML = uiT(m==='update' ? 'patrimoine.hint.update' : 'patrimoine.hint.new');
+  }
+  tabU.onclick=function(){ setMode('update'); }; tabN.onclick=function(){ setMode('new'); };
+
+  var SITES={};
+  fetch('sites.geojson').then(function(r){ return r.json(); }).then(function(g){
+    var dl=document.getElementById('sitesList'); var seen={};
+    (g.features||[]).forEach(function(f){
+      var p=f.properties||{}; var nom=p.nom||p.name; if(!nom || seen[nom]) return; seen[nom]=1;
+      SITES[nom]={ gouvernorat:p.gouvernorat||p.region||'', epoque:p.epoque||p.periode||'', danger:p.danger===true, source:p.source||'' };
+      var o=document.createElement('option'); o.value=nom; o.label=(p.gouvernorat||'')+(p.epoque?' · '+p.epoque:''); dl.appendChild(o);
+    });
+  }).catch(function(){});
+  var uSite=document.getElementById('uSite'), uCur=document.getElementById('uCurrent');
+  uSite.addEventListener('change', function(){
+    var s=SITES[uSite.value.trim()];
+    if(s){ uCur.classList.remove('hidden');
+      uCur.innerHTML='<b>'+uiT('patrimoine.cur.infos')+' :</b> '+(s.gouvernorat?s.gouvernorat+' · ':'')+(s.epoque?uiT('patrimoine.cur.periode')+' « '+s.epoque+' »':uiT('patrimoine.cur.noperiode'))+(s.danger?' · 🚨 '+uiT('patrimoine.cur.danger'):'')
+        +(s.source?'<br><span style="color:#8a7c66;font-size:12.5px">'+uiT('patrimoine.cur.ref')+' : '+s.source+'</span>':'');
+    } else { uCur.classList.add('hidden'); }
+  });
+
+  function val(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+  document.getElementById('sendBtn').onclick=function(){
+    var msg=document.getElementById('sendMsg'); msg.style.color='';
+    if(!val('cNom')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.nom'); return; }
+    var credit='\n\n— '+val('cNom')+(val('cMail')?' <'+val('cMail')+'>':'')+' · '+uiT('patrimoine.credit.via');
+    var subject, body;
+    if(mode==='update'){
+      if(!val('uSite')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.site'); return; }
+      if(!val('uSource')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.source'); return; }
+      var _ref=(SITES[val('uSite')]&&SITES[val('uSite')].source)||'—';
+      subject='[EN DANGER] MàJ — '+val('uSite');
+      body='TYPE : MàJ site existant (public)\nSITE : '+val('uSite')+'\nRÉFÉRENCE : '+_ref
+        +'\nÉTAT : '+(val('uEtat')||'—')+'\nPÉRIODE : '+(val('uPeriode')||'—')+'\nREMARQUE : '+(val('uNote')||'—')
+        +'\nSOURCE : '+val('uSource')+'\nPHOTO : (jointe le cas échéant, droits cédés)'+credit+'\n\n→ Relecture communauté puis validation INP.';
+    } else {
+      if(!val('nNom')||!val('nLieu')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.nomlieu'); return; }
+      if(!val('nSource')){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.source'); return; }
+      subject='[EN DANGER] Nouveau site — '+val('nNom');
+      body='TYPE : nouveau site (à valider INP)\nNOM : '+val('nNom')+'\nLIEU : '+val('nLieu')
+        +'\nCOORDONNÉES : '+(val('nCoords')||'—')+'\nPÉRIODE : '+(val('nPeriode')||'—')+'\nÉTAT : '+(val('nEtat')||'—')
+        +'\nDESCRIPTION : '+(val('nNote')||'—')+'\nSOURCE : '+val('nSource')+'\nRATTACHEMENT INP : '+(val('nAffil')||'—')+credit+'\n\n→ À valider par l’INP.';
+    }
+    if(!CONTACT_EMAIL){ msg.style.color='#a23b2d'; msg.textContent=uiT('patrimoine.err.mail'); return; }
+    location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    setTimeout(function(){ msg.style.color='var(--green)'; msg.innerHTML='✓ '+uiT('patrimoine.sent.ok')+' <b>'+CONTACT_EMAIL+'</b>.'; }, 400);
+  };
+})();
+</script>
+</body>
+</html>
