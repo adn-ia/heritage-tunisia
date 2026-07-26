@@ -255,6 +255,49 @@
     try{ window.webkit.messageHandlers.iap.postMessage({ action:'restore', product:IAP_PRODUCT[PLAN] }); }catch(e){ return 'no-bridge'; }
     return 'iap';
   }
+
+  /* ─── Google Play Billing (app Android / TWA) via Digital Goods API ───────
+     Standard web (PWABuilder/TWA) : aucun code natif custom. Mêmes SKU qu'iOS
+     (<iapPrefix>_sub_annual). C'est la contrepartie Android de StoreKit ; dans l'app
+     Android on ne montre JAMAIS Lemon Squeezy ni l'App Store. iapUnlock au succès. */
+  function hasPlayBridge(){ try{ return typeof window.getDigitalGoodsService==='function'; }catch(e){ return false; } }
+  // Lance l'achat Play. Promise → 'ok' | 'no-bridge' | 'no-sku' | 'error'.
+  function buyAndroid(plan){
+    plan=plan||PLAN;
+    try{
+      if(!DAYS[plan]) return Promise.resolve(null);
+      if(!hasPlayBridge() || typeof PaymentRequest==='undefined') return Promise.resolve('no-bridge');
+      var sku=IAP_PRODUCT[plan];
+      return window.getDigitalGoodsService('https://play.google.com/billing').then(function(svc){
+        return svc.getDetails([sku]).then(function(items){
+          if(!items || !items.length) return 'no-sku';
+          var it=items[0];
+          var pr=new PaymentRequest(
+            [{ supportedMethods:'https://play.google.com/billing', data:{ sku:sku } }],
+            { total:{ label:'Total', amount:{ currency:it.price.currency, value:it.price.value } } }
+          );
+          return pr.show().then(function(resp){
+            var token=(resp.details&&(resp.details.token||resp.details.purchaseToken))||'';
+            var ack=(svc.acknowledge? svc.acknowledge(token) : Promise.resolve());   // abonnement → acknowledge, JAMAIS consume
+            return ack.then(function(){ return resp.complete('success'); }).then(function(){ iapUnlock(plan, token); return 'ok'; });
+          });
+        });
+      }).catch(function(){ return 'error'; });
+    }catch(e){ return Promise.resolve('error'); }
+  }
+  // Restaurer : re-vérifier les abonnements Play actifs (entitlement).
+  function restoreAndroid(){
+    try{
+      if(!hasPlayBridge()) return Promise.resolve('no-bridge');
+      return window.getDigitalGoodsService('https://play.google.com/billing').then(function(svc){
+        if(!svc.listPurchases) return 'none';
+        return svc.listPurchases().then(function(ps){
+          for(var i=0;i<(ps||[]).length;i++){ if(ps[i].itemId===IAP_PRODUCT[PLAN]){ iapUnlock(PLAN, ps[i].purchaseToken||''); return 'ok'; } }
+          return 'none';
+        });
+      }).catch(function(){ return 'error'; });
+    }catch(e){ return Promise.resolve('error'); }
+  }
   // Appelée par le natif au succès d'un achat/restore OU au lancement si entitlement actif.
   function iapUnlock(plan, txId){
     if(!DAYS[plan]){ try{ plan=localStorage.getItem('the_pass_pending'); }catch(e){} }
@@ -325,6 +368,7 @@
   window.THEPass={ isActive:isActive, activate:activate, deactivate:deactivate, info:info,
                    buy:buy, checkoutURL:checkoutURL, handleReturn:handleReturn,
                    isIOS:isIOS, isAndroidApp:isAndroidApp, isStoreApp:isStoreApp, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, restoreIOS:restoreIOS,
+                   hasPlayBridge:hasPlayBridge, buyAndroid:buyAndroid, restoreAndroid:restoreAndroid,
                    iapUnlock:iapUnlock, iapExpire:iapExpire, IAP_PRODUCT:IAP_PRODUCT,
                    grantFeature:grantFeature, hasFeature:hasFeature, giftRandom:giftRandom, GIFT_POOL:GIFT_POOL,
                    premiumLive:premiumLive, redeem:redeem, redeemLicense:redeemLicense, inviteActive:inviteActive,

@@ -128,8 +128,14 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
       var bb=document.getElementById('buyBtn'), rb=document.getElementById('restoreBtn');
       if(bb) bb.onclick=function(){ var r=P.buyIOS('an'); if(r==='no-bridge') alert(uiT('Achat indisponible ici. Réessayez depuis l’application.')); };
       if(rb) rb.onclick=function(){ P.restoreIOS(); };
+    } else if(P.isAndroidApp && P.isAndroidApp() && P.hasPlayBridge && P.hasPlayBridge()){
+      /* app Android avec Google Play Billing (Digital Goods) : achat Play. JAMAIS Lemon Squeezy ni Apple. */
+      document.getElementById('buyIos').innerHTML='<button class="btn big" id="buyPlay" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' / '+uiT('an')+'</button>'
+        +'<button class="btn ghost" id="restorePlay" type="button" style="margin-top:8px">'+uiT('Restaurer un achat')+'</button>';
+      document.getElementById('buyPlay').onclick=function(){ if(P.buyAndroid) P.buyAndroid('an'); };
+      document.getElementById('restorePlay').onclick=function(){ if(P.restoreAndroid) P.restoreAndroid(); };
     } else {
-      /* app Android (Play à venir) ou iOS sans StoreKit : PAS de Lemon Squeezy ni store concurrent. Message neutre. */
+      /* Android sans billing ou iOS sans StoreKit : PAS de Lemon Squeezy ni store concurrent. Message neutre. */
       document.getElementById('buyIos').innerHTML='<div class="note">🛍️ '+uiT('L’abonnement Premium arrive sur iOS — bientôt disponible dans l’application.')+'</div>';
     }
   } else {
