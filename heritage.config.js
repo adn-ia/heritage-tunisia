@@ -11,6 +11,7 @@
     marque:       "Tunisia Heritage Experience",
     marqueCourte: "Tunisia Heritage",
     marqueMark:   "Tunisia&nbsp;Heritage<br>Experience",   // marque du LOGO (HTML, <br> permis) — data-brand-mark
+    monogram:     "THE",   // monogramme court du logo (data-brand-mono)
     carte:        { lat: 34.5, lon: 9.5, zoom: 7 },
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
@@ -55,6 +56,7 @@
       el = document.querySelectorAll("[data-brand]");       for (i = 0; i < el.length; i++) el[i].textContent = C.marque;
       el = document.querySelectorAll("[data-brand-short]"); for (i = 0; i < el.length; i++) el[i].textContent = C.marqueCourte;
       el = document.querySelectorAll("[data-brand-mark]");  for (i = 0; i < el.length; i++) el[i].innerHTML  = C.marqueMark || C.marque;
+      el = document.querySelectorAll("[data-brand-mono]");  for (i = 0; i < el.length; i++) { if (C.monogram) el[i].textContent = C.monogram; }
       var tt = document.querySelector("title[data-brand-title]"); if (tt) document.title = C.marque;
     } catch (e) {}
   }
