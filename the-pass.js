@@ -382,7 +382,7 @@
      le soutien, et les pages légales/aide (exigées par Apple près de l'achat).
      Placé tôt (the-pass.js est chargé en <head>) → pas de contenu qui clignote. */
   function gateAllow(path){
-    return /(?:^|\/)(bienvenue|premium|soutien|cgu|cgv|confidentialite|mentions-legales|remboursement|a-propos|sources-credits|credits-photos)\.html?$/i.test(path)
+    return /(?:^|\/)(bienvenue|premium|soutien|cgu|cgv|confidentialite|mentions-legales|remboursement|a-propos|sources-credits|credits-photos|contribuer)\.html?$/i.test(path)
         || /\/$/.test(path);   // racine « / » = bienvenue (vitrine toujours libre, toutes langues)
   }
   function gate(){
