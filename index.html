@@ -662,7 +662,7 @@
     }
     function stopWatch(){ if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; } }
     audioBtn.addEventListener('click',()=>{
-      if(!audioOn && !isPremium()){ showPremium('Guide audio'); return; }
+      if(!audioOn && !isPremium()){ location.href='premium.html'; return; }
       audioOn=!audioOn; audioBtn.classList.toggle('active',audioOn);
       if(audioOn){
         speak('Guide audio activé. Je décrirai automatiquement les lieux à votre arrivée.');
@@ -818,7 +818,7 @@
       renderWizard();
     }
     function openTour(){
-      if(!isPremium()){ showPremium('Itinéraires sur mesure'); return; }
+      if(!isPremium()){ location.href='premium.html'; return; }
       tourOv.classList.add('show');
       renderStart();
     }
