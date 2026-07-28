@@ -98,5 +98,18 @@
  "footer.mettre.a.jour": "Mettre à jour",
  "footer.passe.actif": "✦ Passe actif",
  "footer.version.gratuite": "Version gratuite",
- "footer.badge.appstore": "Disponible sur l’App Store"
+ "footer.badge.appstore": "Disponible sur l’App Store",
+ "note.titre": "★ Vous aimez l'application ?",
+ "note.texte": "Laissez-nous une bonne évaluation sur le store : c'est gratuit, ça prend 10 secondes, et ça récompense vraiment le travail derrière cette application.",
+ "note.btn.appstore": "Noter sur l'App Store",
+ "note.btn.play": "Noter sur Google Play",
+ "note.merci": "Merci du fond du cœur 🙏",
+ "contact.titre": "🐛 Un bug, une erreur à signaler ?",
+ "contact.texte": "Un bug, une information erronée, une idée ? <b>Écrivez-nous</b> — chaque retour aide à améliorer l'application. Merci !",
+ "contact.btn.bug": "Signaler / nous écrire",
+ "contact.par.email": "Envoi par e-mail.",
+ "contact.sujet.bug": "{app} — Signalement / suggestion",
+ "contact.corps.bug": "Décrivez le problème ou votre idée :\n\n(page concernée, ce qui s'est passé…)\n\n",
+ "contact.aucune.appli.mail": "Aucune appli e-mail détectée. Écrivez-nous à",
+ "contact.adresse.copiee": "(adresse copiée)"
 }

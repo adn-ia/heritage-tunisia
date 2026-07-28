@@ -88,24 +88,15 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
     <div class="fineprint">Paiement sécurisé via Lemon&nbsp;Squeezy — aucune coordonnée bancaire ne nous parvient. Astuce : sous ~1 €, les frais de transaction absorbent l'essentiel. <span class="todo">à brancher : URL de paiement Lemon Squeezy (montant libre)</span></div>
   </section>
 
-  <section>
-    <h2>⭐ Votre avis sur l'application</h2>
-    <p>Vos retours guident le projet. Donnez une note, signalez une erreur, proposez une idée&nbsp;:</p>
-    <div class="rate-stars" id="rateStars" role="radiogroup" aria-label="Note de 1 à 5 étoiles">
-      <span data-v="1" role="radio" tabindex="0">☆</span><span data-v="2" role="radio" tabindex="0">☆</span><span data-v="3" role="radio" tabindex="0">☆</span><span data-v="4" role="radio" tabindex="0">☆</span><span data-v="5" role="radio" tabindex="0">☆</span>
-    </div>
-    <div class="rate-label" id="rateLabel">Touchez les étoiles pour noter</div>
-    <textarea id="rateComment" rows="3" placeholder="Un mot (facultatif) : ce que vous aimez, un bug, une idée…"></textarea>
-    <button class="btn" id="rateSend">Envoyer mon avis</button>
-    <a class="btn ghost" id="feedbackBtn" href="#">…ou écrire un e-mail libre ✉️</a>
-    <div class="fineprint">Votre note reste sur votre appareil et nous est transmise par e-mail. <span class="todo">à brancher : envoi serveur + notes publiques agrégées (nécessite le site)</span></div>
-  </section>
+  <!-- Brique auto-portée « Notez l'application » (rendu par brique-note.js) -->
+  <section data-brique="note-app"></section>
+
+  <!-- Brique auto-portée « Contact / Signaler » (rendu par brique-contact.js) -->
+  <section data-brique="contact"></section>
 
   <section>
     <h2>🤝 Contribuer &amp; signaler</h2>
-    <p><b>🐛 Un bug, une information erronée ?</b> Signalez-le — chaque retour aide à améliorer l'application. Merci !</p>
-    <button class="btn" id="bugBtn" type="button">🐛 Signaler un bug</button>
-    <p style="margin-top:18px"><b>📷 Une photo manque sur un lieu ?</b> Proposez la vôtre. Après <b>validation manuelle</b>, elle pourra être intégrée et <b>vous serez crédité à votre nom</b>. Condition : être l'auteur de la photo et la céder en <b>licence libre CC0</b> (abandon des droits).</p>
+    <p><b>📷 Une photo manque sur un lieu ?</b> Proposez la vôtre. Après <b>validation manuelle</b>, elle pourra être intégrée et <b>vous serez crédité à votre nom</b>. Condition : être l'auteur de la photo et la céder en <b>licence libre CC0</b> (abandon des droits).</p>
     <button class="btn ghost" id="photoBtn" type="button">📷 Proposer une photo</button>
     <div class="fineprint">Envoi par e-mail pré-rempli ; chaque proposition est validée manuellement avant toute intégration.</div>
   </section>
@@ -134,13 +125,10 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
 <script>
   // Placeholders à configurer par l'éditeur :
   var LEMON_URL = (window.HConf&&HConf.tip)||'';                 // ex : https://votreboutique.lemonsqueezy.com/checkout/...
-  var CONTACT_EMAIL = 'support@threshold-analytics.com';   // support Threshold-Analytics
+  var CONTACT_EMAIL = (window.HConf&&HConf.support)||'';   // e-mail contact (HConf.support) — vide = masqué
   var tip=document.getElementById('tipBtn');
   if(LEMON_URL){ tip.href=LEMON_URL; tip.addEventListener('click', function(){ try{ localStorage.setItem('the_tip_pending','1'); }catch(e){} }); }
   else tip.onclick=function(e){ e.preventDefault(); alert(uiT('Lien de pourboire à configurer (Lemon Squeezy).')); };
-  var fb=document.getElementById('feedbackBtn');
-  fb.onclick=function(e){ if(!CONTACT_EMAIL){ e.preventDefault(); alert(uiT('Adresse de contact à configurer.')); return; }
-    e.preventDefault(); location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('THE — Avis / suggestion'); };
 
   // helper i18n (renvoie le FR si pas de THEi18n — cas MHE FR-seul)
   function uiT(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }
@@ -155,39 +143,12 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
       else alert(msg);
     } }, 1200);
   }
-  // ---------- Contribuer & signaler ----------
-  var BUG_BODY=uiT("Décrivez le problème :\n\n• Page concernée : \n• Ce qui s'est passé : \n• Appareil / navigateur : \n\nMerci de votre aide !");
-  var bg=document.getElementById('bugBtn');
-  if(bg) bg.onclick=function(){ safeMailto('THE — Signalement de bug', BUG_BODY); };
+  // ---------- Proposer une photo (contribution) ----------
+  // Note & signalement de bug = briques auto-portées (brique-note.js / brique-contact.js).
   var PHOTO_BODY=uiT("Lieu concerné (nom exact tel qu'affiché dans l'app) : \n\nJ'atteste être l'auteur de la photo jointe et je la cède en licence libre CC0 (j'abandonne mes droits) pour son intégration éventuelle dans l'application.\n\nNom souhaité pour le crédit : \n\n⚠️ Joignez bien la photo à cet e-mail.");
   var ph=document.getElementById('photoBtn');
   if(ph) ph.onclick=function(){ safeMailto('THE — Proposition de photo', PHOTO_BODY); };
 
-  // ---------- Notation de l'application (⭐) ----------
-  (function(){
-    var KEY='the_rating', LABELS={1:'Décevant',2:'Bof',3:'Correct',4:'Très bien',5:'Excellent !'};
-    var stars=document.getElementById('rateStars'), lab=document.getElementById('rateLabel'),
-        com=document.getElementById('rateComment'), cur=0;
-    try{ var sv=JSON.parse(localStorage.getItem(KEY)||'null'); if(sv){ cur=sv.stars||0; if(sv.comment) com.value=sv.comment; } }catch(e){}
-    function paint(n){ [].forEach.call(stars.children,function(s){ s.textContent=(+s.dataset.v<=n)?'★':'☆'; });
-      lab.textContent = n ? (LABELS[n]||'') : uiT('Touchez les étoiles pour noter'); }
-    paint(cur);
-    [].forEach.call(stars.children,function(s){
-      var v=+s.dataset.v;
-      s.onmouseenter=function(){ paint(v); };
-      s.onclick=function(){ cur=v; paint(cur); };
-      s.onkeydown=function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); cur=v; paint(cur); } };
-    });
-    stars.onmouseleave=function(){ paint(cur); };
-    document.getElementById('rateSend').onclick=function(){
-      if(!cur){ alert(uiT('Touchez d\'abord les étoiles pour donner une note.')); return; }
-      var comment=(com.value||'').trim();
-      try{ localStorage.setItem(KEY, JSON.stringify({stars:cur, comment:comment, ts:Date.now()})); }catch(e){}
-      var body='Note : '+cur+'/5 ('+(LABELS[cur]||'')+')\n\n'+(comment||'(sans commentaire)')+'\n\n— Envoyé depuis THE';
-      if(CONTACT_EMAIL){ location.href='mailto:'+CONTACT_EMAIL+'?subject='+encodeURIComponent('THE — Note '+cur+'/5')+'&body='+encodeURIComponent(body); }
-      else { alert(uiT('Merci pour votre note de ')+cur+uiT('/5 ⭐\nElle est enregistrée. (Envoi serveur / e-mail à brancher.)')); }
-    };
-  })();
   document.getElementById('nlBtn').onclick=function(){
     var em=document.getElementById('nlEmail').value.trim();
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){ alert(uiT('Entrez un e-mail valide.')); return; }
@@ -212,6 +173,8 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
   };
 </script>
 <script src="the-backup.js"></script>
+<script src="brique-note.js" defer></script>
+<script src="brique-contact.js" defer></script>
 <script src="the-footer.js" defer></script>
   <script src="analytics.js"></script>
   <script>/* App Store 3.1.1 : masquer tout paiement externe (pourboire/don) quand on tourne sur iOS */
