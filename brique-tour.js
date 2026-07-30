@@ -5,24 +5,24 @@
    étapes guidées, avec projecteur sur l'élément concerné, indicateur
    de progression, et un bouton « Y aller » qui saute à la fonction.
 
-   • AUTO-PORTÉE STRICTE (règle 4.11) : embarque TOUT — code, styles,
-     SON mini-i18n de libellés (LBL ci-dessous) et SA donnée d'étapes
-     (brique-tour.data.json). N'emprunte RIEN à l'hôte : ni the-i18n.js,
-     ni i18n/<lang>.json, ni HConf.
-   • Ne lit de l'hôte QUE la préférence de langue (localStorage
-     'the_lang') pour choisir, puis pioche dans SES dictionnaires.
-     Repli : langue courante → ANGLAIS (pivot).
-   • DYNAMIQUE : une étape à cible n'apparaît que si l'hôte a opté-in
-     en posant un élément <… data-tour-step="<id>"> ; sinon elle est
-     sautée. Les étapes `always` (accueil/fin) sont toujours affichées.
+   • AUTO-PORTÉE STRICTE (règle 4.11) : embarque TOUTE sa machinerie et
+     ses styles. TOUT le texte — libellés d'UI (`labels`) ET contenu des
+     étapes (`steps`) — vit dans SA donnée `brique-tour.data.json`, par
+     édition (fr + en + nationale). Le CODE est GÉNÉRIQUE et IDENTIQUE
+     partout : ajouter une langue = éditer SA donnée, jamais le .js.
+   • N'emprunte RIEN à l'hôte : ni the-i18n.js, ni i18n/<lang>.json, ni
+     HConf. Ne lit de l'hôte QUE la préférence de langue (localStorage
+     'the_lang') → repli ANGLAIS (pivot).
+   • DYNAMIQUE : une étape à cible n'apparaît que si l'hôte a opté-in en
+     posant <… data-tour-step="<id>"> ; sinon elle est sautée. Les étapes
+     `always` (accueil/fin) sont toujours affichées.
    • Contact hôte = ANCRAGES SEULS :
-       - point d'entrée / relance : <… data-brique="tour"> (la brique
-         remplit son propre libellé dans [data-bt-label]/[data-bt-sub]
-         s'ils existent, et câble le clic → démarre la visite) ;
-       - cibles à pointer : <… data-tour-step="<id>"> sur les éléments
-         de l'hôte (la brique ne connaît AUCUN sélecteur de l'hôte) ;
-       - sortie « Y aller › » = .click() sur la cible → navigue via le
-         propre lien de l'hôte. Dégradation propre si une cible manque.
+       - entrée / relance : <… data-brique="tour"> (la brique remplit son
+         libellé dans [data-bt-label]/[data-bt-sub] et câble le clic) ;
+       - cibles : <… data-tour-step="<id>"> (la brique ne connaît AUCUN
+         sélecteur de l'hôte) ;
+       - sortie « Y aller › » = .click() sur la cible → lien de l'hôte.
+         Dégradation propre si une cible manque.
    • Ne se lance qu'une fois (localStorage h_tour_done). Respecte
      prefers-reduced-motion. Mise à jour = remplacer SES fichiers.
    ============================================================ */
@@ -33,19 +33,8 @@
   var reduce = false;
   try { reduce = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches; } catch (e) {}
 
-  /* --- mini-i18n À ELLE (libellés d'UI seulement ; le contenu = données) --- */
-  var LBL = {
-    skip: { fr:"Passer", en:"Skip", et:"Jäta vahele", de:"Überspringen", it:"Salta", ar:"تخطي" },
-    prev: { fr:"Précédent", en:"Back", et:"Tagasi", de:"Zurück", it:"Indietro", ar:"العودة" },
-    next: { fr:"Suivant", en:"Next", et:"Järgmine", de:"Weiter", it:"Avanti", ar:"التالي" },
-    done: { fr:"Terminer", en:"Done", et:"Valmis", de:"Fertig", it:"Fatto", ar:"تم" },
-    stepOf: { fr:"Étape {n} / {total}", en:"Step {n} / {total}", et:"Samm {n} / {total}", de:"Schritt {n} / {total}", it:"Passo {n} / {total}", ar:"الخطوة {n} / {total}" },
-    goto: { fr:"Y aller ›", en:"Go there ›", et:"Mine sinna ›", de:"Dorthin gehen ›", it:"Vai lì ›", ar:"اذهب إلى هناك ›" },
-    menuLabel: { fr:"Visite guidée", en:"Guided tour", et:"Giidiga ekskursioon", de:"Führung", it:"Visita guidata", ar:"جولة بصحبة مرشد" },
-    menuSub: { fr:"Revoir la présentation", en:"Replay the walkthrough", et:"Vaata läbimisjuhendit uuesti", de:"Den Walkthrough noch einmal ansehen", it:"Rivedi la guida passo passo", ar:"إعادة تشغيل دليل الخطوات التفصيلي" }
-  };
   function cur() { try { return localStorage.getItem("the_lang") || ""; } catch (e) { return ""; } }
-  var RTL = { ar:1, he:1, fa:1, ur:1, arc:1, syr:1 };   // langues à écriture droite-à-gauche
+  var RTL = { ar:1, he:1, fa:1, ur:1, arc:1, syr:1 };   // écriture droite-à-gauche
   function pick(o) {
     if (!o) return "";
     var l = cur();
@@ -55,23 +44,23 @@
     for (var k in o) if (o[k] != null) return o[k];
     return "";
   }
-  function L(k, vars) {
-    var s = pick(LBL[k]);
-    if (vars) for (var p in vars) s = s.split("{" + p + "}").join(vars[p]);
-    return s;
-  }
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-  /* --- données À ELLE : étapes (chargées une fois) -------------------- */
-  var DATA = null, LOADING = null, CONFIG = {};
+  /* --- données À ELLE : libellés + étapes (chargées une fois) --------- */
+  var STEPS = null, LABELS = {}, LOADING = null, CONFIG = {};
   function load() {
-    if (DATA) return Promise.resolve(DATA);
+    if (STEPS) return Promise.resolve(STEPS);
     if (LOADING) return LOADING;
     LOADING = fetch("brique-tour.data.json")
       .then(function (r) { return r.json(); })
-      .then(function (j) { DATA = (j && j.steps) || []; CONFIG = (j && j._config) || {}; return DATA; })
-      .catch(function () { DATA = []; return DATA; });
+      .then(function (j) { STEPS = (j && j.steps) || []; LABELS = (j && j.labels) || {}; CONFIG = (j && j._config) || {}; return STEPS; })
+      .catch(function () { STEPS = []; return STEPS; });
     return LOADING;
+  }
+  function L(k, vars) {                                  // libellé d'UI depuis SA donnée
+    var s = pick(LABELS[k]);
+    if (vars) for (var p in vars) s = s.split("{" + p + "}").join(vars[p]);
+    return s;
   }
 
   /* --- Styles À ELLE (injectés une fois) ------------------------------ */
@@ -123,7 +112,7 @@
 
   function targetOf(s) { return s && !s.always ? document.querySelector('[data-tour-step="' + s.id + '"]') : null; }
   function buildSteps() {
-    steps = (DATA || []).filter(function (s) { return s.always || document.querySelector('[data-tour-step="' + s.id + '"]'); });
+    steps = (STEPS || []).filter(function (s) { return s.always || document.querySelector('[data-tour-step="' + s.id + '"]'); });
   }
 
   function teardown() {
@@ -222,13 +211,17 @@
 
   /* --- Point d'entrée / relance : <… data-brique="tour"> -------------- */
   function fillEntry() {
-    document.querySelectorAll('[data-brique="tour"]').forEach(function (a) {
-      if (a.getAttribute("data-bt-done")) return;
-      a.setAttribute("data-bt-done", "1");
-      var lab = a.querySelector("[data-bt-label]"), sub = a.querySelector("[data-bt-sub]");
-      if (lab) lab.textContent = L("menuLabel"); else if (!a.textContent.replace(/\s/g, "")) a.textContent = L("menuLabel");
-      if (sub) sub.textContent = L("menuSub");
-      a.addEventListener("click", function (e) { e.preventDefault(); start(); });
+    var els = document.querySelectorAll('[data-brique="tour"]');
+    if (!els.length) return;
+    load().then(function () {
+      [].forEach.call(els, function (a) {
+        if (a.getAttribute("data-bt-done")) return;
+        a.setAttribute("data-bt-done", "1");
+        var lab = a.querySelector("[data-bt-label]"), sub = a.querySelector("[data-bt-sub]");
+        if (lab) lab.textContent = L("menuLabel"); else if (!a.textContent.replace(/\s/g, "")) a.textContent = L("menuLabel");
+        if (sub) sub.textContent = L("menuSub");
+        a.addEventListener("click", function (e) { e.preventDefault(); start(); });
+      });
     });
   }
 

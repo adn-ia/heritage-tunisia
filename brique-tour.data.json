@@ -1,6 +1,64 @@
 {
- "_note": "Étapes de la visite guidée (brique auto-portée). Libellés d'UI = dans brique-tour.js (LBL). Une étape à cible n'apparaît que si l'hôte a posé <… data-tour-step=\"<id>\"> ; welcome/fin (always) toujours. Édition THE : fr/en/de/it/ar. Langue = the_lang → repli anglais. NE PAS remettre dans ui.*.json.",
+ "_note": "Visite guidée — THE. Libellés (labels) ET étapes (steps) dans SA donnée, langues fr/en/de/it/ar. Auto-portée stricte : le .js est générique, ne les lit qu'ici. Langue = the_lang → repli anglais. Étape sans cible [data-tour-step] = sautée. NE PAS mettre dans ui.*.json.",
  "_config": {},
+ "labels": {
+  "skip": {
+   "fr": "Passer",
+   "en": "Skip",
+   "de": "Überspringen",
+   "it": "Salta",
+   "ar": "تخطي"
+  },
+  "prev": {
+   "fr": "Précédent",
+   "en": "Back",
+   "de": "Zurück",
+   "it": "Indietro",
+   "ar": "العودة"
+  },
+  "next": {
+   "fr": "Suivant",
+   "en": "Next",
+   "de": "Weiter",
+   "it": "Avanti",
+   "ar": "التالي"
+  },
+  "done": {
+   "fr": "Terminer",
+   "en": "Done",
+   "de": "Fertig",
+   "it": "Fatto",
+   "ar": "تم"
+  },
+  "stepOf": {
+   "fr": "Étape {n} / {total}",
+   "en": "Step {n} / {total}",
+   "de": "Schritt {n} / {total}",
+   "it": "Passo {n} / {total}",
+   "ar": "الخطوة {n} / {total}"
+  },
+  "goto": {
+   "fr": "Y aller ›",
+   "en": "Go there ›",
+   "de": "Dorthin gehen ›",
+   "it": "Vai lì ›",
+   "ar": "اذهب إلى هناك ›"
+  },
+  "menuLabel": {
+   "fr": "Visite guidée",
+   "en": "Guided tour",
+   "de": "Führung",
+   "it": "Visita guidata",
+   "ar": "جولة بصحبة مرشد"
+  },
+  "menuSub": {
+   "fr": "Revoir la présentation",
+   "en": "Replay the walkthrough",
+   "de": "Den Walkthrough noch einmal ansehen",
+   "it": "Rivedi la guida passo passo",
+   "ar": "إعادة تشغيل دليل الخطوات التفصيلي"
+  }
+ },
  "steps": [
   {
    "id": "welcome",
