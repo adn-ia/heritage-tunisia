@@ -279,9 +279,7 @@
       if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
       if(hor) h+=`<p class="info">🕒 ${hor}</p>`;
       if(p.acces) h+=`<p class="info warn">⚠️ ${p.acces}</p>`;
-      if((tr&&tr.leg)||p.legende){ var _lg=(tr&&tr.leg)||p.legende; h+= isPremium()
-        ? `<p class="info" style="background:#f3eefb;border-left:3px solid #8a6fb0;padding:8px 11px;border-radius:6px;margin-top:9px">🐉 <b>Légende</b> — ${_lg} <span style="font-size:11px;color:#8a7c9a;font-style:italic">(folklore · tradition)</span></p>`
-        : `<p class="info" onclick="location.href='premium.html'" style="background:#f3eefb;border-left:3px solid #8a6fb0;padding:8px 11px;border-radius:6px;margin-top:9px;cursor:pointer">🐉 <b>Légende</b> — ${String(_lg).replace(/<[^>]*>/g,'').slice(0,55).trim()}… <span style="color:#8a6fb0;font-weight:700;white-space:nowrap">🔒 Premium</span></p>`; }
+      h+=`<div data-brique="legende" data-site="${(p.nom||'').replace(/"/g,'&quot;')}"></div>`;   // brique auto-portée « légende »
       if((tr&&tr.an)||p.anecdote){ var _an=(tr&&tr.an)||p.anecdote; h+= isPremium()
         ? `<p class="info" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px">👁️ <b>Le détail</b> — ${_an}</p>`
         : `<p class="info" onclick="location.href='premium.html'" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px;cursor:pointer">👁️ <b>Le détail</b> — ${String(_an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></p>`; }
@@ -343,8 +341,7 @@
       if(catFilter==='nat' && !isNat) return false;
       // transversaux (aligné socle) : filtre exact par categorie
       if((catFilter==='musee'||catFilter==='marche'||catFilter==='festival'||catFilter==='patrimoine') && o.f.properties.categorie!==catFilter) return false;
-      if(catFilter==='danger' && o.f.properties.danger!==true) return false;   // Patrimoine en danger (par flag)
-      if(legFilter && !(o.f.properties.legende||o.f.properties.anecdote)) return false;
+      if(legFilter && !(window.BriqueLegende&&BriqueLegende.hasSync(o.f.properties.nom))) return false;  // filtre = donnée de la brique
       if(govFilter!=='all' && o.f.properties.gouvernorat!==govFilter) return false;
       if(aroundOn){ const ctr=aroundCenter||userPos; if(!ctr) return false; const [lon,lat]=o.f.geometry.coordinates; if(distanceM(ctr,[lat,lon])>aroundRadius) return false; }
       // La periode ne s'applique qu'aux sites historiques : si une periode est choisie, on masque la nature
@@ -458,8 +455,8 @@
           if(n) opt('<span class="ic">🕰️</span><span class="tx">'+lab+'</span><span class="cnt">'+n+'</span>', ()=>applyChoice('per',k)); });
       } else if(chLevel==='theme'){
         // transversaux (aligné socle) : chacun apparaît seulement s'il a des données
-        [['nat','🌿','Nature & balades'],['musee','🏛️','Musées'],['marche','🛒','Marchés & souks'],['festival','🎭','Festivals & événements'],['danger','🚨','Patrimoine en danger']].forEach(([cat,ic,lab])=>{
-          const n=countWhere(p=> cat==='nat' ? p.categorie==='nature' : cat==='danger' ? p.danger===true : p.categorie===cat);
+        [['nat','🌿','Nature & balades'],['musee','🏛️','Musées'],['marche','🛒','Marchés & souks'],['festival','🎭','Festivals & événements']].forEach(([cat,ic,lab])=>{
+          const n=countWhere(p=> cat==='nat' ? p.categorie==='nature' : p.categorie===cat);
           if(n) opt('<span class="ic">'+ic+'</span><span class="tx">'+lab+'</span><span class="cnt">'+n+'</span>', ()=>applyChoice('cat',cat));
         });
       }
@@ -478,8 +475,6 @@
       // 'all' = tout afficher (tous filtres neutres)
       [fTout,fHist,fNat].forEach(b=>b.classList.remove('active'));
       var _cb=({tout:fTout,hist:fHist,nat:fNat})[catFilter]; if(_cb)_cb.classList.add('active');
-      // zone libre « Patrimoine en danger » : ouvre toutes les fonctions tant qu'on est dans ce thème
-      try{ if(catFilter==='danger') localStorage.setItem('the_free_zone','danger'); else localStorage.removeItem('the_free_zone'); }catch(e){}
       applyFilters(); closeChooser();
     }
     function showPicksOnMap(){
@@ -490,7 +485,6 @@
     }
     function resetMap(){
       selectionActive=false; catFilter='tout'; govFilter='all'; perFilter='all'; aroundOn=false; aroundCenter=null;
-      try{ localStorage.removeItem('the_free_zone'); }catch(e){}
       const selGov=document.getElementById('selGov'), selPer=document.getElementById('selPer');
       selGov.value='all'; selGov.disabled=false; selPer.value='all'; selPer.disabled=false;
       fAround.classList.remove('active'); selRad.style.display='none';
@@ -538,7 +532,7 @@
       const meta=[p.gouvernorat,trCat(p.type),trCat(p.epoque)].filter(Boolean).join(' · ');
       const dist=userPos?'<div class="site-dist">◎ '+uiT('à')+' '+fmtDist(distanceM(userPos,[lat,lon]))+'</div>':'';
       const photo=p.photo?'<img class="site-img" src="'+p.photo+'" alt="" loading="lazy">'+(p.photo_credit?'<div class="site-credit">'+p.photo_credit+'</div>':''):'';
-      body.innerHTML='<div class="site-kick">'+(p.danger?'🚨 '+uiT('Patrimoine en danger'):({nature:'🌿 '+uiT('Nature & paysage'),musee:'🏛️ '+uiT('Musées'),marche:'🛒 '+uiT('Marchés & souks'),festival:'🎭 '+uiT('Festivals & événements')}[p.categorie]||'🏛️ '+uiT('Patrimoine')))+'</div>'+
+      body.innerHTML='<div class="site-kick">'+({nature:'🌿 '+uiT('Nature & paysage'),musee:'🏛️ '+uiT('Musées'),marche:'🛒 '+uiT('Marchés & souks'),festival:'🎭 '+uiT('Festivals & événements')}[p.categorie]||'🏛️ '+uiT('Patrimoine'))+'</div>'+
         '<h2>'+(p.nom||'Sans nom')+'</h2><div class="site-meta">'+meta+'</div>'+dist+photo+
         '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'')+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
@@ -563,7 +557,7 @@
       if(mode==='nat'){ selPer.value='all'; perFilter='all'; selPer.disabled=true; } else { selPer.disabled=false; }
       applyFilters(); }
     fTout.onclick=()=>setCat('tout'); fHist.onclick=()=>setCat('hist'); fNat.onclick=()=>setCat('nat');
-    const fLeg=document.getElementById('fLeg'); fLeg.onclick=()=>{ if(!isPremium()){ location.href='premium.html'; return; } clearRoute(); activateSelection(); legFilter=!legFilter; fLeg.classList.toggle('active',legFilter); applyFilters(); };
+    const fLeg=document.getElementById('fLeg'); fLeg.onclick=()=>{ if(!isPremium()){ location.href='premium.html'; return; } clearRoute(); activateSelection(); legFilter=!legFilter; fLeg.classList.toggle('active',legFilter); if(window.BriqueLegende){BriqueLegende.ready().then(applyFilters);} else applyFilters(); };
     document.getElementById('selGov').onchange=e=>{ clearRoute(); activateSelection(); govFilter=e.target.value; applyFilters(); };
     document.getElementById('selPer').onchange=e=>{ clearRoute(); activateSelection(); perFilter=e.target.value; applyFilters(); };
     const fAround=document.getElementById('fAround'), selRad=document.getElementById('selRad');
@@ -831,5 +825,6 @@
 <script src="the-postcard.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
+<script src="brique-legende.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,61 @@
+{
+  "_note": "i18n À ELLE de la brique « contact » — édition THE (Tunisie). fr+en+it+de+ar. RIEN dans l'i18n de l'hôte.",
+  "i18n": {
+    "contact.titre": {
+      "fr": "🐛 Un bug, une erreur à signaler ?",
+      "en": "🐛 Found a bug or an error?",
+      "it": "🐛 Un bug o un errore da segnalare?",
+      "de": "🐛 Einen Fehler melden?",
+      "ar": "🐛 هل لديك خطأ للإبلاغ عنه؟"
+    },
+    "contact.texte": {
+      "fr": "Un bug, une information erronée, une idée ? <b>Écrivez-nous</b> — chaque retour aide à améliorer l'application. Merci !",
+      "en": "A bug, wrong information, an idea? <b>Write to us</b> — every bit of feedback helps improve the app. Thank you!",
+      "it": "Un bug, un'informazione errata, un'idea? <b>Scrivici</b> — ogni segnalazione aiuta a migliorare l'app. Grazie!",
+      "de": "Ein Fehler, eine falsche Information, eine Idee? <b>Schreiben Sie uns</b> — jede Rückmeldung hilft, die App zu verbessern. Danke!",
+      "ar": "خطأ، معلومة غير صحيحة، أو فكرة؟ <b>راسلنا</b> — كل ملاحظة تساعد على تحسين التطبيق. شكراً!"
+    },
+    "contact.btn.bug": {
+      "fr": "Signaler / nous écrire",
+      "en": "Report / contact us",
+      "it": "Segnala / scrivici",
+      "de": "Melden / kontaktieren",
+      "ar": "الإبلاغ / راسلنا"
+    },
+    "contact.par.email": {
+      "fr": "Envoi par e-mail.",
+      "en": "Sent by e-mail.",
+      "it": "Invio via e-mail.",
+      "de": "Versand per E-Mail.",
+      "ar": "الإرسال عبر البريد الإلكتروني."
+    },
+    "contact.sujet.bug": {
+      "fr": "{app} — Signalement / suggestion",
+      "en": "{app} — Report / suggestion",
+      "it": "{app} — Segnalazione / suggerimento",
+      "de": "{app} — Meldung / Vorschlag",
+      "ar": "{app} — إبلاغ / اقتراح"
+    },
+    "contact.corps.bug": {
+      "fr": "Décrivez le problème ou votre idée :\n\n(page concernée, ce qui s'est passé…)\n\n",
+      "en": "Describe the problem or your idea:\n\n(page concerned, what happened…)\n\n",
+      "it": "Descrivi il problema o la tua idea:\n\n(pagina interessata, cosa è successo…)\n\n",
+      "de": "Beschreiben Sie das Problem oder Ihre Idee:\n\n(betroffene Seite, was passiert ist…)\n\n",
+      "ar": "صف المشكلة أو فكرتك:\n\n(الصفحة المعنية، ما الذي حدث…)\n\n"
+    },
+    "contact.aucune.appli.mail": {
+      "fr": "Aucune appli e-mail détectée. Écrivez-nous à",
+      "en": "No e-mail app detected. Write to us at",
+      "it": "Nessuna app e-mail rilevata. Scrivici a",
+      "de": "Keine E-Mail-App erkannt. Schreiben Sie uns an",
+      "ar": "لم يتم العثور على تطبيق بريد. راسلنا على"
+    },
+    "contact.adresse.copiee": {
+      "fr": "(adresse copiée)",
+      "en": "(address copied)",
+      "it": "(indirizzo copiato)",
+      "de": "(Adresse kopiert)",
+      "ar": "(تم نسخ العنوان)"
+    }
+  }
+}

@@ -1983,18 +1983,5 @@
  "footer.mettre.a.jour": "تحديث",
  "footer.passe.actif": "✦ بطاقة صالحة",
  "footer.version.gratuite": "النسخة المجانية",
- "footer.badge.appstore": "متوفر على متجر التطبيقات",
- "note.titre": "★ هل يعجبك التطبيق؟",
- "note.texte": "اترك لنا تقييماً جيداً على المتجر: إنه مجاني ويستغرق 10 ثوانٍ، ويكافئ حقاً الجهد وراء هذا التطبيق.",
- "note.btn.appstore": "قيّم على App Store",
- "note.btn.play": "قيّم على Google Play",
- "note.merci": "شكراً جزيلاً 🙏",
- "contact.titre": "🐛 هل لديك خطأ للإبلاغ عنه؟",
- "contact.texte": "خطأ، معلومة غير صحيحة، أو فكرة؟ <b>راسلنا</b> — كل ملاحظة تساعد على تحسين التطبيق. شكراً!",
- "contact.btn.bug": "الإبلاغ / راسلنا",
- "contact.par.email": "الإرسال عبر البريد الإلكتروني.",
- "contact.sujet.bug": "{app} — إبلاغ / اقتراح",
- "contact.corps.bug": "صف المشكلة أو فكرتك:\n\n(الصفحة المعنية، ما الذي حدث…)\n\n",
- "contact.aucune.appli.mail": "لم يتم العثور على تطبيق بريد. راسلنا على",
- "contact.adresse.copiee": "(تم نسخ العنوان)"
+ "footer.badge.appstore": "متوفر على متجر التطبيقات"
 }

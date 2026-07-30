@@ -8,11 +8,13 @@
      AUCUNE adresse en dur. Se masque si HConf.support est vide.
    • S'INJECTE seule sur tout ancrage <… data-brique="contact">.
    • mailto SÛR : si aucune appli mail, copie l'adresse + prévient.
-   • i18n : libellés par clés contact.* — aucun texte en dur.
-   • Mise à jour : remplacer CE fichier, sans toucher aux autres briques.
+   • i18n AUTO-PORTÉE : TOUS les libellés (fr, en, nationale…) sont dans SA
+     donnée (brique-contact.data.json) — RIEN emprunté à l'hôte. Langue = celle
+     décidée par l'hôte (the_lang) ; si absente → repli ANGLAIS.
+   • Mise à jour : remplacer CE fichier (+ sa donnée), sans toucher à l'hôte.
 
-   Dépendances hôte : heritage.config.js (HConf) tôt, the-i18n.js,
-   clés contact.* fusionnées dans i18n/ui.<lang>.json.
+   Contact hôte = window.HConf (support/marque) + l'ancrage. Le changement de
+   langue de l'hôte recharge la page → la carte se remonte seule.
    Ancrage type :  <section data-brique="contact"></section>
    ============================================================ */
 (function () {
@@ -21,17 +23,30 @@
   function email() { return (H.support || "").trim(); }
   function brand() { return H.marqueCourte || "Heritage Experience"; }
 
+  /* --- i18n À ELLE : chargée depuis SA donnée (fr + en + nationale). RIEN de l'hôte. --- */
+  var I18N = null, LOADING = null;
+  function load() {
+    if (I18N) return Promise.resolve(I18N);
+    if (LOADING) return LOADING;
+    LOADING = fetch("brique-contact.data.json")
+      .then(function (r) { return r.json(); })
+      .then(function (j) { I18N = (j && j.i18n) || {}; return I18N; })
+      .catch(function () { I18N = {}; return I18N; });
+    return LOADING;
+  }
+  function cur() { try { return localStorage.getItem("the_lang") || ""; } catch (e) { return ""; } }
+  function T(k) { var d = (I18N && I18N[k]) || {}, l = cur(); return (l && d[l] != null) ? d[l] : (d.en != null ? d.en : k); }
+
   function t(k, v) {
-    var s = (window.THEi18n && THEi18n.ui(k)); if (s == null) s = k;
+    var s = T(k);
     return v ? s.replace(/\{(\w+)\}/g, function (_, n) { return v[n] != null ? v[n] : "{" + n + "}"; }) : s;
   }
   function tr(el) {
-    if (!(window.THEi18n && THEi18n.ui)) return;
     el.querySelectorAll("[data-i18n]").forEach(function (n) {
-      var s = THEi18n.ui(n.getAttribute("data-i18n")); if (s != null) n.textContent = s;
+      var s = T(n.getAttribute("data-i18n")); if (s != null) n.textContent = s;
     });
     el.querySelectorAll("[data-i18n-html]").forEach(function (n) {
-      var s = THEi18n.ui(n.getAttribute("data-i18n-html")); if (s != null) n.innerHTML = s;
+      var s = T(n.getAttribute("data-i18n-html")); if (s != null) n.innerHTML = s;
     });
   }
 
@@ -75,11 +90,14 @@
   function mount() {
     if (!email()) return;                          // pas d'adresse → rien
     var els = document.querySelectorAll('[data-brique="contact"]');
-    [].forEach.call(els, function (a) {
-      if (a.getAttribute("data-mounted")) return;
-      a.innerHTML = card();
-      a.setAttribute("data-mounted", "1");
-      tr(a); wire(a);
+    if (!els.length) return;
+    load().then(function () {                       // libellés depuis SA donnée
+      [].forEach.call(els, function (a) {
+        if (a.getAttribute("data-mounted")) return;
+        a.innerHTML = card();
+        a.setAttribute("data-mounted", "1");
+        tr(a); wire(a);
+      });
     });
   }
 

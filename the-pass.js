@@ -119,10 +119,8 @@
   }
 
   /* ─── L'état premium global ─── */
-  function freeZoneActive(){ try{ return localStorage.getItem('the_free_zone')==='danger'; }catch(e){ return false; } }
   function isActive(){
     if(!paywallActive()) return true;   // plateforme gratuite (web sans vente) → tout ouvert
-    if(freeZoneActive()) return true;   // zone civique « Patrimoine en danger » → accès libre à toutes les fonctions, quel que soit l'état du pass
     return inviteActive() || paidActive() || trialActive();
   }
 

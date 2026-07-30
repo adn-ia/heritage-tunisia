@@ -1,0 +1,10 @@
+{
+  "_note": "i18n À ELLE de la brique « note » — édition THE (Tunisie). fr+en+it+de+ar. RIEN dans l'i18n de l'hôte. Langue décidée par l'hôte (the_lang) → repli anglais.",
+  "i18n": {
+    "note.titre": { "fr": "★ Vous aimez l'application ?", "en": "★ Enjoying the app?", "it": "★ Ti piace l'applicazione?", "de": "★ Gefällt Ihnen die App?", "ar": "★ هل يعجبك التطبيق؟" },
+    "note.texte": { "fr": "Laissez-nous une bonne évaluation sur le store : c'est gratuit, ça prend 10 secondes, et ça récompense vraiment le travail derrière cette application.", "en": "Leave us a good rating on the store — it's free, it takes 10 seconds, and it truly rewards the work behind this app.", "it": "Lasciaci una buona valutazione sullo store: è gratis, richiede 10 secondi e premia davvero il lavoro dietro questa applicazione.", "de": "Hinterlassen Sie uns eine gute Bewertung im Store – kostenlos, in 10 Sekunden erledigt, und es belohnt wirklich die Arbeit hinter dieser App.", "ar": "اترك لنا تقييماً جيداً على المتجر: إنه مجاني ويستغرق 10 ثوانٍ، ويكافئ حقاً الجهد وراء هذا التطبيق." },
+    "note.btn.appstore": { "fr": "Noter sur l'App Store", "en": "Rate on the App Store", "it": "Valuta sull'App Store", "de": "Im App Store bewerten", "ar": "قيّم على App Store" },
+    "note.btn.play": { "fr": "Noter sur Google Play", "en": "Rate on Google Play", "it": "Valuta su Google Play", "de": "Bei Google Play bewerten", "ar": "قيّم على Google Play" },
+    "note.merci": { "fr": "Merci du fond du cœur 🙏", "en": "Thank you so much 🙏", "it": "Grazie di cuore 🙏", "de": "Herzlichen Dank 🙏", "ar": "شكراً جزيلاً 🙏" }
+  }
+}

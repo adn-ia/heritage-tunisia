@@ -78,7 +78,6 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
 </head>
 <body>
 <div class="topbar"><a class="back" href="decouvrir.html">‹ Menu</a><span class="t">TOUS LES LIEUX</span><a class="map" href="index.html">🗺️ Carte</a></div>
-<a id="dangerCta" href="contribuer.html" data-i18n="patrimoine.cta.btn" style="display:none;margin:11px 16px 0;padding:12px 14px;background:linear-gradient(135deg,#8a2b1f,#b5482e);color:#fff;text-decoration:none;border-radius:12px;font-weight:600;text-align:center;box-shadow:0 3px 12px rgba(138,43,31,.28);">🚨 Contribuer · veiller sur un site</a>
 
 <div class="filters">
   <div class="row">
@@ -158,10 +157,9 @@ Promise.all([
   const THEMES=[['patrimoine','Patrimoine'],['musee','Musées'],['marche','Marchés & souks'],['festival','Festivals & événements'],['nature','Nature & balades']];
   const _present=new Set(ALL.map(s=>s.categorie).filter(Boolean));
   const thsel=document.getElementById('theme'); THEMES.forEach(([c,lab])=>{ if(_present.has(c)) thsel.add(new Option(uiT(lab),c)); });
-  if(ALL.some(s=>s.danger===true)) thsel.add(new Option('🚨 '+uiT('Patrimoine en danger'),'danger'));
-  // Thème pré-sélectionné par l'URL (?theme=danger depuis le menu / le CTA) — appliqué ici, une fois les options peuplées
+  // Thème pré-sélectionné par l'URL (?theme=…) — appliqué une fois les options peuplées
   var _urlTheme=new URLSearchParams(location.search).get('theme');
-  if(_urlTheme){ F.theme=_urlTheme; thsel.value=_urlTheme; try{ if(_urlTheme==='danger') localStorage.setItem('the_free_zone','danger'); }catch(_){} syncDangerCta(); }
+  if(_urlTheme){ F.theme=_urlTheme; thsel.value=_urlTheme; }
   render();
 });
 let F={g:'all',q:'',region:'',type:'',theme:'',photo:false,legonly:false,around:false,center:null,radius:30};
@@ -170,9 +168,9 @@ function pass(s){
   if(F.g!=='all' && gen(s)!==F.g) return false;
   if(F.region && s.gouvernorat!==F.region) return false;
   if(F.type && s.type!==F.type) return false;
-  if(F.theme==='danger'){ if(s.danger!==true) return false; } else if(F.theme && s.categorie!==F.theme) return false;   // transversal (aligné socle)
+  if(F.theme && s.categorie!==F.theme) return false;   // transversal (aligné socle)
   if(F.photo && !(s.photo||'').startsWith('img/')) return false;
-  if(F.legonly && !(s.legende||s.anecdote)) return false;
+  if(F.legonly && !(window.BriqueLegende&&BriqueLegende.hasSync(s.nom))) return false;  // filtre = donnée de la brique
   if(F.around && F.center){ if(!s._c) return false; if(hav(F.center,s._c)>F.radius) return false; }
   if(F.q){ const q=norm(F.q); if(!norm(s.nom).includes(q) && !norm(s.gouvernorat).includes(q) && !norm(s.type).includes(q)) return false; }
   return true;
@@ -205,8 +203,8 @@ function openSheet(s){
   const cons=(tr&&tr.c)||s.conseil; if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
   if(s.acces) h+=`<div class="warn">⚠️ ${esc(s.acces)}</div>`;
   if(s.ambiance) h+=`<div class="amb">✨ <b style="font-style:normal">L'instant</b> — ${esc(s.ambiance)}</div>`;
-  const lg=(tr&&tr.leg)||s.legende, an=(tr&&tr.an)||s.anecdote;
-  if(lg) h+= isPremium() ? `<div class="leg">🐉 <b>Légende</b> — ${lg} <span class="ln">(folklore · tradition)</span></div>` : `<div class="leg" onclick="location.href='premium.html'" style="cursor:pointer">🐉 <b>Légende</b> — ${String(lg).replace(/<[^>]*>/g,'').slice(0,55).trim()}… <span style="color:#8a6fb0;font-weight:700;white-space:nowrap">🔒 Premium</span></div>`;
+  const an=(tr&&tr.an)||s.anecdote;
+  h+=`<div data-brique="legende" data-site="${esc(s.nom)}"></div>`;   // brique auto-portée « légende »
   if(an) h+= isPremium() ? `<div class="det">👁️ <b>Le détail</b> — ${an}</div>` : `<div class="det" onclick="location.href='premium.html'" style="cursor:pointer">👁️ <b>Le détail</b> — ${String(an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></div>`;
   if(s.source) h+=`<div class="src">Source : ${esc(s.source)}</div>`;
   if(s.photo_credit) h+=`<div class="src">📷 ${esc(s.photo_credit)}</div>`;
@@ -222,10 +220,9 @@ document.getElementById('sheetOv').onclick=e=>{if(e.target.id==='sheetOv')closeS
 document.getElementById('q').oninput=e=>{F.q=e.target.value;render();};
 document.getElementById('region').onchange=e=>{F.region=e.target.value;render();};
 document.getElementById('type').onchange=e=>{F.type=e.target.value;render();};
-function syncDangerCta(){ var c=document.getElementById('dangerCta'); if(c) c.style.display=(F.theme==='danger')?'block':'none'; }
-document.getElementById('theme').onchange=e=>{F.theme=e.target.value; try{ if(F.theme==='danger') localStorage.setItem('the_free_zone','danger'); else localStorage.removeItem('the_free_zone'); }catch(_){} syncDangerCta(); render();};
+document.getElementById('theme').onchange=e=>{F.theme=e.target.value; render();};
 document.getElementById('withPhoto').onchange=e=>{F.photo=e.target.checked;render();};
-document.getElementById('withLeg').onchange=e=>{ if(!isPremium()){ e.target.checked=false; location.href='premium.html'; return; } F.legonly=e.target.checked;render();};
+document.getElementById('withLeg').onchange=e=>{ if(!isPremium()){ e.target.checked=false; location.href='premium.html'; return; } F.legonly=e.target.checked; if(window.BriqueLegende){BriqueLegende.ready().then(render);} else render();};
 [...document.querySelectorAll('#genreSeg button')].forEach(b=>b.onclick=()=>{
   F.g=b.dataset.g; document.querySelectorAll('#genreSeg button').forEach(x=>x.classList.toggle('on',x===b)); render();
 });
@@ -248,11 +245,11 @@ document.getElementById('aroundBtn').onclick=activateAround;
 document.getElementById('radius').oninput=e=>{ F.radius=+e.target.value; document.getElementById('radiusVal').textContent=e.target.value; render(); };
 document.getElementById('aroundOff').onclick=()=>{ F.around=false; F.center=null; document.getElementById('radiusRow').style.display='none'; const b=document.getElementById('aroundBtn'); b.textContent='📍 '+uiT('Autour de moi'); b.style.background=''; b.style.color='var(--ink)'; render(); };
 if(new URLSearchParams(location.search).get('around')==='1') activateAround();
-syncDangerCta();
 </script>
   <script src="analytics.js"></script>
 <script src="the-postcard.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
+<script src="brique-legende.js" defer></script>
 </body>
 </html>

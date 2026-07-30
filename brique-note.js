@@ -9,17 +9,33 @@
      playStore / androidPackage / marqueCourte). AUCUNE valeur en dur.
    • S'INJECTE seule sur tout ancrage <… data-brique="note-app">.
    • Se MASQUE si aucun lien store n'est configuré (édition sans store).
-   • i18n : libellés par clés note.* (traduits par the-i18n.js) — aucun
-     texte en dur. Repli neutre.
-   • Mise à jour : remplacer CE fichier, sans toucher aux autres briques.
+   • i18n AUTO-PORTÉE : TOUS les libellés (fr, en, nationale…) sont dans SA
+     donnée (brique-note.data.json) — RIEN emprunté à l'hôte. Langue = celle
+     décidée par l'hôte (localStorage 'the_lang') ; si absente → repli ANGLAIS.
+   • Mise à jour : remplacer CE fichier, sans toucher aux autres briques ni à l'hôte.
 
-   Dépendances hôte : heritage.config.js (HConf) chargé tôt, the-i18n.js,
-   et les clés note.* fusionnées dans i18n/ui.<lang>.json.
+   Contact hôte = window.HConf (liens store) + l'ancrage. Le changement de
+   langue de l'hôte recharge la page (the-i18n.js) → la carte se remonte seule.
    Ancrage type :  <section data-brique="note-app"></section>
    ============================================================ */
 (function () {
   "use strict";
   var H = window.HConf || {};
+
+  /* --- i18n À ELLE : chargée depuis SA donnée (par édition : fr + en + nationale).
+     RIEN emprunté à l'hôte. Langue décidée par l'hôte (the_lang) → repli anglais. */
+  var I18N = null, LOADING = null;
+  function load() {
+    if (I18N) return Promise.resolve(I18N);
+    if (LOADING) return LOADING;
+    LOADING = fetch("brique-note.data.json")
+      .then(function (r) { return r.json(); })
+      .then(function (j) { I18N = (j && j.i18n) || {}; return I18N; })
+      .catch(function () { I18N = {}; return I18N; });
+    return LOADING;
+  }
+  function cur() { try { return localStorage.getItem("the_lang") || ""; } catch (e) { return ""; } }
+  function T(k) { var d = (I18N && I18N[k]) || {}, l = cur(); return (l && d[l] != null) ? d[l] : (d.en != null ? d.en : ""); }
 
   /* --- Liens store (deep-links de NOTATION, pas la simple fiche) --------- */
   function appStoreReview() {
@@ -40,11 +56,10 @@
   function links() { return { ios: appStoreReview(), play: playReview() }; }
   function hasAny() { var l = links(); return !!(l.ios || l.play); }
 
-  /* --- i18n : appliquer les clés note.* sur un sous-arbre injecté -------- */
+  /* --- appliquer les libellés (de SA donnée) sur un sous-arbre injecté ---- */
   function tr(el) {
-    if (!(window.THEi18n && THEi18n.ui)) return;   // observer prendra le relais
     el.querySelectorAll("[data-i18n]").forEach(function (n) {
-      var s = THEi18n.ui(n.getAttribute("data-i18n")); if (s != null) n.textContent = s;
+      var s = T(n.getAttribute("data-i18n")); if (s !== "") n.textContent = s;
     });
   }
 
@@ -64,11 +79,14 @@
   function mount() {
     if (!hasAny()) return;                         // aucune config store → rien
     var els = document.querySelectorAll('[data-brique="note-app"]');
-    [].forEach.call(els, function (a) {
-      if (a.getAttribute("data-mounted")) return;
-      a.innerHTML = card();
-      a.setAttribute("data-mounted", "1");
-      tr(a);
+    if (!els.length) return;
+    load().then(function () {                       // libellés depuis SA donnée
+      [].forEach.call(els, function (a) {
+        if (a.getAttribute("data-mounted")) return;
+        a.innerHTML = card();
+        a.setAttribute("data-mounted", "1");
+        tr(a);
+      });
     });
   }
 
@@ -90,9 +108,11 @@
       try { if (localStorage.getItem(SEEN)) return false; } catch (e) {}
       var host = document.querySelector('[data-brique="note-app-prompt"]');
       if (!host) return false;
-      host.innerHTML = card();
-      host.setAttribute("data-mounted", "1");
-      tr(host); host.style.display = "";
+      load().then(function () {
+        host.innerHTML = card();
+        host.setAttribute("data-mounted", "1");
+        tr(host); host.style.display = "";
+      });
       try { localStorage.setItem(SEEN, "1"); } catch (e) {}
       return true;
     }
