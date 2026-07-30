@@ -114,7 +114,7 @@ body.narr-on{padding-bottom:76px;}
   <script src="the-pass.js"></script>
 </head>
 <body>
-<div class="topbar"><a class="back" href="bienvenue.html">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" aria-label="Écouter le récit">🔊 Écouter</button></div>
+<div class="topbar"><a class="back" href="bienvenue.html">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" data-tour-step="voix" aria-label="Écouter le récit">🔊 Écouter</button></div>
 
 <div class="narrbar" id="narrbar" hidden aria-label="Commandes de la narration">
   <button class="nb" id="nb-restart" type="button" title="Repartir du début" aria-label="Repartir du début">⏮</button>
@@ -135,16 +135,17 @@ body.narr-on{padding-bottom:76px;}
     <p class="lead"><b>C'est ici qu'est né le mot « Afrique ».</b> Pour les Romains, l'<i>Africa</i> était d'abord — selon l'étymologie la plus admise — « la terre des <b>Afri</b> », un peuple <b>berbère, autochtone</b>, installé autour de Carthage. De cette petite province, le nom a fini par recouvrir <b>tout le continent</b> : sans doute le seul au monde à porter celui d'un peuple local (là où l'Amérique tient le sien d'un explorateur européen). Et ce n'est qu'une strate : en trois mille ans, entre la mer et le désert, presque toutes les puissances de la Méditerranée ont passé par cette terre — chacune y laissant ses pierres, ses mots, ses goûts, superposés comme les strates d'un même récit. Voici, en bref, l'histoire de cette terre, et la nature qui la porte.</p>
     <aside class="sidemenu">
       <div class="sm-title">Le menu</div>
-      <a class="sm-item primary" href="#recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
-      <a class="sm-item" href="itineraire.html"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
-      <a class="sm-item" href="index.html"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
-      <a class="sm-item" href="liste.html"><span class="i">📋</span><span class="t">Tous les lieux (liste)<small>parcourir sans la carte</small></span></a>
-      <a class="sm-item" href="liste.html?around=1"><span class="i">📍</span><span class="t">Autour de moi<small>ce qu'il y a à voir près de vous</small></span></a>
-      <a class="sm-item" href="liste.html?theme=danger"><span class="i">🚨</span><span class="t" data-i18n-html="patrimoine.menu.item">Patrimoine en danger<small>veille citoyenne · accès libre à tous</small></span></a>
-      <a class="sm-item" href="voyage.html"><span class="i">🎞️</span><span class="t">Voyage immersif</span></a>
+      <a class="sm-item primary" href="#recit" data-tour-step="recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
+      <a class="sm-item" href="itineraire.html" data-tour-step="itineraire"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
+      <a class="sm-item" href="index.html" data-tour-step="carte"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
+      <a class="sm-item" href="liste.html" data-tour-step="liste"><span class="i">📋</span><span class="t">Tous les lieux (liste)<small>parcourir sans la carte</small></span></a>
+      <a class="sm-item" href="liste.html?around=1" data-tour-step="autour"><span class="i">📍</span><span class="t">Autour de moi<small>ce qu'il y a à voir près de vous</small></span></a>
+      <a class="sm-item" href="liste.html?theme=danger" data-tour-step="patrimoine"><span class="i">🚨</span><span class="t" data-i18n-html="patrimoine.menu.item">Patrimoine en danger<small>veille citoyenne · accès libre à tous</small></span></a>
+      <a class="sm-item" href="voyage.html" data-tour-step="voyage"><span class="i">🎞️</span><span class="t">Voyage immersif</span></a>
       <a class="sm-item" href="rome-immersion.html"><span class="i">🏛️</span><span class="t">Rome en Afrique<small>immersion narrée</small></span></a>
       <a class="sm-item soon" href="musee/"><span class="i">🏛️</span><span class="t">Scanner au musée <span class="dev">en développement</span></span></a>
       <a class="sm-item soon" href="webar/"><span class="i">✨</span><span class="t">Réalité augmentée <span class="dev">en développement</span></span></a>
+      <a class="sm-item" data-brique="tour" href="#"><span class="i">🎓</span><span class="t"><span data-bt-label></span><small data-bt-sub></small></span></a>
       <a class="sm-item" href="soutien.html"><span class="i">🔒</span><span class="t">Confidentialité &amp; soutien</span></a>
       <a class="sm-item" href="sources-credits.html"><span class="i">📑</span><span class="t">Sources &amp; crédits<small>données &amp; photos sourcées</small></span></a>
       <div class="sm-note">📍 Activez la localisation pour vous situer parmi les sites.</div>
@@ -452,5 +453,6 @@ body.narr-on{padding-bottom:76px;}
 <script src="the-footer.js" defer></script>
   <script src="analytics.js"></script>
 <script src="the-lightbox.js" defer></script>
+<script src="brique-tour.js" defer></script>
 </body>
 </html>
