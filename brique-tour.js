@@ -67,11 +67,15 @@
   function injectCSS() {
     if (document.getElementById("htour-css")) return;
     var css =
-      ".htour-catch{position:fixed;inset:0;z-index:99990;background:rgba(20,15,10,.72);" +
+      ".htour-catch{position:fixed;inset:0;z-index:99990;background:rgba(20,15,10,.82);" +
       (reduce ? "" : "animation:htour-fade .2s ease both;") + "}" +
+      // Spot : le halo (box-shadow 9999px) est le SEUL assombrisseur quand une cible existe
+      // (le catch passe en transparent) → la cible est pleinement éclairée, pas grisée.
       ".htour-spot{position:fixed;z-index:99991;border-radius:12px;pointer-events:none;" +
-      "box-shadow:0 0 0 9999px rgba(20,15,10,.72),0 0 0 3px #c9ad79,0 0 22px 4px rgba(168,136,79,.5);" +
+      "box-shadow:0 0 0 9999px rgba(18,13,8,.82),0 0 0 3px rgba(255,250,235,.95),0 0 0 6px #c9ad79,0 0 34px 9px rgba(240,200,120,.6);" +
       (reduce ? "" : "transition:top .25s ease,left .25s ease,width .25s ease,height .25s ease;") + "}" +
+      ".htour-spot::after{content:'';position:absolute;inset:-5px;border-radius:16px;border:2px solid rgba(240,205,125,.9);" +
+      (reduce ? "" : "animation:htour-pulse 1.6s ease-out infinite;") + "}" +
       ".htour-card{position:fixed;z-index:99993;left:50%;transform:translateX(-50%);" +
       "width:min(420px,calc(100vw - 28px));background:#fffdf8;color:#2b2318;border-radius:14px;" +
       "box-shadow:0 18px 50px rgba(20,15,10,.5);padding:18px 18px 15px;" +
@@ -101,7 +105,8 @@
       ".htour-skip:hover{color:#2b2318;}" +
       ".htour-skwrap{text-align:center;margin-top:9px;}" +
       "@keyframes htour-fade{from{opacity:0;}to{opacity:1;}}" +
-      "@keyframes htour-pop{from{opacity:0;}to{opacity:1;}}";
+      "@keyframes htour-pop{from{opacity:0;}to{opacity:1;}}" +
+      "@keyframes htour-pulse{0%{transform:scale(1);opacity:.9;}70%{transform:scale(1.06);opacity:0;}100%{opacity:0;}}";
     var st = document.createElement("style");
     st.id = "htour-css"; st.textContent = css;
     document.head.appendChild(st);
@@ -130,7 +135,7 @@
   }
 
   function positionSpot(el) {
-    var r = el.getBoundingClientRect(), pad = 6;
+    var r = el.getBoundingClientRect(), pad = 9;
     spotEl.style.top = (r.top - pad) + "px";
     spotEl.style.left = (r.left - pad) + "px";
     spotEl.style.width = (r.width + pad * 2) + "px";
@@ -147,9 +152,11 @@
 
     if (target) {
       try { target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }); } catch (e) { try { target.scrollIntoView(); } catch (e2) {} }
+      if (catchEl) catchEl.style.background = "transparent"; // le halo du spot fait seul l'assombrissement → cible pleinement éclairée
       cardEl.style.top = ""; cardEl.style.bottom = ""; cardEl.style.transform = "";
       positionSpot(target);
     } else {
+      if (catchEl) catchEl.style.background = "rgba(18,13,8,.82)"; // pas de cible → voile plein écran pour la carte centrée
       spotEl.style.display = "none";
       cardEl.classList.remove("top", "bottom");
       cardEl.style.top = "50%"; cardEl.style.bottom = "auto"; cardEl.style.transform = "translate(-50%,-50%)";

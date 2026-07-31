@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26201a">
+<title data-i18n="patrimoine.titre">Patrimoine</title>
+<script src="config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;
+      --peril:#a5432f;--moyen:#b9862f;--bon:#5c7a52;}
+*{box-sizing:border-box;}
+html,body{margin:0;}
+body{font-family:'EB Garamond',Georgia,serif;color:var(--ink);background:var(--ivory);line-height:1.6;}
+a{color:inherit;}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(38,32,26,.97);color:var(--ivory);
+  padding:11px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 2px 14px rgba(0,0,0,.25);}
+.topbar a.back{color:var(--gold-soft);text-decoration:none;font-size:13px;letter-spacing:1px;white-space:nowrap;}
+.topbar .brand{flex:1;font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:3px;font-size:16px;text-transform:uppercase;}
+.topbar .lang{display:flex;gap:6px;}
+.topbar .lang button{background:none;border:1px solid rgba(201,173,121,.4);color:var(--gold-soft);
+  font:inherit;font-size:12px;letter-spacing:1px;padding:3px 9px;border-radius:20px;cursor:pointer;text-transform:uppercase;}
+.topbar .lang button.on{background:var(--gold-soft);color:#2b2318;border-color:var(--gold-soft);}
+main{max-width:940px;margin:0 auto;padding:26px 20px 70px;}
+.kicker{font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin:0 0 6px;}
+h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6vw,46px);line-height:1.04;margin:0 0 10px;}
+.lead{font-style:italic;color:var(--stone);max-width:640px;font-size:17px;margin:0 0 22px;}
+.stats{display:flex;flex-wrap:wrap;gap:10px 26px;margin:0 0 26px;padding:0 0 22px;border-bottom:1px solid var(--line);}
+.stats .s{display:flex;align-items:baseline;gap:8px;}
+.stats .s b{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:700;}
+.stats .s.peril b{color:var(--peril);}
+.stats .s span{font-size:14px;color:var(--stone);letter-spacing:.3px;}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 8px;}
+.filters input[type=search],.filters select{font:inherit;font-size:15px;color:var(--ink);background:var(--paper);
+  border:1px solid var(--line);border-radius:8px;padding:9px 12px;}
+.filters input[type=search]{flex:1;min-width:220px;}
+.filters label.chk{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;color:var(--stone);cursor:pointer;
+  background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px 12px;}
+.count{font-size:13px;color:var(--stone);letter-spacing:.4px;margin:6px 2px 14px;}
+.exportbar{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:0 0 20px;padding:11px 14px;background:#fbf6ec;border:1px solid var(--line);border-radius:10px;}
+.exportbar .exlabel{font-size:13px;color:var(--stone);letter-spacing:.5px;margin-right:2px;}
+.exportbar button{font:inherit;font-size:14px;color:var(--ink);background:var(--paper);border:1px solid var(--gold-soft);border-radius:8px;padding:7px 13px;cursor:pointer;transition:background .12s;}
+.exportbar button:hover{background:var(--gold-soft);}
+.exportbar button.off{opacity:.45;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:11px;
+  padding:16px 16px 15px 20px;cursor:pointer;overflow:hidden;box-shadow:0 3px 12px rgba(43,35,24,.05);
+  transition:transform .12s ease,box-shadow .12s ease;}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(43,35,24,.10);}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--stone);}
+.card.peril::before{background:var(--peril);} .card.moyen::before{background:var(--moyen);} .card.bon::before{background:var(--bon);}
+.card h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;margin:0 0 3px;line-height:1.12;}
+.card .loc{font-size:13.5px;color:var(--stone);margin:0 0 11px;}
+.card .tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:11.5px;letter-spacing:.4px;padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--stone);background:#fbf6ec;}
+.tag.etat{color:#fff;border:none;}
+.tag.etat.peril{background:var(--peril);} .tag.etat.moyen{background:var(--moyen);} .tag.etat.bon{background:var(--bon);} .tag.etat.na{background:var(--stone);}
+.tag.classe{border-color:var(--gold-soft);color:var(--gold);background:#fbf3e8;}
+.empty{text-align:center;color:var(--stone);font-style:italic;padding:60px 0;}
+/* modale */
+.modal{position:fixed;inset:0;z-index:40;display:none;align-items:flex-end;justify-content:center;background:rgba(30,24,16,.55);}
+.modal.on{display:flex;}
+.sheet{background:var(--paper);width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;
+  padding:26px 24px 30px;box-shadow:0 -10px 40px rgba(0,0,0,.3);}
+@media(min-width:640px){.modal{align-items:center;} .sheet{border-radius:16px;}}
+.sheet .close{float:right;background:none;border:none;font-size:22px;color:var(--stone);cursor:pointer;line-height:1;}
+.sheet h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:28px;margin:0 8px 2px 0;line-height:1.08;}
+.sheet .sub{color:var(--stone);font-size:14.5px;margin:0 0 18px;}
+.rows{margin:0 0 18px;border-top:1px solid var(--line);}
+.rows .r{display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px;}
+.rows .r .k{color:var(--stone);}
+.rows .r .v{text-align:right;font-weight:600;}
+.sheet .maplink{display:inline-block;color:var(--gold);text-decoration:none;font-size:15px;margin:0 8px 16px 0;}
+.sheet .signaler{display:inline-block;background:var(--gold);color:#fff;text-decoration:none;font-size:15px;font-weight:600;
+  padding:9px 16px;border-radius:8px;margin:0 0 16px;}
+.sheet .soon{background:#fbf3e8;border-left:3px solid var(--gold-soft);padding:11px 14px;border-radius:6px;font-size:14px;color:#5a4d3a;margin:0 0 12px;}
+.sheet .src{font-size:12px;color:var(--stone);}
+.loading{text-align:center;color:var(--stone);font-style:italic;padding:70px 0;}
+/* Feed contributions (F1) */
+#feed{margin-top:40px;border-top:1px solid var(--line);padding-top:22px;}
+.feed-h{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;margin:0 0 4px;}
+.feed-sub{color:var(--stone);font-style:italic;font-size:14.5px;margin:0 0 16px;}
+.fb-note{color:var(--stone);font-style:italic;text-align:center;padding:26px 0;}
+.fb-card{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:15px 16px;margin:0 0 13px;box-shadow:0 3px 12px rgba(43,35,24,.05);}
+.fb-top{display:flex;align-items:center;gap:10px;justify-content:space-between;}
+.fb-top b{font-family:'Cormorant Garamond',serif;font-size:19px;}
+.fb-badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.fb-badge.attente{background:#f5ead2;color:#8a6d1f;}
+.fb-badge.valide{background:#e3efe4;color:#3f7a4a;}
+.fb-badge.rejete{background:#f0e0da;color:#9a4a34;}
+.fb-gov{font-size:13px;color:var(--stone);margin-top:2px;}
+.fb-obs{font-size:15.5px;margin:9px 0;}
+.fb-photo{display:inline-block;font-size:13.5px;color:var(--gold);text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:5px 10px;}
+.fb-meta{font-size:12.5px;color:var(--stone);margin-top:9px;}
+.fb-ctoggle{appearance:none;background:none;border:none;color:var(--gold);font:inherit;font-size:13.5px;cursor:pointer;padding:8px 0 0;text-decoration:underline;}
+.fb-comments{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;}
+.fb-c{margin:0 0 9px;}
+.fb-cauthor{font-weight:700;font-size:14px;} .fb-crole{font-style:italic;font-weight:400;color:var(--gold);font-size:12px;}
+.fb-cdate{font-size:11.5px;color:var(--stone);margin-left:8px;}
+.fb-c p{margin:2px 0 0;font-size:14.5px;}
+.fb-cempty{font-size:13px;color:var(--stone);font-style:italic;margin-bottom:8px;}
+.fb-cform{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;}
+.fb-cform input,.fb-cform textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:var(--ivory);}
+.fb-cform .fb-cnom,.fb-cform .fb-cmail{flex:1;min-width:130px;}
+.fb-cform .fb-ctext{flex-basis:100%;min-height:52px;resize:vertical;}
+.fb-csend{appearance:none;background:var(--gold);color:#241c12;border:none;border-radius:7px;padding:8px 16px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;}
+.fb-cmsg{font-size:12.5px;color:var(--peril,#a5432f);align-self:center;}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="back" href="../decouvrir.html" data-i18n="patrimoine.retour">‹ Menu</a>
+    <span class="brand" data-i18n="patrimoine.marque">Patrimoine</span>
+    <span class="lang" id="langSw"></span>
+  </div>
+
+  <main>
+    <p class="kicker" data-i18n="patrimoine.kicker">Institut National du Patrimoine</p>
+    <h1 data-i18n="patrimoine.h1">Le patrimoine, sous nos yeux</h1>
+    <p class="lead" data-i18n="patrimoine.lead"></p>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="filters">
+      <input type="search" id="q" data-i18n-ph="patrimoine.filtre.recherche">
+      <select id="fGov"></select>
+      <select id="fEtat"></select>
+      <label class="chk"><input type="checkbox" id="fClasse"> <span data-i18n="patrimoine.filtre.classe"></span></label>
+    </div>
+    <div class="count" id="count"></div>
+
+    <div class="exportbar">
+      <span class="exlabel" data-i18n="patrimoine.export.titre">Exporter le dossier :</span>
+      <button id="exPDF" data-i18n="patrimoine.export.pdf">Imprimer / PDF</button>
+      <button id="exHTML" data-i18n="patrimoine.export.html">Télécharger (HTML)</button>
+      <button id="exINP" data-i18n="patrimoine.export.inp">Envoyer à l'INP</button>
+    </div>
+
+    <div class="grid" id="list"></div>
+    <div class="loading" id="loading">…</div>
+    <div class="empty" id="empty" style="display:none" data-i18n="patrimoine.vide"></div>
+
+    <section id="feed">
+      <h2 class="feed-h" data-i18n="patrimoine.feed.titre">Contributions de la communauté</h2>
+      <p class="feed-sub" data-i18n="patrimoine.feed.sous"></p>
+      <div id="feedList"></div>
+    </section>
+  </main>
+
+  <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+
+  <!-- Firebase (SDK compat) — UNIQUEMENT patrimoine. Inerte si config vide. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="i18n/engine.js"></script>
+  <script src="export.js"></script>
+  <script src="app.js"></script>
+  <script src="feed.js"></script>
+</body>
+</html>

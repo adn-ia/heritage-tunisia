@@ -1,0 +1,54 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║  RÈGLES DE SÉCURITÉ FIRESTORE — sous-app « Veille citoyenne du         ║
+║  Patrimoine ». À coller dans : Firebase console → Firestore Database   ║
+║  → onglet « Règles » → remplacer tout → Publier.                        ║
+║                                                                        ║
+║  ⚠️ AVANT DE PUBLIER : remplace les e-mails de l'allowlist ci-dessous  ║
+║  (fonction estPrivilegie) par TON e-mail (Mère) + celui/ceux de l'INP. ║
+║  Ce sont les SEULS comptes Google pouvant valider / modérer.           ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Allowlist : Mère (toi) + INP. Modifie ces e-mails. ───
+    function estPrivilegie() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+          'helmymekaoui@gmail.com'      // Mère (admin)
+          // , 'contact@inp.tn'          // INP — décommente/ajoute quand tu l'as
+        ];
+    }
+
+    function champsSoumissionOk() {
+      let d = request.resource.data;
+      return d.nom is string && d.nom.size() > 1
+        && d.email is string && d.email.matches('.+@.+[.].+')
+        && d.obs is string && d.obs.size() > 2
+        && d.status == 'pending'                 // le public ne peut créer QUE du 'pending'
+        && d.createdAt == request.time;          // horodatage serveur imposé
+    }
+
+    match /submissions/{id} {
+      allow read: if true;                        // feed public : tout le monde lit
+      allow create: if champsSoumissionOk();      // public : soumettre (nominatif, pending)
+      allow update, delete: if estPrivilegie();   // INP/Mère : valider / éditer / supprimer
+
+      match /comments/{cid} {
+        allow read: if true;
+        allow create: if request.resource.data.nom is string
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;                   // pas d'édition de commentaire
+        allow delete: if estPrivilegie();         // Mère modère (supprime)
+      }
+    }
+  }
+}
+
+──────────────────────────────────────────────────────────────────────────
+NOTE F3 : quand on ajoutera l'upload de photos (Firebase Storage) et les
+e-mails de notification (Cloud Function), on complètera ces règles + celles
+de Storage. En F1, les photos = URL collée (aucune règle Storage requise).

@@ -80,6 +80,8 @@ section.reading,.lead.reading{background:rgba(168,136,79,.10);box-shadow:-3px 0 
 .sidemenu{flex:0 0 214px;margin-top:34px;background:var(--paper);border:1px solid var(--line);
   border-radius:8px;padding:14px 14px 12px;box-shadow:0 4px 16px rgba(43,35,24,.09);}
 .sm-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:19px;margin-bottom:8px;}
+.sm-group{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold);margin:12px 0 4px;padding-top:8px;border-top:1px solid var(--line);}
+.sm-group:first-of-type{border-top:none;padding-top:0;margin-top:2px;}
 .sm-item{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);
   padding:9px;border-radius:6px;font-size:15px;transition:background .12s;}
 .sm-item:hover{background:#f1e7d5;}
@@ -135,18 +137,23 @@ body.narr-on{padding-bottom:76px;}
     <p class="lead"><b>C'est ici qu'est né le mot « Afrique ».</b> Pour les Romains, l'<i>Africa</i> était d'abord — selon l'étymologie la plus admise — « la terre des <b>Afri</b> », un peuple <b>berbère, autochtone</b>, installé autour de Carthage. De cette petite province, le nom a fini par recouvrir <b>tout le continent</b> : sans doute le seul au monde à porter celui d'un peuple local (là où l'Amérique tient le sien d'un explorateur européen). Et ce n'est qu'une strate : en trois mille ans, entre la mer et le désert, presque toutes les puissances de la Méditerranée ont passé par cette terre — chacune y laissant ses pierres, ses mots, ses goûts, superposés comme les strates d'un même récit. Voici, en bref, l'histoire de cette terre, et la nature qui la porte.</p>
     <aside class="sidemenu">
       <div class="sm-title">Le menu</div>
+      <div class="sm-group" data-i18n="menu.groupe.decouvrir"></div>
       <a class="sm-item primary" href="#recit" data-tour-step="recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
       <a class="sm-item" href="itineraire.html" data-tour-step="itineraire"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
       <a class="sm-item" href="index.html" data-tour-step="carte"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
       <a class="sm-item" href="liste.html" data-tour-step="liste"><span class="i">📋</span><span class="t">Tous les lieux (liste)<small>parcourir sans la carte</small></span></a>
       <a class="sm-item" href="liste.html?around=1" data-tour-step="autour"><span class="i">📍</span><span class="t">Autour de moi<small>ce qu'il y a à voir près de vous</small></span></a>
-      <a class="sm-item" href="liste.html?theme=danger" data-tour-step="patrimoine"><span class="i">🚨</span><span class="t" data-i18n-html="patrimoine.menu.item">Patrimoine en danger<small>veille citoyenne · accès libre à tous</small></span></a>
+      <a class="sm-item" href="patrimoine/" data-tour-step="patrimoine"><span class="i">🏛️</span><span class="t"><span data-i18n="patrimoine.menu.titre"></span><small data-i18n="patrimoine.menu.sous"></small></span></a>
       <a class="sm-item" href="voyage.html" data-tour-step="voyage"><span class="i">🎞️</span><span class="t">Voyage immersif</span></a>
       <a class="sm-item" href="rome-immersion.html"><span class="i">🏛️</span><span class="t">Rome en Afrique<small>immersion narrée</small></span></a>
       <a class="sm-item soon" href="musee/"><span class="i">🏛️</span><span class="t">Scanner au musée <span class="dev">en développement</span></span></a>
       <a class="sm-item soon" href="webar/"><span class="i">✨</span><span class="t">Réalité augmentée <span class="dev">en développement</span></span></a>
       <a class="sm-item" data-brique="tour" href="#"><span class="i">🎓</span><span class="t"><span data-bt-label></span><small data-bt-sub></small></span></a>
-      <a class="sm-item" href="soutien.html"><span class="i">🔒</span><span class="t">Confidentialité &amp; soutien</span></a>
+            <div class="sm-group" data-i18n="menu.groupe.pratique"></div>
+      <a class="sm-item" href="hors-ligne.html"><span class="i">💾</span><span class="t"><span data-i18n="menu.sauvegarde"></span><small data-i18n="menu.sauvegarde.sub"></small></span></a>
+      <a class="sm-item" href="contribuer.html"><span class="i">🙌</span><span class="t"><span data-i18n="soutien.contribuer.signaler"></span><small data-i18n="menu.contribuer.sub"></small></span></a>
+      <a class="sm-item" href="confidentialite.html"><span class="i">🔒</span><span class="t"><span data-i18n="menu.confidentialite"></span><small data-i18n="menu.confidentialite.sub"></small></span></a>
+      <a class="sm-item" href="soutien.html"><span class="i">☕</span><span class="t"><span data-i18n="menu.soutien"></span><small data-i18n="menu.soutien.sub"></small></span></a>
       <a class="sm-item" href="sources-credits.html"><span class="i">📑</span><span class="t">Sources &amp; crédits<small>données &amp; photos sourcées</small></span></a>
       <div class="sm-note">📍 Activez la localisation pour vous situer parmi les sites.</div>
     </aside>

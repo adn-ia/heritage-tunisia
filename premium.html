@@ -147,7 +147,7 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
       +'<p class="fineprint">'+uiT('Paiement sécurisé via Lemon Squeezy · activation immédiate au retour.')+'</p>');
     if(P.APPSTORE_URL) parts.push('<a class="btn ghost" href="'+P.APPSTORE_URL+'" target="_blank" rel="noopener">📱 '+uiT('Aussi sur l’App Store')+'</a>');
     // café / pourboire (web only) — petit cadeau surprise
-    parts.push('<a class="btn ghost" href="soutien.html" style="margin-top:8px">☕ '+uiT('Payer un café (soutien)')+'</a>');
+    var _tip=(window.HConf&&HConf.tip)||''; if(_tip) parts.push('<a class="btn ghost" href="'+_tip+'" target="_blank" rel="noopener" style="margin-top:8px">☕ '+uiT('Payer un café (soutien)')+'</a>');
     if(!lemon && !P.APPSTORE_URL) parts.unshift('<div class="note">📱 '+uiT('L’abonnement arrive bientôt. En attendant, entrez un')+' <b>'+uiT('code d’accès')+'</b> '+uiT('ci-dessous, ou offrez un café.')+'</div>');
     web.innerHTML=parts.join('');
     var bLS=document.getElementById('buyLS'); if(bLS) bLS.onclick=function(){ P.buy('an'); };
