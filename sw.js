@@ -3,7 +3,7 @@
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'heritage-95086489';
+const VERSION = 'heritage-353062bd';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 const TILES   = 'the-tiles-' + VERSION;
@@ -12,7 +12,7 @@ const CORE_ASSETS = [
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap',
   'accueil.html', 'bienvenue.html', 'itineraire.html', 'analytics.js', 'index.html', 'liste.html', 'premium.html', 'confidentialite.html',
   'decouvrir.html', 'a-propos.html', 'soutien.html', 'voyage.html', 'sources-credits.html', 'credits-photos.html', 'flux.html', 'rome-immersion.html', 'contribuer.html',
-  'manifest.json', 'icon-the.svg', 'icon-192.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'logo-the.png', 'logo-threshold.png', 'the-footer.js', 'the-pass.js', 'the-lightbox.js', 'the-print.js', 'the-souvenir.js', 'the-i18n.js', 'the-backup.js', 'brique-note.js', 'brique-contact.js', 'brique-legende.js', 'brique-tour.js', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'brique-legende.data.json', 'immersion-rome.mp3',
+  'manifest.json', 'icon-the.svg', 'icon-192.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'logo-the.png', 'logo-threshold.png', 'the-footer.js', 'the-pass.js', 'the-lightbox.js', 'the-print.js', 'the-souvenir.js', 'the-i18n.js', 'the-backup.js', 'brique-note.js', 'brique-contact.js', 'brique-legende.js', 'brique-tour.js', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'brique-legende.data.json', 'immersion-rome.mp3',
   'sites.geojson', 'sites-nature.geojson', 'tours.json', 'mer-antique.geojson', 'photos.json', 'gastronomie.json',
   'musee/index.html', 'webar/index.html'
 ];
@@ -40,6 +40,15 @@ const isTile = url => /basemaps\.cartocdn\.com|tile\.openstreetmap\.org/.test(ur
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || !req.url.startsWith('http')) return;
+
+  // Contenu téléchargé pour hors-ligne (voix .mp3 + photos /img/) : servir depuis le cache dédié.
+  if (/\.(mp3|m4a|ogg|wav)(\?|$)/i.test(req.url) || /\/img\//.test(req.url)) {
+    e.respondWith(
+      caches.open('heritage-offline').then(c => c.match(req, { ignoreVary: true }))
+        .then(hit => hit || fetch(req)).catch(() => fetch(req))
+    );
+    return;
+  }
 
   // Tuiles de carte : cache-first, on garde celles qu'on a vues
   if (isTile(req.url)) {

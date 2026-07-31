@@ -52,6 +52,8 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
 <main>
   <h1>Vos données, votre voyage</h1>
   <p class="lead">Sobre par choix : on vous en demande le moins possible, et rien ne se vend.</p>
+  <section data-brique="hors-ligne"></section>
+
 
   <section class="privacy-key">
     <h2>🔒 Confidentialité (RGPD)</h2>
@@ -184,5 +186,6 @@ input[type=email]{flex:1;min-width:180px;padding:11px;border:1px solid var(--lin
    var andr=/Android/.test(u)&&((new URLSearchParams(location.search)).get('app')==='play'||(document.referrer||'').indexOf('android-app://')===0||(function(){try{return sessionStorage.getItem('the_store_app')==='1';}catch(e){return false;}})());
    if(andr){try{sessionStorage.setItem('the_store_app','1');}catch(e){}}
    if(iOS||andr){var e=document.querySelectorAll('.ios-hide');for(var k=0;k<e.length;k++)e[k].style.display='none';}})();</script>
+<script src="brique-hors-ligne.js" defer></script>
 </body>
 </html>
