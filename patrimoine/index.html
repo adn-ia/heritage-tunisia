@@ -8,6 +8,7 @@
 <script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;
       --peril:#a5432f;--moyen:#b9862f;--bon:#5c7a52;}
@@ -118,6 +119,58 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
 .addsite:hover{background:#f6ead4;}
 .addsite-ic{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
   background:var(--gold);color:#241c12;font-weight:700;font-size:16px;flex:none;}
+/* Bouton connexion admin */
+.authbtn{margin-left:auto;align-self:center;display:flex;align-items:center;gap:8px;}
+.auth-who{font-size:12.5px;color:var(--stone);}
+.auth-b{appearance:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;}
+.auth-b:hover{background:var(--paper);}
+/* Liste linéaire des contributions */
+.fb-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;
+  background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin:0 0 9px;cursor:pointer;font:inherit;}
+.fb-row:hover{border-color:var(--gold-soft);box-shadow:0 2px 10px rgba(43,35,24,.06);}
+.fb-row-main{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.fb-row-main b{font-family:'Cormorant Garamond',serif;font-size:18px;}
+.fb-ref{font-size:12px;color:var(--stone);}
+.fb-row-meta{display:flex;align-items:center;gap:10px;flex:none;}
+.fb-row-date{font-size:12px;color:var(--stone);}
+/* Carte */
+#patMap{height:min(70vh,560px);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.map-note{font-size:12.5px;color:var(--stone);font-style:italic;margin:10px 0 0;}
+.leaflet-popup-content{font-family:'EB Garamond',Georgia,serif;font-size:13.5px;}
+.leaflet-popup-content a{color:var(--gold);}
+/* Modale contribution (grande, pas plein écran) */
+.cmodal{position:fixed;inset:0;z-index:1000;background:rgba(20,15,10,.55);display:flex;align-items:center;justify-content:center;padding:20px;}
+.cmodal[hidden]{display:none;}
+.cmodal-box{background:var(--ivory);border-radius:14px;width:min(680px,100%);max-height:90vh;overflow:auto;position:relative;box-shadow:0 24px 70px rgba(20,15,10,.5);}
+.cmodal-x{position:absolute;top:10px;right:12px;background:none;border:none;font-size:26px;line-height:1;color:var(--stone);cursor:pointer;z-index:2;}
+.cmodal-body{padding:22px 22px 24px;}
+.cm-head{display:flex;align-items:center;gap:12px;justify-content:space-between;padding-right:28px;}
+.cm-head h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:25px;margin:0;}
+.cm-ref,.cm-etat{font-size:13.5px;color:var(--stone);margin-top:3px;}
+.cm-obs{font-size:16px;margin:12px 0;}
+.cm-meta{font-size:12.5px;color:var(--stone);}
+.cm-reason{background:#f0e0da;border-left:3px solid var(--peril,#a5432f);padding:9px 12px;border-radius:6px;font-size:13.5px;margin:10px 0;}
+.cm-admin{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 4px;padding:12px;background:#f3ede0;border:1px solid var(--line);border-radius:10px;}
+.cm-admin-lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep,#8a6d3a);font-weight:700;width:100%;}
+.cm-btn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 13px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink);}
+.cm-btn:hover{background:var(--paper);}
+.cm-btn.ok{background:#e3efe4;border-color:#bcd6c1;color:#3f7a4a;}
+.cm-btn.no{background:#f5ead2;border-color:#e6d3a2;color:#8a6d1f;}
+.cm-btn.danger{background:#f0e0da;border-color:#e2bcae;color:#9a4a34;}
+.cm-edit{display:flex;flex-direction:column;gap:5px;margin:10px 0;padding:12px;background:#fffdf8;border:1px dashed var(--gold-soft);border-radius:10px;}
+.cm-edit label{font-size:12px;color:var(--stone);}
+.cm-edit input,.cm-edit textarea{font:inherit;font-size:14.5px;border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:var(--ivory);}
+.cm-edit textarea{min-height:70px;resize:vertical;}
+.cm-edit-act{flex-direction:row;display:flex;gap:8px;margin-top:4px;}
+.cm-comments{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;}
+.cm-comments h3{font-family:'Cormorant Garamond',serif;font-size:18px;margin:0 0 8px;}
+.cm-clist{margin-bottom:10px;}
+.cm-cform{display:flex;flex-wrap:wrap;gap:7px;}
+.cm-cform input,.cm-cform textarea{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:var(--paper);}
+.cm-cnom,.cm-cmail{flex:1;min-width:130px;}
+.cm-ctext{flex-basis:100%;min-height:52px;resize:vertical;}
+.cm-csend{appearance:none;background:var(--gold);color:#241c12;border:none;border-radius:7px;padding:8px 16px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;}
+.cm-cmsg{font-size:12.5px;color:var(--peril,#a5432f);align-self:center;}
 </style>
 </head>
 <body>
@@ -136,7 +189,10 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
 
     <nav class="ptabs">
       <button class="ptab on" type="button" data-pane="sites" data-i18n="patrimoine.tab.sites">Sites</button>
+      <button class="ptab" type="button" data-pane="carte" data-i18n="patrimoine.tab.carte">Carte</button>
       <button class="ptab" type="button" data-pane="contrib" data-i18n="patrimoine.tab.contrib">Contributions</button>
+      <button class="ptab" type="button" data-pane="statuts" data-i18n="patrimoine.tab.statuts">Statuts</button>
+      <span id="authBtn" class="authbtn"></span>
     </nav>
 
     <div id="pane-sites">
@@ -162,12 +218,25 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
     <div class="empty" id="empty" style="display:none" data-i18n="patrimoine.vide"></div>
     </div><!-- /pane-sites -->
 
+    <div id="pane-carte" hidden>
+      <div id="patMap"></div>
+      <p class="map-note" data-i18n="patrimoine.carte.note"></p>
+    </div>
+
     <div id="pane-contrib" hidden>
       <section id="feed">
         <h2 class="feed-h" data-i18n="patrimoine.feed.titre">Contributions de la communauté</h2>
         <p class="feed-sub" data-i18n="patrimoine.feed.sous"></p>
         <a class="addsite" href="contribuer.html"><span class="addsite-ic">＋</span><span data-i18n="patrimoine.addsite">Un site manque à la liste ? Signalez-le</span></a>
         <div id="feedList"></div>
+      </section>
+    </div>
+
+    <div id="pane-statuts" hidden>
+      <section id="statutsSec">
+        <h2 class="feed-h" data-i18n="patrimoine.statuts.titre">Statuts des contributions</h2>
+        <p class="feed-sub" data-i18n="patrimoine.statuts.sous"></p>
+        <div id="statutsList"></div>
       </section>
     </div>
   </main>
@@ -179,23 +248,24 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="firebase.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="i18n/engine.js"></script>
   <script src="export.js"></script>
   <script src="app.js"></script>
   <script src="feed.js"></script>
   <script>
-  /* Onglets Sites / Contributions (deep-link #contrib) */
+  /* Onglets Sites / Carte / Contributions / Statuts (deep-link #carte, #contrib, #statuts) */
   (function(){
     var tabs = document.querySelectorAll('.ptab');
-    var ps = document.getElementById('pane-sites'), pc = document.getElementById('pane-contrib');
+    var panes = { sites:'pane-sites', carte:'pane-carte', contrib:'pane-contrib', statuts:'pane-statuts' };
     function show(pane){
-      if(ps) ps.hidden = (pane !== 'sites');
-      if(pc) pc.hidden = (pane !== 'contrib');
+      Object.keys(panes).forEach(function(k){ var el=document.getElementById(panes[k]); if(el) el.hidden = (k !== pane); });
       tabs.forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-pane') === pane); });
-      try{ if(pane === 'contrib') history.replaceState(null, '', '#contrib'); else history.replaceState(null, '', location.pathname); }catch(e){}
+      if(pane === 'carte' && window.PatMap) PatMap.show();
+      try{ history.replaceState(null, '', pane === 'sites' ? location.pathname : '#'+pane); }catch(e){}
     }
     tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.getAttribute('data-pane')); }); });
-    if(location.hash === '#contrib') show('contrib');
+    var h = (location.hash||'').replace('#',''); if(panes[h]) show(h);
   })();
   </script>
 </body>

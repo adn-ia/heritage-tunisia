@@ -160,6 +160,28 @@
     etatClass: etatClass, etatLabel: etatLabel, filterText: filterText
   };
 
+  // ── Carte (Leaflet, construite à la 1re ouverture de l'onglet Carte) ──
+  var _map = null;
+  function etatColor(ec){ return ec==='peril'?'#a5432f':(ec==='moyen'?'#b58a2f':(ec==='bon'?'#5c7a52':'#8a7c66')); }
+  function buildMap(){
+    if(_map || !window.L) return;
+    var el = document.getElementById('patMap'); if(!el) return;
+    var pts = SITES.filter(function(s){ return s.lat!=null && s.lon!=null && s.coord_ok!==false; });
+    _map = L.map(el, { scrollWheelZoom:true });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom:19, attribution:'© OpenStreetMap © CARTO' }).addTo(_map);
+    var renderer = L.canvas({ padding:0.5 }), group = [];
+    pts.forEach(function(s){
+      var ec = etatClass(s.etat);
+      var mk = L.circleMarker([s.lat, s.lon], { renderer:renderer, radius:4, weight:1, color:'#fff', fillColor:etatColor(ec), fillOpacity:.9 });
+      mk.bindPopup('<b>'+esc(s.nom||'—')+'</b><br>'+esc([s.localite,s.gov].filter(Boolean).join(' · '))+'<br>'+esc(etatLabel(s.etat))+
+        '<br><a href="contribuer.html?site='+encodeURIComponent(s.id||'')+'&nom='+encodeURIComponent(s.nom||'')+'&gov='+encodeURIComponent(s.gov||'')+'&etat='+encodeURIComponent(s.etat||'')+'">'+esc(T('patrimoine.fiche.signaler'))+'</a>');
+      group.push(mk); mk.addTo(_map);
+    });
+    if(pts.length){ try{ _map.fitBounds(L.featureGroup(group).getBounds().pad(0.05)); }catch(e){ _map.setView([pts[0].lat,pts[0].lon],7); } }
+    else _map.setView([34,9],6);
+  }
+  window.PatMap = { show:function(){ buildMap(); if(_map) setTimeout(function(){ _map.invalidateSize(); },60); } };
+
   function start(){
     buildLangSw();
     loadData().then(function(){

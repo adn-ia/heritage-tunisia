@@ -52,14 +52,30 @@
     };
     return db.collection("submissions").add(doc);
   }
-  // écoute temps réel du feed (les soumissions non rejetées), plus récentes d'abord
+  // écoute temps réel de TOUTES les soumissions (les vues filtrent par statut), plus récentes d'abord
   function watchSubmissions(cb, max) {
     if (!ready) { cb(null); return function () {}; }
-    return db.collection("submissions").orderBy("createdAt", "desc").limit(max || 100)
+    return db.collection("submissions").orderBy("createdAt", "desc").limit(max || 300)
       .onSnapshot(function (snap) {
-        var out = []; snap.forEach(function (d) { var v = d.data(); v.id = d.id; if (v.status !== "rejected") out.push(v); });
+        var out = []; snap.forEach(function (d) { var v = d.data(); v.id = d.id; out.push(v); });
         cb(out);
       }, function () { cb(null); });
+  }
+
+  // ─── Modération (INP / Mère seulement — imposé par les règles Firestore) ───
+  function setStatus(id, status, reason) {   // status: 'pending'|'validated'|'rejected'
+    if (!ready) return Promise.reject(new Error("offline"));
+    var u = { status: status, reviewedBy: (user && user.email) || "", reviewedAt: ts() };
+    if (reason != null) u.reason = reason;
+    return db.collection("submissions").doc(id).update(u);
+  }
+  function updateSubmission(id, fields) {   // éditer le contenu (site/etat/obs/photoUrl/photoCredit)
+    if (!ready) return Promise.reject(new Error("offline"));
+    return db.collection("submissions").doc(id).update(fields || {});
+  }
+  function deleteSubmission(id) {
+    if (!ready) return Promise.reject(new Error("offline"));
+    return db.collection("submissions").doc(id).delete();
   }
 
   // ─── Commentaires (sous une soumission) ───
@@ -86,6 +102,7 @@
     ready: ready,
     addSubmission: addSubmission, watchSubmissions: watchSubmissions,
     addComment: addComment, watchComments: watchComments,
+    setStatus: setStatus, updateSubmission: updateSubmission, deleteSubmission: deleteSubmission,
     signInGoogle: signInGoogle, signOut: signOut, onAuth: onAuth,
     role: role, user: function () { return user; }
   };
