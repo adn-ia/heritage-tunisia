@@ -171,6 +171,14 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
 .cm-ctext{flex-basis:100%;min-height:52px;resize:vertical;}
 .cm-csend{appearance:none;background:var(--gold);color:#241c12;border:none;border-radius:7px;padding:8px 16px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;}
 .cm-cmsg{font-size:12.5px;color:var(--peril,#a5432f);align-self:center;}
+/* Panneau Partager (Mère) */
+.share-panel{background:#f3ede0;border:1px solid var(--line);border-radius:11px;padding:14px 16px;margin:0 0 16px;}
+.share-h{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--gold-deep,#8a6d3a);margin-bottom:8px;}
+.share-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0;}
+.share-lbl{font-size:13px;font-weight:600;min-width:64px;}
+.share-row code{font-size:12.5px;background:#fffdf8;border:1px solid var(--line);border-radius:6px;padding:5px 9px;flex:1;min-width:180px;overflow:auto;white-space:nowrap;}
+.share-b{appearance:none;background:var(--gold);color:#241c12;border:none;border-radius:7px;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;flex:none;}
+.share-note{font-size:12px;color:var(--stone);font-style:italic;margin-top:6px;}
 </style>
 </head>
 <body>
@@ -224,6 +232,7 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
     </div>
 
     <div id="pane-contrib" hidden>
+      <div id="sharePanel" class="share-panel" hidden></div>
       <section id="feed">
         <h2 class="feed-h" data-i18n="patrimoine.feed.titre">Contributions de la communauté</h2>
         <p class="feed-sub" data-i18n="patrimoine.feed.sous"></p>

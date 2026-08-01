@@ -179,11 +179,31 @@
     if (b) b.addEventListener("click", function () { if (b.getAttribute("data-a") === "in") PatFB.signInGoogle().catch(function () {}); else PatFB.signOut(); });
   }
 
+  /* ── panneau « Partager » (Mère seulement) : lien public + lien INP ── */
+  function baseUrl() { return location.origin + location.pathname.replace(/[^/]*$/, ""); } // .../patrimoine/
+  function renderShare() {
+    var el = document.getElementById("sharePanel"); if (!el) return;
+    var isMere = window.PatFB && PatFB.ready && PatFB.role && PatFB.role() === "mere";
+    if (!isMere) { el.hidden = true; el.innerHTML = ""; return; }
+    var pub = baseUrl(), inp = pub + "#contrib";
+    el.hidden = false;
+    function line(lbl, u) { return '<div class="share-row"><span class="share-lbl">' + esc(lbl) + '</span><code>' + esc(u) + '</code><button class="share-b" type="button" data-u="' + esc(u) + '">' + esc(T("patrimoine.share.copier")) + "</button></div>"; }
+    el.innerHTML = '<div class="share-h">' + esc(T("patrimoine.share.titre")) + "</div>" +
+      line(T("patrimoine.share.public"), pub) + line(T("patrimoine.share.inp"), inp) +
+      '<div class="share-note">' + esc(T("patrimoine.share.inp.note")) + "</div>";
+    el.querySelectorAll(".share-b").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var u = b.getAttribute("data-u");
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { b.textContent = T("patrimoine.share.copie"); setTimeout(function () { b.textContent = T("patrimoine.share.copier"); }, 1500); });
+      });
+    });
+  }
+
   function boot() {
     if (!document.getElementById("feed") && !document.getElementById("statutsList")) return;
     if (!window.PatFB || !PatFB.ready) { SUBS = null; renderAll(); return; }
-    PatFB.onAuth(function () { renderAuth(); renderAll(); });
-    renderAuth();
+    PatFB.onAuth(function () { renderAuth(); renderShare(); renderAll(); });
+    renderAuth(); renderShare();
     PatFB.watchSubmissions(function (subs) { SUBS = subs; renderAll(); }, 300);
   }
   if (window.PATi18n && PATi18n.boot) PATi18n.boot().then(boot); else if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();

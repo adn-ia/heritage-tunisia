@@ -121,5 +121,11 @@
  "patrimoine.mod.annuler": "Cancel",
  "patrimoine.mod.confirm.suppr": "Permanently delete this contribution?",
  "patrimoine.auth.connexion": "Admin sign-in",
- "patrimoine.auth.deconnexion": "Sign out"
+ "patrimoine.auth.deconnexion": "Sign out",
+ "patrimoine.share.titre": "Share the watch",
+ "patrimoine.share.public": "Public link",
+ "patrimoine.share.inp": "INP link",
+ "patrimoine.share.copier": "Copy",
+ "patrimoine.share.copie": "Copied ✓",
+ "patrimoine.share.inp.note": "The INP opens this link then signs in with the Google account you authorised to get validation powers."
 }

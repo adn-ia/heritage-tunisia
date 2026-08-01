@@ -121,5 +121,11 @@
  "patrimoine.mod.annuler": "Annuler",
  "patrimoine.mod.confirm.suppr": "Supprimer définitivement cette contribution ?",
  "patrimoine.auth.connexion": "Connexion admin",
- "patrimoine.auth.deconnexion": "Déconnexion"
+ "patrimoine.auth.deconnexion": "Déconnexion",
+ "patrimoine.share.titre": "Partager la veille",
+ "patrimoine.share.public": "Lien public",
+ "patrimoine.share.inp": "Lien INP",
+ "patrimoine.share.copier": "Copier",
+ "patrimoine.share.copie": "Copié ✓",
+ "patrimoine.share.inp.note": "L'INP ouvre ce lien puis se connecte avec le compte Google que vous avez autorisé pour obtenir les pouvoirs de validation."
 }

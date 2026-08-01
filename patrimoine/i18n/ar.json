@@ -121,5 +121,11 @@
  "patrimoine.mod.annuler": "إلغاء",
  "patrimoine.mod.confirm.suppr": "هل تريد حذف هذه المشاركة نهائيًا؟",
  "patrimoine.auth.connexion": "تسجيل دخول المسؤول",
- "patrimoine.auth.deconnexion": "تسجيل الخروج"
+ "patrimoine.auth.deconnexion": "تسجيل الخروج",
+ "patrimoine.share.titre": "مشاركة تقرير الرصد",
+ "patrimoine.share.public": "رابط عام",
+ "patrimoine.share.inp": "رابط INP",
+ "patrimoine.share.copier": "نسخ",
+ "patrimoine.share.copie": "تم النسخ ✓",
+ "patrimoine.share.inp.note": "يقوم INP بفتح هذا الرابط ثم يسجل الدخول باستخدام حساب Google الذي قمت بتفويضه للحصول على صلاحيات المصادقة."
 }
