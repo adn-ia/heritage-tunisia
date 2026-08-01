@@ -182,8 +182,16 @@
   }
   window.PatMap = { show:function(){ buildMap(); if(_map) setTimeout(function(){ _map.invalidateSize(); },60); } };
 
+  // Décoration : frise de motifs discrets depuis la config (générique ; vide = rien).
+  function deco(){
+    var f = document.getElementById('frieze'); if(!f) return;
+    var m = (CFG.motifs || []);
+    if(!m.length){ f.style.display='none'; return; }
+    f.innerHTML = m.map(function(x){ return '<span>'+esc(x)+'</span>'; }).join('');
+  }
+
   function start(){
-    buildLangSw();
+    buildLangSw(); deco();
     loadData().then(function(){
       document.getElementById('loading').style.display='none';
       buildStats(); buildFilters(); render();

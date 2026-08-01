@@ -133,5 +133,6 @@
  "patrimoine.gate.pw": "Password",
  "patrimoine.gate.verifier": "Check your email (link sent) to activate your rights.",
  "patrimoine.gate.verifier.court": "Verify email",
- "patrimoine.gate.echec": "Wrong email or password."
+ "patrimoine.gate.echec": "Wrong email or password.",
+ "patrimoine.feed.repondre": "Reply"
 }

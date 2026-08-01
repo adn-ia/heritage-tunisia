@@ -112,22 +112,45 @@
   }
 
   /* ── commentaires ── */
+  function commentTree(cs) {
+    var byId = {}, roots = [];
+    cs.forEach(function (c) { c._children = []; byId[c.id] = c; });
+    cs.forEach(function (c) { if (c.replyTo && byId[c.replyTo]) byId[c.replyTo]._children.push(c); else roots.push(c); });
+    return roots;
+  }
+  function commentHTML(c, depth) {
+    var rl = (c.role && c.role !== "public") ? ' <em class="fb-crole">' + esc(c.role) + "</em>" : "";
+    var kids = (c._children || []).map(function (k) { return commentHTML(k, depth + 1); }).join("");
+    return '<div class="fb-c"' + (depth ? ' style="margin-left:' + (depth * 16) + 'px;border-left:2px solid var(--line);padding-left:9px"' : "") +
+      '><span class="fb-cauthor">' + esc(c.nom) + rl + '</span><span class="fb-cdate">' + fmt(c.createdAt) + "</span><p>" + esc(c.text) + "</p>" +
+      '<button class="fb-reply" type="button" data-rep="' + esc(c.id) + '">' + esc(T("patrimoine.feed.repondre")) + "</button></div>" + kids;
+  }
+  function submitComment(id, nom, mail, text, replyTo, msg, btn, textEl, formToRemove) {
+    nom = (nom || "").trim(); mail = (mail || "").trim(); text = (text || "").trim();
+    if (!nom || !text || !okMail(mail)) { msg.textContent = T("patrimoine.contrib.requis"); return; }
+    btn.disabled = true; msg.textContent = T("patrimoine.contrib.envoi");
+    PatFB.addComment(id, { nom: nom, email: mail, text: text, replyTo: replyTo || null }).then(function () {
+      if (textEl) textEl.value = ""; msg.textContent = ""; btn.disabled = false; if (formToRemove) formToRemove.remove();
+    }, function () { msg.textContent = T("patrimoine.contrib.erreur"); btn.disabled = false; });
+  }
+  function openReply(subId, parentId, btn) {
+    var nx = btn.nextElementSibling;
+    if (nx && nx.classList && nx.classList.contains("fb-replyform")) { nx.parentNode.removeChild(nx); return; }
+    var f = document.createElement("div"); f.className = "fb-replyform";
+    f.innerHTML = '<input class="r-nom" placeholder="' + esc(T("patrimoine.contrib.nom")) + '"><input class="r-mail" placeholder="' + esc(T("patrimoine.contrib.email")) + '"><textarea class="r-text" placeholder="' + esc(T("patrimoine.feed.votre.commentaire")) + '"></textarea><button class="cm-csend r-send" type="button">' + esc(T("patrimoine.feed.publier")) + '</button><span class="r-msg"></span>';
+    btn.parentNode.insertBefore(f, btn.nextSibling);
+    f.querySelector(".r-send").addEventListener("click", function () { submitComment(subId, f.querySelector(".r-nom").value, f.querySelector(".r-mail").value, f.querySelector(".r-text").value, parentId, f.querySelector(".r-msg"), f.querySelector(".r-send"), f.querySelector(".r-text"), f); });
+  }
   function wireComments(id, body) {
     var list = body.querySelector(".cm-clist");
     if (unsubComments) { unsubComments(); unsubComments = null; }
     unsubComments = PatFB.watchComments(id, function (cs) {
-      if (!cs.length) { list.innerHTML = '<div class="fb-cempty">' + esc(T("patrimoine.feed.aucun.commentaire")) + "</div>"; return; }
-      list.innerHTML = cs.map(function (c) {
-        return '<div class="fb-c"><span class="fb-cauthor">' + esc(c.nom) + (c.role && c.role !== "public" ? ' <em class="fb-crole">' + esc(c.role) + "</em>" : "") + '</span><span class="fb-cdate">' + fmt(c.createdAt) + "</span><p>" + esc(c.text) + "</p></div>";
-      }).join("");
+      if (!cs.length) { list.innerHTML = '<div class="fb-cempty">' + esc(T("patrimoine.feed.aucun.commentaire")) + "</div>"; }
+      else { list.innerHTML = commentTree(cs).map(function (c) { return commentHTML(c, 0); }).join(""); }
+      list.querySelectorAll(".fb-reply").forEach(function (b) { b.addEventListener("click", function () { openReply(id, b.getAttribute("data-rep"), b); }); });
     });
     var send = body.querySelector(".cm-csend"), msg = body.querySelector(".cm-cmsg");
-    send.addEventListener("click", function () {
-      var nom = body.querySelector(".cm-cnom").value.trim(), mail = body.querySelector(".cm-cmail").value.trim(), text = body.querySelector(".cm-ctext").value.trim();
-      if (!nom || !text || !okMail(mail)) { msg.textContent = T("patrimoine.contrib.requis"); return; }
-      send.disabled = true; msg.textContent = T("patrimoine.contrib.envoi");
-      PatFB.addComment(id, { nom: nom, email: mail, text: text }).then(function () { body.querySelector(".cm-ctext").value = ""; msg.textContent = ""; send.disabled = false; }, function () { msg.textContent = T("patrimoine.contrib.erreur"); send.disabled = false; });
-    });
+    send.addEventListener("click", function () { submitComment(id, body.querySelector(".cm-cnom").value, body.querySelector(".cm-cmail").value, body.querySelector(".cm-ctext").value, null, msg, send, body.querySelector(".cm-ctext")); });
   }
 
   /* ── téléchargement d'une contribution (PDF via impression + HTML autonome) ── */
@@ -165,6 +188,8 @@
     if (SUBS === null) { if (fl) note(fl, "patrimoine.feed.avenir"); if (sl) note(sl, "patrimoine.feed.avenir"); return; }
     var pending = SUBS.filter(function (s) { return s.status !== "validated" && s.status !== "rejected"; });
     var done = SUBS.filter(function (s) { return s.status === "validated" || s.status === "rejected"; });
+    var badge = document.getElementById("badgeCours");
+    if (badge) { if (pending.length) { badge.textContent = pending.length; badge.hidden = false; } else badge.hidden = true; }
     if (fl) { if (!pending.length) note(fl, "patrimoine.feed.vide"); else { fl.innerHTML = ""; pending.forEach(function (s) { fl.appendChild(rowEl(s)); }); } }
     if (sl) { if (!done.length) note(sl, "patrimoine.statuts.vide"); else { sl.innerHTML = ""; done.forEach(function (s) { sl.appendChild(rowEl(s)); }); } }
     if (curId && document.getElementById("cmodal") && !document.getElementById("cmodal").hidden) openModal(curId); // rafraîchit la modale ouverte

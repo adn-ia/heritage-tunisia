@@ -30,6 +30,8 @@
       appId: "1:564970341024:web:34117bcc2168ddfe39bfc5",
       measurementId: "G-NVD2BPM425"
     },
+    // Décoration : petits motifs évocateurs de l'édition (discrets, pilotés par config → socle générique).
+    motifs: ["🏛️","🏺","🕌","🫒","🌿","🏖️","⛰️","💧","🐫","🌴"],
     // Valeurs du champ `etat` (donnée INP) considérées « en péril ». Servent au FILTRE,
     // pas à l'affichage (l'affichage passe par i18n). Ce sont des clés de donnée, pas du texte UI.
     perilStates: ["Mauvais","Détruit","Disparu","Non retrouvé","Non trouvé","Mauvais/Réemploi","Immergé","Site immergé"]

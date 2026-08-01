@@ -133,5 +133,6 @@
  "patrimoine.gate.pw": "Mot de passe",
  "patrimoine.gate.verifier": "Vérifiez votre e-mail (lien envoyé) pour activer vos droits.",
  "patrimoine.gate.verifier.court": "Vérifier l'e-mail",
- "patrimoine.gate.echec": "E-mail ou mot de passe incorrect."
+ "patrimoine.gate.echec": "E-mail ou mot de passe incorrect.",
+ "patrimoine.feed.repondre": "Répondre"
 }

@@ -133,5 +133,6 @@
  "patrimoine.gate.pw": "كلمة المرور",
  "patrimoine.gate.verifier": "يرجى التحقق من بريدك الإلكتروني (تم إرسال الرابط) لتفعيل صلاحياتك.",
  "patrimoine.gate.verifier.court": "التحقق من البريد الإلكتروني",
- "patrimoine.gate.echec": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+ "patrimoine.gate.echec": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+ "patrimoine.feed.repondre": "الرد"
 }

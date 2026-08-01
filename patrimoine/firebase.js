@@ -88,7 +88,7 @@
   function addComment(subId, data) {
     if (!ready) return Promise.reject(new Error("offline"));
     return db.collection("submissions").doc(subId).collection("comments")
-      .add({ nom: data.nom || "", email: data.email || "", text: data.text || "", role: role() || "public", createdAt: ts() });
+      .add({ nom: data.nom || "", email: data.email || "", text: data.text || "", replyTo: data.replyTo || null, role: role() || "public", createdAt: ts() });
   }
   function watchComments(subId, cb) {
     if (!ready) { cb([]); return function () {}; }
