@@ -25,11 +25,20 @@
     }).join('');
   }
 
+  var PRE = { siteId:'', gov:'' };   // contribution reliée à une fiche existante (sinon vide = site absent)
   function prefill(){
     try{
       var p = new URLSearchParams(location.search);
       if(p.get('nom')) $('fSite').value = p.get('nom');
       if(p.get('etat')) $('fEtat').value = p.get('etat');
+      PRE.siteId = p.get('site') || '';
+      PRE.gov    = p.get('gov')  || '';
+      // Contexte : on améliore une fiche existante → bandeau + on ne renomme pas le site.
+      if(PRE.siteId){
+        var ctx = $('ctx');
+        if(ctx){ ctx.textContent = T('patrimoine.contrib.ctx', { site: (p.get('nom')||'') }); ctx.hidden = false; }
+        if($('fSite')) $('fSite').setAttribute('readonly','readonly');
+      }
     }catch(e){}
   }
 
@@ -38,7 +47,7 @@
     var nom = val('fNom'), mail = val('fMail'), obs = val('fObs');
     if(!nom || !obs || !okMail(mail)){ $('msg').style.color=''; $('msg').textContent = T('patrimoine.contrib.requis'); return; }
     var data = {
-      site: val('fSite') || '', gov: '',
+      site: val('fSite') || '', gov: PRE.gov, siteId: PRE.siteId,
       etat: $('fEtat').value || '',
       obs: obs, photoUrl: val('fPhoto') || '', photoCredit: val('fCredit') || '',
       rightsOk: !!($('fRights') && $('fRights').checked),

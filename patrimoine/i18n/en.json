@@ -53,7 +53,7 @@
  "patrimoine.fiche.carte": "View on map ›",
  "patrimoine.fiche.source": "Source: National Heritage Institute",
  "patrimoine.fiche.fermer": "Close",
- "patrimoine.fiche.signaler": "⚑ Report this site",
+ "patrimoine.fiche.signaler": "Contribute — info, a photo, a correction?",
  "patrimoine.fiche.soon": "Audio narration and public posting of reports — coming soon.",
  "patrimoine.contrib.titre": "Report — citizen watch",
  "patrimoine.contrib.retour": "‹ Back",
@@ -95,5 +95,9 @@
  "patrimoine.feed.commenter": "Comment",
  "patrimoine.feed.votre.commentaire": "Your comment…",
  "patrimoine.feed.publier": "Post",
- "patrimoine.feed.aucun.commentaire": "No comments yet."
+ "patrimoine.feed.aucun.commentaire": "No comments yet.",
+ "patrimoine.tab.sites": "Sites",
+ "patrimoine.tab.contrib": "Contributions",
+ "patrimoine.addsite": "A site missing from the list? Report it",
+ "patrimoine.contrib.ctx": "You're enriching: {site}. Known info is pre-filled — complete or correct it."
 }

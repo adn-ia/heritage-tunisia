@@ -53,7 +53,7 @@
  "patrimoine.fiche.carte": "انظر على الخريطة ›",
  "patrimoine.fiche.source": "المصدر: المعهد الوطني للتراث",
  "patrimoine.fiche.fermer": "إغلاق",
- "patrimoine.fiche.signaler": "⚑ الإبلاغ عن هذا الموقع",
+ "patrimoine.fiche.signaler": "المساهمة — معلومة، صورة، تصحيح؟",
  "patrimoine.fiche.soon": "التسجيل الصوتي للنبأ ونشره للجمهور — قريبًا.",
  "patrimoine.contrib.titre": "الإبلاغ — المراقبة المدنية",
  "patrimoine.contrib.retour": "‹ العودة",
@@ -95,5 +95,9 @@
  "patrimoine.feed.commenter": "التعليق",
  "patrimoine.feed.votre.commentaire": "تعليقك…",
  "patrimoine.feed.publier": "نشر",
- "patrimoine.feed.aucun.commentaire": "لا توجد تعليقات."
+ "patrimoine.feed.aucun.commentaire": "لا توجد تعليقات.",
+ "patrimoine.tab.sites": "المواقع",
+ "patrimoine.tab.contrib": "المساهمات",
+ "patrimoine.addsite": "هل هناك موقع مفقود من القائمة؟ أبلغنا عنه",
+ "patrimoine.contrib.ctx": "أنت تقوم بتحسين الملف التعريفي لـ: {site}. المعلومات المتوفرة مملوءة مسبقًا — يرجى استكمالها أو تصحيحها."
 }

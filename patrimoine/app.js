@@ -73,7 +73,7 @@
         row(T('patrimoine.fiche.coords'), (s.lat!=null?(s.lat.toFixed(5)+', '+s.lon.toFixed(5)):''))+
       '</div>'+
       '<a class="maplink" target="_blank" rel="noopener" href="'+osm+'"></a>'+
-      '<a class="signaler" href="contribuer.html?nom='+encodeURIComponent(s.nom||'')+'&etat='+encodeURIComponent(s.etat||'')+'"></a>'+
+      '<a class="signaler" href="contribuer.html?site='+encodeURIComponent(s.id||'')+'&nom='+encodeURIComponent(s.nom||'')+'&gov='+encodeURIComponent(s.gov||'')+'&etat='+encodeURIComponent(s.etat||'')+'"></a>'+
       '<div class="soon"></div>'+
       '<p class="src"></p>';
     sheet.querySelector('h2').textContent = s.nom||'—';

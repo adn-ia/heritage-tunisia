@@ -53,7 +53,7 @@
  "patrimoine.fiche.carte": "Auf der Karte anzeigen ›",
  "patrimoine.fiche.source": "Quelle: Nationales Institut für Kulturerbe",
  "patrimoine.fiche.fermer": "Schließen",
- "patrimoine.fiche.signaler": "⚑ Diese Website melden",
+ "patrimoine.fiche.signaler": "Mitwirken – eine Information, ein Foto, eine Korrektur?",
  "patrimoine.fiche.soon": "Audio-Kommentare und öffentliche Veröffentlichung der Meldungen – in Kürze.",
  "patrimoine.contrib.titre": "Melden – Bürgerüberwachung",
  "patrimoine.contrib.retour": "‹ Zurück",
@@ -95,5 +95,9 @@
  "patrimoine.feed.commenter": "Kommentieren",
  "patrimoine.feed.votre.commentaire": "Ihr Kommentar…",
  "patrimoine.feed.publier": "Veröffentlichen",
- "patrimoine.feed.aucun.commentaire": "Keine Kommentare."
+ "patrimoine.feed.aucun.commentaire": "Keine Kommentare.",
+ "patrimoine.tab.sites": "Standorte",
+ "patrimoine.tab.contrib": "Beiträge",
+ "patrimoine.addsite": "Fehlt eine Website in der Liste? Bitte melden Sie dies",
+ "patrimoine.contrib.ctx": "Sie bearbeiten den Eintrag: {site}. Die bekannten Informationen sind bereits ausgefüllt – ergänzen oder korrigieren Sie diese bitte."
 }

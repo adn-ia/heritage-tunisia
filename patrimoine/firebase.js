@@ -45,7 +45,7 @@
   function addSubmission(data) {
     if (!ready) return Promise.reject(new Error("offline"));
     var doc = {
-      site: data.site || "", gov: data.gov || "", etat: data.etat || "",
+      site: data.site || "", siteId: data.siteId || "", gov: data.gov || "", etat: data.etat || "",
       obs: data.obs || "", photoUrl: data.photoUrl || "", photoCredit: data.photoCredit || "",
       rightsOk: !!data.rightsOk, nom: data.nom || "", email: data.email || "",
       status: "pending", createdAt: ts()

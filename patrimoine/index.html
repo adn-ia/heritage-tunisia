@@ -107,6 +107,17 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
 .fb-cform .fb-ctext{flex-basis:100%;min-height:52px;resize:vertical;}
 .fb-csend{appearance:none;background:var(--gold);color:#241c12;border:none;border-radius:7px;padding:8px 16px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;}
 .fb-cmsg{font-size:12.5px;color:var(--peril,#a5432f);align-self:center;}
+/* Onglets Sites / Contributions */
+.ptabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:6px 0 16px;}
+.ptab{appearance:none;background:none;border:none;border-bottom:2px solid transparent;font:inherit;font-size:15px;
+  color:var(--stone);padding:9px 16px;cursor:pointer;margin-bottom:-1px;}
+.ptab:hover{color:var(--ink);}
+.ptab.on{color:var(--ink);border-bottom-color:var(--gold);font-weight:600;}
+.addsite{display:inline-flex;align-items:center;gap:9px;text-decoration:none;background:#fbf3e8;border:1px dashed var(--gold-soft);
+  border-radius:10px;padding:12px 16px;color:#5a4d3a;font-size:15px;margin:0 0 16px;transition:background .15s;}
+.addsite:hover{background:#f6ead4;}
+.addsite-ic{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
+  background:var(--gold);color:#241c12;font-weight:700;font-size:16px;flex:none;}
 </style>
 </head>
 <body>
@@ -122,6 +133,14 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
     <p class="lead" data-i18n="patrimoine.lead"></p>
 
     <div class="stats" id="stats"></div>
+
+    <nav class="ptabs">
+      <button class="ptab on" type="button" data-pane="sites" data-i18n="patrimoine.tab.sites">Sites</button>
+      <button class="ptab" type="button" data-pane="contrib" data-i18n="patrimoine.tab.contrib">Contributions</button>
+    </nav>
+
+    <div id="pane-sites">
+    <a class="addsite" href="contribuer.html"><span class="addsite-ic">＋</span><span data-i18n="patrimoine.addsite">Un site manque à la liste ? Signalez-le</span></a>
 
     <div class="filters">
       <input type="search" id="q" data-i18n-ph="patrimoine.filtre.recherche">
@@ -141,12 +160,16 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
     <div class="grid" id="list"></div>
     <div class="loading" id="loading">…</div>
     <div class="empty" id="empty" style="display:none" data-i18n="patrimoine.vide"></div>
+    </div><!-- /pane-sites -->
 
-    <section id="feed">
-      <h2 class="feed-h" data-i18n="patrimoine.feed.titre">Contributions de la communauté</h2>
-      <p class="feed-sub" data-i18n="patrimoine.feed.sous"></p>
-      <div id="feedList"></div>
-    </section>
+    <div id="pane-contrib" hidden>
+      <section id="feed">
+        <h2 class="feed-h" data-i18n="patrimoine.feed.titre">Contributions de la communauté</h2>
+        <p class="feed-sub" data-i18n="patrimoine.feed.sous"></p>
+        <a class="addsite" href="contribuer.html"><span class="addsite-ic">＋</span><span data-i18n="patrimoine.addsite">Un site manque à la liste ? Signalez-le</span></a>
+        <div id="feedList"></div>
+      </section>
+    </div>
   </main>
 
   <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
@@ -160,5 +183,20 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
   <script src="export.js"></script>
   <script src="app.js"></script>
   <script src="feed.js"></script>
+  <script>
+  /* Onglets Sites / Contributions (deep-link #contrib) */
+  (function(){
+    var tabs = document.querySelectorAll('.ptab');
+    var ps = document.getElementById('pane-sites'), pc = document.getElementById('pane-contrib');
+    function show(pane){
+      if(ps) ps.hidden = (pane !== 'sites');
+      if(pc) pc.hidden = (pane !== 'contrib');
+      tabs.forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-pane') === pane); });
+      try{ if(pane === 'contrib') history.replaceState(null, '', '#contrib'); else history.replaceState(null, '', location.pathname); }catch(e){}
+    }
+    tabs.forEach(function(t){ t.addEventListener('click', function(){ show(t.getAttribute('data-pane')); }); });
+    if(location.hash === '#contrib') show('contrib');
+  })();
+  </script>
 </body>
 </html>

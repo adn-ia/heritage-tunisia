@@ -35,6 +35,8 @@ textarea{min-height:110px;resize:vertical;}
 .btn.off{opacity:.5;cursor:not-allowed;}
 .msg{text-align:center;font-size:14px;color:var(--peril);min-height:20px;margin-top:10px;}
 h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin:0 0 14px;}
+.ctx{background:#eef3ea;border-left:3px solid var(--green,#5c7a52);padding:11px 14px;border-radius:6px;font-size:14.5px;color:#3f5238;margin:0 0 14px;}
+input[readonly]{background:#efe9db;color:#6f6350;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -48,6 +50,7 @@ h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin:
     <h1 data-i18n="patrimoine.contrib.h1">Signaler · veiller sur un site</h1>
     <p class="lead" data-i18n="patrimoine.contrib.lead"></p>
 
+    <div class="ctx" id="ctx" hidden></div>
     <div class="note" data-i18n="patrimoine.contrib.public"></div>
 
     <form id="form" novalidate>

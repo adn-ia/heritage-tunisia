@@ -53,7 +53,7 @@
  "patrimoine.fiche.carte": "Voir sur la carte ›",
  "patrimoine.fiche.source": "Source : Institut National du Patrimoine",
  "patrimoine.fiche.fermer": "Fermer",
- "patrimoine.fiche.signaler": "⚑ Signaler ce site",
+ "patrimoine.fiche.signaler": "Contribuer — une info, une photo, une correction ?",
  "patrimoine.fiche.soon": "Narration audio et publication publique des signalements — bientôt.",
  "patrimoine.contrib.titre": "Signaler — veille citoyenne",
  "patrimoine.contrib.retour": "‹ Retour",
@@ -95,5 +95,9 @@
  "patrimoine.feed.commenter": "Commenter",
  "patrimoine.feed.votre.commentaire": "Votre commentaire…",
  "patrimoine.feed.publier": "Publier",
- "patrimoine.feed.aucun.commentaire": "Aucun commentaire."
+ "patrimoine.feed.aucun.commentaire": "Aucun commentaire.",
+ "patrimoine.tab.sites": "Sites",
+ "patrimoine.tab.contrib": "Contributions",
+ "patrimoine.addsite": "Un site manque à la liste ? Signalez-le",
+ "patrimoine.contrib.ctx": "Vous améliorez la fiche : {site}. Les infos connues sont pré-remplies — complétez ou corrigez."
 }
