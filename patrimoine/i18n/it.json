@@ -128,5 +128,10 @@
  "patrimoine.share.copier": "Copia",
  "patrimoine.share.copie": "Copiato ✓",
  "patrimoine.share.inp.note": "L'INP apre questo link e poi accede con l'account Google che hai autorizzato per ottenere i diritti di convalida.",
- "patrimoine.contrib.prenom": "Nome"
+ "patrimoine.contrib.prenom": "Nome",
+ "patrimoine.gate.acces": "Accesso alla gestione",
+ "patrimoine.gate.pw": "Password",
+ "patrimoine.gate.verifier": "Controlla la tua casella di posta elettronica (ti è stato inviato un link) per attivare i tuoi diritti.",
+ "patrimoine.gate.verifier.court": "Verifica l'indirizzo e-mail",
+ "patrimoine.gate.echec": "Indirizzo e-mail o password errati."
 }

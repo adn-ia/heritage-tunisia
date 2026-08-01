@@ -128,5 +128,10 @@
  "patrimoine.share.copier": "Copier",
  "patrimoine.share.copie": "Copié ✓",
  "patrimoine.share.inp.note": "L'INP ouvre ce lien puis se connecte avec le compte Google que vous avez autorisé pour obtenir les pouvoirs de validation.",
- "patrimoine.contrib.prenom": "Prénom"
+ "patrimoine.contrib.prenom": "Prénom",
+ "patrimoine.gate.acces": "Accès gestion",
+ "patrimoine.gate.pw": "Mot de passe",
+ "patrimoine.gate.verifier": "Vérifiez votre e-mail (lien envoyé) pour activer vos droits.",
+ "patrimoine.gate.verifier.court": "Vérifier l'e-mail",
+ "patrimoine.gate.echec": "E-mail ou mot de passe incorrect."
 }

@@ -29,14 +29,20 @@
     } catch (e) { ready = false; }
   }
 
-  // Rôle dérivé de l'e-mail authentifié (allowlist config). Public = null (pas de compte).
+  // Domaines INP admissibles (config). Tant que vide → aucun rôle INP n'existe.
+  var INPDOMS = ((window.PAT && window.PAT.inpDomains) || []).map(function (d) { return String(d).toLowerCase().replace(/^@/, ""); });
+  function emailDom(m) { var i = String(m || "").toLowerCase().lastIndexOf("@"); return i >= 0 ? m.toLowerCase().slice(i + 1) : ""; }
+  // Un e-mail est « crédité » (→ on demande le mot de passe) s'il est le tien ou d'un domaine INP.
+  function isCredited(m) { m = String(m || "").toLowerCase(); return m === ADMIN || (INPDOMS.length > 0 && INPDOMS.indexOf(emailDom(m)) >= 0); }
+  // Rôle réel (pouvoirs gardés par la vérif e-mail + les règles Firestore).
   function role() {
     if (!user || !user.email) return null;
     var m = user.email.toLowerCase();
     if (m === ADMIN) return "mere";
-    if (INPS.indexOf(m) >= 0) return "inp";
-    return "connecte"; // authentifié mais hors allowlist = pas de pouvoir
+    if (INPS.indexOf(m) >= 0 || (INPDOMS.length > 0 && INPDOMS.indexOf(emailDom(m)) >= 0)) return "inp";
+    return "connecte"; // authentifié mais hors périmètre = pas de pouvoir
   }
+  function emailVerified() { return !!(user && user.emailVerified); }
 
   function ts() { return firebase.firestore.FieldValue.serverTimestamp(); }
 
@@ -90,11 +96,25 @@
       .onSnapshot(function (snap) { var out = []; snap.forEach(function (d) { var v = d.data(); v.id = d.id; out.push(v); }); cb(out); });
   }
 
-  // ─── Auth (F2 : INP + Mère) ───
-  function signInGoogle() {
+  // ─── Auth email + mot de passe (Mère / INP) ───
+  // Connexion ; si le compte n'existe pas encore → création + e-mail de vérification.
+  // Les pouvoirs ne s'activent que si l'e-mail est VÉRIFIÉ (imposé par les règles).
+  function signInEmail(email, pw) {
     if (!ready || !auth) return Promise.reject(new Error("no-auth"));
-    return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    return auth.signInWithEmailAndPassword(email, pw).catch(function (e) {
+      if (e && (e.code === "auth/user-not-found" || e.code === "auth/invalid-login-credentials")) {
+        return auth.createUserWithEmailAndPassword(email, pw).then(function (cred) {
+          try { if (cred.user && !cred.user.emailVerified) cred.user.sendEmailVerification(); } catch (x) {}
+          return cred;
+        });
+      }
+      throw e;
+    }).then(function (cred) {
+      try { if (cred && cred.user && !cred.user.emailVerified) cred.user.sendEmailVerification(); } catch (x) {}
+      return cred;
+    });
   }
+  function resendVerification() { try { return user ? user.sendEmailVerification() : Promise.reject(); } catch (e) { return Promise.reject(e); } }
   function signOut() { return auth ? auth.signOut() : Promise.resolve(); }
   function onAuth(cb) { authCbs.push(cb); cb(user, role()); }
 
@@ -103,7 +123,8 @@
     addSubmission: addSubmission, watchSubmissions: watchSubmissions,
     addComment: addComment, watchComments: watchComments,
     setStatus: setStatus, updateSubmission: updateSubmission, deleteSubmission: deleteSubmission,
-    signInGoogle: signInGoogle, signOut: signOut, onAuth: onAuth,
+    signInEmail: signInEmail, resendVerification: resendVerification, signOut: signOut, onAuth: onAuth,
+    isCredited: isCredited, emailVerified: emailVerified,
     role: role, user: function () { return user; }
   };
 })();

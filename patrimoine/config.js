@@ -18,7 +18,8 @@
     // ─── Contribution / feed partagé (Firebase PROPRE à la sous-app) ───
     inpEmail:   "",   // adresse de l'INP (notification) — à remplir quand l'INP est contactée
     adminEmail: "helmymekaoui@gmail.com",   // Mère (Helmy) : copie notifications + rôle admin
-    inpEmails:  [],   // comptes Google de l'INP (rôle valideur) — à ajouter quand connus
+    inpEmails:  [],   // comptes INP précis (rôle valideur) — à ajouter quand connus
+    inpDomains: [],   // domaines INP admissibles (ex. "inp.tn") — vide = aucun rôle INP
     // config web du projet Firebase DÉDIÉ « Veille citoyenne du Patrimoine » (publique, normale à embarquer)
     firebase: {
       apiKey: "AIzaSyAYeZsZjZMTr_LFP9iO97vEaWkyWbh2yxg",

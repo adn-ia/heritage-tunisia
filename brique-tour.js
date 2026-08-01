@@ -29,7 +29,9 @@
 (function () {
   "use strict";
 
-  var DONE_KEY = "h_tour_done";
+  // Auto-lancement PAR LANGUE : la 1re fois dans CHAQUE langue (fr, en, nationale),
+  // pas une seule fois pour toujours. Clé suffixée par la langue courante.
+  function doneKey() { return "h_tour_done_" + (cur() || "fr"); }
   var reduce = false;
   try { reduce = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches; } catch (e) {}
 
@@ -100,6 +102,7 @@
       ".htour-btn.prim:hover{filter:brightness(1.05);}" +
       ".htour-btn.go{background:#26201a;color:#f6f0e4;border-color:#26201a;}" +
       ".htour-btn.go:hover{filter:brightness(1.15);}" +
+      ".htour-btn.ic{padding:9px 11px;font-size:15px;line-height:1;}" +
       ".htour-skip{background:none;border:none;color:#8a7c66;font-family:inherit;font-size:13px;" +
       "cursor:pointer;text-decoration:underline;padding:4px 2px;}" +
       ".htour-skip:hover{color:#2b2318;}" +
@@ -121,6 +124,7 @@
   }
 
   function teardown() {
+    if (typeof stopVoice === "function") stopVoice();   // couper la voix en cours
     if (onResize) {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onResize, true);
@@ -131,7 +135,7 @@
   }
   function finish() {
     teardown();
-    try { localStorage.setItem(DONE_KEY, "1"); } catch (e) {}
+    try { localStorage.setItem(doneKey(), "1"); } catch (e) {}
   }
 
   function positionSpot(el) {
@@ -174,6 +178,7 @@
       '<div class="htour-dots">' + dots + '</div>' +
       '<div class="htour-ft">' +
         '<span class="htour-count">' + esc(L("stepOf", { n: cur2 + 1, total: steps.length })) + '</span>' +
+        '<button class="htour-btn ic" data-act="voice" aria-label="voix">' + (paused ? "▶" : "⏸") + '</button>' +
         (target ? '<button class="htour-btn go" data-act="goto">' + esc(L("goto")) + '</button>' : '') +
         (cur2 > 0 ? '<button class="htour-btn" data-act="prev">' + esc(L("prev")) + '</button>' : '') +
         '<button class="htour-btn prim" data-act="next">' + esc(last ? L("done") : L("next")) + '</button>' +
@@ -183,6 +188,7 @@
     cardEl.querySelectorAll("[data-act]").forEach(function (b) {
       b.addEventListener("click", function () {
         var a = b.getAttribute("data-act");
+        if (a === "voice") { toggleVoice(); return; }
         if (a === "prev") go(cur2 - 1);
         else if (a === "skip") finish();
         else if (a === "goto") { finish(); try { target.click(); } catch (e) {} }
@@ -192,9 +198,27 @@
     cardEl.querySelectorAll(".htour-dots i").forEach(function (d) {
       d.addEventListener("click", function () { go(parseInt(d.getAttribute("data-i"), 10)); });
     });
+    narrate(); // lit l'étape courante (voix lente) → auto-avance à la fin de la voix
   }
 
   function go(i) { if (i < 0 || i >= steps.length) return; cur2 = i; render(); }
+
+  /* --- Voix (MP3 edge-tts, modèle de la gamme comme the-fiche-audio.js) :
+     joue voix/tour/<étape>-<lang>.mp3 (langue de la garde) ; la DURÉE de la
+     voix définit l'affichage → auto-avance à la fin (événement 'ended').
+     Bouton pause/lecture. Dégradation propre si le MP3 manque (avance manuelle). */
+  var paused = false, audio = null;
+  function stopVoice() { if (audio) { try { audio.pause(); } catch (e) {} audio = null; } }
+  function narrate() {
+    stopVoice();
+    if (paused) return;
+    var s = steps[cur2]; if (!s || !s.id) return;
+    var a = new Audio("voix/tour/" + encodeURIComponent(s.id) + "-" + (cur() || "en") + ".mp3");
+    audio = a;
+    a.addEventListener("ended", function () { if (a !== audio || paused) return; audio = null; if (cur2 < steps.length - 1) go(cur2 + 1); });
+    a.play().catch(function () { /* pas de MP3 pour cette étape/langue → avance manuelle */ });
+  }
+  function toggleVoice() { paused = !paused; if (paused) stopVoice(); render(); }
 
   function _start() {
     injectCSS();
@@ -235,7 +259,7 @@
   /* --- Auto-lancement au 1er passage ---------------------------------- */
   function autoStart() {
     var done = false;
-    try { done = !!localStorage.getItem(DONE_KEY); } catch (e) {}
+    try { done = !!localStorage.getItem(doneKey()); } catch (e) {}
     if (done) return;
     load().then(function () { buildSteps(); if (steps.length) setTimeout(_start, 350); });
   }
@@ -248,7 +272,7 @@
   window.HTour = {
     start: start,
     available: function () { return load().then(function () { buildSteps(); return steps.length > 0; }); },
-    reset: function () { try { localStorage.removeItem(DONE_KEY); } catch (e) {} },
-    seen: function () { try { return !!localStorage.getItem(DONE_KEY); } catch (e) { return false; } }
+    reset: function () { try { ["fr","en","de","it","ar","pt","hr","cs","ga","et"].forEach(function (l) { localStorage.removeItem("h_tour_done_" + l); }); localStorage.removeItem("h_tour_done"); } catch (e) {} },
+    seen: function () { try { return !!localStorage.getItem(doneKey()); } catch (e) { return false; } }
   };
 })();

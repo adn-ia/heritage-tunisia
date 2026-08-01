@@ -171,13 +171,41 @@
   }
 
   /* ── bouton connexion admin ── */
+  /* ── Coin discret de connexion (pas d'écran, pas de mot « admin ») :
+     petite clé 🔑 → e-mail + mot de passe inline. Par défaut le dashboard est PUBLIC.
+     Si l'e-mail est reconnu (le tien / domaine INP) + mot de passe + e-mail vérifié → crédité. ── */
   function renderAuth() {
     var el = document.getElementById("authBtn"); if (!el || !window.PatFB || !PatFB.ready) return;
     var u = PatFB.user && PatFB.user();
-    if (u) { el.innerHTML = '<span class="auth-who">' + esc(u.email) + (isAdmin() ? ' · <b>' + esc(PatFB.role()) + "</b>" : "") + '</span> <button class="auth-b" data-a="out">' + esc(T("patrimoine.auth.deconnexion")) + "</button>"; }
-    else { el.innerHTML = '<button class="auth-b" data-a="in">' + esc(T("patrimoine.auth.connexion")) + "</button>"; }
-    var b = el.querySelector("[data-a]");
-    if (b) b.addEventListener("click", function () { if (b.getAttribute("data-a") === "in") PatFB.signInGoogle().catch(function () {}); else PatFB.signOut(); });
+    el.hidden = false;
+    if (u) {
+      var warn = !PatFB.emailVerified() ? ' <button class="auth-b" data-a="verify">' + esc(T("patrimoine.gate.verifier.court")) + "</button>" : "";
+      el.innerHTML = '<span class="auth-who">' + esc(u.email) + (isAdmin() && PatFB.emailVerified() ? ' · <b>' + esc(PatFB.role()) + "</b>" : "") + "</span>" + warn +
+        ' <button class="auth-b" data-a="out">' + esc(T("patrimoine.auth.deconnexion")) + "</button>";
+      el.querySelectorAll("[data-a]").forEach(function (b) {
+        b.addEventListener("click", function () {
+          var a = b.getAttribute("data-a");
+          if (a === "out") PatFB.signOut();
+          else if (a === "verify") PatFB.resendVerification().then(function () { alert(T("patrimoine.gate.verifier")); }, function () {});
+        });
+      });
+      return;
+    }
+    // non connecté : clé discrète qui déplie un mini-formulaire e-mail + mot de passe
+    el.innerHTML = '<button class="auth-key" data-a="open" aria-label="' + esc(T("patrimoine.gate.acces")) + '" title="' + esc(T("patrimoine.gate.acces")) + '">🔑</button>' +
+      '<span class="auth-form" hidden><input type="email" class="af-email" placeholder="' + esc(T("patrimoine.contrib.email")) + '" autocomplete="email">' +
+      '<input type="password" class="af-pw" placeholder="' + esc(T("patrimoine.gate.pw")) + '" autocomplete="current-password">' +
+      '<button class="auth-b" data-a="go">→</button><span class="af-msg"></span></span>';
+    var form = el.querySelector(".auth-form"), msg = el.querySelector(".af-msg");
+    el.querySelector('[data-a="open"]').addEventListener("click", function () { form.hidden = !form.hidden; if (!form.hidden) el.querySelector(".af-email").focus(); });
+    el.querySelector('[data-a="go"]').addEventListener("click", function () {
+      var email = (el.querySelector(".af-email").value || "").trim(), pw = el.querySelector(".af-pw").value;
+      if (!email || !pw) return;
+      if (!PatFB.isCredited(email)) { msg.textContent = "—"; return; }   // non reconnu → reste public, discret
+      msg.textContent = "…";
+      PatFB.signInEmail(email, pw).then(function () { if (!PatFB.emailVerified()) msg.textContent = T("patrimoine.gate.verifier"); })
+        .catch(function () { msg.textContent = T("patrimoine.gate.echec"); });
+    });
   }
 
   /* ── panneau « Partager » (Mère seulement) : lien public + lien INP ── */
