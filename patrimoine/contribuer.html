@@ -73,14 +73,16 @@ input[readonly]{background:#efe9db;color:#6f6350;cursor:not-allowed;}
         <h2 data-i18n="patrimoine.contrib.vous">Vous</h2>
         <div class="row2">
           <div>
-            <label data-i18n="patrimoine.contrib.nom">Nom <span class="req">*</span></label>
-            <input id="fNom" type="text" autocomplete="name">
+            <label data-i18n="patrimoine.contrib.prenom">Prénom <span class="req">*</span></label>
+            <input id="fPrenom" type="text" autocomplete="given-name">
           </div>
           <div>
-            <label data-i18n="patrimoine.contrib.email">Email <span class="req">*</span></label>
-            <input id="fMail" type="email" autocomplete="email">
+            <label data-i18n="patrimoine.contrib.nom">Nom <span class="req">*</span></label>
+            <input id="fNom" type="text" autocomplete="family-name">
           </div>
         </div>
+        <label data-i18n="patrimoine.contrib.email">Email <span class="req">*</span></label>
+        <input id="fMail" type="email" autocomplete="email">
       </section>
 
       <button class="btn" id="send" type="submit" data-i18n="patrimoine.contrib.envoyer">Envoyer ma contribution</button>

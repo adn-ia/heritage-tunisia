@@ -127,5 +127,6 @@
  "patrimoine.share.inp": "Link zum INP",
  "patrimoine.share.copier": "Kopieren",
  "patrimoine.share.copie": "Kopiert ✓",
- "patrimoine.share.inp.note": "Das INP öffnet diesen Link und meldet sich anschließend mit dem von Ihnen autorisierten Google-Konto an, um die Bestätigungsrechte zu erhalten."
+ "patrimoine.share.inp.note": "Das INP öffnet diesen Link und meldet sich anschließend mit dem von Ihnen autorisierten Google-Konto an, um die Bestätigungsrechte zu erhalten.",
+ "patrimoine.contrib.prenom": "Vorname"
 }

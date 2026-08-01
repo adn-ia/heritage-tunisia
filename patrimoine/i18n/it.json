@@ -127,5 +127,6 @@
  "patrimoine.share.inp": "Link INP",
  "patrimoine.share.copier": "Copia",
  "patrimoine.share.copie": "Copiato ✓",
- "patrimoine.share.inp.note": "L'INP apre questo link e poi accede con l'account Google che hai autorizzato per ottenere i diritti di convalida."
+ "patrimoine.share.inp.note": "L'INP apre questo link e poi accede con l'account Google che hai autorizzato per ottenere i diritti di convalida.",
+ "patrimoine.contrib.prenom": "Nome"
 }

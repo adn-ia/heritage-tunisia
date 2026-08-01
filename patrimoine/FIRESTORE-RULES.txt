@@ -24,6 +24,7 @@ service cloud.firestore {
     function champsSoumissionOk() {
       let d = request.resource.data;
       return d.nom is string && d.nom.size() > 1
+        && d.prenom is string && d.prenom.size() > 0
         && d.email is string && d.email.matches('.+@.+[.].+')
         && d.obs is string && d.obs.size() > 2
         && d.status == 'pending'                 // le public ne peut créer QUE du 'pending'

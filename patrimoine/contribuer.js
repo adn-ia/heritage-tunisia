@@ -44,14 +44,14 @@
 
   function submit(e){
     e.preventDefault();
-    var nom = val('fNom'), mail = val('fMail'), obs = val('fObs');
-    if(!nom || !obs || !okMail(mail)){ $('msg').style.color=''; $('msg').textContent = T('patrimoine.contrib.requis'); return; }
+    var prenom = val('fPrenom'), nom = val('fNom'), mail = val('fMail'), obs = val('fObs');
+    if(!prenom || !nom || !obs || !okMail(mail)){ $('msg').style.color=''; $('msg').textContent = T('patrimoine.contrib.requis'); return; }
     var data = {
       site: val('fSite') || '', gov: PRE.gov, siteId: PRE.siteId,
       etat: $('fEtat').value || '',
       obs: obs, photoUrl: val('fPhoto') || '', photoCredit: val('fCredit') || '',
       rightsOk: !!($('fRights') && $('fRights').checked),
-      nom: nom, email: mail
+      prenom: prenom, nom: nom, email: mail
     };
     var btn = $('send');
     // Firebase configuré → feed partagé (soumission → stockée → affichée sur les 3 entités)

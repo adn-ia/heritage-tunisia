@@ -127,5 +127,6 @@
  "patrimoine.share.inp": "رابط INP",
  "patrimoine.share.copier": "نسخ",
  "patrimoine.share.copie": "تم النسخ ✓",
- "patrimoine.share.inp.note": "يقوم INP بفتح هذا الرابط ثم يسجل الدخول باستخدام حساب Google الذي قمت بتفويضه للحصول على صلاحيات المصادقة."
+ "patrimoine.share.inp.note": "يقوم INP بفتح هذا الرابط ثم يسجل الدخول باستخدام حساب Google الذي قمت بتفويضه للحصول على صلاحيات المصادقة.",
+ "patrimoine.contrib.prenom": "الاسم الأول"
 }

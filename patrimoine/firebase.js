@@ -47,7 +47,7 @@
     var doc = {
       site: data.site || "", siteId: data.siteId || "", gov: data.gov || "", etat: data.etat || "",
       obs: data.obs || "", photoUrl: data.photoUrl || "", photoCredit: data.photoCredit || "",
-      rightsOk: !!data.rightsOk, nom: data.nom || "", email: data.email || "",
+      rightsOk: !!data.rightsOk, prenom: data.prenom || "", nom: data.nom || "", email: data.email || "",
       status: "pending", createdAt: ts()
     };
     return db.collection("submissions").add(doc);

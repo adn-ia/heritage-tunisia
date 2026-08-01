@@ -13,6 +13,7 @@
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function okMail(e) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); }
   function fmt(ts) { try { var d = ts && ts.toDate ? ts.toDate() : null; return d ? d.toLocaleDateString(PATi18n ? PATi18n.lang() : "fr") : ""; } catch (e) { return ""; } }
+  function who(s) { return ((s.prenom ? s.prenom + " " : "") + (s.nom || "")).trim() || (s.nom || ""); }
   function isAdmin() { var r = window.PatFB && PatFB.ready && PatFB.role && PatFB.role(); return r === "mere" || r === "inp"; }
   function statusKey(st) { return { pending: "attente", validated: "valide", rejected: "rejete" }[st] || "attente"; }
   function badge(st) { var k = statusKey(st); return '<span class="fb-badge ' + k + '">' + esc(T("patrimoine.feed.statut." + k)) + "</span>"; }
@@ -57,7 +58,7 @@
       (s.siteId ? '<div class="cm-ref">' + esc(T("patrimoine.feed.ref")) + " " + esc(s.siteId) + (s.gov ? " · " + esc(s.gov) : "") + "</div>" : (s.gov ? '<div class="cm-ref">' + esc(s.gov) + "</div>" : "")) +
       (s.etat ? '<div class="cm-etat">' + esc(T("patrimoine.fiche.etat")) + " : " + esc(s.etat) + "</div>" : "") +
       '<p class="cm-obs">' + esc(s.obs) + "</p>" + photo +
-      '<div class="cm-meta">' + esc(T("patrimoine.feed.par")) + " " + esc(s.nom) + " · " + fmt(s.createdAt) + "</div>" +
+      '<div class="cm-meta">' + esc(T("patrimoine.feed.par")) + " " + esc(who(s)) + " · " + fmt(s.createdAt) + "</div>" +
       (s.status === "rejected" && s.reason ? '<div class="cm-reason">' + esc(T("patrimoine.statuts.motif")) + " " + esc(s.reason) + "</div>" : "") +
       (admin ? adminBar(s) : "") +
       '<div class="cm-comments"><h3>' + esc(T("patrimoine.feed.commentaires")) + '</h3><div class="cm-clist">…</div>' +
@@ -139,7 +140,7 @@
       (s.etat ? '<div class="r"><span class="k">État</span> ' + esc(s.etat) + "</div>" : "") +
       '<div class="r"><span class="k">Observation</span><br>' + esc(s.obs) + "</div>" +
       (s.photoUrl ? '<div class="r"><span class="k">Photo</span> <a href="' + esc(s.photoUrl) + '">' + esc(s.photoUrl) + "</a>" + (s.photoCredit ? " (" + esc(s.photoCredit) + ")" : "") + "</div>" : "") +
-      '<div class="r"><span class="k">Proposé par</span> ' + esc(s.nom) + " · " + esc(s.email) + " · " + fmt(s.createdAt) + "</div>" +
+      '<div class="r"><span class="k">Proposé par</span> ' + esc(who(s)) + " · " + esc(s.email) + " · " + fmt(s.createdAt) + "</div>" +
       '<div class="r"><span class="k">Statut</span> ' + esc(T("patrimoine.feed.statut." + statusKey(s.status))) + (s.reason ? " — " + esc(s.reason) : "") + "</div>";
   }
   function downloadOne(s) {

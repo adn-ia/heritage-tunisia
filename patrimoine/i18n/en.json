@@ -127,5 +127,6 @@
  "patrimoine.share.inp": "INP link",
  "patrimoine.share.copier": "Copy",
  "patrimoine.share.copie": "Copied ✓",
- "patrimoine.share.inp.note": "The INP opens this link then signs in with the Google account you authorised to get validation powers."
+ "patrimoine.share.inp.note": "The INP opens this link then signs in with the Google account you authorised to get validation powers.",
+ "patrimoine.contrib.prenom": "First name"
 }
