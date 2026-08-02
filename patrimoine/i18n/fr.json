@@ -124,15 +124,17 @@
  "patrimoine.auth.deconnexion": "Déconnexion",
  "patrimoine.share.titre": "Partager la veille",
  "patrimoine.share.public": "Lien public",
- "patrimoine.share.inp": "Lien INP",
  "patrimoine.share.copier": "Copier",
  "patrimoine.share.copie": "Copié ✓",
- "patrimoine.share.inp.note": "L'INP ouvre ce lien puis se connecte avec le compte Google que vous avez autorisé pour obtenir les pouvoirs de validation.",
  "patrimoine.contrib.prenom": "Prénom",
  "patrimoine.gate.acces": "Accès gestion",
  "patrimoine.gate.pw": "Mot de passe",
  "patrimoine.gate.verifier": "Vérifiez votre e-mail (lien envoyé) pour activer vos droits.",
  "patrimoine.gate.verifier.court": "Vérifier l'e-mail",
  "patrimoine.gate.echec": "E-mail ou mot de passe incorrect.",
- "patrimoine.feed.repondre": "Répondre"
+ "patrimoine.feed.repondre": "Répondre",
+ "patrimoine.role.mere": "Gestion",
+ "patrimoine.role.expert": "Référent",
+ "patrimoine.share.expert": "Lien référent",
+ "patrimoine.share.expert.note": "Le référent ouvre ce lien puis se connecte avec l'e-mail que vous avez autorisé pour obtenir les droits de validation."
 }

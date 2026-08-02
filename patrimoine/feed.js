@@ -14,7 +14,8 @@
   function okMail(e) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); }
   function fmt(ts) { try { var d = ts && ts.toDate ? ts.toDate() : null; return d ? d.toLocaleDateString(PATi18n ? PATi18n.lang() : "fr") : ""; } catch (e) { return ""; } }
   function who(s) { return ((s.prenom ? s.prenom + " " : "") + (s.nom || "")).trim() || (s.nom || ""); }
-  function isAdmin() { var r = window.PatFB && PatFB.ready && PatFB.role && PatFB.role(); return r === "mere" || r === "inp"; }
+  function isAdmin() { var r = window.PatFB && PatFB.ready && PatFB.role && PatFB.role(); return r === "mere" || r === "expert"; }
+  function roleLabel(r) { return r === "mere" ? T("patrimoine.role.mere") : (r === "expert" ? T("patrimoine.role.expert") : ""); }
   function statusKey(st) { return { pending: "attente", validated: "valide", rejected: "rejete" }[st] || "attente"; }
   function badge(st) { var k = statusKey(st); return '<span class="fb-badge ' + k + '">' + esc(T("patrimoine.feed.statut." + k)) + "</span>"; }
 
@@ -205,7 +206,7 @@
     el.hidden = false;
     if (u) {
       var warn = !PatFB.emailVerified() ? ' <button class="auth-b" data-a="verify">' + esc(T("patrimoine.gate.verifier.court")) + "</button>" : "";
-      el.innerHTML = '<span class="auth-who">' + esc(u.email) + (isAdmin() && PatFB.emailVerified() ? ' · <b>' + esc(PatFB.role()) + "</b>" : "") + "</span>" + warn +
+      el.innerHTML = '<span class="auth-who">' + esc(u.email) + (isAdmin() && PatFB.emailVerified() ? ' · <b>' + esc(roleLabel(PatFB.role())) + "</b>" : "") + "</span>" + warn +
         ' <button class="auth-b" data-a="out">' + esc(T("patrimoine.auth.deconnexion")) + "</button>";
       el.querySelectorAll("[data-a]").forEach(function (b) {
         b.addEventListener("click", function () {
@@ -243,8 +244,8 @@
     el.hidden = false;
     function line(lbl, u) { return '<div class="share-row"><span class="share-lbl">' + esc(lbl) + '</span><code>' + esc(u) + '</code><button class="share-b" type="button" data-u="' + esc(u) + '">' + esc(T("patrimoine.share.copier")) + "</button></div>"; }
     el.innerHTML = '<div class="share-h">' + esc(T("patrimoine.share.titre")) + "</div>" +
-      line(T("patrimoine.share.public"), pub) + line(T("patrimoine.share.inp"), inp) +
-      '<div class="share-note">' + esc(T("patrimoine.share.inp.note")) + "</div>";
+      line(T("patrimoine.share.public"), pub) + line(T("patrimoine.share.expert"), inp) +
+      '<div class="share-note">' + esc(T("patrimoine.share.expert.note")) + "</div>";
     el.querySelectorAll(".share-b").forEach(function (b) {
       b.addEventListener("click", function () {
         var u = b.getAttribute("data-u");

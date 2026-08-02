@@ -124,15 +124,17 @@
  "patrimoine.auth.deconnexion": "تسجيل الخروج",
  "patrimoine.share.titre": "مشاركة تقرير الرصد",
  "patrimoine.share.public": "رابط عام",
- "patrimoine.share.inp": "رابط INP",
  "patrimoine.share.copier": "نسخ",
  "patrimoine.share.copie": "تم النسخ ✓",
- "patrimoine.share.inp.note": "يقوم INP بفتح هذا الرابط ثم يسجل الدخول باستخدام حساب Google الذي قمت بتفويضه للحصول على صلاحيات المصادقة.",
  "patrimoine.contrib.prenom": "الاسم الأول",
  "patrimoine.gate.acces": "الوصول إلى الإدارة",
  "patrimoine.gate.pw": "كلمة المرور",
  "patrimoine.gate.verifier": "يرجى التحقق من بريدك الإلكتروني (تم إرسال الرابط) لتفعيل صلاحياتك.",
  "patrimoine.gate.verifier.court": "التحقق من البريد الإلكتروني",
  "patrimoine.gate.echec": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
- "patrimoine.feed.repondre": "الرد"
+ "patrimoine.feed.repondre": "الرد",
+ "patrimoine.role.mere": "الإدارة",
+ "patrimoine.role.expert": "المسؤول",
+ "patrimoine.share.expert": "رابط الإحالة",
+ "patrimoine.share.expert.note": "يقوم المسؤول بفتح هذا الرابط ثم يسجل الدخول باستخدام عنوان البريد الإلكتروني الذي أذنت به للحصول على صلاحيات المصادقة."
 }

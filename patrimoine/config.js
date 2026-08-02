@@ -16,10 +16,10 @@
     dataClasses: "data/inp_classes.json",   // donnée EXCLUSIVE : monuments classés (import INP)
 
     // ─── Contribution / feed partagé (Firebase PROPRE à la sous-app) ───
-    inpEmail:   "",   // adresse de l'INP (notification) — à remplir quand l'INP est contactée
-    adminEmail: "helmymekaoui@gmail.com",   // Mère (Helmy) : copie notifications + rôle admin
-    inpEmails:  [],   // comptes INP précis (rôle valideur) — à ajouter quand connus
-    inpDomains: [],   // domaines INP admissibles (ex. "inp.tn") — vide = aucun rôle INP
+    notifyEmail:   "",   // adresse de notification (institution/référent) — à remplir le moment venu
+    adminEmail:    "helmymekaoui@gmail.com",   // Mère (Helmy) : copie notifications + rôle admin
+    expertEmails:  [],   // référents (chercheurs/historiens reconnus) — plusieurs possibles, rôle valideur
+    expertDomains: [],   // domaines de référents admissibles (ex. "univ-xxx.tn") — vide = aucun référent
     // config web du projet Firebase DÉDIÉ « Veille citoyenne du Patrimoine » (publique, normale à embarquer)
     firebase: {
       apiKey: "AIzaSyAYeZsZjZMTr_LFP9iO97vEaWkyWbh2yxg",

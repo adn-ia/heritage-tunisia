@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════
    PATRIMOINE — formulaire de contribution (sous-app autonome).
-   Nominatif (nom + email OBLIGATOIRES). Envoie le signalement à l'INP par
-   email (config.inpEmail). Le feed public + commentaires + modération =
+   Nominatif (nom + email OBLIGATOIRES). Envoie le signalement (repli) par
+   email (config.notifyEmail). Le feed public + commentaires + modération =
    Firebase de la sous-app (étape suivante). Aucune dépendance externe.
    ═══════════════════════════════════════════════════════════════════════ */
 (function(){
@@ -69,7 +69,7 @@
       return;
     }
     // Repli : mailto (tant que Firebase n'est pas configuré)
-    var to = (CFG.inpEmail||'').trim();
+    var to = (CFG.notifyEmail||'').trim();
     if(!to){ $('msg').textContent = T('patrimoine.contrib.vide'); return; }
     var site = data.site || '—';
     var etat = $('fEtat').value ? T('patrimoine.etat.'+slug($('fEtat').value)) : '—';
@@ -83,7 +83,7 @@
     buildEtat(); prefill();
     // Bouton actif si Firebase OU mailto dispo ; désactivé seulement si aucun des deux.
     var fbOff = !(window.PatFB && PatFB.ready);
-    var mailOff = !(CFG.inpEmail||'').trim();
+    var mailOff = !(CFG.notifyEmail||'').trim();
     if(fbOff && mailOff){
       var b=$('send'); if(b){ b.classList.add('off'); }
       $('msg').textContent = T('patrimoine.contrib.vide');

@@ -13,7 +13,8 @@
   "use strict";
   var CFG = (window.PAT && window.PAT.firebase) || {};
   var ADMIN = (window.PAT && window.PAT.adminEmail || "").toLowerCase();
-  var INPS = ((window.PAT && window.PAT.inpEmails) || []).map(function (e) { return String(e).toLowerCase(); });
+  // Référents (chercheurs / historiens reconnus) — plusieurs possibles. Compat ancien nom inpEmails.
+  var EXPERTS = ((window.PAT && (window.PAT.expertEmails || window.PAT.inpEmails)) || []).map(function (e) { return String(e).toLowerCase(); });
 
   var ready = !!(CFG && CFG.projectId && CFG.apiKey && window.firebase);
   var db = null, auth = null, user = null, authCbs = [];
@@ -29,17 +30,17 @@
     } catch (e) { ready = false; }
   }
 
-  // Domaines INP admissibles (config). Tant que vide → aucun rôle INP n'existe.
-  var INPDOMS = ((window.PAT && window.PAT.inpDomains) || []).map(function (d) { return String(d).toLowerCase().replace(/^@/, ""); });
+  // Domaines de référents admissibles (config). Vide → aucun rôle référent n'existe. Compat inpDomains.
+  var EXPERTDOMS = ((window.PAT && (window.PAT.expertDomains || window.PAT.inpDomains)) || []).map(function (d) { return String(d).toLowerCase().replace(/^@/, ""); });
   function emailDom(m) { var i = String(m || "").toLowerCase().lastIndexOf("@"); return i >= 0 ? m.toLowerCase().slice(i + 1) : ""; }
-  // Un e-mail est « crédité » (→ on demande le mot de passe) s'il est le tien ou d'un domaine INP.
-  function isCredited(m) { m = String(m || "").toLowerCase(); return m === ADMIN || (INPDOMS.length > 0 && INPDOMS.indexOf(emailDom(m)) >= 0); }
+  // Un e-mail est « crédité » (→ on demande le mot de passe) s'il est le tien ou d'un référent (e-mail/domaine).
+  function isCredited(m) { m = String(m || "").toLowerCase(); return m === ADMIN || EXPERTS.indexOf(m) >= 0 || (EXPERTDOMS.length > 0 && EXPERTDOMS.indexOf(emailDom(m)) >= 0); }
   // Rôle réel (pouvoirs gardés par la vérif e-mail + les règles Firestore).
   function role() {
     if (!user || !user.email) return null;
     var m = user.email.toLowerCase();
     if (m === ADMIN) return "mere";
-    if (INPS.indexOf(m) >= 0 || (INPDOMS.length > 0 && INPDOMS.indexOf(emailDom(m)) >= 0)) return "inp";
+    if (EXPERTS.indexOf(m) >= 0 || (EXPERTDOMS.length > 0 && EXPERTDOMS.indexOf(emailDom(m)) >= 0)) return "expert";
     return "connecte"; // authentifié mais hors périmètre = pas de pouvoir
   }
   function emailVerified() { return !!(user && user.emailVerified); }

@@ -124,15 +124,17 @@
  "patrimoine.auth.deconnexion": "Abmelden",
  "patrimoine.share.titre": "Marktbeobachtung teilen",
  "patrimoine.share.public": "Öffentlicher Link",
- "patrimoine.share.inp": "Link zum INP",
  "patrimoine.share.copier": "Kopieren",
  "patrimoine.share.copie": "Kopiert ✓",
- "patrimoine.share.inp.note": "Das INP öffnet diesen Link und meldet sich anschließend mit dem von Ihnen autorisierten Google-Konto an, um die Bestätigungsrechte zu erhalten.",
  "patrimoine.contrib.prenom": "Vorname",
  "patrimoine.gate.acces": "Zugang zur Verwaltung",
  "patrimoine.gate.pw": "Passwort",
  "patrimoine.gate.verifier": "Bitte überprüfen Sie Ihre E-Mails (Link wurde gesendet), um Ihre Berechtigungen zu aktivieren.",
  "patrimoine.gate.verifier.court": "E-Mail überprüfen",
  "patrimoine.gate.echec": "Falsche E-Mail-Adresse oder falsches Passwort.",
- "patrimoine.feed.repondre": "Antworten"
+ "patrimoine.feed.repondre": "Antworten",
+ "patrimoine.role.mere": "Verwaltung",
+ "patrimoine.role.expert": "Ansprechpartner",
+ "patrimoine.share.expert": "Verweisender Link",
+ "patrimoine.share.expert.note": "Der Ansprechpartner öffnet diesen Link und meldet sich dann mit der von Ihnen autorisierten E-Mail-Adresse an, um die Freigaberechte zu erhalten."
 }

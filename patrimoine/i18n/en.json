@@ -124,15 +124,17 @@
  "patrimoine.auth.deconnexion": "Sign out",
  "patrimoine.share.titre": "Share the watch",
  "patrimoine.share.public": "Public link",
- "patrimoine.share.inp": "INP link",
  "patrimoine.share.copier": "Copy",
  "patrimoine.share.copie": "Copied ✓",
- "patrimoine.share.inp.note": "The INP opens this link then signs in with the Google account you authorised to get validation powers.",
  "patrimoine.contrib.prenom": "First name",
  "patrimoine.gate.acces": "Management access",
  "patrimoine.gate.pw": "Password",
  "patrimoine.gate.verifier": "Check your email (link sent) to activate your rights.",
  "patrimoine.gate.verifier.court": "Verify email",
  "patrimoine.gate.echec": "Wrong email or password.",
- "patrimoine.feed.repondre": "Reply"
+ "patrimoine.feed.repondre": "Reply",
+ "patrimoine.role.mere": "Management",
+ "patrimoine.role.expert": "Reviewer",
+ "patrimoine.share.expert": "Reviewer link",
+ "patrimoine.share.expert.note": "The reviewer opens this link then signs in with the email you authorised to get validation rights."
 }
