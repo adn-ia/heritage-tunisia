@@ -50,6 +50,7 @@
 
   function openModal(id) {
     var s = find(id); if (!s) return;
+    if (!isAdmin() && s.status !== "validated") return;   // le public n'ouvre que des contributions validées
     curId = id;
     var m = ensureModal(), body = m.querySelector(".cmodal-body");
     var photo = s.photoUrl ? '<a class="fb-photo" href="' + esc(s.photoUrl) + '" target="_blank" rel="noopener">' + esc(T("patrimoine.feed.photo")) + (s.photoCredit ? " — " + esc(s.photoCredit) : "") + "</a>" : "";
@@ -59,6 +60,7 @@
       (s.siteId ? '<div class="cm-ref">' + esc(T("patrimoine.feed.ref")) + " " + esc(s.siteId) + (s.gov ? " · " + esc(s.gov) : "") + "</div>" : (s.gov ? '<div class="cm-ref">' + esc(s.gov) + "</div>" : "")) +
       (s.etat ? '<div class="cm-etat">' + esc(T("patrimoine.fiche.etat")) + " : " + esc(s.etat) + "</div>" : "") +
       '<p class="cm-obs">' + esc(s.obs) + "</p>" + photo +
+      (admin && s.photoUrl && scanOn() ? '<div class="cm-scan"></div>' : "") +
       '<div class="cm-meta">' + esc(T("patrimoine.feed.par")) + " " + esc(who(s)) + " · " + fmt(s.createdAt) + "</div>" +
       (s.status === "rejected" && s.reason ? '<div class="cm-reason">' + esc(T("patrimoine.statuts.motif")) + " " + esc(s.reason) + "</div>" : "") +
       (admin ? adminBar(s) : "") +
@@ -68,7 +70,34 @@
         '<button class="cm-csend" type="button">' + esc(T("patrimoine.feed.publier")) + '</button><span class="cm-cmsg"></span></div></div>';
     wireComments(id, body);
     if (admin) wireAdmin(id, body);
+    if (admin && s.photoUrl && scanOn()) runScan(s, body.querySelector(".cm-scan"));
     m.hidden = false;
+  }
+
+  /* ── Scan anti-copie (recherche d'image inversée via Worker, à la demande, modérateur seul).
+     « présente en ligne » ≠ « copyrightée » → SIGNAL, jamais d'auto-rejet. Résultat mis en cache session. ── */
+  var SCAN_CACHE = {};
+  function scanOn() { return !!(((window.PAT && window.PAT.scanWorker) || "").trim()); }
+  function runScan(s, el) {
+    if (!el) return;
+    el.className = "cm-scan"; el.innerHTML = '<span class="cm-scan-l">🔍 ' + esc(T("patrimoine.scan.encours")) + "</span>";
+    var cached = SCAN_CACHE[s.id];
+    var p = cached ? Promise.resolve(cached)
+      : fetch(((window.PAT && window.PAT.scanWorker) || "").trim(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ imageUrl: s.photoUrl }) })
+          .then(function (r) { return r.json(); }).then(function (jj) { SCAN_CACHE[s.id] = jj; return jj; });
+    p.then(function (jj) { renderScan(el, jj); }).catch(function () { el.className = "cm-scan"; el.innerHTML = '<span class="cm-scan-l">' + esc(T("patrimoine.scan.err")) + "</span>"; });
+  }
+  function renderScan(el, jj) {
+    if (!jj || jj.error) { el.className = "cm-scan"; el.innerHTML = '<span class="cm-scan-l">' + esc(T("patrimoine.scan.err")) + "</span>"; return; }
+    if (jj.found) {
+      var n = (jj.full || 0) + (jj.pages ? jj.pages.length : 0);
+      var links = (jj.pages || []).map(function (p) { return '<a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.title || p.url) + "</a>"; }).join("");
+      el.className = "cm-scan warn";
+      el.innerHTML = '<span class="cm-scan-l">⚠️ ' + esc(T("patrimoine.scan.trouve", { n: n })) + "</span>" + (links ? '<div class="cm-scan-src">' + links + "</div>" : "");
+    } else {
+      el.className = "cm-scan ok";
+      el.innerHTML = '<span class="cm-scan-l">✓ ' + esc(T("patrimoine.scan.rien")) + "</span>";
+    }
   }
 
   function adminBar(s) {
@@ -164,7 +193,7 @@
       (s.etat ? '<div class="r"><span class="k">État</span> ' + esc(s.etat) + "</div>" : "") +
       '<div class="r"><span class="k">Observation</span><br>' + esc(s.obs) + "</div>" +
       (s.photoUrl ? '<div class="r"><span class="k">Photo</span> <a href="' + esc(s.photoUrl) + '">' + esc(s.photoUrl) + "</a>" + (s.photoCredit ? " (" + esc(s.photoCredit) + ")" : "") + "</div>" : "") +
-      '<div class="r"><span class="k">Proposé par</span> ' + esc(who(s)) + " · " + esc(s.email) + " · " + fmt(s.createdAt) + "</div>" +
+      '<div class="r"><span class="k">Proposé par</span> ' + esc(who(s)) + " · " + fmt(s.createdAt) + "</div>" +
       '<div class="r"><span class="k">Statut</span> ' + esc(T("patrimoine.feed.statut." + statusKey(s.status))) + (s.reason ? " — " + esc(s.reason) : "") + "</div>";
   }
   function downloadOne(s) {
@@ -184,16 +213,68 @@
 
   /* ── rendus des 2 onglets ── */
   function note(el, key) { el.innerHTML = '<p class="fb-note">' + esc(T(key)) + "</p>"; }
+  function zoneOf(el) { return el && el.closest ? el.closest(".dash-zone") : null; }
   function renderAll() {
     var fl = document.getElementById("feedList"), sl = document.getElementById("statutsList");
     if (SUBS === null) { if (fl) note(fl, "patrimoine.feed.avenir"); if (sl) note(sl, "patrimoine.feed.avenir"); return; }
-    var pending = SUBS.filter(function (s) { return s.status !== "validated" && s.status !== "rejected"; });
-    var done = SUBS.filter(function (s) { return s.status === "validated" || s.status === "rejected"; });
+    var pending   = SUBS.filter(function (s) { return s.status !== "validated" && s.status !== "rejected"; });
+    var validated = SUBS.filter(function (s) { return s.status === "validated"; });
+    var done      = SUBS.filter(function (s) { return s.status === "validated" || s.status === "rejected"; });
+    var admin = isAdmin();
     var badge = document.getElementById("badgeCours");
-    if (badge) { if (pending.length) { badge.textContent = pending.length; badge.hidden = false; } else badge.hidden = true; }
-    if (fl) { if (!pending.length) note(fl, "patrimoine.feed.vide"); else { fl.innerHTML = ""; pending.forEach(function (s) { fl.appendChild(rowEl(s)); }); } }
-    if (sl) { if (!done.length) note(sl, "patrimoine.statuts.vide"); else { sl.innerHTML = ""; done.forEach(function (s) { sl.appendChild(rowEl(s)); }); } }
+    var statZone = zoneOf(sl);
+    // ── Public : voit UNIQUEMENT les contributions VALIDÉES. Rien en attente/rejeté n'est affiché. ──
+    // ── Modérateur (Mère/référent) : file d'attente à modérer + statuts (validées/rejetées). ──
+    if (admin) {
+      if (badge) { if (pending.length) { badge.textContent = pending.length; badge.hidden = false; } else badge.hidden = true; }
+      if (fl) { if (!pending.length) note(fl, "patrimoine.feed.vide"); else { fl.innerHTML = ""; pending.forEach(function (s) { fl.appendChild(rowEl(s)); }); } }
+      if (statZone) statZone.hidden = false;
+      if (sl) { if (!done.length) note(sl, "patrimoine.statuts.vide"); else { sl.innerHTML = ""; done.forEach(function (s) { sl.appendChild(rowEl(s)); }); } }
+    } else {
+      if (badge) badge.hidden = true;
+      if (fl) { if (!validated.length) note(fl, "patrimoine.feed.public.vide"); else { fl.innerHTML = ""; validated.forEach(function (s) { fl.appendChild(rowEl(s)); }); } }
+      if (statZone) statZone.hidden = true;   // la zone « statuts » est un outil de modération → masquée au public
+    }
     if (curId && document.getElementById("cmodal") && !document.getElementById("cmodal").hidden) openModal(curId); // rafraîchit la modale ouverte
+    publishPhotos();
+    publishContribs();
+  }
+
+  /* ── Photos disponibles par site = contributions VALIDÉES avec photo (la plus récente).
+     Publiées à app.js (liste/fiche) via un événement — la modération contrôle donc ce qui s'affiche. ── */
+  var lastPhotoKey = "";
+  function photoMap() {   // siteId → [photos] (toutes les contributions validées avec photo, + récentes d'abord)
+    var m = {};
+    (SUBS || []).forEach(function (s) {
+      if (s.status === "validated" && s.photoUrl && s.siteId) (m[s.siteId] = m[s.siteId] || []).push({ url: s.photoUrl, credit: s.photoCredit || "", par: who(s) });
+    });
+    return m;
+  }
+  function publishPhotos() {
+    var m = photoMap(), k = JSON.stringify(m);
+    if (k === lastPhotoKey) return;   // ne notifie app.js que si ça change
+    lastPhotoKey = k;
+    try { document.dispatchEvent(new CustomEvent("pat:photos", { detail: m })); } catch (e) {}
+  }
+
+  /* ── Contributions VALIDÉES par site (texte + photo + auteur) = pièces jointes de la fiche.
+     Publiées à app.js → la fiche du site affiche les enrichissements validés (consolidation). ── */
+  var lastContribKey = "";
+  function contribMap() {   // siteId → [{obs, photoUrl, photoCredit, etat, who, t}] (+ récentes d'abord)
+    var m = {};
+    (SUBS || []).forEach(function (s) {
+      if (s.status === "validated" && s.siteId) (m[s.siteId] = m[s.siteId] || []).push({
+        obs: s.obs || "", photoUrl: s.photoUrl || "", photoCredit: s.photoCredit || "",
+        etat: s.etat || "", who: who(s), t: tms(s.createdAt)
+      });
+    });
+    return m;
+  }
+  function publishContribs() {
+    var m = contribMap(), k = JSON.stringify(m);
+    if (k === lastContribKey) return;
+    lastContribKey = k;
+    try { document.dispatchEvent(new CustomEvent("pat:contribs", { detail: m })); } catch (e) {}
   }
 
   /* ── bouton connexion admin ── */
@@ -221,16 +302,18 @@
     el.innerHTML = '<button class="auth-key" data-a="open" aria-label="' + esc(T("patrimoine.gate.acces")) + '" title="' + esc(T("patrimoine.gate.acces")) + '">🔑</button>' +
       '<span class="auth-form" hidden><input type="email" class="af-email" placeholder="' + esc(T("patrimoine.contrib.email")) + '" autocomplete="email">' +
       '<input type="password" class="af-pw" placeholder="' + esc(T("patrimoine.gate.pw")) + '" autocomplete="current-password">' +
+      '<input type="password" class="af-pw2" placeholder="' + esc(T("patrimoine.gate.pw2")) + '" autocomplete="new-password">' +
       '<button class="auth-b" data-a="go">→</button><span class="af-msg"></span></span>';
     var form = el.querySelector(".auth-form"), msg = el.querySelector(".af-msg");
     el.querySelector('[data-a="open"]').addEventListener("click", function () { form.hidden = !form.hidden; if (!form.hidden) el.querySelector(".af-email").focus(); });
     el.querySelector('[data-a="go"]').addEventListener("click", function () {
-      var email = (el.querySelector(".af-email").value || "").trim(), pw = el.querySelector(".af-pw").value;
+      var email = (el.querySelector(".af-email").value || "").trim(), pw = el.querySelector(".af-pw").value, pw2 = el.querySelector(".af-pw2").value;
       if (!email || !pw) return;
-      if (!PatFB.isCredited(email)) { msg.textContent = "—"; return; }   // non reconnu → reste public, discret
+      // Connexion ouverte : Mère + modérateurs (liste dynamique) peuvent entrer. Le RÔLE (après
+      // connexion) décide des pouvoirs. Le champ « confirmer » n'est vérifié qu'à la CRÉATION du compte.
       msg.textContent = "…";
-      PatFB.signInEmail(email, pw).then(function () { if (!PatFB.emailVerified()) msg.textContent = T("patrimoine.gate.verifier"); })
-        .catch(function () { msg.textContent = T("patrimoine.gate.echec"); });
+      PatFB.signInEmail(email, pw, pw2).then(function () { if (!PatFB.emailVerified()) msg.textContent = T("patrimoine.gate.verifier"); })
+        .catch(function (err) { msg.textContent = (err && err.code === "pat/password-mismatch") ? T("patrimoine.gate.pwdiff") : T("patrimoine.gate.echec"); });
     });
   }
 
@@ -254,12 +337,156 @@
     });
   }
 
+  /* ── Panneau MODÉRATEURS (Mère seulement) : ajouter (nom + e-mail + profil) / révoquer.
+     Liste dynamique Firestore → rôle « modérateur » sans toucher la config. Ces personnes,
+     connues et reconnues, reçoivent les soumissions à modérer avant affichage. ── */
+  var unsubMods = null;
+  function renderMods() {
+    var el = document.getElementById("modPanel"); if (!el) return;
+    var isMere = window.PatFB && PatFB.ready && PatFB.role && PatFB.role() === "mere";
+    if (!isMere) { el.hidden = true; el.innerHTML = ""; if (unsubMods) { unsubMods(); unsubMods = null; } return; }
+    el.hidden = false;
+    el.innerHTML = '<div class="mod-h">' + esc(T("patrimoine.mod.panel.titre")) + "</div>" +
+      '<div class="mod-list" id="modList"></div>' +
+      '<form class="mod-form"><input class="mod-name" placeholder="' + esc(T("patrimoine.mod.panel.nom")) + '">' +
+      '<input class="mod-mail" type="email" placeholder="' + esc(T("patrimoine.contrib.email")) + '" autocomplete="off">' +
+      '<input class="mod-prof" placeholder="' + esc(T("patrimoine.mod.panel.profil")) + '">' +
+      '<button class="mod-add" type="submit">' + esc(T("patrimoine.mod.panel.ajouter")) + '</button><span class="mod-msg"></span></form>' +
+      '<div class="mod-note">' + esc(T("patrimoine.mod.panel.note")) + "</div>";
+    var list = el.querySelector("#modList"), form = el.querySelector(".mod-form"), mmsg = el.querySelector(".mod-msg");
+    if (unsubMods) { unsubMods(); unsubMods = null; }
+    unsubMods = PatFB.watchModerators(function (mods) {
+      if (!mods || !mods.length) { note(list, "patrimoine.mod.panel.vide"); return; }
+      list.innerHTML = mods.map(function (m) {
+        return '<div class="mod-row"><span class="mod-who"><b>' + esc(m.name || m.email) + "</b>" + (m.profile ? ' <em>' + esc(m.profile) + "</em>" : "") +
+          '<span class="mod-mail-l">' + esc(m.email) + "</span></span>" +
+          '<button class="mod-rm" type="button" data-e="' + esc(m.id) + '" aria-label="' + esc(T("patrimoine.mod.panel.revoquer")) + '">✕</button></div>';
+      }).join("");
+      list.querySelectorAll(".mod-rm").forEach(function (b) {
+        b.addEventListener("click", function () {
+          if (!confirm(T("patrimoine.mod.panel.confirm"))) return;
+          PatFB.removeModerator(b.getAttribute("data-e")).catch(function () { alert(T("patrimoine.contrib.erreur")); });
+        });
+      });
+    });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = form.querySelector(".mod-name").value.trim(), mail = form.querySelector(".mod-mail").value.trim(), prof = form.querySelector(".mod-prof").value.trim();
+      if (!name || !okMail(mail)) { mmsg.textContent = T("patrimoine.contrib.requis"); return; }
+      mmsg.textContent = T("patrimoine.contrib.envoi");
+      PatFB.addModerator(mail, name, prof).then(function () { form.reset(); mmsg.textContent = ""; }, function () { mmsg.textContent = T("patrimoine.contrib.erreur"); });
+    });
+  }
+
+  /* ── Cloche de notifications : activité récente (nouvelles contributions + commentaires).
+     Auto-porté : état « vu » en localStorage (clé propre). Les commentaires sont suivis
+     par soumission (listeners existants), bornés aux plus récentes → pas d'infra en plus. ── */
+  var SEEN_KEY = "pat_notif_seen";
+  var commentWatchers = {};   // subId -> unsub
+  var COMMENT_ACT = {};       // subId -> [{id,time,who,text}]
+  var NOTIF_MAX_SUBS = 60;    // borne le nb de listeners commentaires (soumissions les + récentes)
+  function seenTs() { try { return +localStorage.getItem(SEEN_KEY) || 0; } catch (e) { return 0; } }
+  function setSeen(t) { try { localStorage.setItem(SEEN_KEY, String(t)); } catch (e) {} }
+  function tms(ts) { try { return ts && ts.toDate ? ts.toDate().getTime() : 0; } catch (e) { return 0; } }
+  function relTime(ms) {
+    if (!ms) return "";
+    var m = Math.round((Date.now() - ms) / 60000);
+    if (m < 1) return T("patrimoine.notif.maintenant");
+    if (m < 60) return T("patrimoine.notif.min", { n: m });
+    var h = Math.round(m / 60); if (h < 24) return T("patrimoine.notif.h", { n: h });
+    return T("patrimoine.notif.j", { n: Math.round(h / 24) });
+  }
+  function reconcileCommentWatchers() {
+    if (!SUBS || !PatFB.watchComments) return;
+    var keep = {};
+    SUBS.slice(0, NOTIF_MAX_SUBS).forEach(function (s) {
+      keep[s.id] = 1;
+      if (!commentWatchers[s.id]) {
+        commentWatchers[s.id] = PatFB.watchComments(s.id, function (cs) {
+          COMMENT_ACT[s.id] = cs.map(function (c) { return { id: c.id, time: tms(c.createdAt), who: c.nom || "", text: c.text || "" }; });
+          renderNotif();
+        });
+      }
+    });
+    Object.keys(commentWatchers).forEach(function (id) {
+      if (!keep[id]) { try { commentWatchers[id](); } catch (e) {} delete commentWatchers[id]; delete COMMENT_ACT[id]; }
+    });
+  }
+  function buildActivity() {
+    var items = [], siteOf = {};
+    (SUBS || []).forEach(function (s) {
+      siteOf[s.id] = s.site || T("patrimoine.feed.site.inconnu");
+      items.push({ kind: "sub", subId: s.id, site: siteOf[s.id], who: who(s), time: tms(s.createdAt) });
+    });
+    Object.keys(COMMENT_ACT).forEach(function (id) {
+      (COMMENT_ACT[id] || []).forEach(function (c) {
+        items.push({ kind: "comment", subId: id, site: siteOf[id] || T("patrimoine.feed.site.inconnu"), who: c.who, text: c.text, time: c.time });
+      });
+    });
+    items.sort(function (a, b) { return b.time - a.time; });
+    return items.slice(0, 40);
+  }
+  function fillNotifPanel(panel, items, seen) {
+    var list = panel.querySelector(".notif-list");
+    if (!items.length) { list.innerHTML = '<div class="notif-empty">' + esc(T("patrimoine.notif.vide")) + "</div>"; return; }
+    list.innerHTML = items.map(function (i) {
+      var isNew = i.time > seen;
+      var label = T(i.kind === "sub" ? "patrimoine.notif.contribution" : "patrimoine.notif.commentaire", { site: i.site, qui: i.who || T("patrimoine.feed.site.inconnu") });
+      return '<button type="button" class="notif-item' + (isNew ? " is-new" : "") + '" data-sub="' + esc(i.subId) + '">' +
+        (isNew ? '<span class="notif-dot"></span>' : "") +
+        '<span class="notif-txt">' + esc(label) + (i.kind === "comment" && i.text ? '<span class="notif-snip">« ' + esc(i.text.slice(0, 70)) + (i.text.length > 70 ? "…" : "") + ' »</span>' : "") + "</span>" +
+        '<span class="notif-when">' + esc(relTime(i.time)) + "</span></button>";
+    }).join("");
+    list.querySelectorAll(".notif-item").forEach(function (b) {
+      b.addEventListener("click", function () { closeNotif(); openModal(b.getAttribute("data-sub")); });
+    });
+  }
+  function renderNotif() {
+    var bell = document.getElementById("notifBell"); if (!bell) return;
+    if (!PatFB.ready || !isAdmin()) { bell.hidden = true; return; }   // cloche = outil de modération (activité, dont soumissions en attente)
+    bell.hidden = false;
+    var h = bell.querySelector(".notif-h"); if (h && !h.textContent) h.textContent = T("patrimoine.notif.titre");
+    var btn = bell.querySelector(".notif-btn"); if (btn && !btn.getAttribute("aria-label")) btn.setAttribute("aria-label", T("patrimoine.notif.titre"));
+    var items = buildActivity(), seen = seenTs();
+    var unseen = items.filter(function (i) { return i.time > seen; }).length;
+    var cnt = bell.querySelector(".notif-count");
+    if (cnt) { if (unseen) { cnt.textContent = unseen > 99 ? "99+" : unseen; cnt.hidden = false; } else cnt.hidden = true; }
+    var panel = bell.querySelector(".notif-panel");
+    if (panel && !panel.hidden) fillNotifPanel(panel, items, seen);
+  }
+  function closeNotif() {
+    var bell = document.getElementById("notifBell"); if (!bell) return;
+    var panel = bell.querySelector(".notif-panel"); if (panel) panel.hidden = true;
+    var btn = bell.querySelector(".notif-btn"); if (btn) btn.setAttribute("aria-expanded", "false");
+  }
+  function toggleNotif() {
+    var bell = document.getElementById("notifBell"); var panel = bell.querySelector(".notif-panel");
+    if (panel.hidden) {
+      var old = seenTs();
+      panel.hidden = false;
+      bell.querySelector(".notif-btn").setAttribute("aria-expanded", "true");
+      fillNotifPanel(panel, buildActivity(), old);   // surligne ce qui était neuf
+      setSeen(Date.now());                            // ouvrir = tout marquer vu
+      var cnt = bell.querySelector(".notif-count"); if (cnt) cnt.hidden = true;
+    } else closeNotif();
+  }
+  function wireBell() {
+    var bell = document.getElementById("notifBell"); if (!bell) return;
+    var btn = bell.querySelector(".notif-btn");
+    if (btn) btn.addEventListener("click", function (e) { e.stopPropagation(); toggleNotif(); });
+    document.addEventListener("click", function (e) { if (!bell.contains(e.target)) closeNotif(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeNotif(); });
+    renderNotif();
+  }
+
   function boot() {
     if (!document.getElementById("feed") && !document.getElementById("statutsList")) return;
     if (!window.PatFB || !PatFB.ready) { SUBS = null; renderAll(); return; }
-    PatFB.onAuth(function () { renderAuth(); renderShare(); renderAll(); });
-    renderAuth(); renderShare();
-    PatFB.watchSubmissions(function (subs) { SUBS = subs; renderAll(); }, 300);
+    PatFB.onAuth(function () { renderAuth(); renderShare(); renderMods(); renderAll(); renderNotif(); });
+    renderAuth(); renderShare(); renderMods(); wireBell();
+    // Corrections de fiche (lecture publique) → publiées à app.js (fusion base INP + corrections).
+    PatFB.watchCorrections(function (m) { try { document.dispatchEvent(new CustomEvent("pat:corrections", { detail: m || {} })); } catch (e) {} });
+    PatFB.watchSubmissions(function (subs) { SUBS = subs; renderAll(); reconcileCommentWatchers(); renderNotif(); }, 300);
   }
   if (window.PATi18n && PATi18n.boot) PATi18n.boot().then(boot); else if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })();

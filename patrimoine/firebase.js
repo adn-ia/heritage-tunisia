@@ -17,15 +17,22 @@
   var EXPERTS = ((window.PAT && (window.PAT.expertEmails || window.PAT.inpEmails)) || []).map(function (e) { return String(e).toLowerCase(); });
 
   var ready = !!(CFG && CFG.projectId && CFG.apiKey && window.firebase);
-  var db = null, auth = null, user = null, authCbs = [];
+  var db = null, auth = null, user = null, authCbs = [], isMod = false;
 
+  function fireAuth() { authCbs.forEach(function (cb) { try { cb(user, role()); } catch (e) {} }); }
   if (ready) {
     try {
       if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(CFG);
       db = firebase.firestore();
       if (firebase.auth) {
         auth = firebase.auth();
-        auth.onAuthStateChanged(function (u) { user = u; authCbs.forEach(function (cb) { try { cb(u, role()); } catch (e) {} }); });
+        auth.onAuthStateChanged(function (u) {
+          user = u; isMod = false; fireAuth();   // notif immédiate (rôle sans statut modérateur encore connu)
+          if (u && u.email) {
+            db.collection("moderators").doc(u.email.toLowerCase()).get()
+              .then(function (d) { isMod = d.exists; fireAuth(); }).catch(function () {});
+          }
+        });
       }
     } catch (e) { ready = false; }
   }
@@ -40,12 +47,63 @@
     if (!user || !user.email) return null;
     var m = user.email.toLowerCase();
     if (m === ADMIN) return "mere";
-    if (EXPERTS.indexOf(m) >= 0 || (EXPERTDOMS.length > 0 && EXPERTDOMS.indexOf(emailDom(m)) >= 0)) return "expert";
+    // Modérateur = présent dans la liste dynamique (Firestore) OU dans la config (compat référents).
+    if (isMod || EXPERTS.indexOf(m) >= 0 || (EXPERTDOMS.length > 0 && EXPERTDOMS.indexOf(emailDom(m)) >= 0)) return "expert";
     return "connecte"; // authentifié mais hors périmètre = pas de pouvoir
   }
+  function isModerator() { return isMod; }
   function emailVerified() { return !!(user && user.emailVerified); }
 
+  // ─── Gestion des modérateurs (Mère seulement — imposé par les règles Firestore) ───
+  function watchModerators(cb) {
+    if (!ready) { cb([]); return function () {}; }
+    return db.collection("moderators").onSnapshot(function (snap) {
+      var out = []; snap.forEach(function (d) { var v = d.data(); v.id = d.id; out.push(v); });
+      out.sort(function (a, b) { return (a.name || a.email || "").localeCompare(b.name || b.email || ""); });
+      cb(out);
+    }, function () { cb(null); });
+  }
+  function addModerator(email, name, profile) {
+    if (!ready) return Promise.reject(new Error("offline"));
+    var e = String(email || "").trim().toLowerCase();
+    return db.collection("moderators").doc(e).set({ email: e, name: (name || "").trim(), profile: (profile || "").trim(), addedAt: ts(), addedBy: (user && user.email) || "" });
+  }
+  function removeModerator(email) {
+    if (!ready) return Promise.reject(new Error("offline"));
+    return db.collection("moderators").doc(String(email || "").trim().toLowerCase()).delete();
+  }
+
+  // ─── Corrections de fiche (couche par-dessus la base INP figée). Lecture publique,
+  //     écriture réservée aux privilégiés (règles Firestore). doc ID = siteId. ───
+  function watchCorrections(cb) {
+    if (!ready) { cb({}); return function () {}; }
+    return db.collection("corrections").onSnapshot(function (snap) {
+      var m = {}; snap.forEach(function (d) { m[d.id] = d.data(); }); cb(m);
+    }, function () { cb(null); });
+  }
+  function setCorrection(siteId, fields) {
+    if (!ready) return Promise.reject(new Error("offline"));
+    var u = {}; for (var k in fields) { if (fields[k] !== undefined) u[k] = fields[k]; }
+    u.updatedBy = (user && user.email) || ""; u.updatedAt = ts();
+    return db.collection("corrections").doc(String(siteId)).set(u, { merge: true });
+  }
+  // Réinitialise la fiche : supprime la correction → la donnée INP d'origine réapparaît.
+  function removeCorrection(siteId) {
+    if (!ready) return Promise.reject(new Error("offline"));
+    return db.collection("corrections").doc(String(siteId)).delete();
+  }
+
   function ts() { return firebase.firestore.FieldValue.serverTimestamp(); }
+  function curLang() { try { return (window.PATi18n && PATi18n.lang && PATi18n.lang()) || "fr"; } catch (e) { return "fr"; } }
+  // Notif e-mail via Worker Cloudflare (inerte si PAT.notifyWorker vide). Le Worker lit la
+  // contribution dans Firestore → le client n'envoie QUE { type, id } (jamais e-mail/contenu).
+  function notify(type, id) {
+    try {
+      var url = ((window.PAT && window.PAT.notifyWorker) || "").trim();
+      if (!url || !id) return;
+      fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: type, id: id }) }).catch(function () {});
+    } catch (e) {}
+  }
 
   // ─── Contributions (soumissions) ───
   // data = { site, gov, etat, obs, photoUrl, photoCredit, rightsOk, nom, email }
@@ -54,10 +112,16 @@
     var doc = {
       site: data.site || "", siteId: data.siteId || "", gov: data.gov || "", etat: data.etat || "",
       obs: data.obs || "", photoUrl: data.photoUrl || "", photoCredit: data.photoCredit || "",
-      rightsOk: !!data.rightsOk, prenom: data.prenom || "", nom: data.nom || "", email: data.email || "",
-      status: "pending", createdAt: ts()
+      rightsOk: !!data.rightsOk, prenom: data.prenom || "", nom: data.nom || "",
+      lang: curLang(), status: "pending", createdAt: ts()
     };
-    return db.collection("submissions").add(doc);
+    // L'e-mail est une donnée perso → doc SÉPARÉ (submission_contacts), fermé au public par les règles.
+    // Le doc public ne contient jamais l'e-mail. Écriture atomique (batch) des deux.
+    var ref = db.collection("submissions").doc();
+    var batch = db.batch();
+    batch.set(ref, doc);
+    batch.set(db.collection("submission_contacts").doc(ref.id), { email: data.email || "", createdAt: ts() });
+    return batch.commit().then(function () { notify("submission", ref.id); return ref; });
   }
   // écoute temps réel de TOUTES les soumissions (les vues filtrent par statut), plus récentes d'abord
   function watchSubmissions(cb, max) {
@@ -74,7 +138,7 @@
     if (!ready) return Promise.reject(new Error("offline"));
     var u = { status: status, reviewedBy: (user && user.email) || "", reviewedAt: ts() };
     if (reason != null) u.reason = reason;
-    return db.collection("submissions").doc(id).update(u);
+    return db.collection("submissions").doc(id).update(u).then(function (r) { notify("status", id); return r; });
   }
   function updateSubmission(id, fields) {   // éditer le contenu (site/etat/obs/photoUrl/photoCredit)
     if (!ready) return Promise.reject(new Error("offline"));
@@ -100,19 +164,20 @@
   // ─── Auth email + mot de passe (Mère / INP) ───
   // Connexion ; si le compte n'existe pas encore → création + e-mail de vérification.
   // Les pouvoirs ne s'activent que si l'e-mail est VÉRIFIÉ (imposé par les règles).
-  function signInEmail(email, pw) {
+  function signInEmail(email, pw, pw2) {
     if (!ready || !auth) return Promise.reject(new Error("no-auth"));
-    return auth.signInWithEmailAndPassword(email, pw).catch(function (e) {
-      if (e && (e.code === "auth/user-not-found" || e.code === "auth/invalid-login-credentials")) {
-        return auth.createUserWithEmailAndPassword(email, pw).then(function (cred) {
-          try { if (cred.user && !cred.user.emailVerified) cred.user.sendEmailVerification(); } catch (x) {}
-          return cred;
-        });
+    // Codes « connexion impossible » qui, avec la protection anti-énumération de Firebase,
+    // recouvrent aussi « compte inexistant » → on tente alors de CRÉER le compte.
+    var CREATE = { "auth/user-not-found": 1, "auth/invalid-login-credentials": 1, "auth/invalid-credential": 1 };
+    function verif(cred) { try { if (cred && cred.user && !cred.user.emailVerified) cred.user.sendEmailVerification(); } catch (x) {} return cred; }
+    return auth.signInWithEmailAndPassword(email, pw).then(verif).catch(function (e) {
+      if (e && CREATE[e.code]) {
+        // On va CRÉER le compte → le mot de passe doit être confirmé (évite une faute de frappe verrouillante).
+        if (pw2 != null && pw !== pw2) return Promise.reject({ code: "pat/password-mismatch" });
+        // Si l'e-mail existe déjà (auth/email-already-in-use) → c'était un VRAI mauvais mot de passe (rejet propagé).
+        return auth.createUserWithEmailAndPassword(email, pw).then(verif);
       }
       throw e;
-    }).then(function (cred) {
-      try { if (cred && cred.user && !cred.user.emailVerified) cred.user.sendEmailVerification(); } catch (x) {}
-      return cred;
     });
   }
   function resendVerification() { try { return user ? user.sendEmailVerification() : Promise.reject(); } catch (e) { return Promise.reject(e); } }
@@ -126,6 +191,8 @@
     setStatus: setStatus, updateSubmission: updateSubmission, deleteSubmission: deleteSubmission,
     signInEmail: signInEmail, resendVerification: resendVerification, signOut: signOut, onAuth: onAuth,
     isCredited: isCredited, emailVerified: emailVerified,
+    watchModerators: watchModerators, addModerator: addModerator, removeModerator: removeModerator, isModerator: isModerator,
+    watchCorrections: watchCorrections, setCorrection: setCorrection, removeCorrection: removeCorrection,
     role: role, user: function () { return user; }
   };
 })();

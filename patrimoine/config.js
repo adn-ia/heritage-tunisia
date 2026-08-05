@@ -17,6 +17,10 @@
 
     // ─── Contribution / feed partagé (Firebase PROPRE à la sous-app) ───
     notifyEmail:   "",   // adresse de notification (institution/référent) — à remplir le moment venu
+    notifyWorker:  "https://patrimoine-notify.threshold-heritage.workers.dev",   // URL du Worker Cloudflare d'e-mails (vide = aucun e-mail) — voir patrimoine-notify-worker/README-SETUP.md
+    uploadWorker:  "",   // URL du Worker d'upload photo R2 (vide = champ lien seulement) — voir patrimoine-upload-worker/
+    scanWorker:   "",   // URL du Worker scan anti-copie (vide = pas de scan) — voir patrimoine-scan-worker/
+    contactEmail:  "patrimoine_tunisie@threshold-analytics.com",   // contact affiché dans les mentions (page À propos)
     adminEmail:    "helmymekaoui@gmail.com",   // Mère (Helmy) : copie notifications + rôle admin
     expertEmails:  [],   // référents (chercheurs/historiens reconnus) — plusieurs possibles, rôle valideur
     expertDomains: [],   // domaines de référents admissibles (ex. "univ-xxx.tn") — vide = aucun référent
