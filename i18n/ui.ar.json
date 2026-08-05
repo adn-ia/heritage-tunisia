@@ -1961,5 +1961,10 @@
  "soutien.rich.le.paiement.est.lemon": "يتم <b>تفويض</b> عملية الدفع <b>إلى مزود خدمة</b> (Lemon Squeezy): <b>ولا نتمتع بأي وصول إلى بياناتك المصرفية</b>.",
  "a.propos.menu": "‹ القائمة",
  "patrimoine.menu.titre": "التراث · المراقبة المدنية",
- "patrimoine.menu.sous": "المواقع المدرجة، وحالتها — متاحة للجميع مجانًا"
+ "patrimoine.menu.sous": "المواقع المدرجة، وحالتها — متاحة للجميع مجانًا",
+ "footer.plan.essai": "تجريبي",
+ "footer.plan.code": "رمز",
+ "footer.plan.cadeau": "هدية",
+ "footer.plan.an": "سنوي",
+ "footer.jours.abbr": "يوم"
 }

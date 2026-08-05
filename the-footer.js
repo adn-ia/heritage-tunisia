@@ -40,7 +40,9 @@
     if(i.active){
       // Modèle essai 2 sem. → paywall → abonnement : pas de « version gratuite » où revenir,
       // donc on n'affiche QUE le statut/décompte (plus de lien « revenir au gratuit », qui n'a plus de sens).
-      var lbl=T('footer.passe.actif')+(i.plan && i.plan!=='démo' ? ' ('+i.plan+(i.daysLeft!=null?', '+i.daysLeft+' j':'')+')' : '');
+      var _plk='footer.plan.'+i.plan, _plt=T(_plk); if(_plt===_plk) _plt=i.plan;
+      var _jt=T('footer.jours.abbr'); if(_jt==='footer.jours.abbr') _jt='j';
+      var lbl=T('footer.passe.actif')+(i.plan && i.plan!=='démo' ? ' ('+_plt+(i.daysLeft!=null?', '+i.daysLeft+' '+_jt:'')+')' : '');
       el.textContent=lbl;
     } else {
       el.textContent=T('footer.version.gratuite');

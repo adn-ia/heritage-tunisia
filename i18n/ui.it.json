@@ -1961,5 +1961,10 @@
  "soutien.rich.le.paiement.est.lemon": "Il pagamento viene <b>gestito da un fornitore di servizi</b> (Lemon Squeezy): <b>non abbiamo alcun accesso ai tuoi dati bancari</b>.",
  "a.propos.menu": "‹ Menu",
  "patrimoine.menu.titre": "Patrimonio · monitoraggio civico",
- "patrimoine.menu.sous": "I siti elencati, il loro stato — accesso libero a tutti"
+ "patrimoine.menu.sous": "I siti elencati, il loro stato — accesso libero a tutti",
+ "footer.plan.essai": "prova",
+ "footer.plan.code": "codice",
+ "footer.plan.cadeau": "regalo",
+ "footer.plan.an": "annuale",
+ "footer.jours.abbr": "gg"
 }

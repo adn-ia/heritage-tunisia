@@ -1961,5 +1961,10 @@
  "soutien.rich.le.paiement.est.lemon": "Die Zahlungsabwicklung <b>erfolgt über einen Dienstleister</b> (Lemon Squeezy): <b>Wir haben keinerlei Zugriff auf Ihre Bankdaten</b>.",
  "a.propos.menu": "‹ Menü",
  "patrimoine.menu.titre": "Kulturerbe · Bürgerinitiativen",
- "patrimoine.menu.sous": "Die aufgeführten Stätten, ihr Zustand – freier Zugang für alle"
+ "patrimoine.menu.sous": "Die aufgeführten Stätten, ihr Zustand – freier Zugang für alle",
+ "footer.plan.essai": "Test",
+ "footer.plan.code": "Code",
+ "footer.plan.cadeau": "Geschenk",
+ "footer.plan.an": "jährlich",
+ "footer.jours.abbr": "T"
 }

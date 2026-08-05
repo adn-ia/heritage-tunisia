@@ -1,9 +1,9 @@
-/* build 2026-07-09 THE — teaser Premium sur page de garde (i18n 5 langues) */
+/* build 2026-08-05 — fix i18n textes en dur (badge footer plan/jours, data-i18n-alt, replis decouvrir) */
 /* THE — service worker : rend l'app utilisable hors-ligne.
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'heritage-d5757065';
+const VERSION = 'heritage-477ad7f8';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 const TILES   = 'the-tiles-' + VERSION;

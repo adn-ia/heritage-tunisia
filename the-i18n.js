@@ -46,6 +46,7 @@
     root.querySelectorAll('[data-i18n-placeholder]').forEach(function(el){ var k=el.getAttribute('data-i18n-placeholder'); if(UI[k]) el.setAttribute('placeholder',UI[k]); });
     root.querySelectorAll('[data-i18n-title]').forEach(function(el){ var k=el.getAttribute('data-i18n-title'); if(UI[k]) el.setAttribute('title',UI[k]); });
     root.querySelectorAll('[data-i18n-aria]').forEach(function(el){ var k=el.getAttribute('data-i18n-aria'); if(UI[k]) el.setAttribute('aria-label',UI[k]); });
+    root.querySelectorAll('[data-i18n-alt]').forEach(function(el){ var k=el.getAttribute('data-i18n-alt'); if(UI[k]) el.setAttribute('alt',UI[k]); });
     try{ var _t=document.querySelector('title[data-i18n]'); if(_t){ var _k=_t.getAttribute('data-i18n'); if(UI[_k]) document.title=UI[_k]; } }catch(e){}
     // 2) balayage des nœuds de texte (interface statique : boutons, labels, options, hints…)
     try{

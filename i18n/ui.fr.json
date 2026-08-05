@@ -76,5 +76,10 @@
  "soutien.rich.le.paiement.est.lemon": "Le paiement est <b>délégué à un prestataire</b> (Lemon&nbsp;Squeezy) : <b>nous n'avons aucun accès à vos coordonnées bancaires</b>.",
  "a.propos.menu": "‹ Menu",
  "patrimoine.menu.titre": "Patrimoine · veille citoyenne",
- "patrimoine.menu.sous": "Les sites répertoriés, leur état — accès libre à tous"
+ "patrimoine.menu.sous": "Les sites répertoriés, leur état — accès libre à tous",
+ "footer.plan.essai": "essai",
+ "footer.plan.code": "code",
+ "footer.plan.cadeau": "cadeau",
+ "footer.plan.an": "annuel",
+ "footer.jours.abbr": "j"
 }

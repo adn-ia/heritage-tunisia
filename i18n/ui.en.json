@@ -1961,5 +1961,10 @@
  "soutien.rich.le.paiement.est.lemon": "Payment is <b>handled by a third-party service provider</b> (Lemon Squeezy): <b>we do not have access to your bank details</b>.",
  "a.propos.menu": "‹ Menu",
  "patrimoine.menu.titre": "Heritage · citizen watch",
- "patrimoine.menu.sous": "The recorded sites, their condition — free for all"
+ "patrimoine.menu.sous": "The recorded sites, their condition — free for all",
+ "footer.plan.essai": "trial",
+ "footer.plan.code": "code",
+ "footer.plan.cadeau": "gift",
+ "footer.plan.an": "annual",
+ "footer.jours.abbr": "d"
 }
