@@ -3,14 +3,16 @@
    SON moteur, SA donnée (tour.data.json), SON i18n (patrimoine.tour.*).
    • Spotlight sur la cible + carte d'explication + contrôles ⏮ ⏭ ✕.
    • Langue = celle de la garde (the_lang via PATi18n). Rejouable.
-   • VISUEL seul : on avance à la main (bouton › / flèches). (Voix débranchée —
-     les MP3 restent sur le serveur, on pourra rebrancher plus tard.)
+   • Voix : joue voix/tour/<id>-<langue>.mp3 ; la fin de la voix auto-avance à
+     l'étape suivante. Bouton pause/lecture. Avance manuelle toujours possible.
    ═══════════════════════════════════════════════════════════════════════ */
 (function () {
   "use strict";
   function T(k) { return window.PATi18n ? PATi18n.uiT(k) : k; }
   var STEPS = [], i = 0, over = null, hole = null, tip = null, loaded = false;
   var KEY = "pat_tour_v1";
+  var paused = false, audio = null;
+  function curLang() { try { return (window.PATi18n && PATi18n.lang && PATi18n.lang()) || localStorage.getItem("the_lang") || "fr"; } catch (e) { return "fr"; } }
 
   function load() {
     if (loaded) return Promise.resolve();
@@ -30,6 +32,7 @@
         '<div class="ptour-ctl">' +
           '<button class="ptour-b" data-a="prev" aria-label="précédent">‹</button>' +
           '<button class="ptour-b ptour-next" data-a="next" aria-label="suivant">›</button>' +
+          '<button class="ptour-b ptour-voice" data-a="voice" aria-label="voix">⏸</button>' +
           '<button class="ptour-b ptour-close" data-a="close" aria-label="fermer">✕</button>' +
         '</div></div>';
     document.body.appendChild(over);
@@ -48,21 +51,37 @@
   function act(a) {
     if (a === "prev") go(i - 1);
     else if (a === "next") go(i + 1);
+    else if (a === "voice") toggleVoice();
     else if (a === "close") stop();
   }
 
-  function begin() { i = 0; over.hidden = false; document.documentElement.classList.add("ptour-on"); render(); }
+  function begin() { i = 0; paused = false; over.hidden = false; document.documentElement.classList.add("ptour-on"); render(); }
   function start() {
     ensureDom();
     if (loaded && STEPS.length) begin();
     else load().then(function () { if (STEPS.length) begin(); });
   }
   function stop() {
+    stopVoice();
     if (over) over.hidden = true;
     document.documentElement.classList.remove("ptour-on");
     try { localStorage.setItem(KEY, "1"); } catch (e) {}
   }
   function go(n) { if (n < 0) return; if (n >= STEPS.length) { stop(); return; } i = n; render(); }
+
+  // Voix : joue le MP3 de l'étape (langue de la garde) ; auto-avance à la fin. Dégradation propre si MP3 manquant.
+  function stopVoice() { if (audio) { try { audio.pause(); } catch (e) {} audio = null; } }
+  function narrate() {
+    stopVoice();
+    if (paused) return;
+    var s = STEPS[i]; if (!s || !s.id) return;
+    var a = new Audio("voix/tour/" + encodeURIComponent(s.id) + "-" + curLang() + ".mp3");
+    audio = a;
+    a.addEventListener("ended", function () { if (a !== audio || paused) return; audio = null; if (i < STEPS.length - 1) go(i + 1); });
+    a.play().catch(function () {});
+  }
+  function toggleVoice() { paused = !paused; if (paused) stopVoice(); updateVoiceBtn(); }
+  function updateVoiceBtn() { var b = over && over.querySelector(".ptour-voice"); if (b) b.textContent = paused ? "▶" : "⏸"; }
 
   function render() {
     var s = STEPS[i];
@@ -74,6 +93,7 @@
     var tgt = s.target ? document.querySelector(s.target) : null;
     if (tgt) { try { tgt.scrollIntoView({ block: "center", behavior: "smooth" }); } catch (e) { tgt.scrollIntoView(); } }
     setTimeout(position, tgt ? 280 : 0);
+    updateVoiceBtn(); narrate();
   }
 
   function position() {
