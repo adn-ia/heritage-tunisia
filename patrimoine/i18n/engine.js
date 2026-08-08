@@ -4,6 +4,10 @@
    c'est une infrastructure À ELLE : aucun fichier commun avec l'app principale.
    ═══════════════════════════════════════════════════════════════════════ */
 (function(){
+  // Hash de version repris du propre <script src="…engine.js?v=HASH"> → sert à buster
+  // les fetch JSON avec le MÊME tampon que les scripts (le hash inclut les JSON). Fin de la dette de cache i18n.
+  var SELF = document.currentScript;
+  var V = (SELF && SELF.src && (SELF.src.match(/[?&]v=([a-z0-9]+)/i) || [])[1]) || '';
   var cfg = window.PAT || {};
   var LANGS = cfg.langs || ['fr'];
   var DEF   = cfg.defaultLang || 'fr';
@@ -38,7 +42,7 @@
     var l = lang();
     document.documentElement.setAttribute('lang', l);
     document.documentElement.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
-    return fetch('i18n/' + l + '.json')
+    return fetch('i18n/' + l + '.json' + (V ? '?v=' + V : ''))
       .then(function(r){ return r.json(); })
       .then(function(j){
         UI = j || {};

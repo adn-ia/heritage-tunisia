@@ -9,7 +9,8 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -u
 cd "$(dirname "$0")" || exit 2
-FILES="config.js firebase.js export.js i18n/engine.js app.js feed.js tour.js"
+# Inclut les JSON i18n : un changement de libellé change le hash → le moteur re-fetch les JSON (?v) → fin de la dette de cache i18n.
+FILES="config.js firebase.js export.js i18n/engine.js app.js feed.js tour.js i18n/fr.json i18n/en.json i18n/de.json i18n/it.json i18n/ar.json"
 H=$( { for f in $FILES; do [ -f "$f" ] && cat "$f"; done; } | shasum -a 256 | cut -c1-8 )
 for html in index.html apropos.html; do
   [ -f "$html" ] || continue
