@@ -329,6 +329,70 @@
     if(fc) fc.addEventListener('change', function(){ CLASSE=fc.checked; render(); });
     var q=document.getElementById('q'); var to;
     q.addEventListener('input', function(){ clearTimeout(to); to=setTimeout(function(){ Q=q.value.trim(); render(); },120); });
+    wireNear();
+  }
+
+  // ── « Autour de moi » : géoloc → rayon (km) → sites proches + liens navigation. ──
+  var _userPos = null;
+  function distKm(la1,lo1,la2,lo2){
+    var R=6371, r=Math.PI/180, dLa=(la2-la1)*r, dLo=(lo2-lo1)*r;
+    var a=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(la1*r)*Math.cos(la2*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+  function fmtDist(d){ return d<1 ? Math.round(d*1000)+' m' : d.toFixed(1)+' km'; }
+  function navLinks(la,lo){
+    var g='https://www.google.com/maps/dir/?api=1&destination='+la+','+lo;
+    var a='https://maps.apple.com/?daddr='+la+','+lo+'&dirflg=d';
+    var o='https://www.openstreetmap.org/directions?to='+la+','+lo;
+    return '<span class="near-nav">'+esc(T('patrimoine.near.yaller'))+
+      ' <a href="'+g+'" target="_blank" rel="noopener">Google Maps</a>'+
+      '<a href="'+a+'" target="_blank" rel="noopener">Plan</a>'+
+      '<a href="'+o+'" target="_blank" rel="noopener">OSM</a></span>';
+  }
+  function nearRecompute(){
+    var list=document.getElementById('nearList'), msg=document.getElementById('nearMsg');
+    if(!list||!msg) return;
+    if(!_userPos){ list.innerHTML=''; return; }
+    var km=parseFloat(document.getElementById('nearKm').value)||20;
+    var near=SITES.filter(function(s){ return s.lat!=null && s.lon!=null && s.coord_ok!==false; })
+      .map(function(s){ return { s:s, d:distKm(_userPos.lat,_userPos.lon,s.lat,s.lon) }; })
+      .filter(function(o){ return o.d<=km; })
+      .sort(function(a,b){ return a.d-b.d; });
+    msg.textContent = near.length
+      ? T('patrimoine.near.compte').replace('{n}',near.length).replace('{km}',km)
+      : T('patrimoine.near.aucun');
+    list.innerHTML = near.map(function(o){
+      var s=o.s;
+      return '<div class="near-item"><button type="button" class="near-name" data-id="'+esc(String(s.id))+'">'+esc(s.nom||'—')+'</button>'+
+        '<div class="near-meta">'+esc([effLoc(s),s.gov].filter(Boolean).join(' · '))+' · <b>'+fmtDist(o.d)+'</b></div>'+
+        navLinks(s.lat,s.lon)+'</div>';
+    }).join('');
+    list.querySelectorAll('.near-name').forEach(function(b){
+      b.addEventListener('click', function(){
+        var s=SITES.filter(function(x){ return String(x.id)===b.getAttribute('data-id'); })[0];
+        if(s){ document.getElementById('nearModal').hidden=true; openSheet(s); }
+      });
+    });
+  }
+  function nearLocate(){
+    var msg=document.getElementById('nearMsg'); if(!msg) return;
+    if(!navigator.geolocation){ msg.textContent=T('patrimoine.near.refus'); return; }
+    msg.textContent=T('patrimoine.near.localisation');
+    navigator.geolocation.getCurrentPosition(function(p){
+      _userPos={ lat:p.coords.latitude, lon:p.coords.longitude }; nearRecompute();
+    }, function(){ msg.textContent=T('patrimoine.near.refus'); }, { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+  }
+  function wireNear(){
+    var open=document.getElementById('openNear'), modal=document.getElementById('nearModal');
+    if(!open||!modal||open._wired) return; open._wired=true;
+    var close=document.getElementById('closeNear'), km=document.getElementById('nearKm'),
+        kmv=document.getElementById('nearKmVal'), loc=document.getElementById('nearLocate');
+    function setKmLabel(){ if(kmv&&km) kmv.textContent=km.value+' km'; }
+    open.addEventListener('click', function(){ modal.hidden=false; setKmLabel(); if(!_userPos) nearLocate(); });
+    if(close) close.addEventListener('click', function(){ modal.hidden=true; });
+    modal.addEventListener('click', function(e){ if(e.target===modal) modal.hidden=true; });
+    if(km) km.addEventListener('input', function(){ setKmLabel(); nearRecompute(); });
+    if(loc) loc.addEventListener('click', nearLocate);
   }
 
   function buildStats(){

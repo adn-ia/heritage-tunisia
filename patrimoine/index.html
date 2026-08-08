@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#26201a">
 <title data-i18n="patrimoine.titre">Patrimoine</title>
-<script src="config.js?v=abb8443f"></script>
+<script src="config.js?v=89784e81"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -371,6 +371,24 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
 .zone-badge[hidden]{display:none;}
 .mapbox{width:min(920px,100%);}
 .mapbox #patMap{height:min(72vh,600px);border:none;border-radius:0;margin:0;}
+/* « Autour de moi » */
+.dash-h-btns{display:flex;gap:8px;}
+.nearbox{width:min(560px,100%);}
+.near-h{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;margin:0 0 14px;}
+.near-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 12px;}
+.near-locate{appearance:none;background:var(--sea);color:#fff;border:none;border-radius:8px;padding:8px 14px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;}
+.near-locate:hover{filter:brightness(1.06);}
+.near-rlbl{font-size:14px;color:var(--stone);}
+.near-ctl input[type=range]{flex:1;min-width:140px;accent-color:var(--sea);}
+.near-msg{font-size:13.5px;color:var(--stone);margin:0 0 10px;min-height:1em;}
+.near-list{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;}
+.near-item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper);}
+.near-name{background:none;border:none;padding:0;font:inherit;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:17px;color:var(--ink);cursor:pointer;text-align:left;}
+.near-name:hover{color:var(--sea);}
+.near-meta{font-size:13px;color:var(--stone);margin:2px 0 6px;}
+.near-nav{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--stone);}
+.near-nav a{color:var(--sea);text-decoration:none;border:1px solid var(--sea-soft);border-radius:6px;padding:2px 8px;}
+.near-nav a:hover{background:#eaf5f4;}
 @media (max-width:820px){ .dash{grid-template-columns:1fr;} .dash-left .grid{max-height:none;} }
 /* Frise décorative (motifs config) */
 .pat-frieze{display:flex;flex-wrap:wrap;gap:14px;font-size:15px;opacity:.32;margin:2px 0 8px;}
@@ -418,7 +436,7 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
       <!-- Colonne GAUCHE : les sites (pleine hauteur, sélectionnables) -->
       <section class="dash-left">
         <div class="dash-h"><span data-i18n="patrimoine.tab.sites">Sites</span>
-          <button class="dash-map-btn" type="button" id="openMap">🗺️ <span data-i18n="patrimoine.tab.carte">Carte</span></button></div>
+          <span class="dash-h-btns"><button class="dash-map-btn" type="button" id="openNear">📍 <span data-i18n="patrimoine.near.btn">Autour de moi</span></button><button class="dash-map-btn" type="button" id="openMap">🗺️ <span data-i18n="patrimoine.tab.carte">Carte</span></button></span></div>
         <a class="addsite" href="contribuer.html"><span class="addsite-ic">＋</span><span data-i18n="patrimoine.addsite">Un site manque à la liste ? Signalez-le</span></a>
         <div class="filters">
           <input type="search" id="q" data-i18n-ph="patrimoine.filtre.recherche">
@@ -458,6 +476,18 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
     <!-- Carte en modale (ouverte depuis le bouton Carte) -->
     <div id="mapModal" class="cmodal" hidden><div class="cmodal-box mapbox"><button class="cmodal-x" id="closeMap" aria-label="fermer">×</button><div id="patMap"></div><p class="map-note" data-i18n="patrimoine.carte.note"></p></div></div>
 
+    <!-- « Autour de moi » : géoloc + rayon → sites proches + liens navigation -->
+    <div id="nearModal" class="cmodal" hidden><div class="cmodal-box nearbox"><button class="cmodal-x" id="closeNear" aria-label="fermer">×</button><div class="cmodal-body">
+      <h3 class="near-h" data-i18n="patrimoine.near.titre">Sites autour de moi</h3>
+      <div class="near-ctl">
+        <button type="button" class="near-locate" id="nearLocate">📍 <span data-i18n="patrimoine.near.localiser">Me localiser</span></button>
+        <label class="near-rlbl"><span data-i18n="patrimoine.near.rayon">Rayon</span> : <b id="nearKmVal">20 km</b></label>
+        <input type="range" id="nearKm" min="1" max="100" value="20">
+      </div>
+      <div class="near-msg" id="nearMsg"></div>
+      <div class="near-list" id="nearList"></div>
+    </div></div></div>
+
     <!-- Pied : rappel accès libre & règles (rouvre la charte) -->
     <footer class="pat-foot"><button type="button" class="pat-foot-link" id="charteLink"></button><span class="pat-foot-sep">·</span><a class="pat-foot-link" href="apropos.html" data-i18n="patrimoine.apropos.comment">À propos</a><span class="pat-foot-sep">·</span><button type="button" class="pat-foot-link" id="tourLink" data-i18n="patrimoine.tour.revoir">Revoir la visite</button></footer>
   </main>
@@ -471,13 +501,13 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(30px,6
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="firebase.js?v=abb8443f"></script>
+  <script src="firebase.js?v=89784e81"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="i18n/engine.js?v=abb8443f"></script>
-  <script src="export.js?v=abb8443f"></script>
-  <script src="app.js?v=abb8443f"></script>
-  <script src="feed.js?v=abb8443f"></script>
-  <script src="tour.js?v=abb8443f"></script>
+  <script src="i18n/engine.js?v=89784e81"></script>
+  <script src="export.js?v=89784e81"></script>
+  <script src="app.js?v=89784e81"></script>
+  <script src="feed.js?v=89784e81"></script>
+  <script src="tour.js?v=89784e81"></script>
   <script>
   /* Carte en modale (dashboard : plus d'onglets) */
   (function(){
