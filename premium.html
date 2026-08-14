@@ -60,11 +60,23 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     <div id="buyIos" style="display:none">
       <button class="btn big" id="buyBtn" type="button" data-i18n="premium.essayer.2.semaines">Essayer 2 semaines gratuitement</button>
       <button class="btn ghost" id="restoreBtn" type="button" style="margin-top:8px" data-i18n="premium.restaurer.achat">Restaurer un achat</button>
-      <p class="fineprint" id="disclosure" data-i18n-html="premium.mention.legale.apple">Abonnement annuel <b>auto-renouvelable</b> de 14,99 €/an, précédé de 2 semaines d'essai gratuit. Le paiement est débité de votre compte Apple à la confirmation. Il se renouvelle automatiquement sauf annulation au moins 24 h avant la fin de la période en cours ; gérez ou annulez dans les Réglages de votre compte App Store après l'achat. En continuant, vous acceptez les <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Conditions d'utilisation (EULA)</a> et la <a href="confidentialite.html">politique de confidentialité</a>.</p>
     </div>
 
     <!-- web : portes de paiement (Lemon Squeezy / App Store / café) — remplies par JS -->
     <div id="buyWeb" style="display:none"></div>
+
+    <!-- Mentions abo + liens LÉGAUX obligatoires DANS le flux d'achat (Apple 3.1.2(c) / Google Play).
+         Calqué sur le socle. Deux règles à ne pas défaire :
+         ① HORS de #buyIos et #buyWeb — leur innerHTML est écrasé par le JS (Android, iOS sans
+            StoreKit), ce qui faisait disparaître EULA + confidentialité ;
+         ② texte SANS balise — une valeur traduite contenant du HTML se fait tronquer à la
+            traduction (la mention entière s'était réduite à trois mots dans les 4 langues). -->
+    <p class="fineprint" data-i18n="premium.abo.legal.disclosure">Abonnement auto-renouvelable. Il se renouvelle automatiquement au tarif indiqué, sauf résiliation au moins 24 h avant la fin de la période en cours. Gérez ou résiliez à tout moment dans les réglages de votre compte.</p>
+    <p class="fineprint">
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener" data-i18n="premium.conditions.utilisation">Conditions d’utilisation (EULA)</a>
+      &nbsp;·&nbsp;
+      <a href="confidentialite.html" data-i18n="footer.confidentialite">Confidentialité</a>
+    </p>
   </section>
 
   <!-- ═══ CE QUE C'EST ═══ -->
@@ -93,7 +105,7 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     <h2 data-i18n="premium.jai.un.code">🎟️ J'ai un code ou une clé</h2>
     <p class="fs" style="color:#5a4d3a" data-i18n="premium.code.explication">Un code offert ou une clé d'achat (reçue par e-mail) débloque le Premium complet, sur n'importe quel appareil.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <input id="codeInput" type="text" autocapitalize="characters" spellcheck="false" placeholder="THE-XXXX-XXXX"
+      <input id="codeInput" type="text" autocapitalize="characters" spellcheck="false"
              style="flex:1;min-width:170px;padding:11px 12px;border:1px solid #cdbb95;border-radius:8px;font:inherit;letter-spacing:1px;text-transform:uppercase">
       <button class="btn" id="codeBtn" type="button" data-i18n="premium.activer">Activer</button>
     </div>
@@ -191,6 +203,9 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
   }
 
   /* Code d'accès (web) */
+  /* placeholder dérivé de HConf — aucune marque en dur (règle « un fichier, un pays ») */
+  var _pfx=((window.HConf&&HConf.iapPrefix)||'').toUpperCase();
+  if(_pfx) document.getElementById('codeInput').placeholder=_pfx+'-XXXX-XXXX';
   var inp=document.getElementById('codeInput'), cbtn=document.getElementById('codeBtn'), msg=document.getElementById('codeMsg');
   if(cbtn){
     var go=function(){

@@ -81,5 +81,7 @@
  "footer.plan.code": "code",
  "footer.plan.cadeau": "cadeau",
  "footer.plan.an": "annuel",
- "footer.jours.abbr": "j"
+ "footer.jours.abbr": "j",
+ "premium.abo.legal.disclosure": "Abonnement auto-renouvelable. Il se renouvelle automatiquement au tarif indiqué, sauf résiliation au moins 24 h avant la fin de la période en cours. Gérez ou résiliez à tout moment dans les réglages de votre compte.",
+ "premium.conditions.utilisation": "Conditions d’utilisation (EULA)"
 }

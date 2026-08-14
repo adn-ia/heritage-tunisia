@@ -1977,7 +1977,6 @@
  "premium.essai.puis.abo": "Free 2-week trial, then €14.99 per year. No commitment; can be cancelled at any time.",
  "premium.essayer.2.semaines": "Try it free for 2 weeks",
  "premium.restaurer.achat": "Restore a purchase",
- "premium.mention.legale.apple": "<b>Automatic renewal</b> annual subscription",
  "premium.tout.ce.que.vous.avez": "✨ Everything you have",
  "premium.f1.t": "Memory album & book-passport",
  "premium.f1.d": "Export your trip as an illustrated passport, photo album and PDF — a real travel journal.",
@@ -2020,5 +2019,7 @@
  "Votre essai est terminé": "Your trial has ended",
  "Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.": "Subscribe to regain full access. Your itineraries and travel journal will be saved.",
  "Code ou clé invalide.": "Invalid code or key.",
- "par an": "per year"
+ "par an": "per year",
+ "premium.abo.legal.disclosure": "Auto-renewable subscription. It renews automatically at the stated price, unless cancelled at least 24 hours before the end of the current period. Manage or cancel at any time in your account settings.",
+ "premium.conditions.utilisation": "Terms of Use (EULA)"
 }

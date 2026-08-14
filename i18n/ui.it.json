@@ -1977,7 +1977,6 @@
  "premium.essai.puis.abo": "Prova gratuita di 2 settimane, poi 14,99 € all’anno. Senza impegno, disdicibile in qualsiasi momento.",
  "premium.essayer.2.semaines": "Prova gratuita per 2 settimane",
  "premium.restaurer.achat": "Ripristinare un acquisto",
- "premium.mention.legale.apple": "Abbonamento annuale <b>con rinnovo automatico</b>",
  "premium.tout.ce.que.vous.avez": "✨ Tutto quello che avete",
  "premium.f1.t": "Album dei ricordi e passaporto-libro",
  "premium.f1.d": "Esporta il tuo viaggio in un passaporto illustrato, un album e un PDF: un vero e proprio diario di viaggio.",
@@ -2020,5 +2019,7 @@
  "Votre essai est terminé": "Il periodo di prova è terminato",
  "Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.": "Iscriviti per riottenere l'accesso completo. I tuoi itinerari e il tuo diario di viaggio vengono salvati.",
  "Code ou clé invalide.": "Codice o chiave non valida.",
- "par an": "all’anno"
+ "par an": "all’anno",
+ "premium.abo.legal.disclosure": "Abbonamento a rinnovo automatico. Si rinnova automaticamente alla tariffa indicata, salvo disdetta almeno 24 ore prima della scadenza del periodo in corso. È possibile gestirlo o disdirlo in qualsiasi momento dalle impostazioni del proprio account.",
+ "premium.conditions.utilisation": "Condizioni d’uso (EULA)"
 }

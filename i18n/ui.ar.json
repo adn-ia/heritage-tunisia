@@ -1977,7 +1977,6 @@
  "premium.essai.puis.abo": "تجربة مجانية لمدة أسبوعين، ثم 14,99 يورو في السنة. بدون التزام، وقابل للإلغاء في أي وقت.",
  "premium.essayer.2.semaines": "جربه مجانًا لمدة أسبوعين",
  "premium.restaurer.achat": "استعادة عملية شراء",
- "premium.mention.legale.apple": "اشتراك سنوي <b>قابل للتجديد التلقائي</b>",
  "premium.tout.ce.que.vous.avez": "✨ كل ما لديكم",
  "premium.f1.t": "ألبوم الذكريات وجواز السفر-الكتاب",
  "premium.f1.d": "قم بتصدير رحلتك في شكل جواز سفر مصور وألبوم وملف PDF — إنه دفتر رحلة حقيقي.",
@@ -2020,5 +2019,7 @@
  "Votre essai est terminé": "انتهت فترة تجربتك",
  "Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.": "اشترك للحصول على الوصول الكامل. سيتم الاحتفاظ بمساراتك ودفتر ملاحظاتك.",
  "Code ou clé invalide.": "الرمز أو المفتاح غير صالح.",
- "par an": "في السنة"
+ "par an": "في السنة",
+ "premium.abo.legal.disclosure": "اشتراك قابل للتجديد التلقائي. يتم تجديده تلقائيًا بالسعر المحدد، ما لم يتم إلغاؤه قبل 24 ساعة على الأقل من انتهاء الفترة الحالية. يمكنك إدارة اشتراكك أو إلغاؤه في أي وقت من خلال إعدادات حسابك.",
+ "premium.conditions.utilisation": "شروط الاستخدام (EULA)"
 }

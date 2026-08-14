@@ -1977,7 +1977,6 @@
  "premium.essai.puis.abo": "2 Wochen kostenlos testen, danach 14,99 € pro Jahr. Ohne Vertragsbindung, jederzeit kündbar.",
  "premium.essayer.2.semaines": "2 Wochen kostenlos testen",
  "premium.restaurer.achat": "Einen Kauf wiederherstellen",
- "premium.mention.legale.apple": "<b>Selbstverlängerndes</b> Jahresabonnement",
  "premium.tout.ce.que.vous.avez": "✨ Alles, was ihr habt",
  "premium.f1.t": "Erinnerungsalbum & Buch-Reisepass",
  "premium.f1.d": "Exportieren Sie Ihre Reise als illustrierten Reisebericht, Fotoalbum und PDF – ein echtes Reisetagebuch.",
@@ -2020,5 +2019,7 @@
  "Votre essai est terminé": "Ihre Testphase ist abgelaufen",
  "Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.": "Abonnieren Sie unseren Service, um wieder vollen Zugriff zu erhalten. Ihre Routen und Ihr Reisetagebuch bleiben erhalten.",
  "Code ou clé invalide.": "Ungültiger Code oder Schlüssel.",
- "par an": "pro Jahr"
+ "par an": "pro Jahr",
+ "premium.abo.legal.disclosure": "Abonnement mit automatischer Verlängerung. Es verlängert sich automatisch zu dem angegebenen Preis, sofern es nicht mindestens 24 Stunden vor Ablauf des laufenden Zeitraums gekündigt wird. Sie können es jederzeit in Ihren Kontoeinstellungen verwalten oder kündigen.",
+ "premium.conditions.utilisation": "Nutzungsbedingungen (EULA)"
 }
