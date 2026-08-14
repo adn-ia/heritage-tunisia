@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#26201a">
-<title>THE — Le Premium</title>
+<title data-i18n="premium.titre.page">Le Premium</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -42,25 +42,25 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
 </style>
 </head>
 <body>
-<div class="topbar"><a class="back" href="decouvrir.html" id="backLink">‹ Menu</a><span class="t">LE PREMIUM</span></div>
+<div class="topbar"><a class="back" href="decouvrir.html" id="backLink" data-i18n="premium.menu">‹ Menu</a><span class="t" data-i18n="premium.bandeau">PREMIUM</span></div>
 <main>
-  <h1>Le Premium <span class="badge" id="stateBadge" style="display:none"></span></h1>
-  <p class="lead" id="lead">Tout THE, sans limite — récits, audio, itinéraires, thèmes et circuits.</p>
+  <h1><span data-i18n="premium.h1">Le Premium</span> <span class="badge" id="stateBadge" style="display:none"></span></h1>
+  <p class="lead" id="lead" data-i18n="premium.lead">Tout, sans limite — récits, audio, itinéraires, thèmes et circuits.</p>
 
   <!-- ═══ ÉTAT / MUR (piloté par the-pass.js) ═══ -->
   <section id="statebox" style="display:none"></section>
 
   <!-- ═══ L'OFFRE ═══ -->
   <section id="offer">
-    <h2>💛 Passez au Premium</h2>
-    <p class="price"><b id="priceVal">14,99 €</b> <span>/ an</span></p>
-    <p class="fs" id="offerSub" style="color:#5a4d3a">Essai gratuit de 2 semaines, puis 14,99 €/an. Sans engagement, annulable à tout moment.</p>
+    <h2 data-i18n="premium.passez.au.premium">💛 Passez au Premium</h2>
+    <p class="price"><b id="priceVal">14,99 €</b> <span data-i18n="premium.par.an">par an</span></p>
+    <p class="fs" id="offerSub" style="color:#5a4d3a" data-i18n="premium.essai.puis.abo">Essai gratuit de 2 semaines, puis 14,99 €/an. Sans engagement, annulable à tout moment.</p>
 
     <!-- iOS : achat via Apple -->
     <div id="buyIos" style="display:none">
-      <button class="btn big" id="buyBtn" type="button">Essayer 2 semaines gratuitement</button>
-      <button class="btn ghost" id="restoreBtn" type="button" style="margin-top:8px">Restaurer un achat</button>
-      <p class="fineprint" id="disclosure">Abonnement annuel <b>auto-renouvelable</b> de 14,99 €/an, précédé de 2 semaines d'essai gratuit. Le paiement est débité de votre compte Apple à la confirmation. Il se renouvelle automatiquement sauf annulation au moins 24 h avant la fin de la période en cours ; gérez ou annulez dans les Réglages de votre compte App Store après l'achat. En continuant, vous acceptez les <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Conditions d'utilisation (EULA)</a> et la <a href="confidentialite.html">politique de confidentialité</a>.</p>
+      <button class="btn big" id="buyBtn" type="button" data-i18n="premium.essayer.2.semaines">Essayer 2 semaines gratuitement</button>
+      <button class="btn ghost" id="restoreBtn" type="button" style="margin-top:8px" data-i18n="premium.restaurer.achat">Restaurer un achat</button>
+      <p class="fineprint" id="disclosure" data-i18n-html="premium.mention.legale.apple">Abonnement annuel <b>auto-renouvelable</b> de 14,99 €/an, précédé de 2 semaines d'essai gratuit. Le paiement est débité de votre compte Apple à la confirmation. Il se renouvelle automatiquement sauf annulation au moins 24 h avant la fin de la période en cours ; gérez ou annulez dans les Réglages de votre compte App Store après l'achat. En continuant, vous acceptez les <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener">Conditions d'utilisation (EULA)</a> et la <a href="confidentialite.html">politique de confidentialité</a>.</p>
     </div>
 
     <!-- web : portes de paiement (Lemon Squeezy / App Store / café) — remplies par JS -->
@@ -69,33 +69,33 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
 
   <!-- ═══ CE QUE C'EST ═══ -->
   <section>
-    <h2>✨ Tout ce que vous avez</h2>
-    <div class="feat"><span class="ic">📔</span><div><div class="ft">Album souvenir &amp; passeport-livre</div><div class="fs">Exportez votre voyage en passeport illustré, album et PDF — un vrai carnet de route.</div></div></div>
-    <div class="feat"><span class="ic">🎧</span><div><div class="ft">Narration audio des récits</div><div class="fs">La voix pro qui raconte « Découvrir » en entier, dans votre langue.</div></div></div>
-    <div class="feat"><span class="ic">🧭</span><div><div class="ft">Itinéraires sur mesure</div><div class="fs">Composez des parcours 100&nbsp;% personnalisés, sans limite.</div></div></div>
-    <div class="feat"><span class="ic">🔗</span><div><div class="ft">Lien partageable</div><div class="fs">Partagez vos itinéraires d'un simple lien.</div></div></div>
-    <div class="feat"><span class="ic">🍽️</span><div><div class="ft">Thème Gastronomie</div><div class="fs">Un fil rouge dédié aux saveurs et adresses du pays.</div></div></div>
-    <div class="feat"><span class="ic">🗺️</span><div><div class="ft">Tous les circuits prêts</div><div class="fs">Accédez à l'ensemble des circuits clés en main.</div></div></div>
-    <div class="feat"><span class="ic">📖</span><div><div class="ft">Focus thématiques</div><div class="fs">Des dossiers approfondis sur les grands thèmes (dynasties, patrimoine, légendes…).</div></div></div>
+    <h2 data-i18n="premium.tout.ce.que.vous.avez">✨ Tout ce que vous avez</h2>
+    <div class="feat"><span class="ic">📔</span><div><div class="ft" data-i18n="premium.f1.t">Album souvenir &amp; passeport-livre</div><div class="fs" data-i18n="premium.f1.d">Exportez votre voyage en passeport illustré, album et PDF — un vrai carnet de route.</div></div></div>
+    <div class="feat"><span class="ic">🎧</span><div><div class="ft" data-i18n="premium.f2.t">Narration audio des récits</div><div class="fs" data-i18n="premium.f2.d">La voix pro qui raconte « Découvrir » en entier, dans votre langue.</div></div></div>
+    <div class="feat"><span class="ic">🧭</span><div><div class="ft" data-i18n="premium.f3.t">Itinéraires sur mesure</div><div class="fs" data-i18n="premium.f3.d">Composez des parcours 100&nbsp;% personnalisés, sans limite.</div></div></div>
+    <div class="feat"><span class="ic">🔗</span><div><div class="ft" data-i18n="premium.f4.t">Lien partageable</div><div class="fs" data-i18n="premium.f4.d">Partagez vos itinéraires d'un simple lien.</div></div></div>
+    <div class="feat"><span class="ic">🍽️</span><div><div class="ft" data-i18n="premium.f5.t">Thème Gastronomie</div><div class="fs" data-i18n="premium.f5.d">Un fil rouge dédié aux saveurs et adresses du pays.</div></div></div>
+    <div class="feat"><span class="ic">🗺️</span><div><div class="ft" data-i18n="premium.f6.t">Tous les circuits prêts</div><div class="fs" data-i18n="premium.f6.d">Accédez à l'ensemble des circuits clés en main.</div></div></div>
+    <div class="feat"><span class="ic">📖</span><div><div class="ft" data-i18n="premium.f7.t">Focus thématiques</div><div class="fs" data-i18n="premium.f7.d">Des dossiers approfondis sur les grands thèmes (dynasties, patrimoine, légendes…).</div></div></div>
   </section>
 
   <!-- ═══ MOT DU CRÉATEUR (masqué sur iOS : évoque le soutien externe) ═══ -->
   <section class="ios-hide" id="creator" style="display:flex;gap:15px;align-items:flex-start">
     <div style="font-size:30px;line-height:1;flex:0 0 auto">🩺</div>
     <div>
-      <h2 style="margin:0 0 8px">Le mot du créateur</h2>
-      <p class="fs" style="font-size:15px;color:#5a4d3a;margin:0">Médecin, plus de 25 ans sur le terrain humanitaire — négociation d'accès en zones de conflit et urgences complexes. J'ai appris le code en autodidacte et je développe seul ces applications : une passion personnelle, rendre le patrimoine lisible, sourcé et accessible. L'abonnement sert à couvrir l'infrastructure et les dépenses de base (hébergement, données, sources).</p>
+      <h2 style="margin:0 0 8px" data-i18n="premium.mot.du.createur">Le mot du créateur</h2>
+      <p class="fs" style="font-size:15px;color:#5a4d3a;margin:0" data-i18n="premium.createur.texte">Médecin, plus de 25 ans sur le terrain humanitaire — négociation d'accès en zones de conflit et urgences complexes. J'ai appris le code en autodidacte et je développe seul ces applications : une passion personnelle, rendre le patrimoine lisible, sourcé et accessible. L'abonnement sert à couvrir l'infrastructure et les dépenses de base (hébergement, données, sources).</p>
     </div>
   </section>
 
   <!-- ═══ CODE D'ACCÈS (web uniquement — règle Apple 3.1.1) ═══ -->
   <section class="ios-hide" id="codebox">
-    <h2>🎟️ J'ai un code ou une clé</h2>
-    <p class="fs" style="color:#5a4d3a">Un code offert ou une clé d'achat (reçue par e-mail) débloque le Premium complet, sur n'importe quel appareil.</p>
+    <h2 data-i18n="premium.jai.un.code">🎟️ J'ai un code ou une clé</h2>
+    <p class="fs" style="color:#5a4d3a" data-i18n="premium.code.explication">Un code offert ou une clé d'achat (reçue par e-mail) débloque le Premium complet, sur n'importe quel appareil.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input id="codeInput" type="text" autocapitalize="characters" spellcheck="false" placeholder="THE-XXXX-XXXX"
              style="flex:1;min-width:170px;padding:11px 12px;border:1px solid #cdbb95;border-radius:8px;font:inherit;letter-spacing:1px;text-transform:uppercase">
-      <button class="btn" id="codeBtn" type="button">Activer</button>
+      <button class="btn" id="codeBtn" type="button" data-i18n="premium.activer">Activer</button>
     </div>
     <p id="codeMsg" class="fineprint" style="min-height:1.1em;margin-top:8px"></p>
   </section>
@@ -106,6 +106,10 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
 <script src="the-pass.js"></script>
 <script>(function(){
   var P=window.THEPass; if(!P) return;
+  /* ⚠️ i18n : le dictionnaire ui.<lang>.json est chargé de façon ASYNCHRONE.
+     Tout ce qui est construit en JS doit attendre THEi18n.ready, sinon uiT()
+     retombe sur le français alors que le reste de la page est traduit. */
+  function __render(){
   function uiT(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
 
   /* App de store (iOS OU Android) ? On masque les portes de paiement externes (LS, café, code)
@@ -130,7 +134,7 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
       if(rb) rb.onclick=function(){ P.restoreIOS(); };
     } else if(P.isAndroidApp && P.isAndroidApp() && P.hasPlayBridge && P.hasPlayBridge()){
       /* app Android avec Google Play Billing (Digital Goods) : achat Play. JAMAIS Lemon Squeezy ni Apple. */
-      document.getElementById('buyIos').innerHTML='<button class="btn big" id="buyPlay" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' / '+uiT('an')+'</button>'
+      document.getElementById('buyIos').innerHTML='<button class="btn big" id="buyPlay" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' '+uiT('par an')+'</button>'
         +'<button class="btn ghost" id="restorePlay" type="button" style="margin-top:8px">'+uiT('Restaurer un achat')+'</button>';
       document.getElementById('buyPlay').onclick=function(){ if(P.buyAndroid) P.buyAndroid('an'); };
       document.getElementById('restorePlay').onclick=function(){ if(P.restoreAndroid) P.restoreAndroid(); };
@@ -143,7 +147,7 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     document.getElementById('buyWeb').style.display='block';
     var web=document.getElementById('buyWeb'), parts=[];
     var lemon = !!(P.CHECKOUT && P.CHECKOUT.an);
-    if(lemon) parts.push('<button class="btn big" id="buyLS" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' / '+uiT('an')+'</button>'
+    if(lemon) parts.push('<button class="btn big" id="buyLS" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' '+uiT('par an')+'</button>'
       +'<p class="fineprint">'+uiT('Paiement sécurisé via Lemon Squeezy · activation immédiate au retour.')+'</p>');
     if(P.APPSTORE_URL) parts.push('<a class="btn ghost" href="'+P.APPSTORE_URL+'" target="_blank" rel="noopener">📱 '+uiT('Aussi sur l’App Store')+'</a>');
     // café / pourboire (web only) — petit cadeau surprise
@@ -204,6 +208,9 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
 
   /* Rechargement après déverrouillage natif (StoreKit) */
   window.__thePassOnUnlock=function(){ try{ location.reload(); }catch(e){} };
+  }
+  if(window.THEi18n && THEi18n.ready && THEi18n.ready.then){ THEi18n.ready.then(__render, __render); }
+  else { __render(); }
 })();</script>
 <script src="analytics.js"></script>
 </body>
