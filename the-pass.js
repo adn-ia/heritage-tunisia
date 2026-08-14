@@ -25,7 +25,18 @@
   /* ─── L'offre unique : le pass 1 an (abonnement annuel auto-renouvelable) ─── */
   var PLAN='an';
   var DAYS={ an:365 };
-  var PRICE={ an:'14,99 €' };               // affiché « 14,99 €/an »
+  /* Prix : montant + devise via HConf (repli neutre), MIS EN FORME SELON LA LANGUE affichée.
+     Écrire « 14,99 € » en dur donnait une virgule française jusqu'en anglais. Intl s'en charge :
+     fr/de/it/cs/hr/nb/et « 14,99 € », en/ga « €14.99 », pt « € 14,99 », ar chiffres latins.
+     Getter volontaire : la langue n'est connue qu'après le chargement du dictionnaire. */
+  var PRICE_AN=(window.HConf&&HConf.prixAn)||14.99;
+  var PRICE_CUR=(window.HConf&&HConf.devise)||'EUR';
+  function fmtPrix(v){
+    var lg=(window.THEi18n&&THEi18n.lang&&THEi18n.lang())||'fr';
+    try{ return new Intl.NumberFormat(lg,{style:'currency',currency:PRICE_CUR}).format(v); }
+    catch(e){ return v.toFixed(2).replace('.',',')+' \u20ac'; }
+  }
+  var PRICE={ get an(){ return fmtPrix(PRICE_AN); } };
   var PERIOD='an';
   var TRIAL_DAYS=14;                         // essai gratuit (web) — 2 semaines, comme l'essai natif iOS
   var GIFT_DAYS=3;                           // café/pourboire (web) → petit cadeau surprise : accès complet N jours
