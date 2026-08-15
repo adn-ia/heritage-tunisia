@@ -54,6 +54,10 @@ def hconf():
     except Exception:
         return {}
 
+# Le SOCLE est un gabarit, pas une édition livrable : sa config est vide, ses
+# placeholders sont normaux, ses scripts de travail ont leur place. On l'annonce.
+GABARIT = os.path.exists('propager-regles.sh') or os.path.basename(os.getcwd()).upper().startswith('HERITAGE-SOCLE')
+
 HTML  = sorted(glob.glob('*.html'))
 JS    = sorted(glob.glob('*.js'))
 H     = hconf()
@@ -81,8 +85,9 @@ dire(not casses, '2. Tous les JSON valides',
 
 # ── 3. le fichier pays porte bien tout ─────────────────────────────────────
 manque = [k for k in ('marque', 'marqueCourte', 'iso', 'domaine') if not H.get(k)]
-dire(not manque, '3. heritage.config.js complet',
-     f'{len(H)} clés', 'manque : ' + ', '.join(manque))
+dire(GABARIT or not manque, '3. heritage.config.js complet',
+     'gabarit : à remplir au clonage' if GABARIT else f'{len(H)} clés',
+     'manque : ' + ', '.join(manque))
 
 # ── 4. rien du pays n'est écrit dans le CODE ───────────────────────────────
 #    ← villes tunisiennes et libellés d'échelle codés en dur dans index/itineraire
@@ -132,7 +137,7 @@ dire(not vieux, '6. Verrous premium sur le vrai système', '',
 #    ← bouton « Débloquer Premium » gratuit + « déblocage simulé, sans paiement réel »
 DEMO = re.compile(r"order\s*:\s*['\"]demo['\"]|déblocage simulé|activation simulée|"
                   r"sans paiement réel|Débloquer Premium", re.I)
-demo = [f for f in HTML + JS if DEMO.search(lire(f))]
+demo = [f for f in HTML + JS if DEMO.search(sans_commentaires(lire(f)))]
 dire(not demo, '7. Aucun déblocage gratuit / mode démo', '', ', '.join(demo))
 
 # ── 8. le mur de navigation est bien retiré ────────────────────────────────
@@ -223,7 +228,9 @@ dire(not sales, '14. Aucune note interne visible', '', ', '.join(sorted(set(sale
 travail = [f for f in os.listdir('.')
            if re.search(r'\.(avant|bak|zip|py|sh)|TODO|^\.git', f)
            and f != 'verifier-paquet.py']
-dire(not travail, '15. Aucun fichier de travail', '', ', '.join(travail[:4]), mou=True)
+dire(GABARIT or not travail, '15. Aucun fichier de travail',
+     'gabarit : les scripts ont leur place' if GABARIT else '',
+     ', '.join(travail[:4]), mou=True)
 
 # ── 16. aucun brouillon ni schéma publié ───────────────────────────────────
 brouillons = [f for f in ('cgu.html','cgv.html','mentions-legales.html',
@@ -233,8 +240,8 @@ dire(not brouillons, '16. Aucun brouillon ni schéma interne', '', ', '.join(bro
 
 # ── 17. les fichiers cachés voyagent (sans le point) ───────────────────────
 #    ← FileZilla les masque : livrés avec le point, ils ne partaient jamais
-caches = [f for f in os.listdir('.') if f.startswith('.') and f not in ('.', '..')]
-a_plat = os.path.exists('well-known') or os.path.exists('htaccess')
+caches = [] if GABARIT else [f for f in os.listdir('.') if f.startswith('.') and f not in ('.', '..')]
+a_plat = GABARIT or os.path.exists('well-known') or os.path.exists('htaccess')
 dire(a_plat and not caches, '17. Fichiers cachés livrables',
      'htaccess + well-known/ sans le point',
      ('encore cachés : ' + ', '.join(caches)) if caches else 'well-known/ ou htaccess absent')
@@ -245,7 +252,7 @@ al = json.loads(lire('well-known/assetlinks.json') or lire('.well-known/assetlin
 pkg = al[0]['target']['package_name'] if al else ''
 emp = len(al[0]['target']['sha256_cert_fingerprints']) if al else 0
 attendu = H.get('androidPackage', '')
-dire(bool(al) and (not attendu or pkg == attendu) and emp >= 2,
+dire(GABARIT or (bool(al) and (not attendu or pkg == attendu) and emp >= 2),
      '18. assetlinks Android', f'{pkg} · {emp} empreintes',
      f'paquet={pkg or "—"} attendu={attendu or "—"} empreintes={emp}')
 
@@ -253,7 +260,10 @@ dire(bool(al) and (not attendu or pkg == attendu) and emp >= 2,
 #    ← Apple 3.1.1 : jamais de paiement externe dans une app de store
 prem, sout, foot = lire('premium.html'), lire('soutien.html'), lire('the-footer.js')
 c = []
-if not re.search(r'isStoreApp\)\s*\{[^}]*ios-hide', prem, re.S): c.append('premium: portes externes non masquées')
+# deux écritures acceptées : le masquage groupé, ou la délégation à isStoreApp()
+masque = re.search(r'isStoreApp\)\s*\{[^}]*ios-hide', prem, re.S) \
+      or re.search(r'isStoreApp\(\)[\s\S]{0,500}?ios-hide', prem)
+if not masque: c.append('premium: portes externes non masquées')
 i, j = prem.find('buyWeb'), prem.find('HConf&&HConf.tip')
 if not (i > 0 and j > i): c.append('premium: café hors branche web')
 if 'ios-hide' not in sout: c.append('soutien: café non masqué en app')
@@ -291,7 +301,7 @@ dire(bool(v), '22. Service worker tamponné', v.group(1) if v else '', 'VERSION 
 # ── 23. codes d'invitation conservés ───────────────────────────────────────
 #    ← la config en ligne avait 230 codes, le local 10 : l'envoi les aurait effacés
 inv = len(H.get('invites', []) or [])
-dire(True, '23. Codes d\'invitation', f'{inv}' + ('  ⚠️ vérifier contre le en-ligne' if inv < 20 else ''))
+dire(True, '23. Codes d\'invitation', ('gabarit' if GABARIT else f'{inv}') + ('  ⚠️ vérifier contre le en-ligne' if inv < 20 else ''))
 
 print()
 if _fail:

@@ -210,21 +210,30 @@ function render(){
   updateBar();
 }
 function openSheet(s){
+  /* RÈGLE (Helmy, 15/08/2026) : on parcourt la liste librement — titre et image —
+     mais ouvrir la fiche est réservé au Premium. Le clic renvoie au paywall, qui
+     explique et laisse revenir. Seul « Patrimoine » reste libre en permanence. */
+  if(!isPremium()){ try{ localStorage.setItem('the_feat', (s&&s.nom)||''); }catch(e){}
+    location.href='premium.html'; return; }
   const tr=trSite(s);
   const img=(s.photo||'').startsWith('img/')?`<img class="sh-img" src="${esc(s.photo)}" alt="">`:`<div class="sh-img" style="display:flex;align-items:center;justify-content:center;font-size:60px;color:var(--gold-soft)">${emoji(s)}</div>`;
   const mt=[s.gouvernorat,trCat(s.type),trCat(s.epoque)].filter(Boolean).join(' · ');
   let h=`<button class="sh-close" onclick="closeSheet()">✕</button>${img}<div class="sh-bd">`;
   if(s.sous_titre) h+=`<div class="sh-st">${esc(s.sous_titre)}</div>`;
-  h+=`<h2>${esc(s.nom)}</h2><div class="sh-mt">${esc(mt)}</div>`;
-  const desc=(tr&&tr.d)||s.description; if(desc){ h+=`<p class="desc">${desc}</p>`; if(window.THEFicheAudio) h+=THEFicheAudio.html(s.vkey,uiT('Écouter ce lieu')); }
-  const av=(tr&&tr.a)||s.a_voir; if(av) h+=`<p class="info">👁️ <b>${lblI('avoir')}</b> : ${av}</p>`;
-  const cons=(tr&&tr.c)||s.conseil; if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
-  if(s.acces) h+=`<div class="warn">⚠️ ${esc(s.acces)}</div>`;
-  if(s.ambiance) h+=`<div class="amb">✨ <b style="font-style:normal">L'instant</b> — ${esc(s.ambiance)}</div>`;
+  h+=`<h2>${esc(s.nom)}</h2>`+(isPremium()?`<div class="sh-mt">${esc(mt)}</div>`:'');
+  const desc=(tr&&tr.d)||s.description;
+  const av=(tr&&tr.a)||s.a_voir, cons=(tr&&tr.c)||s.conseil;
+  if(isPremium()){
+    if(desc){ h+=`<p class="desc">${desc}</p>`; if(window.THEFicheAudio) h+=THEFicheAudio.html(s.vkey,uiT('Écouter ce lieu')); }
+    if(av) h+=`<p class="info">👁️ <b>${lblI('avoir')}</b> : ${av}</p>`;
+    if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
+  }
+  if(isPremium() && s.acces) h+=`<div class="warn">⚠️ ${esc(s.acces)}</div>`;
+  if(isPremium() && s.ambiance) h+=`<div class="amb">✨ <b style="font-style:normal">L'instant</b> — ${esc(s.ambiance)}</div>`;
   const an=(tr&&tr.an)||s.anecdote;
-  h+=`<div data-brique="legende" data-site="${esc(s.nom)}"></div>`;   // brique auto-portée « légende »
+  if(isPremium()) h+=`<div data-brique="legende" data-site="${esc(s.nom)}"></div>`;   // légende : premium
   if(an) h+= isPremium() ? `<div class="det">👁️ <b>Le détail</b> — ${an}</div>` : `<div class="det" onclick="location.href='premium.html'" style="cursor:pointer">👁️ <b>Le détail</b> — ${String(an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></div>`;
-  if(s.source) h+=`<div class="src">Source : ${esc(s.source)}</div>`;
+  if(isPremium() && s.source) h+=`<div class="src">Source : ${esc(s.source)}</div>`;
   if(s.photo_credit) h+=`<div class="src">📷 ${esc(s.photo_credit)}</div>`;
   const en=encodeURIComponent(s.nom);
   h+=`<div class="sh-act"><a href="index.html?route=${en}&from=liste">🗺️ Situer sur la carte</a><a href="itineraire.html?picks=${en}&from=liste">➕ Nouvel itinéraire</a><a class="sec" href="itineraire.html?picks=${en}&add=1&from=liste">➕ Ajouter au parcours</a></div>`;

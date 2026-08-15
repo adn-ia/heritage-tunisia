@@ -273,11 +273,13 @@
     function infoBlock(p){
       const tr=trSite(p); let h='';
       const av=(tr&&tr.a)||p.a_voir, cons=(tr&&tr.c)||p.conseil, hor=(tr&&tr.h)||p.horaires;
-      if(av) h+=`<p class="info">👁️ <b>${lblI('avoir')}</b> : ${av}</p>`;
-      if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
+      if(isPremium()){
+        if(av) h+=`<p class="info">👁️ <b>${lblI('avoir')}</b> : ${av}</p>`;
+        if(cons) h+=`<p class="info">💡 <b>${lblI('conseil')}</b> : ${cons}</p>`;
+      }
       if(hor) h+=`<p class="info">🕒 ${hor}</p>`;
       if(p.acces) h+=`<p class="info warn">⚠️ ${p.acces}</p>`;
-      h+=`<div data-brique="legende" data-site="${(p.nom||'').replace(/"/g,'&quot;')}"></div>`;   // brique auto-portée « légende »
+      if(isPremium()) h+=`<div data-brique="legende" data-site="${(p.nom||'').replace(/"/g,'&quot;')}"></div>`;   // légende : premium
       if((tr&&tr.an)||p.anecdote){ var _an=(tr&&tr.an)||p.anecdote; h+= isPremium()
         ? `<p class="info" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px">👁️ <b>Le détail</b> — ${_an}</p>`
         : `<p class="info" onclick="location.href='premium.html'" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px;cursor:pointer">👁️ <b>Le détail</b> — ${String(_an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></p>`; }
@@ -292,11 +294,12 @@
       }
       let photoHtml='';
       if(p.photo){ photoHtml=`<img src="${p.photo}" alt="${p.nom||''}" loading="lazy">`; if(p.photo_credit) photoHtml+=`<p class="credit">${p.photo_credit}</p>`; }
-      const meta=[trCat(p.type),trCat(p.epoque)].filter(Boolean).join(' — ');
+      // Option A : sans abonnement, la pastille ne livre QUE le titre.
+      const meta = isPremium() ? [trCat(p.type),trCat(p.epoque)].filter(Boolean).join(' — ') : '';
       const picked=hasPick(p.nom);
       const pkBtn=`<button class="pk-add${picked?' on':''}" data-nom="${(p.nom||'').replace(/"/g,'&quot;')}">${picked?uiT('✓ Dans mon itinéraire — retirer'):uiT('➕ Ajouter à mon itinéraire')}</button>`;
       const trp=trSite(p); const desc=(trp&&trp.d)||p.description||'';
-      return `<div class="popup-card"><h3>${p.nom||uiT('Sans nom')}</h3><div class="meta${isNat?' nat':''}">${meta}</div>${distHtml}${photoHtml}<p>${desc}</p>${desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):''}${infoBlock(p)}${pkBtn}<div class="source"><span>Source —</span> ${p.source||uiT('non renseignée')}</div></div>`;
+      return `<div class="popup-card"><h3>${p.nom||uiT('Sans nom')}</h3><div class="meta${isNat?' nat':''}">${meta}</div>${distHtml}${photoHtml}${isPremium()?`<p>${desc}</p>`:``}${desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):''}${infoBlock(p)}${pkBtn}<div class="source"><span>Source —</span> ${p.source||uiT('non renseignée')}</div></div>`;
     }
 
     // Couche unique + filtres (categorie / periode / gouvernorat)
@@ -523,6 +526,11 @@
     // ---------- Modale d'un lieu (clic sur une icône) : narratif + ajouter ----------
     let CUR_SITE=null;
     function openSite(f){
+      /* RÈGLE (Helmy, 15/08/2026) : la carte et la liste se PARCOURENT librement, mais
+         ouvrir un lieu est réservé au Premium. Le clic renvoie au paywall — qui, lui,
+         explique et laisse revenir. Seul « Patrimoine » reste libre en permanence. */
+      if(!isPremium()){ try{ localStorage.setItem('the_feat', (f&&f.properties&&f.properties.nom)||''); }catch(e){}
+        location.href='premium.html'; return; }
       CUR_SITE=f; const p=f.properties; const [lon,lat]=f.geometry.coordinates;
       const body=document.getElementById('siteBody'), add=document.getElementById('siteAdd');
       if(!isRevealed(f)){
@@ -535,10 +543,10 @@
       const dist=userPos?'<div class="site-dist">◎ '+uiT('à')+' '+fmtDist(distanceM(userPos,[lat,lon]))+'</div>':'';
       const photo=p.photo?'<img class="site-img" src="'+p.photo+'" alt="" loading="lazy">'+(p.photo_credit?'<div class="site-credit">'+p.photo_credit+'</div>':''):'';
       body.innerHTML='<div class="site-kick">'+({nature:'🌿 '+uiT('Nature & paysage'),musee:'🏛️ '+uiT('Musées'),marche:'🛒 '+uiT('Marchés & souks'),festival:'🎭 '+uiT('Festivals & événements')}[p.categorie]||'🏛️ '+uiT('Patrimoine'))+'</div>'+
-        '<h2>'+(p.nom||'Sans nom')+'</h2><div class="site-meta">'+meta+'</div>'+dist+photo+
-        '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'')+infoBlock(p)+
+        '<h2>'+(p.nom||'Sans nom')+'</h2>'+(isPremium()?'<div class="site-meta">'+meta+'</div>'+dist:'')+photo+
+        (isPremium() ? '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'') : '')+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
-        '<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>'+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ '+uiT('Carte postale')+'</button>';
+        (isPremium()?'<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>':'')+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ '+uiT('Carte postale')+'</button>';
       var _pcb=document.getElementById('site-pc-btn');if(_pcb)_pcb.onclick=function(){if(window.THEPostcard)THEPostcard.open(p.nom,p.gouvernorat||'');}; add.style.display='block'; setAddBtn(hasPick(p.nom));
       document.getElementById('siteOv').style.display='flex';
     }

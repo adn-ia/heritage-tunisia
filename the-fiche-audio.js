@@ -21,6 +21,8 @@
     CUR = CURKEY = CURBTN = null;
   }
   function play(btn){
+    /* Narration réservée au Premium (Helmy, 15/08/2026) : le clic renvoie au paywall. */
+    try{ var P=window.THEPass; if(!(P&&P.isActive&&P.isActive())){ location.href='premium.html'; return; } }catch(e){}
     var k = btn.getAttribute('data-vkey'); if(!k) return;
     var uid = k + '|' + curLang();
     if(CURKEY === uid){ stopCur(); return; }         // re-clic sur la même fiche -> STOP

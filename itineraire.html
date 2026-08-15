@@ -868,14 +868,26 @@
   renderThemeChips();
 
   // ---------- résolution du point de départ ----------
+  /* ← Avant : on attendait la position jusqu'à 8 secondes SANS RIEN AFFICHER, puis on
+       tentait une alert() — invisible dans l'app Android. L'utilisateur cliquait sur
+       « Composer », rien ne se passait, et il croyait l'application cassée.
+     Maintenant : retour visuel immédiat, message dans le bandeau de la page (qui, lui,
+     s'affiche partout), et on ramène le point de départ à portée de main. */
   function resolveOrigin(silent){
-    const v=document.getElementById('origin').value;
+    const sel=document.getElementById('origin');
+    const v=sel.value;
     if(v.startsWith('g:')) return Promise.resolve({coord:GOUV[v.slice(2)], label:v.slice(2)});
+    function echec(cle){
+      if(silent) return;
+      showGuide('📍 '+uiT(cle));
+      try{ sel.scrollIntoView({behavior:'smooth', block:'center'}); sel.focus(); }catch(e){}
+    }
     return new Promise(res=>{
-      if(!navigator.geolocation){ if(!silent) alert(uiT('Géolocalisation indisponible — choisissez un point de départ.')); res(null); return; }
+      if(!navigator.geolocation){ echec('itin.position.indisponible'); res(null); return; }
+      if(!silent) showGuide('📍 '+uiT('itin.position.recherche'), 9000);
       navigator.geolocation.getCurrentPosition(
         pos=>res({coord:[pos.coords.longitude,pos.coords.latitude], label:'votre position'}),
-        ()=>{ if(!silent) alert(uiT('Position refusée/indisponible — choisissez un point de départ.')); res(null); },
+        ()=>{ echec('itin.position.refusee'); res(null); },
         {enableHighAccuracy:true, timeout:8000}
       );
     });
@@ -1517,8 +1529,10 @@
     t.innerHTML=msg+' <span style="opacity:.6;font-size:12px">'+uiT('(toucher pour fermer)')+'</span>'; t.classList.add('show');
     clearTimeout(showGuide._t); showGuide._t=setTimeout(()=>t.classList.remove('show'), ms||7000);
   }
-  document.getElementById('generate').onclick=()=>run(false);
-  document.getElementById('mSurprise').onclick=()=>{ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); };
+  /* RÈGLE (Helmy, 15/08/2026) : composer un itinéraire est réservé au Premium.
+     requirePass renvoie au paywall quand aucun paiement web n'est configuré. */
+  document.getElementById('generate').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>run(false));
+  document.getElementById('mSurprise').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>{ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); });
   document.getElementById('mGo').onclick=()=>{ const c=document.getElementById('critStart'); if(c) c.scrollIntoView({behavior:'smooth',block:'start'}); showGuide('👇 Réglez vos critères (<b>départ, durée, ce qui vous intéresse</b>), puis appuyez sur <b>« Composer mon itinéraire »</b>.'); };
   // ---------- Voyage libre : pas de plan, on capture au fil de la route ----------
   function startLibre(){
@@ -1532,7 +1546,7 @@
       p=>{ if(LASTRES&&LASTRES.mode==='libre') LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:'Ma position'}; },()=>{},
       {enableHighAccuracy:true,timeout:8000,maximumAge:120000});
   }
-  document.getElementById('mLibre').onclick=startLibre;
+  document.getElementById('mLibre').onclick=()=>requirePass(uiT('itin.feature.libre'), startLibre);
   // ---------- album souvenir (I6) ----------
   let ALBUM_URLS=[];           // object URLs de l'album, révoqués entre deux rendus
   let albumTemplate='baroudeur';

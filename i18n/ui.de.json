@@ -2226,5 +2226,19 @@
   "« propres »": "„eigene“",
   "Bab Souika": "Bab Souika",
   "Tourbet El Bey": "Tourbet El Bey",
-  "Au XIIIᵉ siècle": "Im 13. Jahrhundert"
+  "Au XIIIᵉ siècle": "Im 13. Jahrhundert",
+  "fiche.recit.titre": "Fortsetzung der Geschichte",
+  "fiche.recit.detail": "Die vollständige Geschichte dieses Ortes, die Audioführung und die Bildunterschriften sind Teil des Premium-Angebots – 14,99 € pro Jahr, zwei Wochen gratis.",
+  "fiche.recit.bouton": "Entdecken Sie die Premium-Version",
+  "itin.position.recherche": "Suche nach Ihrem Standort…",
+  "itin.position.refusee": "Standort nicht verfügbar – wählen Sie unten einen Ausgangspunkt aus.",
+  "itin.position.indisponible": "Standortdaten auf diesem Gerät nicht verfügbar – wählen Sie unten einen Ausgangspunkt aus.",
+  "fiche.terrain.titre": "Inhalte zu diesem Ort",
+  "fiche.terrain.avoir": "Die Geschichte des Ortes und seine Vergangenheit",
+  "fiche.terrain.conseil": "Sehenswürdigkeiten und praktische Tipps",
+  "fiche.terrain.legende": "Die Legende zu diesem Ort",
+  "fiche.terrain.audio": "Die Erzählung zum Anhören beim Spazierengehen",
+  "fiche.terrain.detail": "Im Premium-Paket enthalten – 14,99 € pro Jahr, zwei Wochen gratis.",
+  "itin.feature.composer": "Route erstellen",
+  "itin.feature.libre": "Freie Reise"
 }
