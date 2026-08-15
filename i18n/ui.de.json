@@ -2240,5 +2240,11 @@
   "fiche.terrain.audio": "Die Erzählung zum Anhören beim Spazierengehen",
   "fiche.terrain.detail": "Im Premium-Paket enthalten – 14,99 € pro Jahr, zwei Wochen gratis.",
   "itin.feature.composer": "Route erstellen",
-  "itin.feature.libre": "Freie Reise"
+  "itin.feature.libre": "Freie Reise",
+  "prem.ask.titre": "Nur für Premium-Nutzer",
+  "prem.ask.detail": "Die Inhalte zu den Orten, die Routen und die Erzählungen sind Teil des Premium-Angebots – 14,99 € pro Jahr, zwei Wochen gratis. Sie können die Karte, die Liste und das Kulturerbe weiterhin frei erkunden.",
+  "prem.ask.oui": "Premium entdecken",
+  "prem.ask.non": "Später",
+  "itin.feature.enregistrer": "Mehr als zwei Routen speichern",
+  "index.feat.guide.audio": "Der standortbezogene Audioführer"
 }

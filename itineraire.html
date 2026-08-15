@@ -363,7 +363,15 @@
       .photos{break-inside:avoid;}
       .src a{color:#000;text-decoration:underline;}
     }
-  </style>
+  .prem-ask{position:fixed;inset:0;z-index:9999;background:rgba(20,15,10,.55);display:flex;align-items:center;justify-content:center;padding:18px;}
+.prem-ask .pa-card{background:#fffdf8;border-radius:12px;max-width:420px;width:100%;padding:22px 20px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+.prem-ask .pa-x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:19px;cursor:pointer;color:#8a7c66;}
+.prem-ask .pa-t{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:5px;}
+.prem-ask .pa-q{font-size:14px;color:#a8884f;margin-bottom:8px;}
+.prem-ask .pa-d{font-size:14px;color:#6b5a39;line-height:1.6;margin-bottom:16px;}
+.prem-ask .pa-go{display:block;text-align:center;background:#a8884f;color:#2b2318;text-decoration:none;padding:12px;border-radius:7px;font-size:15px;margin-bottom:8px;}
+.prem-ask .pa-no{display:block;width:100%;background:none;border:1px solid #e3d8c4;color:#8a7c66;padding:11px;border-radius:7px;font-size:14.5px;cursor:pointer;}
+</style>
   <script src="the-pass.js"></script>
   <script src="the-i18n.js"></script>
 </head>
@@ -1132,7 +1140,7 @@
   function writeSaved(a){ try{ localStorage.setItem('the_saved', JSON.stringify(a)); }catch(e){} }
   function saveCurrent(){
     if(!LASTRES || !LASTRES.route.length) return;
-    if(!isPremium() && readSaved().length >= 2){ location.href='premium.html'; return; }   // freemium : 2 itinéraires sauvegardés max
+    if(!isPremium() && readSaved().length >= 2){ premAsk(uiT('itin.feature.enregistrer')); return; }   // 2 itinéraires max sans abonnement
     const def=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:(uiT('Itinéraire —')+' '+LASTRES.route.length+' '+uiT('étapes'));
     const name=prompt(uiT('Nom de cet itinéraire :'), def); if(name===null) return;
     const arr=readSaved();
@@ -1196,10 +1204,33 @@
   }
   // ---------- Le passe (freemium « généreux ») ----------
   function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : (localStorage.getItem('the_premium')==='1'); }catch(e){ return false; } }
+
+  /* AVERTISSEMENT PREMIUM — on EXPLIQUE, on ne coupe jamais la navigation.
+     ← La redirection sèche vers premium.html est ce qui a fait rejeter l'app par
+       Apple : « could not proceed further and could not return to the previous menu ».
+     « Plus tard » referme et laisse l'utilisateur exactement où il était. */
+  function premAsk(quoi){
+    if(document.getElementById('premAsk')) return;
+    var d=document.createElement('div');
+    d.id='premAsk'; d.className='prem-ask';
+    d.innerHTML='<div class="pa-card">'
+      + '<button class="pa-x" aria-label="'+uiT('Fermer')+'">✕</button>'
+      + '<div class="pa-t">🔒 '+uiT('prem.ask.titre')+'</div>'
+      + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
+      + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
+      + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
+      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
+      + '</div>';
+    function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
+    d.addEventListener('click',function(e){ if(e.target===d) ferme(); });
+    document.body.appendChild(d);
+    d.querySelector('.pa-x').onclick=ferme;
+    d.querySelector('.pa-no').onclick=ferme;
+  }
   let _passOk=null;
   function requirePass(feat, onOk){ if(isPremium() || (window.THEPass&&THEPass.hasFeature&&THEPass.hasFeature(feat))){ onOk(); return; }
     var _live=window.THEPass && (THEPass.checkoutURL('semaine')||THEPass.checkoutURL('mois'));
-    if(!_live){ try{ localStorage.setItem('the_feat', feat); }catch(e){} location.href='premium.html'; return; }
+    if(!_live){ premAsk(feat); return; }   // pas de paiement web : on AVERTIT, on ne redirige pas sèchement
     _passOk=onOk;
     document.getElementById('passTitle').textContent=feat;
     document.getElementById('passWhy').textContent='« '+feat+uiT(' » fait partie du passe THE — la version gratuite reste complète par ailleurs.');

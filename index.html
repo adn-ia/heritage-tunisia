@@ -154,7 +154,15 @@
     #siteBody .site-src{font-size:11px;color:var(--stone);font-style:italic;border-top:1px solid var(--line);padding-top:8px;margin-top:12px;}
     .site-add{flex:0 0 auto;border:none;border-top:1px solid var(--line);background:var(--gold);color:#2b2318;padding:14px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;}
     .site-add.on{background:#2b2318;color:var(--ivory);}
-  </style>
+  .prem-ask{position:fixed;inset:0;z-index:9999;background:rgba(20,15,10,.55);display:flex;align-items:center;justify-content:center;padding:18px;}
+.prem-ask .pa-card{background:#fffdf8;border-radius:12px;max-width:420px;width:100%;padding:22px 20px;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.3);}
+.prem-ask .pa-x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:19px;cursor:pointer;color:#8a7c66;}
+.prem-ask .pa-t{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:5px;}
+.prem-ask .pa-q{font-size:14px;color:#a8884f;margin-bottom:8px;}
+.prem-ask .pa-d{font-size:14px;color:#6b5a39;line-height:1.6;margin-bottom:16px;}
+.prem-ask .pa-go{display:block;text-align:center;background:#a8884f;color:#2b2318;text-decoration:none;padding:12px;border-radius:7px;font-size:15px;margin-bottom:8px;}
+.prem-ask .pa-no{display:block;width:100%;background:none;border:1px solid #e3d8c4;color:#8a7c66;padding:11px;border-radius:7px;font-size:14.5px;cursor:pointer;}
+</style>
   <script src="the-pass.js"></script>
   <script src="the-i18n.js"></script>
 </head>
@@ -282,7 +290,7 @@
       if(isPremium()) h+=`<div data-brique="legende" data-site="${(p.nom||'').replace(/"/g,'&quot;')}"></div>`;   // légende : premium
       if((tr&&tr.an)||p.anecdote){ var _an=(tr&&tr.an)||p.anecdote; h+= isPremium()
         ? `<p class="info" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px">👁️ <b>Le détail</b> — ${_an}</p>`
-        : `<p class="info" onclick="location.href='premium.html'" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px;cursor:pointer">👁️ <b>Le détail</b> — ${String(_an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></p>`; }
+        : `<p class="info" onclick="premAsk('')" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px;cursor:pointer">👁️ <b>Le détail</b> — ${String(_an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></p>`; }
       return h;
     }
     function popupHtml(f){
@@ -529,8 +537,7 @@
       /* RÈGLE (Helmy, 15/08/2026) : la carte et la liste se PARCOURENT librement, mais
          ouvrir un lieu est réservé au Premium. Le clic renvoie au paywall — qui, lui,
          explique et laisse revenir. Seul « Patrimoine » reste libre en permanence. */
-      if(!isPremium()){ try{ localStorage.setItem('the_feat', (f&&f.properties&&f.properties.nom)||''); }catch(e){}
-        location.href='premium.html'; return; }
+      if(!isPremium()){ premAsk((f&&f.properties&&f.properties.nom)||''); return; }
       CUR_SITE=f; const p=f.properties; const [lon,lat]=f.geometry.coordinates;
       const body=document.getElementById('siteBody'), add=document.getElementById('siteAdd');
       if(!isRevealed(f)){
@@ -606,6 +613,30 @@
     // ---- Premium (freemium) ----
     function isPremium(){ try{return window.THEPass ? THEPass.isActive() : false;}catch(e){return false;} }
 
+  /* AVERTISSEMENT PREMIUM — règle posée par Helmy le 15/08/2026.
+     Au clic sur une fonction réservée, on EXPLIQUE et on laisse le choix :
+     « Découvrir le Premium » ou « Plus tard ». « Plus tard » referme et laisse
+     l'utilisateur exactement où il était — la navigation n'est jamais coupée.
+     Patrimoine (veille citoyenne) reste libre quel que soit le statut de paiement. */
+  function premAsk(quoi){
+    if(document.getElementById('premAsk')) return;
+    var d=document.createElement('div');
+    d.id='premAsk'; d.className='prem-ask';
+    d.innerHTML='<div class="pa-card">'
+      + '<button class="pa-x" aria-label="'+uiT('Fermer')+'">✕</button>'
+      + '<div class="pa-t">🔒 '+uiT('prem.ask.titre')+'</div>'
+      + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
+      + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
+      + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
+      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
+      + '</div>';
+    function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
+    d.addEventListener('click',function(e){ if(e.target===d) ferme(); });
+    document.body.appendChild(d);
+    d.querySelector('.pa-x').onclick=ferme;
+    d.querySelector('.pa-no').onclick=ferme;
+  }
+
     // ---- Guide audio (synthese vocale) ----
     let audioOn=false; const audioBtn=document.getElementById('audioBtn');
     function speak(txt){
@@ -650,7 +681,7 @@
     }
     function stopWatch(){ if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; } }
     audioBtn.addEventListener('click',()=>{
-      if(!audioOn && !isPremium()){ location.href='premium.html'; return; }
+      if(!audioOn && !isPremium()){ premAsk(uiT('index.feat.guide.audio')); return; }
       audioOn=!audioOn; audioBtn.classList.toggle('active',audioOn);
       if(audioOn){
         speak('Guide audio activé. Je décrirai automatiquement les lieux à votre arrivée.');
@@ -816,7 +847,7 @@
       renderWizard();
     }
     function openTour(){
-      if(!isPremium()){ location.href='premium.html'; return; }
+      if(!isPremium()){ premAsk(''); return; }
       tourOv.classList.add('show');
       renderStart();
     }

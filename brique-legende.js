@@ -112,7 +112,7 @@
     }
     // option premium cochée + non-abonné → teaser tronqué + verrou → premium.html (comme avant)
     var teaser = String(txt).replace(/<[^>]*>/g, "").slice(0, 55).trim();
-    return '<div class="bl-leg bl-lock"' + (rtl ? ' dir="rtl"' : "") + " onclick=\"location.href='premium.html'\">" +
+    return '<div class="bl-leg bl-lock"' + (rtl ? ' dir="rtl"' : "") + " onclick=\"if(typeof premAsk==='function'){premAsk('');}else{location.href='premium.html';}\">" +
              '<span class="bl-lbl">🐉 ' + T("titre", dl) + "</span>" +
              "<p>" + esc(teaser) + '… <span class="bl-prem">🔒 ' + T("lock", dl) + "</span></p>" +
            "</div>";

@@ -2240,5 +2240,11 @@
   "fiche.terrain.audio": "La narrazione da ascoltare mentre si cammina",
   "fiche.terrain.detail": "Incluso nell'abbonamento Premium — 14,99 € all'anno, due settimane in omaggio.",
   "itin.feature.composer": "Creare un itinerario",
-  "itin.feature.libre": "Viaggio libero"
+  "itin.feature.libre": "Viaggio libero",
+  "prem.ask.titre": "Riservato agli utenti Premium",
+  "prem.ask.detail": "I contenuti relativi ai luoghi, gli itinerari e la narrazione fanno parte dell'abbonamento Premium — 14,99 € all'anno, con due settimane in omaggio. È possibile continuare a esplorare liberamente la mappa, l'elenco e il Patrimonio.",
+  "prem.ask.oui": "Scopri Premium",
+  "prem.ask.non": "Più tardi",
+  "itin.feature.enregistrer": "Salvare più di due itinerari",
+  "index.feat.guide.audio": "La guida audio geolocalizzata"
 }

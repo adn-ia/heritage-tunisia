@@ -310,5 +310,12 @@
   "fiche.terrain.audio": "La narration à écouter en marchant",
   "fiche.terrain.detail": "Compris dans le Premium — 14,99 € par an, deux semaines offertes.",
   "itin.feature.composer": "Composer un itinéraire",
-  "itin.feature.libre": "Voyage libre"
+  "itin.feature.libre": "Voyage libre",
+  "prem.ask.titre": "Réservé au Premium",
+  "prem.ask.detail": "Le contenu des lieux, les itinéraires et la narration font partie du Premium — 14,99 € par an, deux semaines offertes. Vous pouvez continuer à explorer librement la carte, la liste et le Patrimoine.",
+  "prem.ask.oui": "Découvrir le Premium",
+  "prem.ask.non": "Plus tard",
+  "Fermer": "Fermer",
+  "itin.feature.enregistrer": "Enregistrer plus de deux itinéraires",
+  "index.feat.guide.audio": "Le guide audio géolocalisé"
 }

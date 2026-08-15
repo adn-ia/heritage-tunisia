@@ -21,8 +21,13 @@
     CUR = CURKEY = CURBTN = null;
   }
   function play(btn){
-    /* Narration réservée au Premium (Helmy, 15/08/2026) : le clic renvoie au paywall. */
-    try{ var P=window.THEPass; if(!(P&&P.isActive&&P.isActive())){ location.href='premium.html'; return; } }catch(e){}
+    /* Narration réservée au Premium (Helmy, 15/08/2026) : on AVERTIT, on ne coupe pas.
+       « Plus tard » referme et laisse l'utilisateur où il était. */
+    try{ var P=window.THEPass;
+      if(!(P&&P.isActive&&P.isActive())){
+        if(typeof premAsk==='function') premAsk(''); else location.href='premium.html';
+        return;
+      } }catch(e){}
     var k = btn.getAttribute('data-vkey'); if(!k) return;
     var uid = k + '|' + curLang();
     if(CURKEY === uid){ stopCur(); return; }         // re-clic sur la même fiche -> STOP

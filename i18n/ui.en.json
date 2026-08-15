@@ -2240,5 +2240,11 @@
   "fiche.terrain.audio": "Audio narration to listen to whilst walking",
   "fiche.terrain.detail": "Included in the Premium subscription — €14.99 per year, with two weeks free.",
   "itin.feature.composer": "Plan a route",
-  "itin.feature.libre": "Unrestricted travel"
+  "itin.feature.libre": "Unrestricted travel",
+  "prem.ask.titre": "Premium members only",
+  "prem.ask.detail": "The content of the venues, the itineraries and the narration are part of the Premium service — €14.99 per year, with two weeks free. You can continue to explore the map, the list and the Heritage section freely.",
+  "prem.ask.oui": "Discover Premium",
+  "prem.ask.non": "Later",
+  "itin.feature.enregistrer": "Save more than two routes",
+  "index.feat.guide.audio": "The geolocated audio guide"
 }
