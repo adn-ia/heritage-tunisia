@@ -119,6 +119,10 @@
     metaPatch(LASTRES.route[i], {date: val||""});
     rerender();
   }
+  function setHeure(i, val){
+    if(!window.LASTRES || !LASTRES.route || !LASTRES.route[i]) return;
+    metaPatch(LASTRES.route[i], {heure: val||""});
+  }
 
   /* --- rôle base / visite / normal --- */
   function role(s){ return (metaFor(s).kind)||""; }
@@ -268,10 +272,16 @@
       // 2) date par étape (une seule fois)
       if(!card.querySelector(".rtp-daterow")){
         var drow=document.createElement("div"); drow.className="rtp-daterow";
-        drow.innerHTML='<span>📅 '+xe(T("plan.quand"))+'</span><input type="date" value="'+xe(md.date||"")+'">';
+        /* Date ET heure : une halte se note parfois sur le moment, parfois le soir.
+           Les deux vivent dans la MÊME métadonnée d'étape que le reste — jamais
+           dans un second endroit de stockage. */
+        drow.innerHTML='<span>📅 '+xe(T("plan.quand"))+'</span>'
+          + '<input type="date" data-rtp-date value="'+xe(md.date||"")+'">'
+          + '<input type="time" data-rtp-heure value="'+xe(md.heure||"")+'">';
         var bar2=card.querySelector(".rtp-bar");
         if(bar2 && bar2.nextSibling) card.insertBefore(drow, bar2.nextSibling); else card.insertBefore(drow, card.firstChild);
-        drow.querySelector("input").onchange=function(e){ setDate(i, e.target.value); };
+        drow.querySelector("[data-rtp-date]").onchange=function(e){ setDate(i, e.target.value); };
+        drow.querySelector("[data-rtp-heure]").onchange=function(e){ setHeure(i, e.target.value); };
       }
 
       // 3) sur une BASE : bouton « ajouter une visite depuis cette base »
