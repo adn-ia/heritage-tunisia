@@ -139,7 +139,6 @@ body.narr-on{padding-bottom:76px;}
       <div class="sm-title">Le menu</div>
       <div class="sm-group" data-i18n="menu.groupe.decouvrir"></div>
       <a class="sm-item primary" href="#recit" data-tour-step="recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
-        <div id="smMesItineraires"></div>
       <a class="sm-item" href="itineraire.html?reprendre=1" id="smReprendre" style="display:none"><span class="i">↩</span><span class="t"><span data-i18n="menu.reprendre"></span><small><span id="smReprendreN"></span> <span id="smReprendreU" data-i18n="menu.reprendre.sub"></span></small></span></a>
       <a class="sm-item" href="itineraire.html" data-tour-step="itineraire"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
       <a class="sm-item" href="index.html" data-tour-step="carte"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
@@ -505,34 +504,6 @@ body.narr-on{padding-bottom:76px;}
   })();
 </script>
 
-  <script>
-  /* MES ITINÉRAIRES — un bouton PAR itinéraire, à SON nom.
-     On peut mener de front un parcours composé, un « surprenez-moi » et un voyage
-     libre : une entrée « Reprendre » unique ne permettait d'en retrouver qu'un seul,
-     et restait invisible tant qu'un voyage libre n'avait pas d'étape. Chaque
-     itinéraire nommé apparaît donc ici, et on revient dessus d'un clic. */
-  (function(){
-    try{
-      var box=document.getElementById('smMesItineraires'); if(!box) return;
-      var arr=[]; try{ arr=JSON.parse(localStorage.getItem('the_saved')||'[]'); }catch(e){ arr=[]; }
-      if(!Array.isArray(arr) || !arr.length) return;
-      var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
-      var titre=document.createElement('div');
-      titre.className='sm-group'; titre.textContent=T('menu.mes.itineraires','Mes itinéraires');
-      box.appendChild(titre);
-      arr.slice(0,8).forEach(function(r){
-        var nb=(r.steps&&r.steps.length)||0;
-        var a=document.createElement('a');
-        a.className='sm-item'; a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
-        a.innerHTML='<span class="i">'+(r.mode==='libre'?'🎒':'↩')+'</span><span class="t">'
-          + String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,'')
-          + '<small>' + (r.mode==='libre'
-              ? T('menu.voyage.libre','voyage libre') + (nb?' · '+nb:'')
-              : nb + ' ' + T('menu.etapes','étapes')) + '</small></span>';
-        box.appendChild(a);
-      });
-    }catch(e){}
-  })();
-  </script>
+
 </body>
 </html>

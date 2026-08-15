@@ -388,7 +388,7 @@
     </div>
     <div class="lead">
       <h1 data-i18n="lead_h1">Votre voyage</h1>
-      <p data-i18n="lead_p">Trois façons de partir — choisissez la vôtre.</p>
+      <p data-i18n="lead_p">Cinq façons de partir — choisissez la vôtre.</p>
     </div>
 
     <!-- ENTONNOIR -->
@@ -397,6 +397,8 @@
         <button class="mode-card" id="mGo" type="button"><span class="mc-ic">🧭</span><span class="mc-t" data-i18n="m_go_t">Composer</span><span class="mc-s" data-i18n="m_go_s">sur mesure — vous réglez vos critères</span></button>
         <button class="mode-card" id="mSurprise" type="button"><span class="mc-ic">🎲</span><span class="mc-t" data-i18n="m_su_t">Surprenez-moi</span><span class="mc-s" data-i18n="m_su_s">un itinéraire au hasard, tout de suite</span></button>
         <button class="mode-card" id="mLibre" type="button"><span class="mc-ic">🎒</span><span class="mc-t" data-i18n="m_li_t">Voyage libre</span><span class="mc-s" data-i18n="m_li_s">sans plan — on capture au fil de la route</span></button>
+          <button class="mode-card" id="mMes" type="button"><span class="mc-ic">📚</span><span class="mc-t" data-i18n="m_me_t">Mes itinéraires</span><span class="mc-s" data-i18n="m_me_s">ceux que vous avez créés</span></button>
+          <button class="mode-card" id="mPropos" type="button"><span class="mc-ic">✨</span><span class="mc-t" data-i18n="m_pr_t">Propositions</span><span class="mc-s" data-i18n="m_pr_s">des circuits déjà tracés</span></button>
       </div>
 
       <div class="q" id="savedBox" style="display:none">
@@ -413,6 +415,8 @@
       <div class="q" id="critStart">
         <div class="lbl"><span class="n">1</span> Vous partez d'où ?</div>
         <select id="origin"><option value="gps">📍 Ma position (GPS)</option></select>
+        <input id="originAdr" type="text" placeholder="" style="display:none;width:100%;margin-top:8px;padding:11px;border:1px solid #e3d8c4;border-radius:7px;font:inherit">
+        <div class="hint" id="originAdrMsg" style="display:none"></div>
         <div class="hint">Choisissez « Ma position » sur place, ou un gouvernorat pour préparer à l'avance.</div>
       </div>
 
@@ -879,6 +883,13 @@
         const cur=readCurrent();
         if(cur && (cur.mode==='libre' || (cur.steps && cur.steps.length))) renderRecord(cur);
       }
+      else if((function(){ try{ return localStorage.getItem('the_actif'); }catch(e){ return null; } })()){
+        /* voyage en cours désigné par l'utilisateur : on l'ouvre directement,
+           la sortie « ‹ Les trois façons de partir » reste disponible. */
+        var _a=localStorage.getItem('the_actif');
+        var _r=readSaved().filter(function(x){ return x.id===_a; })[0];
+        if(_r) renderRecord(_r);
+      }
       else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
     });
     }
@@ -910,6 +921,7 @@
     const sel=document.getElementById('origin');
     const v=sel.value;
     if(v.startsWith('g:')) return Promise.resolve({coord:GOUV[v.slice(2)], label:v.slice(2)});
+    if(v==='adr' && window.THEadresseDepart) return THEadresseDepart();   // départ saisi à la main
     function echec(cle){
       if(silent) return;
       showGuide('📍 '+uiT(cle));
@@ -2146,6 +2158,179 @@
 
     var go=document.getElementById('mGo');
     if(go) go.addEventListener('click', function(){ ouvrir(); }, true);
+  })();
+  </script>
+
+  <script>
+  /* DÉPART PAR ADRESSE — on ne partait que de sa position GPS ou d'un chef-lieu.
+     Préparer son voyage avant de partir demande de dire « je pars de CET hôtel »,
+     « de CETTE rue ». Le géocodage OpenStreetMap est déjà dans la page pour
+     « Ajouter un lieu » : on le réutilise, on n'en ajoute pas un second. */
+  (function(){
+    var sel=document.getElementById('origin'), champ=document.getElementById('originAdr'),
+        msg=document.getElementById('originAdrMsg');
+    if(!sel||!champ) return;
+    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    champ.placeholder=T('itin.depart.adresse.exemple','Adresse, hôtel, gare, quartier…');
+    var o=document.createElement('option');
+    o.value='adr'; o.textContent='\u270D\uFE0F '+T('itin.depart.adresse','Une adresse précise…');
+    sel.insertBefore(o, sel.options[1]||null);
+    function bascule(){
+      var on=(sel.value==='adr');
+      champ.style.display=on?'':'none';
+      msg.style.display='none';
+      if(on) setTimeout(function(){ try{ champ.focus(); }catch(e){} },50);
+    }
+    sel.addEventListener('change', bascule); bascule();
+    window.THEadresseDepart=function(){
+      var q=(champ.value||'').trim();
+      if(!q) return Promise.resolve(null);
+      msg.style.display=''; msg.textContent=T('itin.depart.adresse.recherche','Recherche de l\'adresse…');
+      var iso=(window.HConf&&HConf.iso)||'';
+      return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language='
+          + ((window.THEi18n&&THEi18n.lang&&THEi18n.lang())||'fr')
+          + (iso?'&countrycodes='+iso:'') + '&q=' + encodeURIComponent(q))
+        .then(function(r){ return r.json(); })
+        .then(function(j){
+          if(!j||!j.length){ msg.textContent=T('itin.depart.adresse.introuvable','Adresse introuvable — précisez la ville.'); return null; }
+          msg.textContent='\uD83D\uDCCD '+j[0].display_name;
+          return {coord:[parseFloat(j[0].lon), parseFloat(j[0].lat)], label:(j[0].display_name||q).split(',')[0]};
+        })
+        .catch(function(){ msg.textContent=T('itin.depart.adresse.echec','Recherche impossible — vérifiez la connexion.'); return null; });
+    };
+  })();
+  </script>
+
+  <script>
+  /* CHAQUE ITINÉRAIRE PORTE UN NOM — les trois modes partagent le même carnet ;
+     ce qui les distingue, c'est la façon de naître : Composer prédit, Surprenez-moi
+     tire au sort, Voyage libre se remplit après coup. Sans nom, trois itinéraires
+     menés de front deviennent indiscernables dans le menu. Voyage libre demande le
+     sien au départ ; les deux autres l'obtiennent une fois l'itinéraire dressé. */
+  (function(){
+    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    function nommer(defaut){
+      if(!window.LASTRES || !LASTRES.route || !LASTRES.route.length) return;
+      if(LASTRES._nomme) return;                       // on ne redemande pas à chaque retouche
+      var n=prompt(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut);
+      if(n===null) return;                              // refusé : l'itinéraire vit quand même
+      n=(n||'').trim().slice(0,80) || defaut;
+      LASTRES.tour = LASTRES.tour || {};
+      LASTRES.tour.titre = n;
+      LASTRES._nomme = true;
+      try{
+        var arr=readSaved();
+        arr.unshift({ id:'it'+Date.now(), title:n, forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
+          origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour,
+          steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
+            halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||''}; }) });
+        writeSaved(arr.slice(0,40)); renderSaved();
+        localStorage.setItem('the_current', JSON.stringify(recordFromCurrent()));
+      }catch(e){}
+      var h=document.querySelector('#rsum h2'); if(h) h.textContent=n;
+    }
+    function apres(defaut){ var t=0, id=setInterval(function(){
+        t++; if(t>40){ clearInterval(id); return; }
+        if(window.LASTRES && LASTRES.route && LASTRES.route.length){ clearInterval(id); nommer(defaut); }
+      }, 250); }
+    ['generate','mSurprise'].forEach(function(bid){
+      var b=document.getElementById(bid); if(!b) return;
+      b.addEventListener('click', function(){
+        apres(bid==='mSurprise' ? T('itin.nom.surprise','Ma surprise') : T('itin.nom.compose','Mon itinéraire'));
+      });
+    });
+  })();
+  </script>
+
+  <div id="itiModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,15,10,.55);align-items:center;justify-content:center;padding:18px">
+    <div style="background:#fffdf8;border-radius:12px;max-width:420px;width:100%;padding:20px;position:relative;max-height:80vh;overflow:auto">
+      <button id="itiX" type="button" aria-label="Fermer" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:19px;cursor:pointer;color:#8a7c66">✕</button>
+      <div id="itiTitre" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:12px">Mes itinéraires</div>
+      <div id="itiListe"></div>
+    </div>
+  </div>
+  <script>
+  /* QUATRIÈME OPTION — « Mes itinéraires ».
+     Les trois premières CRÉENT ; celle-ci RETROUVE. Elle ouvre une fenêtre plutôt
+     qu'une liste dépliée : on peut mener de front un itinéraire composé, une
+     surprise et un voyage libre, et c'est leur NOM qui les distingue. Zéro
+     itinéraire n'est pas une anomalie : on le dit simplement. */
+  (function(){
+    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
+        btn=document.getElementById('mMes');
+    if(!mod||!liste||!btn) return;
+    document.getElementById('itiTitre').textContent=T('menu.mes.itineraires','Mes itinéraires');
+    function lire(){ try{ var a=JSON.parse(localStorage.getItem('the_saved')||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+    function actif(){ try{ return localStorage.getItem('the_actif')||''; }catch(e){ return ''; } }
+    function remplir(){
+      var arr=lire(); liste.innerHTML='';
+      if(!arr.length){
+        var v=document.createElement('div');
+        v.style.cssText='color:#8a7c66;font-size:15px;line-height:1.6';
+        v.textContent=T('menu.aucun.itineraire','Aucun itinéraire enregistré pour le moment.');
+        liste.appendChild(v); return;
+      }
+      arr.slice(0,20).forEach(function(r){
+        var nb=(r.steps&&r.steps.length)||0;
+        var a=document.createElement('a');
+        a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
+        a.style.cssText='display:flex;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid #efe7d8;text-decoration:none;color:inherit';
+        a.innerHTML='<span style="font-size:19px">'+(r.mode==='libre'?'🎒':'🧭')+'</span>'
+          + '<span style="flex:1"><b>'+String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,'')+'</b>'
+          + '<br><small style="color:#8a7c66">'
+          + (r.mode==='libre' ? T('menu.voyage.libre','voyage libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes','étapes'))
+          + '</small></span>';
+        /* Étoile « celui-ci est mon voyage en cours » : à la réouverture de
+           l'application on retombe dessus, sans jamais y être enfermé. */
+        var et=document.createElement('button');
+        et.type='button';
+        et.title=T('itin.actif.aide','Ouvrir ce voyage au démarrage');
+        et.style.cssText='background:none;border:none;font-size:19px;cursor:pointer;padding:4px 6px;opacity:'
+          + (actif()===r.id ? '1' : '.28');
+        et.textContent='★';
+        et.onclick=function(ev){ ev.preventDefault(); ev.stopPropagation();
+          try{ if(actif()===r.id) localStorage.removeItem('the_actif');
+               else localStorage.setItem('the_actif', r.id); }catch(e){}
+          remplir(); };
+        a.appendChild(et);
+        liste.appendChild(a);
+      });
+    }
+    function ouvrir(){ remplir(); mod.style.display='flex'; }
+    function fermer(){ mod.style.display='none'; }
+    btn.addEventListener('click', ouvrir);
+    document.getElementById('itiX').onclick=fermer;
+    mod.addEventListener('click', function(e){ if(e.target===mod) fermer(); });
+    window.THEitineraires={ouvrir:ouvrir};
+  })();
+  </script>
+
+  <script>
+  /* CINQUIÈME OPTION — les circuits déjà tracés.
+     Ils existaient, mais enfouis au milieu du formulaire de Composer : on ne les
+     voyait qu'après avoir choisi de composer, alors qu'ils sont une façon de partir
+     à part entière — la plus simple. Ils ont donc leur carte. */
+  (function(){
+    var btn=document.getElementById('mPropos'); if(!btn) return;
+    btn.addEventListener('click', function(){
+      if(window.THEmodes) THEmodes.ouvrir();
+      ['savedBox','critStart'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
+      var b=document.getElementById('builder');
+      if(b) [].slice.call(b.children).forEach(function(e){
+        if(e.id && e.id!=='presetsBox' && e.id!=='retourModes') return;
+      });
+      var box=document.getElementById('presetsBox'), liste=document.getElementById('presets');
+      if(box) box.style.display=(liste && liste.children.length) ? '' : 'none';
+      /* on ne garde que les propositions : le formulaire reste accessible par Composer */
+      var b2=document.getElementById('builder');
+      if(b2) [].slice.call(b2.children).forEach(function(e){
+        if(e.classList && e.classList.contains('modes')) return;
+        if(e.id==='presetsBox' || e.id==='retourModes') return;
+        e.style.display='none';
+      });
+      try{ (box||btn).scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+    });
   })();
   </script>
 </body>
