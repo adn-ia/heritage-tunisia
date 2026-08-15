@@ -220,7 +220,6 @@
   </div>
   <div class="toast" id="toast"></div>
   <div class="sheet-ov" id="tourOv"><div class="sheet" id="tourSheet"></div></div>
-  <div class="sheet-ov" id="premOv"><div class="sheet" id="premSheet"></div></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
@@ -598,21 +597,6 @@
 
     // ---- Premium (freemium) ----
     function isPremium(){ try{return window.THEPass ? THEPass.isActive() : false;}catch(e){return false;} }
-    const premOv=document.getElementById('premOv'), premSheet=document.getElementById('premSheet');
-    function showPremium(feat){
-      premSheet.innerHTML=`<button class="close" onclick="closePrem()">✕</button>
-        <h3>✦ THE Premium</h3>
-        <div class="sub">« ${feat} » fait partie des fonctions Premium.</div>
-        <div class="q">Inclus dans Premium</div>
-        <div style="font-size:15px;line-height:1.85;margin-bottom:4px">🔊 Guide audio géolocalisé<br>🧭 Itinéraires sur mesure &amp; durées<br>✨ Réalité augmentée <span style="color:#8a7c66">(en développement)</span><br>🏛️ Scan d'objets au musée <span style="color:#8a7c66">(en développement)</span><br>🗺️ Cartes hors-ligne <span style="color:#8a7c66">(à venir)</span><br>🚫 Sans publicité</div>
-        <button class="go" id="doUnlock">Débloquer Premium</button>
-        <button class="go alt" onclick="closePrem()">Plus tard</button>
-        <p class="sub" style="margin-top:8px">Démonstration : déblocage simulé, sans paiement réel.</p>`;
-      premOv.classList.add('show');
-      document.getElementById('doUnlock').onclick=()=>{ if(window.THEPass) THEPass.activate('mois',{order:'demo'}); else { try{localStorage.setItem('the_premium','1');}catch(e){} } closePrem(); toast('✦ Passe activé (démo)'); };
-    }
-    function closePrem(){ premOv.classList.remove('show'); }
-    premOv.addEventListener('click',e=>{ if(e.target===premOv) closePrem(); });
 
     // ---- Guide audio (synthese vocale) ----
     let audioOn=false; const audioBtn=document.getElementById('audioBtn');

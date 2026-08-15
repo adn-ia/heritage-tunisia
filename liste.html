@@ -164,6 +164,9 @@ Promise.all([
     themesOf(s).forEach(t=>_cpt.set(t,(_cpt.get(t)||0)+1)); });
   const _decl=(window.HConf&&HConf.themes)||[];
   _decl.forEach(t=>{ const n=_cpt.get(t.id)||0; if(n>=3) thsel.add(new Option(uiT(t.label),t.id)); });
+  // « Autres lieux » — même entrée que sur la CARTE : sans elle, les lieux qui
+  // n'entrent dans aucun thème seraient introuvables au filtre.
+  if((_cpt.get('autres')||0)>0) thsel.add(new Option(uiT('theme.autres'),'autres'));
   // Thème pré-sélectionné par l'URL (?theme=…) — appliqué une fois les options peuplées
   var _urlTheme=new URLSearchParams(location.search).get('theme');
   if(_urlTheme){ F.theme=_urlTheme; thsel.value=_urlTheme; }

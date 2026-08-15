@@ -41,7 +41,8 @@ import re,json,glob,html
 LG=['en','ar','de','it']
 UI={lg:json.load(open('i18n/ui.%s.json'%lg,encoding='utf-8')) for lg in LG}
 skip={'apps.html','credits-photos.html','googleaee5a2729db003c0.html'}
-PR={'Heritage Experience','Threshold-Analytics','Bab Souika','Tourbet El Bey','🌐 Langue / Language','Heritage — Ouverture…'}
+PR={'Heritage Experience','Threshold-Analytics','Bab Souika','Tourbet El Bey','🌐 Langue / Language',
+    'Heritage — Ouverture…','Heritage','Experience','artfletch','✦ Premium','THE','UNESCO','Premium','FREE'}
 NB=chr(160)
 def nm(x): return html.unescape(x).replace(NB,' ').strip()
 t=c=0
@@ -51,7 +52,9 @@ for f in sorted(set(glob.glob('*.html'))-skip):
     x=re.sub(r'<(script|style)\b[^>]*>.*?</\1>','',x,flags=re.S|re.I)
     x=re.sub(r'<([a-z0-9]+)[^>]*\bdata-i18n(?:-html)?="[^"]*"[^>]*>.*?</\1>','',x,flags=re.S|re.I)
     for y in set(nm(z) for z in re.split(r'<[^>]+>',x)):
-        if len(re.findall(r"[A-Za-zÀ-ÿ]{3,}",y))>=2 and y not in PR and [l for l in LG if y not in UI[l]]: t+=1
+        # UN SEUL mot suffit : le seuil de 2 mots ratait « 700 monuments », « ottomane »,
+        # « authentique » — des mots en gras au milieu de phrases pourtant traduites.
+        if re.findall(r"[A-Za-zÀ-ÿ]{3,}",y) and y not in PR and len(y)<=200 and [l for l in LG if y not in UI[l]]: t+=1
 for f in glob.glob('*.html'):
     s=open(f,encoding='utf-8').read()
     for k in set(re.findall(r'data-i18n(?:-html|-placeholder|-title|-aria|-alt)?="([^"]+)"',s))|set(re.findall(r"uiT\('([^']+)'\)",s)):

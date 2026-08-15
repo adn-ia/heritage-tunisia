@@ -45,7 +45,7 @@
   /* Lemon Squeezy en sommeil (web). Vide = pas de vente web ; l'achat se fait
      via l'App Store (Apple). Le jour où tu actives la vente web, colle l'URL. */
   var CHECKOUT={ an:(window.HConf&&HConf.checkout)||'' };          // ← URL de checkout Lemon Squeezy (web) via HConf ; vide = pas de vente web
-  var APPSTORE_URL='';             // ← lien App Store de CETTE app (à coller une fois publiée) ; vide = masqué
+  var APPSTORE_URL=(window.HConf&&HConf.appStore)||'';   // lien App Store via HConf (un fichier, un pays) ; vide = masqué
   function premiumLive(){ return !!CHECKOUT.an; }
 
   /* ═══ OÙ le premium est-il PAYANT ? ═══

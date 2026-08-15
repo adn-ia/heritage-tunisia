@@ -1056,8 +1056,13 @@
       box.innerHTML='';                       // re-render propre (ex. après activation du passe)
       const FREE_TOURS=4;                      // freemium « généreux » : 4 circuits offerts
       ids.forEach((id,i)=>{ const c=document.createElement('div'); c.className='chip pchip'; c.textContent='✨ '+t[id].titre;
-        const hardLock = t[id].premium===true && (function(){ try{ return localStorage.getItem('the_premium')!=='1'; }catch(e){ return true; } })();
-        if(hardLock){ c.classList.add('locked'); c.textContent='🔒 '+t[id].titre; c.onclick=()=>alert(uiT('🔒 « Explorer la Médina » est un module premium — bientôt disponible. Merci de votre patience !')); }
+        // Circuits marqués premium dans tours.json : verrou NORMAL (essai ou abonnement
+        // débloquent), et renvoi au paywall — plus de clé « the_premium » obsolète qui
+        // bloquait même les abonnés, ni de message « bientôt disponible » (c'est en ligne).
+        if(t[id].premium===true && !isPremium()){
+          c.classList.add('locked'); c.textContent='🔒 '+t[id].titre;
+          c.onclick=()=>requirePass(t[id].titre, ()=>loadTour(id));
+        }
         else if(i>=FREE_TOURS && !isPremium()){ c.classList.add('locked'); c.onclick=()=>requirePass('Tous les circuits prêts', ()=>loadTour(id)); }
         else c.onclick=()=>loadTour(id);
         box.appendChild(c); });
