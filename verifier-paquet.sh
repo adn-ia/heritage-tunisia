@@ -68,3 +68,35 @@ for f in glob.glob('*.html'):
 morts=[l for l in sorted(liens) if not os.path.exists(l)]
 print(('  ✅ ' if not morts else '  ❌ ')+'%-46s %s'%('20. Liens internes',('aucun mort' if not morts else ', '.join(morts))))
 PY
+python3 - <<'PY2'
+import json,re,glob,html
+# 21) jetons qui ne seront JAMAIS remplacés (DeepL traduit parfois leur nom)
+VALIDES={'__MARQUE__','__MARQUE_COURTE__','__MARQUE_MARK__','__PAYS__','__PAYS_MAJ__','__LE_PAYS__','__PAYS_DE__','__LANGUE_NAT__','__ENDONYME__'}
+casses=[]
+for f in glob.glob('i18n/ui.*.json'):
+    d=json.load(open(f,encoding='utf-8'))
+    for k,v in d.items():
+        if isinstance(v,str):
+            for t in set(re.findall(r'__[A-Z_]+__',v)):
+                if t not in VALIDES: casses.append((f,k,t))
+print(('  \u2705 ' if not casses else '  \u274c ')+'%-46s %s'%('21. Jetons i18n valides',
+      'aucun jeton cassé' if not casses else '%d cassé(s) : %s'%(len(casses),', '.join(sorted({t for _,_,t in casses}))[:60])))
+
+# 22) notes internes visibles (texte rendu + valeurs i18n)
+MOTS=r"(TODO|FIXME|XXX\b|décision Helmy|Helmy|Helmi|à faire|à revoir|provisoire|brouillon|WIP|prototype|schéma des flux|activation simulée|ne pas livrer|à supprimer|aucune valeur contractuelle)"
+NB=chr(160); trouve=[]
+for f in glob.glob('*.html')+glob.glob('patrimoine/*.html'):
+    s=open(f,encoding='utf-8').read()
+    s=re.sub(r'<!--.*?-->','',s,flags=re.S)
+    s=re.sub(r'<(script|style)\b[^>]*>.*?</\1>','',s,flags=re.S|re.I)
+    t=html.unescape(re.sub(r'<[^>]+>',' ',s)).replace(NB,' ')
+    for m in re.finditer(MOTS,t,re.I): trouve.append((f,m.group(0)))
+for f in glob.glob('i18n/ui.*.json'):
+    d=json.load(open(f,encoding='utf-8'))
+    for k,v in d.items():
+        # confid.* = mentions légales : le nom de l'éditeur y est OBLIGATOIRE
+        if k.startswith('confid.'): continue
+        if isinstance(v,str) and re.search(MOTS,v,re.I): trouve.append((f,k[:40]))
+print(('  \u2705 ' if not trouve else '  \u274c ')+'%-46s %s'%('22. Aucune note interne visible',
+      '' if not trouve else '%d : %s'%(len(trouve),', '.join('%s (%s)'%x for x in trouve[:3]))))
+PY2
