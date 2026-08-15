@@ -100,3 +100,29 @@ for f in glob.glob('i18n/ui.*.json'):
 print(('  \u2705 ' if not trouve else '  \u274c ')+'%-46s %s'%('22. Aucune note interne visible',
       '' if not trouve else '%d : %s'%(len(trouve),', '.join('%s (%s)'%x for x in trouve[:3]))))
 PY2
+python3 - <<'PY3'
+import re
+# 23) CONFORMITÉ STORES (Apple 3.1.1 / Google Play) — matrice de visibilité :
+#     web = Lemon Squeezy + App Store + Play Store + café ; app iOS ou Android = AUCUN lien externe.
+ok=[]; ko=[]
+prem=open('premium.html',encoding='utf-8').read()
+sout=open('soutien.html',encoding='utf-8').read()
+foot=open('the-footer.js',encoding='utf-8').read()
+if re.search(r"isStoreApp\)\s*\{[^}]*ios-hide", prem, re.S): ok.append(1)
+else: ko.append('premium: portes externes non masquees en app')
+i=prem.find('buyWeb'); j=prem.find('HConf&&HConf.tip')
+if i>0 and j>i: ok.append(1)
+else: ko.append('premium: cafe hors branche web')
+if prem.find('buyLS')>i: ok.append(1)
+else: ko.append('premium: Lemon Squeezy hors branche web')
+if 'ios-hide' in sout and re.search(r"if\(iOS\|\|andr\)", sout): ok.append(1)
+else: ko.append('soutien: cafe non masque en app')
+if 'standalone' in foot: ok.append(1)
+else: ko.append('footer: badges visibles en app installee')
+dur=re.findall(r"https://(?:apps\.apple\.com|play\.google\.com/store)[^\"']*", prem+sout+foot)
+if not dur: ok.append(1)
+else: ko.append('URL de store en dur: '+dur[0][:44])
+print(('  ✅ ' if not ko else '  ❌ ')+'%-46s %s'%('23. Conformite stores (visibilite des liens)',
+      '%d/6 controles'%len(ok) if not ko else '; '.join(ko)[:78]))
+PY3
+node -e 'global.window={};global.document={readyState:"x",addEventListener(){},querySelectorAll(){return[]},querySelector(){return null},documentElement:{},title:""};require("./heritage.config.js");var C=window.HConf;console.log("     portes : appStore="+(C.appStore?"oui":"—")+" playStore="+(C.playStore?"oui":"vide")+" cafe="+(C.tip?"oui":"vide")+" checkout="+(C.checkout?"oui":"vide"))'
