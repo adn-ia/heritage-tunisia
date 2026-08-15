@@ -843,6 +843,10 @@
     if(tripParam) loadTrip(tripParam);                 // lien partagé reçu d'un ami → on charge son itinéraire
     else if(picksParam) loadPicks(picksParam, params.get('add')==='1');
     else if(tourId){ (function w(){ if(TOURS) loadTour(tourId); else setTimeout(w,80); })(); }   // attendre que TOURS (async) soit chargé
+    else if(params.get('reprendre')){                  // « Reprendre l'itinéraire » depuis le menu
+      const cur=readCurrent();
+      if(cur && cur.steps && cur.steps.length) renderRecord(cur);
+    }
     else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
   });
 

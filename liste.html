@@ -87,7 +87,6 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
     <select id="type"><option value="">Tous les types</option></select>
     <select id="theme"><option value="">Tous les thèmes</option></select>
     <label class="chk"><input type="checkbox" id="withPhoto"> avec photo</label>
-    <label class="chk"><input type="checkbox" id="withLeg"> 🐉 légendes</label>
     <button id="aroundBtn" class="seg" style="padding:9px 12px;cursor:pointer;color:var(--ink)">📍 Autour de moi</button>
   </div>
   <div class="row" id="radiusRow" style="display:none;margin-top:8px;">
@@ -239,7 +238,6 @@ document.getElementById('region').onchange=e=>{F.region=e.target.value;render();
 document.getElementById('type').onchange=e=>{F.type=e.target.value;render();};
 document.getElementById('theme').onchange=e=>{F.theme=e.target.value; render();};
 document.getElementById('withPhoto').onchange=e=>{F.photo=e.target.checked;render();};
-document.getElementById('withLeg').onchange=e=>{ if(!isPremium()){ e.target.checked=false; location.href='premium.html'; return; } F.legonly=e.target.checked; if(window.BriqueLegende){BriqueLegende.ready().then(render);} else render();};
 [...document.querySelectorAll('#genreSeg button')].forEach(b=>b.onclick=()=>{
   F.g=b.dataset.g; document.querySelectorAll('#genreSeg button').forEach(x=>x.classList.toggle('on',x===b)); render();
 });

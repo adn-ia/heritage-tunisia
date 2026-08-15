@@ -116,8 +116,26 @@
   function trialStartedTs(){ try{ return parseInt(localStorage.getItem(TRIAL_FLAG)||'0',10)||0; }catch(e){ return 0; } }
   function trialActive(){ var t=trialRead(); return !!(t && t.expires && t.expires>Date.now()); }
   // Démarre l'essai UNE seule fois. Si déjà consommé (même expiré) → jamais réarmé.
+  // Remise à zéro pilotée par l'édition : tout essai COMMENCÉ avant HConf.essaiDepuis
+  // est effacé, l'utilisateur repart pour une période complète. Sert quand on a corrigé
+  // une cause qui a gâché l'essai de tout le monde. Une seule date à changer, dans
+  // heritage.config.js ; sans elle, rien ne se passe (repli 0).
+  function trialEpoch(){
+    var v=(window.HConf&&HConf.essaiDepuis)||0;
+    if(!v) return 0;
+    var t=(typeof v==='number')?v:Date.parse(v);
+    return isNaN(t)?0:t;
+  }
+  function trialResetIfStale(){
+    var ep=trialEpoch(); if(!ep) return false;
+    var st=trialStartedTs(); if(!st || st>=ep) return false;
+    try{ localStorage.removeItem(TRIAL_FLAG); localStorage.removeItem(TRIAL_KEY); }catch(e){}
+    return true;
+  }
+
   function trialMaybeStart(){
     if(!paywallActive()) return false;            // plateforme gratuite : pas d'essai daté
+    trialResetIfStale();                          // essai d'avant la date d'édition → on repart
     if(trialStartedTs()) return false;            // déjà utilisé une fois
     if(paidActive() || inviteActive()) return false; // déjà premium : inutile
     var now=Date.now();
@@ -390,10 +408,6 @@
      paywall (premium.html). On laisse toujours ouvertes : le paywall lui-même,
      le soutien, et les pages légales/aide (exigées par Apple près de l'achat).
      Placé tôt (the-pass.js est chargé en <head>) → pas de contenu qui clignote. */
-  function gateAllow(path){
-    return /(?:^|\/)(bienvenue|decouvrir|premium|soutien|cgu|cgv|confidentialite|mentions-legales|remboursement|a-propos|sources-credits|credits-photos|contribuer)\.html?$/i.test(path)
-        || /\/$/.test(path);   // racine « / » = bienvenue (vitrine toujours libre, toutes langues)
-  }
   /* ─── PLUS DE MUR DE NAVIGATION (15/08/2026) ───────────────────────────────
      Règle posée par Helmy : « un essai actif ne doit JAMAIS masquer le paywall,
      un essai fini ne doit JAMAIS masquer la navigation. »
@@ -417,7 +431,7 @@
 
   handleReturn();       // retour paiement / lien invité
   trialMaybeStart();    // démarre l'essai (une seule fois)
-  gate();               // ← MUR : après l'essai, tout renvoie au paywall SAUF bienvenue (vitrine libre)
+  gate();               // sans effet depuis le 15/08 : plus aucun mur — le verrouillage se fait par FONCTION
   openAlbumIfFlagged(); // à la 1re activation : ouvre l'album par défaut
   trialEndNudge();      // rappel « enregistrez votre album » dans les 3 derniers jours
   showGiftToast();      // cadeau pourboire éventuel

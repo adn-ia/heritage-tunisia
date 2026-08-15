@@ -36,6 +36,8 @@
     ],
     appStoreId:   "6785249427",   // id App Store (deep-link go.html / apps.html) — propre à l'édition
     support:      "support@threshold-analytics.com",   // e-mail contact/signalement (briques)
+    // Page d'aide publique (URL de support de la fiche App Store). Vide = entrée masquée.
+    supportURL:   "https://heritage-support.threshold-analytics.com/?lang=",
     iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
     // Android — repris de l'assetlinks EN LIGNE (2 empreintes : upload + signature Play).
     androidPackage: "com.thresholdanalytics.heritage.tunisia",
@@ -53,6 +55,11 @@
     pays:   { fr:"Tunisie", en:"Tunisia", ar:"تونس", de:"Tunesien", it:"Tunisia" },
     paysLe: { fr:"la Tunisie", en:"Tunisia", ar:"تونس", de:"Tunesien", it:"la Tunisia" },
     paysDe: { fr:"de Tunisie", en:"of Tunisia", ar:"من تونس", de:"von Tunesien", it:"della Tunisia" },
+    // Remise à zéro de l'essai gratuit : tout essai commencé AVANT cette date est
+    // effacé et l'utilisateur repart pour une période complète. Laisser vide ("")
+    // pour ne rien remettre à zéro. Posée le 15/08/2026 : le mur de navigation
+    // avait gâché l'essai de tout le monde, la cause est corrigée.
+    essaiDepuis: "2026-08-15T00:00:00Z",
     champRegion: "gouvernorat",
     // Points de départ SUPPLÉMENTAIRES propres à l'édition : villes très
     // demandées qui ne sont pas des chefs-lieux. [nom, latitude, longitude].

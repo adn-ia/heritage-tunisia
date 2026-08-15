@@ -116,7 +116,7 @@ body.narr-on{padding-bottom:76px;}
   <script src="the-pass.js"></script>
 </head>
 <body>
-<div class="topbar"><a class="back" href="bienvenue.html">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" data-tour-step="voix" aria-label="Écouter le récit">🔊 Écouter</button></div>
+<div class="topbar"><a class="back" href="bienvenue.html?garde=1">‹ Accueil</a><span class="t">DÉCOUVRIR</span><button class="listen" id="listen" data-tour-step="voix" aria-label="Écouter le récit">🔊 Écouter</button></div>
 
 <div class="narrbar" id="narrbar" hidden aria-label="Commandes de la narration">
   <button class="nb" id="nb-restart" type="button" title="Repartir du début" aria-label="Repartir du début">⏮</button>
@@ -139,6 +139,7 @@ body.narr-on{padding-bottom:76px;}
       <div class="sm-title">Le menu</div>
       <div class="sm-group" data-i18n="menu.groupe.decouvrir"></div>
       <a class="sm-item primary" href="#recit" data-tour-step="recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
+      <a class="sm-item" href="itineraire.html?reprendre=1" id="smReprendre" style="display:none"><span class="i">↩</span><span class="t"><span data-i18n="menu.reprendre"></span><small><span id="smReprendreN"></span> <span data-i18n="menu.reprendre.sub"></span></small></span></a>
       <a class="sm-item" href="itineraire.html" data-tour-step="itineraire"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
       <a class="sm-item" href="index.html" data-tour-step="carte"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
       <a class="sm-item" href="liste.html" data-tour-step="liste"><span class="i">📋</span><span class="t">Tous les lieux (liste)<small>parcourir sans la carte</small></span></a>
@@ -154,6 +155,7 @@ body.narr-on{padding-bottom:76px;}
             <div class="sm-group" data-i18n="menu.groupe.pratique"></div>
       <a class="sm-item" href="hors-ligne.html"><span class="i">💾</span><span class="t"><span data-i18n="menu.sauvegarde"></span><small data-i18n="menu.sauvegarde.sub"></small></span></a>
       <a class="sm-item" href="contribuer.html"><span class="i">🙌</span><span class="t"><span data-i18n="soutien.contribuer.signaler"></span><small data-i18n="menu.contribuer.sub"></small></span></a>
+      <a class="sm-item" id="smSupport" href="#" target="_blank" rel="noopener" style="display:none"><span class="i">🛟</span><span class="t"><span data-i18n="menu.support"></span><small data-i18n="menu.support.sub"></small></span></a>
       <a class="sm-item" href="confidentialite.html"><span class="i">🔒</span><span class="t"><span data-i18n="menu.confidentialite"></span><small data-i18n="menu.confidentialite.sub"></small></span></a>
       <a class="sm-item" href="soutien.html"><span class="i">☕</span><span class="t"><span data-i18n="menu.soutien"></span><small data-i18n="menu.soutien.sub"></small></span></a>
       <a class="sm-item" href="sources-credits.html"><span class="i">📑</span><span class="t">Sources &amp; crédits<small>données &amp; photos sourcées</small></span></a>
@@ -463,5 +465,29 @@ body.narr-on{padding-bottom:76px;}
   <script src="analytics.js"></script>
 <script src="the-lightbox.js" defer></script>
 <script src="brique-tour.js" defer></script>
+<script>
+  // « Reprendre l'itinéraire » : visible UNIQUEMENT s'il y a un itinéraire en cours
+  // (the_current, autosauvegardé par itineraire.html). Affiche son nombre d'étapes.
+  (function(){
+    try{
+      var c=JSON.parse(localStorage.getItem('the_current')||'null');
+      if(!c || !c.steps || !c.steps.length) return;
+      var a=document.getElementById('smReprendre'); if(!a) return;
+      var n=document.getElementById('smReprendreN'); if(n) n.textContent=c.steps.length;
+      a.style.display='';
+    }catch(e){}
+  })();
+</script>
+<script>
+  // Aide : ouvre la page de support publique dans la langue affichée.
+  // Masquée si l'édition ne déclare pas HConf.supportURL.
+  (function(){
+    var u=(window.HConf&&HConf.supportURL)||''; if(!u) return;
+    var a=document.getElementById('smSupport'); if(!a) return;
+    var lg=(window.THEi18n&&THEi18n.lang&&THEi18n.lang())||'fr';
+    a.href=u+(u.slice(-1)==='='?lg:'');
+    a.style.display='';
+  })();
+</script>
 </body>
 </html>

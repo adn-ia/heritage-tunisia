@@ -270,5 +270,9 @@
   "itin.mail.sujet": "Mon itinéraire en Tunisie (Tunisia Heritage)",
   "lead_h1": "Votre voyage en Tunisie",
   "itin.se.deplacer.corps": "Entre villes : <b>louages</b> (taxis collectifs, fréquents et bon marché) et <b>bus régionaux</b> ; longues distances : autocars <b>SNTRI</b>. <b>Train</b> (SNCFT) pratique mais limité à certaines lignes (axe Tunis–Sousse–Sfax–Gabès, banlieue de Tunis). Souvent <b>non climatisé</b> — prévoyez de l'eau. La plupart des villes et grands sites sont accessibles ainsi ; quelques sites isolés demandent une voiture ou un taxi.",
-  "itin.pays.maj": "__PAYS_MAJ__"
+  "itin.pays.maj": "__PAYS_MAJ__",
+  "menu.reprendre": "Reprendre l'itinéraire",
+  "menu.reprendre.sub": "étapes — là où vous en étiez",
+  "menu.support": "Aide & contact",
+  "menu.support.sub": "une question, un souci ? on répond"
 }

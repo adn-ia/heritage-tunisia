@@ -2206,5 +2206,9 @@
   "itin.se.deplacer.corps": "Zwischen den Städten: <b>„Louages“</b> (Sammeltaxis, häufig verkehrend und günstig) und <b>Regionalbusse</b>; auf langen Strecken: <b>SNTRI-Reisebusse</b>. <b>Der Zug</b> (SNCFT) ist praktisch, aber auf bestimmte Strecken beschränkt (Achse Tunis–Sousse–Sfax–Gabès, Vororte von Tunis). Oft <b>nicht klimatisiert</b> – nehmen Sie Wasser mit. Die meisten Städte und wichtigen Sehenswürdigkeiten sind auf diese Weise erreichbar; für einige abgelegene Orte benötigen Sie ein Auto oder ein Taxi.",
   "index.periode.exemples": "Karthago, Rom, der Islam im Mittelalter … in ganz Tunesien",
   "index.depart.exemples": "Beispiele: Kairouan, Dougga, Sousse…",
-  "itin.pays.maj": "__PAYS_MAJ__"
+  "itin.pays.maj": "__PAYS_MAJ__",
+  "menu.reprendre": "Route fortsetzen",
+  "menu.reprendre.sub": "Schritte – dort, wo Sie aufgehört haben",
+  "menu.support": "Hilfe & Kontakt",
+  "menu.support.sub": "Haben Sie eine Frage oder ein Anliegen? Wir helfen Ihnen gerne weiter."
 }

@@ -2206,5 +2206,9 @@
   "itin.se.deplacer.corps": "Between towns: <b>louages</b> (shared taxis, frequent and inexpensive) and <b>regional buses</b>; long distances: <b>SNTRI</b> coaches. <b>Trains</b> (SNCFT) are convenient but limited to certain routes (the Tunis–Sousse–Sfax–Gabès line and the Tunis suburbs). Often <b>not air-conditioned</b> — make sure you take water with you. Most towns and major attractions are accessible this way; a few remote sites require a car or a taxi.",
   "index.periode.exemples": "Carthage, Rome, medieval Islam… across the whole of Tunisia",
   "index.depart.exemples": "E.g. Kairouan, Dougga, Sousse…",
-  "itin.pays.maj": "__PAYS_MAJ__"
+  "itin.pays.maj": "__PAYS_MAJ__",
+  "menu.reprendre": "Resume the itinerary",
+  "menu.reprendre.sub": "Steps — where you left off",
+  "menu.support": "Help & contact",
+  "menu.support.sub": "Got a question or a concern? We’re here to help"
 }

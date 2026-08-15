@@ -173,7 +173,6 @@
       <button class="chip active" id="fTout">Tout</button>
       <button class="chip" id="fHist">Histoire</button>
       <button class="chip nat" id="fNat">Nature</button>
-      <button class="chip" id="fLeg">🐉 Légendes</button>
       <span class="spacer"></span>
       <button class="icon-btn" id="tourBtn" title="Itinéraire / tour guidé">🧭</button>
       <button class="icon-btn" id="audioBtn" title="Guide audio (raconte où vous êtes)">🔊</button>
@@ -495,7 +494,7 @@
       selGov.value='all'; selGov.disabled=false; selPer.value='all'; selPer.disabled=false;
       fAround.classList.remove('active'); selRad.style.display='none';
       [fTout,fHist,fNat].forEach(b=>b.classList.remove('active')); fTout.classList.add('active');
-      legFilter=false; var _fl=document.getElementById('fLeg'); if(_fl)_fl.classList.remove('active');
+      legFilter=false;
       document.getElementById('mapReset').classList.remove('show');
       applyFilters(); map.setView(DEFAULT_CENTER, DEFAULT_ZOOM); openChooser('root');
     }
@@ -563,7 +562,6 @@
       if(mode==='nat'){ selPer.value='all'; perFilter='all'; selPer.disabled=true; } else { selPer.disabled=false; }
       applyFilters(); }
     fTout.onclick=()=>setCat('tout'); fHist.onclick=()=>setCat('hist'); fNat.onclick=()=>setCat('nat');
-    const fLeg=document.getElementById('fLeg'); fLeg.onclick=()=>{ if(!isPremium()){ location.href='premium.html'; return; } clearRoute(); activateSelection(); legFilter=!legFilter; fLeg.classList.toggle('active',legFilter); if(window.BriqueLegende){BriqueLegende.ready().then(applyFilters);} else applyFilters(); };
     document.getElementById('selGov').onchange=e=>{ clearRoute(); activateSelection(); govFilter=e.target.value; applyFilters(); };
     document.getElementById('selPer').onchange=e=>{ clearRoute(); activateSelection(); perFilter=e.target.value; applyFilters(); };
     const fAround=document.getElementById('fAround'), selRad=document.getElementById('selRad');
