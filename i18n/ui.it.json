@@ -2266,11 +2266,11 @@
   "menu.aucun.itineraire": "Al momento non ci sono itinerari salvati.",
   "menu.nouvel.itineraire": "Nuovo itinerario",
   "menu.mes.itineraires.sub": "pacchetti, sorprese, viaggi fai da te",
-  "m_me_t": "I miei itinerari",
-  "m_me_s": "quelli che avete creato",
+  "m_me_t": "Itinerari salvati",
+  "m_me_s": "quelle che hai creato",
   "itin.actif.aide": "Apri questo viaggio all'avvio",
   "itin.quatre.facons": "Quattro modi per partire: scegli quello che preferisci.",
-  "m_pr_t": "Suggerimenti",
+  "m_pr_t": "Itinerari",
   "m_pr_s": "percorsi già tracciati",
   "itin.cinq.facons": "Cinque modi per partire: scegli quello che preferisci."
 }

@@ -337,11 +337,11 @@
   "menu.aucun.itineraire": "Aucun itinéraire enregistré pour le moment.",
   "menu.nouvel.itineraire": "Nouvel itinéraire",
   "menu.mes.itineraires.sub": "composés, surprises, voyages libres",
-  "m_me_t": "Mes itinéraires",
+  "m_me_t": "Itinéraires sauvegardés",
   "m_me_s": "ceux que vous avez créés",
   "itin.actif.aide": "Ouvrir ce voyage au démarrage",
   "itin.quatre.facons": "Quatre façons de partir — choisissez la vôtre.",
-  "m_pr_t": "Propositions",
-  "m_pr_s": "des circuits déjà tracés",
+  "m_pr_t": "Circuits",
+  "m_pr_s": "des parcours déjà tracés",
   "itin.cinq.facons": "Cinq façons de partir — choisissez la vôtre."
 }

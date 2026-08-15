@@ -2266,11 +2266,11 @@
   "menu.aucun.itineraire": "No itineraries have been saved yet.",
   "menu.nouvel.itineraire": "New itinerary",
   "menu.mes.itineraires.sub": "packages, surprises, independent travel",
-  "m_me_t": "My itineraries",
+  "m_me_t": "Saved routes",
   "m_me_s": "the ones you’ve created",
   "itin.actif.aide": "Open this trip on start-up",
   "itin.quatre.facons": "Four ways to set off — choose the one that suits you best.",
-  "m_pr_t": "Suggestions",
-  "m_pr_s": "Pre-planned itineraries",
+  "m_pr_t": "Tours",
+  "m_pr_s": "pre-planned routes",
   "itin.cinq.facons": "Five ways to set off — choose the one that suits you best."
 }

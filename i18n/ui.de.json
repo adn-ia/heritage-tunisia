@@ -2266,11 +2266,11 @@
   "menu.aucun.itineraire": "Derzeit sind keine Reiserouten gespeichert.",
   "menu.nouvel.itineraire": "Neue Route",
   "menu.mes.itineraires.sub": "Pauschalreisen, Überraschungsreisen, Individualreisen",
-  "m_me_t": "Meine Routen",
+  "m_me_t": "Gespeicherte Routen",
   "m_me_s": "die, die Sie erstellt haben",
   "itin.actif.aide": "Diese Reise beim Start öffnen",
   "itin.quatre.facons": "Vier Möglichkeiten, loszulegen – wählen Sie Ihre aus.",
-  "m_pr_t": "Vorschläge",
+  "m_pr_t": "Rundreisen",
   "m_pr_s": "Vorgefertigte Routen",
   "itin.cinq.facons": "Fünf Möglichkeiten, loszufahren – wählen Sie Ihre aus."
 }
