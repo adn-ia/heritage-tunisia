@@ -177,7 +177,7 @@ function themesOf(p){
   const r=((window.HConf&&HConf.themes)||[]).filter(t=>t.kw && t.kw.length && t.kw.some(k=>e.includes(norm(k)))).map(t=>t.id);
   return r.length?r:['autres'];   // « Autres lieux »
 }
-let F={g:'all',q:'',region:'',type:'',theme:'',photo:false,legonly:false,around:false,center:null,radius:30};
+let F={g:'all',q:'',region:'',type:'',theme:'',photo:false,around:false,center:null,radius:30};
 function hav(a,b){ const R=6371,r=Math.PI/180,x=Math.sin((b[1]-a[1])*r/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin((b[0]-a[0])*r/2)**2; return 2*R*Math.asin(Math.sqrt(x)); }
 function pass(s){
   if(F.g!=='all' && gen(s)!==F.g) return false;
@@ -186,7 +186,6 @@ function pass(s){
   if(F.theme){ if(F.theme==='nature'){ if(gen(s)!=='nature') return false; }
                else if(themesOf(s).indexOf(F.theme)<0) return false; }
   if(F.photo && !(s.photo||'').startsWith('img/')) return false;
-  if(F.legonly && !(window.BriqueLegende&&BriqueLegende.hasSync(s.nom))) return false;  // filtre = donnée de la brique
   if(F.around && F.center){ if(!s._c) return false; if(hav(F.center,s._c)>F.radius) return false; }
   if(F.q){ const q=norm(F.q); if(!norm(s.nom).includes(q) && !norm(s.gouvernorat).includes(q) && !norm(s.type).includes(q)) return false; }
   return true;

@@ -303,7 +303,7 @@
     // Couche unique + filtres (categorie / periode / gouvernorat)
     const markers = []; // {f, marker, cat}
     const displayGroup = L.layerGroup().addTo(map);
-    let catFilter='tout', govFilter='all', perFilter='all', aroundOn=false, aroundRadius=10000, legFilter=false;
+    let catFilter='tout', govFilter='all', perFilter='all', aroundOn=false, aroundRadius=10000;
     let selectionActive=false;   // carte vide tant qu'aucun choix n'est fait (anti-fouillis sur mobile)
     let aroundCenter=null, AROUND_CENTER=null;   // centre « autour de » : null = ma position (GPS), sinon [lat,lon] défini
     const picks=(function(){ try{ const r=localStorage.getItem('the_picks'); return r?JSON.parse(r):[]; }catch(e){ return []; } })();
@@ -346,7 +346,6 @@
       if(catFilter==='nat' && !isNat) return false;
       // transversaux (aligné socle) : filtre exact par categorie
       if((catFilter==='musee'||catFilter==='marche'||catFilter==='festival'||catFilter==='patrimoine') && o.f.properties.categorie!==catFilter) return false;
-      if(legFilter && !(window.BriqueLegende&&BriqueLegende.hasSync(o.f.properties.nom))) return false;  // filtre = donnée de la brique
       if(govFilter!=='all' && o.f.properties.gouvernorat!==govFilter) return false;
       if(aroundOn){ const ctr=aroundCenter||userPos; if(!ctr) return false; const [lon,lat]=o.f.geometry.coordinates; if(distanceM(ctr,[lat,lon])>aroundRadius) return false; }
       // La periode ne s'applique qu'aux sites historiques : si une periode est choisie, on masque la nature
@@ -494,7 +493,6 @@
       selGov.value='all'; selGov.disabled=false; selPer.value='all'; selPer.disabled=false;
       fAround.classList.remove('active'); selRad.style.display='none';
       [fTout,fHist,fNat].forEach(b=>b.classList.remove('active')); fTout.classList.add('active');
-      legFilter=false;
       document.getElementById('mapReset').classList.remove('show');
       applyFilters(); map.setView(DEFAULT_CENTER, DEFAULT_ZOOM); openChooser('root');
     }
