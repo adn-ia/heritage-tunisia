@@ -2246,5 +2246,12 @@
   "prem.ask.oui": "Scopri Premium",
   "prem.ask.non": "Più tardi",
   "itin.feature.enregistrer": "Salvare più di due itinerari",
-  "index.feat.guide.audio": "La guida audio geolocalizzata"
+  "index.feat.guide.audio": "La guida audio geolocalizzata",
+  "itin.libre.nom": "Che nome daresti a questo viaggio?",
+  "itin.libre.defaut": "Il mio viaggio libero",
+  "itin.libre.soustitre": "Senza un itinerario prestabilito — seguendo la strada",
+  "menu.mes.itineraires": "I miei itinerari",
+  "menu.itineraire.sans.nom": "Senza nome",
+  "menu.voyage.libre": "viaggio libero",
+  "menu.etapes": "fasi"
 }

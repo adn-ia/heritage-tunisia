@@ -2246,5 +2246,12 @@
   "prem.ask.oui": "Discover Premium",
   "prem.ask.non": "Later",
   "itin.feature.enregistrer": "Save more than two routes",
-  "index.feat.guide.audio": "The geolocated audio guide"
+  "index.feat.guide.audio": "The geolocated audio guide",
+  "itin.libre.nom": "What would you call this trip?",
+  "itin.libre.defaut": "My independent trip",
+  "itin.libre.soustitre": "No plan — just follow the road",
+  "menu.mes.itineraires": "My itineraries",
+  "menu.itineraire.sans.nom": "Untitled",
+  "menu.voyage.libre": "self-guided tour",
+  "menu.etapes": "Steps"
 }

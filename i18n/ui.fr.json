@@ -317,5 +317,12 @@
   "prem.ask.non": "Plus tard",
   "Fermer": "Fermer",
   "itin.feature.enregistrer": "Enregistrer plus de deux itinéraires",
-  "index.feat.guide.audio": "Le guide audio géolocalisé"
+  "index.feat.guide.audio": "Le guide audio géolocalisé",
+  "itin.libre.nom": "Quel nom donnez-vous à ce voyage ?",
+  "itin.libre.defaut": "Mon voyage libre",
+  "itin.libre.soustitre": "Sans plan — au fil de la route",
+  "menu.mes.itineraires": "Mes itinéraires",
+  "menu.itineraire.sans.nom": "Sans nom",
+  "menu.voyage.libre": "voyage libre",
+  "menu.etapes": "étapes"
 }

@@ -2246,5 +2246,12 @@
   "prem.ask.oui": "Premium entdecken",
   "prem.ask.non": "Später",
   "itin.feature.enregistrer": "Mehr als zwei Routen speichern",
-  "index.feat.guide.audio": "Der standortbezogene Audioführer"
+  "index.feat.guide.audio": "Der standortbezogene Audioführer",
+  "itin.libre.nom": "Wie nennen Sie diese Reise?",
+  "itin.libre.defaut": "Meine Reise auf eigene Faust",
+  "itin.libre.soustitre": "Ohne Plan – einfach der Straße folgen",
+  "menu.mes.itineraires": "Meine Routen",
+  "menu.itineraire.sans.nom": "Ohne Namen",
+  "menu.voyage.libre": "Freie Reise",
+  "menu.etapes": "Schritte"
 }

@@ -866,9 +866,14 @@
       if(tripParam) loadTrip(tripParam);                 // lien partagé reçu d'un ami → on charge son itinéraire
       else if(picksParam) loadPicks(picksParam, params.get('add')==='1');
       else if(tourId){ (function w(){ if(TOURS) loadTour(tourId); else setTimeout(w,80); })(); }   // attendre que TOURS (async) soit chargé
-      else if(params.get('reprendre')){                  // « Reprendre l'itinéraire » depuis le menu
+      else if(params.get('ouvrir')){                     /* le menu liste chaque itineraire par SON nom */
+          const _id=params.get('ouvrir');
+          const _rec=readSaved().filter(r=>r.id===_id)[0];
+          if(_rec) renderRecord(_rec);
+        }
+        else if(params.get('reprendre')){                  // « Reprendre l'itinéraire » depuis le menu
         const cur=readCurrent();
-        if(cur && cur.steps && cur.steps.length) renderRecord(cur);
+        if(cur && (cur.mode==='libre' || (cur.steps && cur.steps.length))) renderRecord(cur);
       }
       else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
     });
@@ -1163,12 +1168,17 @@
   function readSaved(){ try{ return JSON.parse(localStorage.getItem('the_saved')||'[]'); }catch(e){ return []; } }
   function writeSaved(a){ try{ localStorage.setItem('the_saved', JSON.stringify(a)); }catch(e){} }
   function saveCurrent(){
-    if(!LASTRES || !LASTRES.route.length) return;
+    /* Un voyage libre DÉMARRE vide : c'est son principe, il se remplit en chemin.
+       L'exiger non vide le rendait impossible à enregistrer — et donc à reprendre —
+       en refusant le clic sans le moindre message. */
+    if(!LASTRES) return;
+    var _libre = (LASTRES.mode==='libre');
+    if(!_libre && !LASTRES.route.length) return;
     if(!isPremium() && readSaved().length >= 2){ premAsk(uiT('itin.feature.enregistrer')); return; }   // 2 itinéraires max sans abonnement
     const def=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:(uiT('Itinéraire —')+' '+LASTRES.route.length+' '+uiT('étapes'));
     const name=prompt(uiT('Nom de cet itinéraire :'), def); if(name===null) return;
     const arr=readSaved();
-    arr.unshift({ id:'it'+Date.now(), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway',
+    arr.unshift({ id:'it'+Date.now(), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) });
@@ -1178,7 +1188,8 @@
   function deleteSaved(id){ writeSaved(readSaved().filter(r=>r.id!==id)); renderSaved(); }
   // reconstruit et affiche un itinéraire à partir d'un enregistrement sérialisé
   function renderRecord(rec, entry){
-    if(!rec || !rec.steps || !rec.steps.length) return;
+    if(!rec) return;
+    if((!rec.steps || !rec.steps.length) && rec.mode!=='libre') return;   // un libre vide se rouvre : il attend ses haltes
     const byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
     const route=rec.steps.map(st=>{
       const found = st.genre!=='perso' && byName.get(norm(st.nom));
@@ -1189,18 +1200,18 @@
     let prev=rec.origin.coord; route.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
     ENTRY=entry||rec.entry||'funnel';
     render(rec.origin, {route, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||'itinéraire enregistré'},
-      per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'enregistré'}, forme:rec.forme||'oneway', pepites:[],
+      per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'enregistré'}, forme:rec.forme||'oneway', pepites:[], mode:rec.mode||'',
       tour:rec.tour||{titre:rec.title, soustitre:'Itinéraire enregistré'}});
   }
   function resumeSaved(id){ const rec=readSaved().find(r=>r.id===id); renderRecord(rec, 'saved'); }
   // sérialise l'itinéraire courant (pour ne pas le perdre en quittant la page, ex. « Voir la grande carte »)
   function recordFromCurrent(){
-    return { title:(LASTRES.tour&&LASTRES.tour.titre)||'Dernier itinéraire', forme:LASTRES.forme||'oneway', entry:ENTRY,
+    return { title:(LASTRES.tour&&LASTRES.tour.titre)||'Dernier itinéraire', forme:LASTRES.forme||'oneway', entry:ENTRY, mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
   }
-  function autosaveCurrent(){ try{ if(LASTRES&&LASTRES.route&&LASTRES.route.length) localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){} }
+  function autosaveCurrent(){ try{ if(LASTRES && (LASTRES.mode==='libre' || (LASTRES.route&&LASTRES.route.length))) localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){} }
   function readCurrent(){ try{ return JSON.parse(localStorage.getItem('the_current')||'null'); }catch(e){ return null; } }
 
   // ---------- Partage : lien d'itinéraire (encodé dans l'URL, sans serveur) ----------
@@ -1592,9 +1603,20 @@
   // ---------- Voyage libre : pas de plan, on capture au fil de la route ----------
   function startLibre(){
     ENTRY='libre';
+    /* On demande son nom AU DÉPART : un voyage libre se remplit en chemin, il doit
+       donc exister — et être retrouvable — avant d'avoir la moindre halte. */
+    var _nomLibre = prompt(uiT('itin.libre.nom'), uiT('itin.libre.defaut'));
+    if(_nomLibre===null) return;                    // annulé : on ne lance rien
+    _nomLibre = (_nomLibre||'').trim().slice(0,80) || uiT('itin.libre.defaut');
     render({coord:[10.18,36.8], label:'Ma position'},
       { route:[], theme:{ic:'🆓',label:'Voyage libre'}, dur:{max:99,lib:'libre'}, per:{radius:99999,lib:'libre'},
-        forme:'oneway', pepites:[], mode:'libre', tour:{titre:'Mon voyage libre', soustitre:'Sans plan — au fil de la route'} });
+        forme:'oneway', pepites:[], mode:'libre', tour:{titre:_nomLibre, soustitre:uiT('itin.libre.soustitre')} });
+    /* enregistré tout de suite : il apparaît dans le menu, on peut y revenir */
+    try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
+    (function(){ var arr=readSaved();
+       arr.unshift({ id:'it'+Date.now(), title:_nomLibre, forme:'oneway', mode:'libre',
+         origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null, steps:[] });
+       writeSaved(arr.slice(0,40)); renderSaved(); })();
     showGuide('🆓 <b>Voyage libre</b> lancé ! Déplacez-vous, puis marquez chaque moment avec <b>« 📍 J\'ai fait une halte ici »</b> (plus bas) — tout va dans votre carnet.', 9000);
     // on cale l'origine sur la position réelle si dispo (pour ordonner les haltes autour de soi)
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
