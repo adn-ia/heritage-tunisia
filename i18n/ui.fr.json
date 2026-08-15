@@ -321,7 +321,7 @@
   "itin.libre.nom": "Quel nom donnez-vous à ce voyage ?",
   "itin.libre.defaut": "Mon voyage libre",
   "itin.libre.soustitre": "Sans plan — au fil de la route",
-  "menu.mes.itineraires": "Mes itinéraires",
+  "menu.mes.itineraires": "Itinéraires sauvegardés",
   "menu.itineraire.sans.nom": "Sans nom",
   "menu.voyage.libre": "voyage libre",
   "menu.etapes": "étapes",
