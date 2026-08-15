@@ -267,7 +267,25 @@
     return false;
   }
   // Dans une APP de store (iOS OU Android) : on masque Lemon Squeezy + café (règles Apple 3.1.1 / Google Play Billing).
-  function isStoreApp(){ return isIOS() || isAndroidApp(); }
+  /* iOS : distinguer l'APPLICATION du NAVIGATEUR — ils ne doivent PAS voir la même chose.
+     ← Avant, isStoreApp() ne regardait que l'agent utilisateur : tout visiteur iPhone du
+       SITE WEB voyait « l'abonnement arrive bientôt » au lieu de pouvoir s'abonner.
+       Une moitié du trafic mobile ne pouvait pas acheter.
+     Une WebView d'application n'annonce pas « Safari » dans son agent, là où Safari
+     mobile le fait toujours — c'est le repère le plus sûr. On accepte aussi le pont
+     StoreKit, le mode « installé » et un marqueur d'URL explicite. */
+  function isIOSApp(){
+    if(!isIOS()) return false;
+    try{ if(sessionStorage.getItem('the_store_app')==='1') return true; }catch(e){}
+    var marque = hasIAPBridge()
+      || navigator.standalone===true
+      || (window.matchMedia && matchMedia('(display-mode: standalone)').matches)
+      || (new URLSearchParams(location.search)).get('app')==='ios'
+      || !/Safari/.test(navigator.userAgent||'');       // WebView, pas Safari
+    if(marque){ try{ sessionStorage.setItem('the_store_app','1'); }catch(e){} }
+    return !!marque;
+  }
+  function isStoreApp(){ return isIOSApp() || isAndroidApp(); }
   // Lance l'achat Apple. Retour : 'iap' (envoyé au natif) ou 'no-bridge'.
   function buyIOS(plan){
     plan=plan||PLAN; if(!DAYS[plan]) return null;
@@ -394,7 +412,7 @@
 
   window.THEPass={ isActive:isActive, activate:activate, deactivate:deactivate, info:info,
                    buy:buy, checkoutURL:checkoutURL, handleReturn:handleReturn,
-                   isIOS:isIOS, isAndroidApp:isAndroidApp, isStoreApp:isStoreApp, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, restoreIOS:restoreIOS,
+                   isIOS:isIOS, isIOSApp:isIOSApp, isAndroidApp:isAndroidApp, isStoreApp:isStoreApp, hasIAPBridge:hasIAPBridge, buyIOS:buyIOS, restoreIOS:restoreIOS,
                    hasPlayBridge:hasPlayBridge, buyAndroid:buyAndroid, restoreAndroid:restoreAndroid,
                    iapUnlock:iapUnlock, iapExpire:iapExpire, IAP_PRODUCT:IAP_PRODUCT,
                    grantFeature:grantFeature, hasFeature:hasFeature, giftRandom:giftRandom, GIFT_POOL:GIFT_POOL,

@@ -1,0 +1,7 @@
+# SEGMENTS QUE LE CONTRÔLE « texte visible traduit » NE DOIT PAS SIGNALER
+# Un par ligne. Tout ce qui est ici est un NOM PROPRE ou une MARQUE : le
+# traduire serait une faute, pas une amélioration. Justifier chaque ajout.
+
+Heritage — Ouverture…      # titre de go.html : page de transit, porte la marque
+✦ Premium                  # marque de l'offre, identique dans toutes les langues
+artfletch                  # pseudonyme de l'auteur d'un modèle 3D (Sketchfab)
