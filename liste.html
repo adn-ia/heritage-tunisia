@@ -153,22 +153,39 @@ Promise.all([
   const rsel=document.getElementById('region'); regs.forEach(r=>rsel.add(new Option(r,r)));
   const typs=[...new Set(ALL.map(s=>s.type).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fr'));
   const tsel=document.getElementById('type'); typs.forEach(t=>tsel.add(new Option(trCat(t),t)));
-  // Thème transversal (aligné socle) : chaque option n'apparaît que si la categorie a des données
-  const THEMES=[['patrimoine','Patrimoine'],['musee','Musées'],['marche','Marchés & souks'],['festival','Festivals & événements'],['nature','Nature & balades']];
-  const _present=new Set(ALL.map(s=>s.categorie).filter(Boolean));
-  const thsel=document.getElementById('theme'); THEMES.forEach(([c,lab])=>{ if(_present.has(c)) thsel.add(new Option(uiT(lab),c)); });
+  /* Menu THÈME aligné sur la CARTE : mêmes périodes, même découpage (celui de
+     l'Institut national du patrimoine), mêmes libellés — tirés de HConf.themes,
+     donc traduits. Avant, ce menu proposait la `categorie` avec des libellés
+     écrits en dur, et la liste n'offrait aucun filtre par période alors que la
+     carte en avait un. */
+  const thsel=document.getElementById('theme');
+  if(ALL.some(s=>gen(s)==='nature')) thsel.add(new Option(uiT('theme.nature'),'nature'));
+  const _cpt=new Map();
+  ALL.forEach(s=>{ if(gen(s)==='nature') return;
+    themesOf(s).forEach(t=>_cpt.set(t,(_cpt.get(t)||0)+1)); });
+  const _decl=(window.HConf&&HConf.themes)||[];
+  _decl.forEach(t=>{ const n=_cpt.get(t.id)||0; if(n>=3) thsel.add(new Option(uiT(t.label),t.id)); });
   // Thème pré-sélectionné par l'URL (?theme=…) — appliqué une fois les options peuplées
   var _urlTheme=new URLSearchParams(location.search).get('theme');
   if(_urlTheme){ F.theme=_urlTheme; thsel.value=_urlTheme; }
   render();
 });
+/* Thèmes d'un lieu : le champ `themes` des données (périodes de l'INP + transversaux),
+   avec repli sur les mots-clés d'époque déclarés dans HConf.themes. Même règle que la carte. */
+function themesOf(p){
+  if(p && Array.isArray(p.themes) && p.themes.length) return p.themes;
+  const e=norm(p&&p.epoque||'');
+  const r=((window.HConf&&HConf.themes)||[]).filter(t=>t.kw && t.kw.length && t.kw.some(k=>e.includes(norm(k)))).map(t=>t.id);
+  return r.length?r:['autres'];   // « Autres lieux »
+}
 let F={g:'all',q:'',region:'',type:'',theme:'',photo:false,legonly:false,around:false,center:null,radius:30};
 function hav(a,b){ const R=6371,r=Math.PI/180,x=Math.sin((b[1]-a[1])*r/2)**2+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin((b[0]-a[0])*r/2)**2; return 2*R*Math.asin(Math.sqrt(x)); }
 function pass(s){
   if(F.g!=='all' && gen(s)!==F.g) return false;
   if(F.region && s.gouvernorat!==F.region) return false;
   if(F.type && s.type!==F.type) return false;
-  if(F.theme && s.categorie!==F.theme) return false;   // transversal (aligné socle)
+  if(F.theme){ if(F.theme==='nature'){ if(gen(s)!=='nature') return false; }
+               else if(themesOf(s).indexOf(F.theme)<0) return false; }
   if(F.photo && !(s.photo||'').startsWith('img/')) return false;
   if(F.legonly && !(window.BriqueLegende&&BriqueLegende.hasSync(s.nom))) return false;  // filtre = donnée de la brique
   if(F.around && F.center){ if(!s._c) return false; if(hav(F.center,s._c)>F.radius) return false; }

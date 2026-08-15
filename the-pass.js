@@ -394,16 +394,26 @@
     return /(?:^|\/)(bienvenue|decouvrir|premium|soutien|cgu|cgv|confidentialite|mentions-legales|remboursement|a-propos|sources-credits|credits-photos|contribuer)\.html?$/i.test(path)
         || /\/$/.test(path);   // racine « / » = bienvenue (vitrine toujours libre, toutes langues)
   }
-  function gate(){
-    try{
-      if(!paywallActive()) return;               // site gratuit (web sans vente) → aucun mur
-      if(gateAllow(location.pathname)) return;
-      if(isActive()) return;
-      // Laisse passer le retour de code (?code=…) que handleReturn traite en asynchrone.
-      if(/[?&](code|invite|pass)=/.test(location.search)) return;
-      location.replace('premium.html');
-    }catch(e){}
-  }
+  /* ─── PLUS DE MUR DE NAVIGATION (15/08/2026) ───────────────────────────────
+     Règle posée par Helmy : « un essai actif ne doit JAMAIS masquer le paywall,
+     un essai fini ne doit JAMAIS masquer la navigation. »
+
+     Avant, cette fonction faisait `location.replace('premium.html')` dès l'essai
+     terminé. Elle coupait 10 pages sur 18 — dont la CARTE, la LISTE et
+     l'ITINÉRAIRE — et le paywall n'offrait aucun retour. L'application ne
+     paraissait pas payante, elle paraissait cassée : c'est ce qu'Apple a décrit
+     en rejetant une édition (« could not proceed further and could not return to
+     the previous menu », puis « the app contents did not load »).
+
+     Le mur faisait DOUBLON : le verrouillage par fonction existe déjà et couvre
+     le modèle freemium — `requirePass()` et `isPremium()` dans itineraire.html
+     (2 itinéraires max, circuits limités par FREE_TOURS, thèmes premium),
+     liste.html (détail, légendes), index.html (itinéraires sur mesure), et
+     `hasFeature()` ici même. On garde ces verrous, on retire le mur global.
+
+     `gate()` est conservée — vide — pour ne pas casser l'ordre d'appel plus bas
+     et pour rester le point d'accroche si un bandeau non bloquant est ajouté. */
+  function gate(){ /* volontairement sans effet — voir le commentaire ci-dessus */ }
 
   handleReturn();       // retour paiement / lien invité
   trialMaybeStart();    // démarre l'essai (une seule fois)

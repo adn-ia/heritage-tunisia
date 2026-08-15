@@ -1,0 +1,40 @@
+RETIRÉES le 15 août 2026 — Helmy : « je n'ai jamais dit de faire ça ».
+
+Ces 4 pages étaient des BROUILLONS, en ligne et publiquement accessibles sur
+heritage.threshold-analytics.com, et elles affichaient à l'utilisateur :
+
+  « ⚠️ BROUILLON — non validé juridiquement. Ce texte est un modèle de travail,
+    en attente de validation par un avocat. Il n'a AUCUNE VALEUR CONTRACTUELLE
+    en l'état. »
+
+Avec 19 trous jamais remplis : [RAISON SOCIALE] ×6, [DATE] ×4, [EMAIL CONTACT] ×2,
+[PAYS/DROIT APPLICABLE], [NOM], [MÉTHODE], [HÉBERGEUR], [FORME JURIDIQUE],
+[ADRESSE SIÈGE], [ADRESSE HÉBERGEUR].
+
+CE QUI REND LE RETRAIT SANS RISQUE
+- AUCUNE page ne liait vers elles : vérifié sur les 26 pages du site, zéro lien.
+  Elles n'étaient atteignables qu'en tapant l'URL.
+- SEULE la Tunisie les avait. Les 8 autres éditions n'ont que confidentialite.html,
+  qui est complète et traduite.
+- Le paywall renvoie vers l'EULA standard d'Apple et vers confidentialite.html,
+  jamais vers ces pages.
+
+À FAIRE CÔTÉ SERVEUR
+Un delta ne peut pas supprimer un fichier. Il faut les EFFACER en FTP dans
+/webroots/93f13c21/ : cgu.html, cgv.html, mentions-legales.html, remboursement.html.
+Tant qu'elles y sont, elles restent lisibles par n'importe qui, Apple compris.
+
+SI ON EN REFAIT UN JOUR
+Des CGU/CGV n'ont de sens que pour la vente WEB (Lemon Squeezy). Sur les stores,
+l'EULA d'Apple et les conditions de Google font foi. Il faudra alors un texte
+validé, pas un modèle — et le passer par l'i18n dès la première ligne.
+
+--- Retirés le 15/08/2026 (2e vague) ---
+flux.html                 : SCHÉMA INTERNE de conception de l'application
+                            (« THE — SCHÉMA DES FLUX », A/B/C/D). Document de
+                            travail publié en ligne par erreur. Rien à y faire
+                            pour un utilisateur.
+exemples-itineraires.html : 3 itinéraires de démonstration encodés en URL.
+                            Orpheline (aucune page n'y menait), en français
+                            seul, et redondante avec les 18 circuits prêts de
+                            tours.json accessibles depuis « Créer un itinéraire ».

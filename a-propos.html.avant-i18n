@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <script src="heritage.config.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#26201a">
+<title>THE — À quoi sert cette application</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f6f0e4;--paper:#fffdf8;--ink:#2b2318;--stone:#8a7c66;--gold:#a8884f;--gold-soft:#c9ad79;--line:#e3d8c4;--green:#5c7a52;}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);background:var(--ivory);line-height:1.6;}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(38,32,26,0.96);color:var(--ivory);padding:11px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 14px rgba(0,0,0,.25);}
+.topbar a.back{color:var(--gold-soft);text-decoration:none;font-size:13px;letter-spacing:1px;}
+.topbar .t{flex:1;font-family:'Cormorant Garamond',serif;font-weight:700;letter-spacing:3px;font-size:17px;}
+.topbar .listen{appearance:none;-webkit-appearance:none;border:1px solid var(--gold);background:transparent;
+  color:var(--gold-soft);font-family:inherit;font-size:13px;letter-spacing:.5px;padding:5px 13px;border-radius:20px;
+  cursor:pointer;white-space:nowrap;transition:all .15s;}
+.topbar .listen.on{background:var(--gold);color:#2b2318;border-color:var(--gold);}
+
+.hero{position:relative;height:62vh;min-height:380px;display:flex;align-items:flex-end;color:#fff;
+  background:linear-gradient(180deg,rgba(20,15,10,.15) 0%,rgba(20,15,10,.78) 100%),url('img/Terrasses_de_la_m_dina_de_Tunis.jpg') center/cover;}
+.hero .inner{padding:30px 22px 40px;max-width:720px;margin:0 auto;width:100%;}
+.hero .kick{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-soft);margin-bottom:8px;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(32px,7.5vw,54px);line-height:1.04;margin:0 0 10px;text-shadow:0 2px 18px rgba(0,0,0,.5);}
+.hero p{font-size:clamp(16px,4.5vw,20px);font-style:italic;color:#f3e8d6;margin:0;max-width:560px;text-shadow:0 1px 10px rgba(0,0,0,.6);}
+
+main{max-width:720px;margin:0 auto;padding:8px 22px 60px;}
+.lead{font-size:19px;line-height:1.65;color:#3a3023;margin:30px 0;}
+.lead:first-letter{font-family:'Cormorant Garamond',serif;font-size:58px;float:left;line-height:.8;padding:6px 10px 0 0;color:var(--gold);}
+.lead strong{color:var(--ink);}
+
+section{margin:38px 0;}
+.kicker{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;}
+h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:29px;line-height:1.06;margin:0 0 10px;}
+section p{font-size:17px;margin:12px 0;color:#332a1d;}
+section p strong{color:var(--ink);}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:34px 0;}
+
+/* Compteur + catégories de contenu */
+.count{display:inline-block;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--gold);font-size:1.05em;}
+.cats{list-style:none;padding:0;margin:18px 0 4px;display:flex;flex-direction:column;gap:10px;}
+.cats li{display:flex;align-items:flex-start;gap:13px;background:var(--paper);border:1px solid var(--line);
+  border-radius:6px;padding:13px 15px;box-shadow:0 4px 14px rgba(43,35,24,.08);}
+.cats .i{font-size:22px;flex:0 0 30px;text-align:center;line-height:1.3;}
+.cats .tx b{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;}
+.cats .tx span{display:block;font-size:14.5px;color:var(--stone);margin-top:2px;line-height:1.4;}
+
+/* Étapes "garder une trace" */
+.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0;}
+.steps li{position:relative;padding:6px 0 16px 46px;}
+.steps li:before{counter-increment:s;content:counter(s);position:absolute;left:0;top:2px;width:32px;height:32px;
+  border-radius:50%;background:#26201a;color:var(--ivory);font-family:'Cormorant Garamond',serif;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-size:16px;}
+.steps li:not(:last-child):after{content:"";position:absolute;left:15px;top:34px;bottom:2px;width:2px;background:var(--line);}
+.steps b{font-family:'Cormorant Garamond',serif;font-size:18px;}
+.steps span{display:block;font-size:15px;color:var(--stone);margin-top:2px;}
+
+/* Bloc confidentialité (ligne rouge) */
+.privacy{background:#26201a;color:var(--ivory);border-radius:8px;padding:24px 22px;margin-top:30px;}
+.privacy .ic{font-size:30px;}
+.privacy h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:24px;margin:8px 0 10px;color:#fff;}
+.privacy p{font-size:15.5px;color:#ece1cf;margin:10px 0;line-height:1.6;}
+.privacy strong{color:var(--gold-soft);}
+
+.cta{margin-top:40px;}
+.cta .ask{text-align:center;margin-bottom:18px;}
+.cta .ask h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;margin:0 0 4px;}
+.cta .ask p{color:var(--stone);font-size:15px;margin:0;}
+.choice{display:flex;align-items:center;gap:16px;background:var(--paper);border:1px solid var(--line);
+  border-radius:6px;padding:16px 18px;text-decoration:none;color:var(--ink);margin-bottom:12px;
+  box-shadow:0 4px 16px rgba(43,35,24,.10);transition:transform .15s;}
+.choice:active{transform:scale(.99);}
+.choice .ic{width:46px;height:46px;flex:0 0 46px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:22px;background:#f1e7d5;border:1px solid var(--line);}
+.choice .tx{flex:1;}
+.choice .tt{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;line-height:1.1;}
+.choice .ds{font-size:13.5px;color:var(--stone);margin-top:2px;line-height:1.35;}
+.choice .ar{color:var(--gold);font-size:20px;}
+
+.note{font-size:12px;color:var(--stone);font-style:italic;border-top:1px solid var(--line);padding-top:14px;margin-top:34px;}
+
+section.reading,.lead.reading{background:rgba(168,136,79,.10);box-shadow:-3px 0 0 var(--gold);border-radius:2px;transition:background .3s;}
+.lead.reading{padding:6px 0 6px 14px;margin-left:-14px;}
+html{scroll-behavior:smooth;}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}
+</style>
+  <script src="the-i18n.js"></script>
+</head>
+<body>
+<div class="topbar"><a class="back" href="decouvrir.html">‹ Menu</a><span class="t">L'APPLICATION</span><button class="listen" id="listen" aria-label="Écouter la présentation">🔊 Écouter</button></div>
+
+<div class="hero"><div class="inner">
+  <div class="kick">Le contenu de l'application</div>
+  <h1>Votre compagnon<br>de voyage patrimonial</h1>
+  <p>Comprendre ce que vous visitez, en garder la trace, et la partager — à votre façon.</p>
+</div></div>
+
+<main>
+  <p class="lead">La Tunisie ne se visite pas, elle se déchiffre. Derrière chaque ruine, chaque oasis, chaque village perché, il y a trois mille ans d'histoires qui se sont superposées. Cette application est le <strong>compagnon qui vous aide à les lire</strong> : elle réunit <span class="count" id="count">plus de 500</span> sites et lieux référencés à travers tout le pays, classés par genre, pour faire de votre séjour une <strong>vraie découverte</strong> — un fil à suivre, d'un lieu à l'autre, avec à chaque fois la bonne clé de lecture.</p>
+
+  <section>
+    <div class="kicker">Ce qu'elle contient</div>
+    <h2>Plus de 500 lieux, rangés par genre</h2>
+    <p>Chaque lieu vient avec une fiche claire et <strong>sourcée</strong> : ce qu'on y voit, à quelle époque il remonte, un conseil de visite. Les lieux sont organisés pour s'y retrouver d'un coup d'œil :</p>
+    <ul class="cats">
+      <li><span class="i">🏛️</span><span class="tx"><b>Sites historiques, par période</b><span>De Carthage la punique à l'époque coloniale : romain, byzantin, islam médiéval, ottoman… chaque strate du pays.</span></span></li>
+      <li><span class="i">🌿</span><span class="tx"><b>Nature &amp; paysages</b><span>Parcs, oasis, chotts, forêts et balades — l'autre visage de la Tunisie, au-delà des pierres.</span></span></li>
+      <li><span class="i">🖼️</span><span class="tx"><b>Musées</b><span>Où voir les objets, les mosaïques et les collections qui racontent les sites.</span></span></li>
+      <li><span class="i">🎬</span><span class="tx"><b>Lieux de tournage</b><span>Les décors de cinéma, de <i>Star Wars</i> aux paysages du Sud devenus célèbres à l'écran.</span></span></li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="kicker">À quoi elle sert</div>
+    <h2>Tirer le meilleur de chaque journée</h2>
+    <p>Le but est simple : vous aider à <strong>voir plus, et mieux comprendre</strong>, sans rien rater de ce qui se trouvait juste à côté. Vous avez le choix, à votre guise :</p>
+    <ul class="cats">
+      <li><span class="i">✨</span><span class="tx"><b>Suivre un itinéraire déjà prêt</b><span>Des circuits soignés, clés en main, pour partir sans rien préparer.</span></span></li>
+      <li><span class="i">✏️</span><span class="tx"><b>Le modifier à votre goût</b><span>Ajoutez une étape, retirez-en une, allongez ou raccourcissez : le circuit s'adapte à vous.</span></span></li>
+      <li><span class="i">🧭</span><span class="tx"><b>Créer le vôtre de A à Z</b><span>Votre départ, votre temps, votre thème — l'application compose le parcours et sa carte.</span></span></li>
+    </ul>
+    <p>De quoi <strong>organiser vos visites et planifier au mieux les petits détours</strong> — ceux qu'on ne soupçonne pas et qui font tout le sel d'un voyage. Le séjour prend un <strong>côté ludique</strong> : on suit la piste, on coche les étapes, on se laisse surprendre. Et surtout, on s'offre une <strong>vraie immersion dans le pays et ses habitants</strong>, au plus près de ce qui le fait vivre.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Avec les guides, pas à leur place</div>
+    <h2>Un complément, jamais un remplaçant</h2>
+    <p>L'application <strong>complète et accompagne les guides présents sur place</strong>, qui sont le plus souvent formés pour vous donner le plus de détails, le récit vivant et les anecdotes qu'aucun écran ne remplace. Elle prépare et prolonge la visite ; le guide, lui, la fait vivre. Les deux vont ensemble.</p>
+  </section>
+
+  <section>
+    <div class="kicker">Garder une trace</div>
+    <h2>Documentez et bonifiez votre voyage</h2>
+    <p>Au fil du parcours, l'application vous permet de <strong>garder une trace de votre visite et de la documenter</strong> :</p>
+    <ul class="steps">
+      <li><b>Capturez</b><span>Ajoutez vos photos et vos vidéos directement sur chaque étape de votre itinéraire.</span></li>
+      <li><b>Bonifiez</b><span>Enrichissez chaque moment de notes personnelles — vos impressions, vos souvenirs.</span></li>
+      <li><b>Exportez</b><span>Transformez le tout en album souvenir, à partager sous différents formats avec vos amis et votre famille.</span></li>
+    </ul>
+  </section>
+
+  <div class="privacy">
+    <div class="ic">🔒</div>
+    <h3>Vos souvenirs restent les vôtres</h3>
+    <p>Tout ce que vous créez — itinéraires, photos, vidéos, notes — <strong>reste votre propriété et demeure toujours sur votre appareil</strong>.</p>
+    <p>En aucun cas il n'est partagé sans votre <strong>accord explicite</strong>. Et si vous choisissez de ne rien partager, <strong>votre refus n'entraîne aucune réduction des services</strong> proposés : vous profitez de l'application exactement de la même façon.</p>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="cta">
+    <div class="ask">
+      <h3>Prêt à commencer&nbsp;?</h3>
+      <p>Le menu complet vous attend sur la page « Découvrir ».</p>
+    </div>
+    <a class="choice" href="decouvrir.html"><span class="ic">🧭</span><span class="tx"><span class="tt">Aller au menu</span><span class="ds">Découvrir la Tunisie, créer un itinéraire, explorer la carte…</span></span><span class="ar">›</span></a>
+  </div>
+
+  <p class="note">Présentation générale à vocation pédagogique. Médiation sourcée — chaque lieu renvoie à ses sources dans sa fiche. Les contenus que vous créez sont stockés localement sur votre appareil (aucun envoi automatique).</p>
+</main>
+
+<script>
+  // Compte réel de lieux (Histoire + Nature), arrondi pour la présentation
+  Promise.all([
+    fetch('sites.geojson').then(r=>r.json()).catch(()=>({features:[]})),
+    fetch('sites-nature.geojson').then(r=>r.json()).catch(()=>({features:[]}))
+  ]).then(([h,n])=>{
+    const tot=(h.features?.length||0)+(n.features?.length||0);
+    if(tot>=100){ const floor=Math.floor(tot/100)*100; document.getElementById('count').textContent=((window.THEi18n&&THEi18n.ui('plus de '))||'plus de ')+floor; }
+  }).catch(()=>{});
+
+  // ---- Narration vocale (synthèse vocale du navigateur) ----
+  const synth = window.speechSynthesis;
+  const btn = document.getElementById('listen');
+  let chunks = [], idx = 0, state = 'idle';
+  function buildChunks(){
+    chunks = [];
+    const lead = document.querySelector('main .lead');
+    if (lead) chunks.push({ el: lead, text: lead.textContent.trim() });
+    document.querySelectorAll('main section').forEach(sec => {
+      const h2 = sec.querySelector('h2');
+      const ps = [...sec.querySelectorAll(':scope > p')];
+      const text = ((h2 ? h2.textContent.trim() + '. ' : '') + ps.map(p => p.textContent.trim()).join(' ')).trim();
+      if (text) chunks.push({ el: sec, text });
+    });
+    const priv = document.querySelector('.privacy');
+    if (priv){ const h3=priv.querySelector('h3'); const ps=[...priv.querySelectorAll('p')];
+      chunks.push({ el: priv, text:(h3?h3.textContent.trim()+'. ':'')+ps.map(p=>p.textContent.trim()).join(' ') }); }
+  }
+  function frVoice(){ const vs=synth.getVoices(); return vs.find(v=>/^fr[-_]FR/i.test(v.lang))||vs.find(v=>/^fr/i.test(v.lang))||null; }
+  function clearHighlight(){ document.querySelectorAll('.reading').forEach(e=>e.classList.remove('reading')); }
+  function highlight(el){ clearHighlight(); el.classList.add('reading'); el.scrollIntoView({behavior:'smooth',block:'center'}); }
+  function setUI(){
+    if(state==='playing'){ btn.textContent='⏸ Pause'; btn.classList.add('on'); }
+    else if(state==='paused'){ btn.textContent='▶ Reprendre'; btn.classList.add('on'); }
+    else { btn.textContent=uiT('🔊 Écouter'); btn.classList.remove('on'); }
+  }
+  function stop(){ synth.cancel(); state='idle'; idx=0; clearHighlight(); setUI(); }
+  function speakIdx(){
+    if(idx>=chunks.length){ stop(); return; }
+    const {el,text}=chunks[idx];
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='fr-FR'; u.rate=0.96; u.pitch=1;
+    const v=frVoice(); if(v) u.voice=v;
+    u.onstart=()=>highlight(el);
+    u.onend=()=>{ if(state==='playing'){ idx++; speakIdx(); } };
+    synth.speak(u);
+  }
+  btn.addEventListener('click', ()=>{
+    if(!('speechSynthesis' in window)){ btn.textContent=uiT('🔇 Indisponible'); btn.disabled=true; return; }
+    if(state==='idle'){ buildChunks(); idx=0; state='playing'; setUI(); speakIdx(); }
+    else if(state==='playing'){ synth.pause(); state='paused'; setUI(); }
+    else if(state==='paused'){ synth.resume(); state='playing'; setUI(); }
+  });
+  window.addEventListener('beforeunload', ()=>synth.cancel());
+  window.addEventListener('pagehide', ()=>synth.cancel());
+</script>
+<script src="the-footer.js" defer></script>
+  <script src="analytics.js"></script>
+</body>
+</html>

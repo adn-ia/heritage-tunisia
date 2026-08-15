@@ -563,12 +563,15 @@
         <div class="md-kick">✦ Le passe THE</div>
         <h3 class="md-title" id="passTitle">Fonction du passe</h3>
         <p id="passWhy" style="color:var(--stone);font-size:14px;margin:0 0 12px"></p>
-        <div style="font-size:14.5px;line-height:1.95">🗺️ Tous les circuits prêts<br>📔 Album souvenir (Baroudeur · Passeport · Dépliant) + PDF<br>🖥️ Diaporama / Projection du carnet<br>🔗 Lien d'itinéraire partageable<br>🔊 Guide audio · 🗺️ hors-ligne<br>🚫 Sans publicité</div>
+        <div style="font-size:14.5px;line-height:1.95">🗺️ Tous les circuits prêts<br>📔 Album souvenir (Baroudeur · Passeport · Dépliant) + PDF<br>🖥️ Diaporama / Projection du carnet<br>🍽️ Thème Gastronomie<br>🔗 Lien d'itinéraire partageable<br>🔊 Guide audio · 🗺️ hors-ligne<br>🚫 Sans publicité</div>
         <div style="background:#f6f0e4;border:1px solid var(--line);border-radius:8px;padding:11px;margin:13px 0;font-size:14px">
-          <span style="color:var(--stone);font-size:12.5px" data-i18n="pass.modal.rassurance"></span>
+          <b>Le passe</b> — 1 semaine <b>4,90 €</b> · 1 mois <b>9,90 €</b><br>
+          <span style="color:var(--stone);font-size:12.5px">Résident du Maghreb : mêmes montants en dinars. Paiement délégué (Lemon&nbsp;Squeezy) — aucune coordonnée bancaire ne nous parvient. <b>Tout ce que vous avez créé reste à vous, même sans passe.</b></span>
         </div>
-        <a class="md-add" href="premium.html" style="width:100%;display:block;text-align:center;text-decoration:none;box-sizing:border-box" data-i18n="pass.modal.voir"></a>
+        <button class="md-add" id="passWeek" type="button" style="width:100%">Passe 1 semaine — 4,90 €</button>
+        <button class="md-add" id="passMonth" type="button" style="width:100%;margin-top:8px">Passe 1 mois — 9,90 €</button>
         <button class="md-reject" id="passLater" type="button" style="width:100%;margin-top:8px">Plus tard</button>
+        <p id="passDemoNote" style="font-size:11px;color:var(--stone);font-style:italic;margin-top:8px">Démonstration : activation simulée tant que le paiement Lemon&nbsp;Squeezy n'est pas branché.</p>
       </div>
     </div>
 
@@ -754,29 +757,30 @@
   }
 
   // ---------- thèmes (regroupement des 161 époques) ----------
-  /* Thèmes de voyage — DÉCOUPAGE INCHANGÉ, repris tel quel : Carthage & Puniques,
-     royaumes numides, Tunisie romaine, Byzance, islam médiéval, ottoman & beylical,
-     andalou & morisque, berbère & ksour, colonial & XXe, Seconde Guerre mondiale,
-     oasis & Sahara, décors de cinéma. Deux changements seulement :
-       • les libellés ne sont plus écrits en dur — ils viennent de HConf.themes,
-         donc de l'i18n : ils étaient en français dans toutes les langues ;
-       • « Mythes & Légendes » et « Gastronomie » sont RETIRÉS (décision Helmy,
-         15/08/2026) : pas encore au point, ils reviendront en plugins.
-     Carte, liste et itinéraire lisent désormais la même source. */
-  const THEMES = ((window.HConf && HConf.themes) || []).map(t => ({
-    id:t.id, ic:t.ic||'🏷️', label:t.label||('theme.'+t.id), kw:t.kw||[]
-  }));
-  /* Le champ `themes` des données porte déjà le classement (mêmes mots-clés,
-     appliqués à la curation). Repli sur l'époque si un lieu n'en a pas. */
-  function themesOf(p){
-    if(p && Array.isArray(p.themes) && p.themes.length) return p.themes;
-    const ep = norm(p && p.epoque || '');
-    const r=THEMES.filter(t => t.kw.length && t.kw.some(k => ep.includes(norm(k)))).map(t => t.id);
-    return r.length?r:['autres'];   // « Autres lieux »
+  const THEMES = [
+    {id:'legende',    ic:'🐉', label:'Mythes & Légendes', legend:true},
+    {id:'punique',  ic:'⚓', label:'Carthage & Puniques', kw:['punique']},
+    {id:'numide',   ic:'🐎', label:'Royaumes numides',    kw:['numide']},
+    {id:'romain',   ic:'🏛️', label:'Tunisie romaine',     kw:['romain','romaine','thysdrus','sullecthum','tacapae','gightis','hadrien','gergis']},
+    {id:'byzantin', ic:'✝️', label:'Byzance & paléochrétien', kw:['byzantin','byzantine','paleochret']},
+    {id:'islam',    ic:'☪️', label:'Islam médiéval',       kw:['islamique','aghlabide','fatimide','ziride','hafside','ibadite','kateb']},
+    {id:'ottoman',  ic:'🕌', label:'Ottoman & beylical',   kw:['ottoman','ottomane','beylical','husseinite','mouradite','hispano-ottoman','espagnol']},
+    {id:'andalou',  ic:'🌿', label:'Andalou & morisque',   kw:['andalou','morisque']},
+    {id:'berbere',  ic:'🏜️', label:'Berbère & ksour',      kw:['berbere','ksour','berberophone']},
+    {id:'colonial', ic:'🏙️', label:'Colonial & XXe s.',    kw:['colonial','coloniale','contemporain','contemporaine','moderne','xxe siecle','post-1956','1963','1990','1992','1997']},
+    {id:'guerre',   ic:'🎖️', label:'2nde Guerre mondiale', kw:['guerre mondiale']},
+    {id:'oasis',    ic:'🌴', label:'Oasis & Sahara',       kw:['oasis','saharien','saharienne','frontaliere']},
+    {id:'cinema',   ic:'🎬', label:'Décors de cinéma',     kw:['cinema']},
+    {id:'gastronomie', ic:'🍽️', label:'Gastronomie',       food:true, kw:[]},
+  ];
+  function matchTheme(props, theme){
+    if(theme.legend) return !!(props.legende && String(props.legende).trim());
+    if(theme.id==='cinema' && norm(props.type)==='cinema') return true;
+    const ep = norm(props.epoque);
+    return theme.kw.some(k => ep.includes(norm(k)));
   }
-  function matchTheme(props, theme){ return themesOf(props).indexOf(theme.id) >= 0; }
   // un thème ne s'affiche que s'il a du contenu réel dans CE pays (≥3 sites) — seuls les transversaux SANS mots-clés (Légende, Gastronomie) sont exemptés ; Cinéma doit mériter ses ≥3
-  function themeViable(t){ return SITES.filter(s=>matchTheme(s.p,t)).length >= 3; }
+  function themeViable(t){ return t.legend || t.food || SITES.filter(s=>matchTheme(s.p,t)).length >= 3; }
 
   // ---------- variables indépendantes : durée (nb d'étapes) × périmètre (rayon) ----------
   const DUREE = {
@@ -855,7 +859,10 @@
     THEMES.filter(themeViable).forEach(t=>{
     const c=document.createElement('div'); c.className='chip'; c.dataset.id=t.id;
     c.textContent=t.ic+' '+((window.THEi18n&&THEi18n.ui(t.label))||t.label);
+    if(t.food) c.classList.add('chip-pass');
     c.onclick=()=>{
+      if(t.food && !selectedThemes.has(t.id) && !isPremium()){ requirePass('Thème Gastronomie', ()=>{ selectedThemes.add(t.id); [...chipsEl.children].forEach(x=>x.classList.toggle('on', selectedThemes.has(x.dataset.id))); }); return; }
+      if(t.legend && !selectedThemes.has(t.id) && !isPremium()){ requirePass('Mythes & Légendes', ()=>{ selectedThemes.add(t.id); [...chipsEl.children].forEach(x=>x.classList.toggle('on', selectedThemes.has(x.dataset.id))); }); return; }
       if(t.id==='cinema' && !selectedThemes.has(t.id) && !isPremium()){ requirePass('Décors de cinéma', ()=>{ selectedThemes.add(t.id); [...chipsEl.children].forEach(x=>x.classList.toggle('on', selectedThemes.has(x.dataset.id))); }); return; }
       if(selectedThemes.has(t.id)) selectedThemes.delete(t.id); else selectedThemes.add(t.id);
       [...chipsEl.children].forEach(x=>x.classList.toggle('on', selectedThemes.has(x.dataset.id))); };
@@ -913,8 +920,8 @@
     const dur=DUREE[dureeKey], per=PERIM[perimKey];
     const ids=Array.isArray(themeIds)?themeIds:(themeIds?[themeIds]:[]);   // accepte 1 id ou une liste
     const themes=ids.map(id=>THEMES.find(t=>t.id===id)).filter(Boolean);
-    const foodOn=false;                                   // gastronomie retirée (15/08)
-    const filterT=themes;
+    const foodOn=themes.some(t=>t.food);                  // gastronomie = couche, ne filtre pas
+    const filterT=themes.filter(t=>!t.food);
     const useTheme = filterT.length>0 && genreFilter!=='nature';
     let cand=SITES.slice();
     if(genreFilter!=='all') cand=cand.filter(s=>s.genre===genreFilter);
@@ -1196,6 +1203,10 @@
     else { try{ localStorage.setItem('the_premium','1'); }catch(e){} }            // secours si module absent
     closePass(); applyPremiumUI(); const f=_passOk; _passOk=null; if(f) f();
   }
+  document.getElementById('passWeek').onclick=()=>buyPass('semaine');
+  document.getElementById('passMonth').onclick=()=>buyPass('mois');
+  // masque la mention « démo » dès qu'un vrai lien de paiement est configuré
+  if(window.THEPass && (THEPass.checkoutURL('semaine')||THEPass.checkoutURL('mois'))){ var _dn=document.getElementById('passDemoNote'); if(_dn) _dn.style.display='none'; }
   applyPremiumUI();
 
   document.getElementById('sharebtn').onclick=()=>requirePass('Lien partageable', shareTrip);

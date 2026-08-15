@@ -14,6 +14,16 @@ set -u
 COUNTRY_TERMS="Tunisie|Tunisia|Tunis|Carthage|Kairouan|TUNISIA HERITAGE"   # Tunisie
 ISO="tn"
 CHECKOUT_HINT="lemonsqueezy|checkout\.|buy\.stripe|gumroad"  # indices de mur payant
+# Pages HORS application, exemptées du contrôle « identité pays » — avec leur raison.
+# apps.html = catalogue de la COLLECTION (QR codes distribués) : il nomme
+#   volontairement les 4 éditions. Il n'est lié depuis aucune page de l'app.
+EXEMPT_PAYS="apps.html"
+# Pages de RÉCIT éditorial : leur texte PARLE du pays, c'est leur raison d'être.
+#   Le nom du pays y est du CONTENU, pas une valeur de configuration. Ces pages
+#   sont signalées en AVERTISSEMENT (à relire au clonage), jamais en bloquant.
+#   DETTE CONNUE : au clonage, ce récit doit être réécrit — ce n'est pas
+#   « un fichier, un pays » pour ces pages-là. Migration vers i18n non faite.
+RECIT_PAYS="decouvrir.html"
 # ===== /CONFIG-PAYS =========================================================
 
 # ===== CANONIQUE — géré par ./propager-regles.sh (NE PAS éditer à la main) ===
@@ -34,12 +44,22 @@ wn(){ printf '  ⚠️  %s\n' "$1"; warn=$((warn+1)); }
 
 # fichiers de CODE (hors config unique et hors données .json)
 CODE=$(ls ./*.html ./*.js 2>/dev/null | grep -v '/heritage.config.js$')
+# retire les pages hors-app exemptées (voir EXEMPT_PAYS dans CONFIG-PAYS)
+if [ -n "${EXEMPT_PAYS:-}" ]; then
+  for _x in $EXEMPT_PAYS; do CODE=$(printf '%s\n' "$CODE" | grep -v "/$_x$"); done
+fi
 [ -z "$CODE" ] && { echo "Aucun .html/.js ici — es-tu dans le dossier de l'app ?"; exit 2; }
 
 title "1) Identité pays en dur dans le CODE (hors clés i18n)"
 # On exclut les valeurs data-i18n (ce sont des CLÉS de traduction, pas du texte en dur).
-hits=$(grep -rniE "$COUNTRY_TERMS" $CODE 2>/dev/null | grep -viE 'data-i18n')
-if [ -n "$hits" ]; then ko "fuite pays dans le code :"; echo "$hits" | sed 's/^/       /'; else ok "aucune identité pays en dur"; fi
+_recit_re=$(printf '%s' "${RECIT_PAYS:-}" | tr ' ' '|')
+allhits=$(grep -rniE "$COUNTRY_TERMS" $CODE 2>/dev/null | grep -viE 'data-i18n')
+if [ -n "${_recit_re}" ]; then
+  hits=$(printf '%s\n' "$allhits" | grep -vE "^\./(${_recit_re}):" | grep -vE '^$')
+  soft=$(printf '%s\n' "$allhits" | grep -E  "^\./(${_recit_re}):" | grep -vE '^$')
+else hits="$allhits"; soft=""; fi
+if [ -n "$hits" ]; then ko "fuite pays dans le code :"; echo "$hits" | sed 's/^/       /'; else ok "aucune identité pays en dur (hors pages de récit)"; fi
+if [ -n "$soft" ]; then wn "pays nommé dans une page de RÉCIT ($(printf '%s\n' "$soft" | wc -l | tr -d ' ') ligne(s)) — contenu éditorial, à réécrire au clonage"; fi
 
 title "2) Repli qui NOMME un pays ( || 'X Heritage' )"
 hits=$(grep -rniE "\|\|[[:space:]]*'[^']*($COUNTRY_TERMS)[^']*'" $CODE 2>/dev/null)

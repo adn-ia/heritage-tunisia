@@ -319,19 +319,25 @@
     })();
     const routeLayer=L.layerGroup().addTo(map);
 
-    const PERIODES = [
-      ['prehistorique|capsien','Préhistoire / Capsien'],
-      ['phenicien|punique','Phénicien / Punique'],
-      ['numide','Numide'],
-      ['romain','Romain'],
-      ['byzantin|paleochret','Byzantin / paléochrétien'],
-      ['islamique|aghlabide|fatimide|ziride|hafside|mouradite|morisque|medieval','Islamique (médiéval)'],
-      ['ottoman|husseinite','Ottoman'],
-      ['berbere','Berbère'],
-      ['contemporain|colonial|moderne|guerre|cinema','Moderne / Contemporain']
-    ];
+    /* Périodes : le DÉCOUPAGE ne change pas — il est repris tel quel, c'est le bon.
+       Seuls les libellés cessent d'être écrits en dur : ils viennent de HConf.themes,
+       donc de l'i18n. Avant, un lecteur anglais, allemand, italien ou arabe voyait
+       « Préhistoire / Capsien » en français. Les mots-clés sont dans HConf.themes.kw. */
     function strip(s){ return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase(); }
-    function matchPer(f,key){ if(key==='all') return true; return new RegExp(key).test(strip(f.properties.epoque)); }
+    /* Thèmes de voyage : même source et mêmes valeurs que la liste et l'itinéraire —
+       le champ `themes` des données, avec repli sur les mots-clés d'époque, et
+       « Autres lieux » pour que rien ne reste invisible (idée Helmy, 15/08). */
+    function themesOf(p){
+      if(p && Array.isArray(p.themes) && p.themes.length) return p.themes;
+      const ep=strip(p&&p.epoque||'');
+      const r=((window.HConf&&HConf.themes)||[])
+        .filter(t=>t.kw && t.kw.length && t.kw.some(k=>ep.includes(strip(k)))).map(t=>t.id);
+      return r.length?r:['autres'];
+    }
+    const PERIODES = ((window.HConf && HConf.themes) || [])
+      .map(t => [t.id, uiT(t.label)])
+      .concat([['autres', uiT('theme.autres')]]);
+    function matchPer(f,key){ if(key==='all') return true; return themesOf(f.properties).indexOf(key)>=0; }
 
     function passes(o){
       if(routeFilter) return routeFilter.has(strip(o.f.properties.nom));  // mode itinéraire : uniquement ses lieux
@@ -451,7 +457,7 @@
         govs.forEach(g=>{ const n=countWhere(p=>p.gouvernorat===g);
           opt('<span class="ic">📍</span><span class="tx">'+g+'</span><span class="cnt">'+n+'</span>', ()=>applyChoice('gov',g)); });
       } else if(chLevel==='per'){
-        PERIODES.forEach(([k,lab])=>{ const n=countWhere(p=>p.categorie!=='nature'&&new RegExp(k).test(strip(p.epoque)));
+        PERIODES.forEach(([k,lab])=>{ const n=countWhere(p=>p.categorie!=='nature'&&themesOf(p).indexOf(k)>=0);
           if(n) opt('<span class="ic">🕰️</span><span class="tx">'+lab+'</span><span class="cnt">'+n+'</span>', ()=>applyChoice('per',k)); });
       } else if(chLevel==='theme'){
         // transversaux (aligné socle) : chacun apparaît seulement s'il a des données

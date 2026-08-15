@@ -19,7 +19,7 @@
      aux autres briques ni à l'hôte.
 
    Point de contact hôte = UNIQUEMENT l'ancrage :
-     <div data-brique="legende" data-site="Carthage"></div>
+     <div data-brique="legende" data-site="NOM_DU_SITE"></div>
    ============================================================ */
 (function () {
   "use strict";
