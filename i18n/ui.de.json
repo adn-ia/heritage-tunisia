@@ -2272,5 +2272,10 @@
   "itin.quatre.facons": "Vier Möglichkeiten, loszulegen – wählen Sie Ihre aus.",
   "m_pr_t": "Rundreisen",
   "m_pr_s": "Vorgefertigte Routen",
-  "itin.cinq.facons": "Fünf Möglichkeiten, loszufahren – wählen Sie Ihre aus."
+  "itin.cinq.facons": "Fünf Möglichkeiten, loszufahren – wählen Sie Ihre aus.",
+  "autour.titre": "In meiner Umgebung",
+  "autour.bouton": "Was gibt es in meiner Umgebung?",
+  "autour.ma.position": "Mein Standort",
+  "autour.rien": "Es wurden keine Orte gefunden.",
+  "autour.rien.rayon": "In diesem Bereich wurden keine Ergebnisse gefunden – versuchen Sie es mit einer breiteren Suche."
 }

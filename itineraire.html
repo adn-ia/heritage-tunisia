@@ -708,7 +708,7 @@
      l'itinéraire. Rien n'est perdu : à la lecture, si la nouvelle clé est vide, on
      retombe sur l'ancienne — les carnets déjà remplis restent lisibles. */
   const placeBase = s => norm(s.p.nom)+'@'+s.c[0].toFixed(4)+','+s.c[1].toFixed(4);
-  function itiId(){ try{ return (window.LASTRES && LASTRES._id) || localStorage.getItem('the_actif') || ''; }catch(e){ return ''; } }
+  function itiId(){ try{ return (typeof LASTRES!=='undefined' && LASTRES && LASTRES._id) || localStorage.getItem('the_actif') || ''; }catch(e){ return ''; } }
   const placeKey = s => { const id=itiId(); return id ? (id+'#'+placeBase(s)) : placeBase(s); };
   function capLire(cle, s){
     try{
@@ -901,7 +901,7 @@
       else if(params.get('ouvrir')){                     /* le menu liste chaque itineraire par SON nom */
           const _id=params.get('ouvrir');
           const _rec=readSaved().filter(r=>r.id===_id)[0];
-          if(_rec){ renderRecord(_rec); if(window.LASTRES) LASTRES._id=_rec.id; }
+          if(_rec){ renderRecord(_rec); if(typeof LASTRES!=='undefined' && LASTRES) LASTRES._id=_rec.id; }
         }
         else if(params.get('reprendre')){                  // « Reprendre l'itinéraire » depuis le menu
         const cur=readCurrent();
@@ -912,7 +912,7 @@
            la sortie « ‹ Les trois façons de partir » reste disponible. */
         var _a=localStorage.getItem('the_actif');
         var _r=readSaved().filter(function(x){ return x.id===_a; })[0];
-        if(_r){ renderRecord(_r); if(window.LASTRES) LASTRES._id=_r.id; }
+        if(_r){ renderRecord(_r); if(typeof LASTRES!=='undefined' && LASTRES) LASTRES._id=_r.id; }
       }
       else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
     });
@@ -2234,7 +2234,7 @@
   (function(){
     var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
     function nommer(defaut){
-      if(!window.LASTRES || !LASTRES.route || !LASTRES.route.length) return;
+      if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
       if(LASTRES._nomme) return;                       // on ne redemande pas à chaque retouche
       var n=prompt(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut);
       if(n===null) return;                              // refusé : l'itinéraire vit quand même
@@ -2255,7 +2255,7 @@
     }
     function apres(defaut){ var t=0, id=setInterval(function(){
         t++; if(t>40){ clearInterval(id); return; }
-        if(window.LASTRES && LASTRES.route && LASTRES.route.length){ clearInterval(id); nommer(defaut); }
+        if(typeof LASTRES!=='undefined' && LASTRES && LASTRES.route && LASTRES.route.length){ clearInterval(id); nommer(defaut); }
       }, 250); }
     ['generate','mSurprise'].forEach(function(bid){
       var b=document.getElementById(bid); if(!b) return;
@@ -2393,5 +2393,114 @@
   };
   </script>
   <script src="brique-modes.js" defer></script>
+
+  <div id="autourModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,15,10,.55);align-items:center;justify-content:center;padding:18px">
+    <div style="background:#fffdf8;border-radius:12px;max-width:440px;width:100%;padding:20px;position:relative;max-height:82vh;overflow:auto">
+      <button id="autourX" type="button" aria-label="Fermer" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:19px;cursor:pointer;color:#8a7c66">✕</button>
+      <div id="autourTitre" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:4px">Autour de moi</div>
+      <div id="autourDe" style="font-size:13.5px;color:#a8884f;margin-bottom:12px"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="autourRayons"></div>
+      <div id="autourListe"></div>
+    </div>
+  </div>
+
+  <script>
+  /* « QU'Y A-T-IL AUTOUR DE MOI ? » depuis une étape.
+     L'en-tête du voyage libre le PROMETTAIT — « ou découvrez ce qui est près de
+     vous » — sans qu'aucun bouton ne le fasse : la fonction n'existait qu'en page
+     séparée, avant d'avoir commencé. C'est pourtant le pont entre le voyage libre
+     et Composer : je pose ma position, je demande dans un rayon, on me propose des
+     lieux sourcés, j'en choisis un et il devient une étape. */
+  (function(){
+    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var RAYONS=[2,5,10,25,50];
+    var mod=document.getElementById('autourModal'); if(!mod) return;
+    var liste=document.getElementById('autourListe'), rayons=document.getElementById('autourRayons'),
+        deQui=document.getElementById('autourDe');
+    var centre=null, label='', rayon=10;
+
+    function fermer(){ mod.style.display='none'; }
+    document.getElementById('autourX').onclick=fermer;
+    mod.addEventListener('click', function(e){ if(e.target===mod) fermer(); });
+    document.getElementById('autourTitre').textContent=T('autour.titre','Autour de moi');
+
+    function dejaLa(nom){
+      try{ return (LASTRES.route||[]).some(function(s){ return norm(s.p.nom)===norm(nom); }); }catch(e){ return false; }
+    }
+    function remplir(){
+      liste.innerHTML='';
+      rayons.innerHTML='';
+      RAYONS.forEach(function(r){
+        var b=document.createElement('button'); b.type='button';
+        b.textContent=r+' km';
+        b.style.cssText='padding:6px 12px;border-radius:20px;border:1px solid '+(r===rayon?'#a8884f':'#e3d8c4')
+          + ';background:'+(r===rayon?'#a8884f':'none')+';color:'+(r===rayon?'#2b2318':'#6b5a39')
+          + ';font:inherit;font-size:14px;cursor:pointer';
+        b.onclick=function(){ rayon=r; remplir(); };
+        rayons.appendChild(b);
+      });
+      if(!centre || typeof SITES==='undefined' || !SITES.length){
+        liste.textContent=T('autour.rien','Aucun lieu trouvé.'); return;
+      }
+      var proches=SITES.map(function(s){ return {s:s, d:haversine(centre, s.c)}; })
+        .filter(function(x){ return x.d<=rayon && !dejaLa(x.s.p.nom); })
+        .sort(function(a,b){ return a.d-b.d; }).slice(0,25);
+      if(!proches.length){
+        var v=document.createElement('div');
+        v.style.cssText='color:#8a7c66;font-size:15px;line-height:1.6';
+        v.textContent=T('autour.rien.rayon','Rien de sourcé dans ce rayon — essayez plus large.');
+        liste.appendChild(v); return;
+      }
+      proches.forEach(function(x){
+        var b=document.createElement('button'); b.type='button';
+        b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 4px;'
+          + 'border:none;border-bottom:1px solid #efe7d8;background:none;font:inherit;cursor:pointer';
+        b.innerHTML='<span style="font-size:18px">'+(x.s.genre==='nature'?'🌿':'🏛️')+'</span>'
+          + '<span style="flex:1"><b>'+String(x.s.p.nom||'').replace(/[<>&]/g,'')+'</b>'
+          + '<br><small style="color:#8a7c66">'+x.d.toFixed(1)+' km'
+          + (x.s.p.type?' · '+String(x.s.p.type).replace(/[<>&]/g,''):'')+'</small></span>'
+          + '<span style="color:#a8884f;font-weight:700">＋</span>';
+        b.onclick=function(){
+          var stop={}; for(var k in x.s) stop[k]=x.s[k];
+          var items=LASTRES.route.concat([stop]).map(function(y){ var o={}; for(var k in y) o[k]=y[k]; return o; });
+          var nr=nearestOrder(LASTORIGIN.coord, items, null);
+          fermer();
+          var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
+          base.route=nr;
+          render(LASTORIGIN, base);
+        };
+        liste.appendChild(b);
+      });
+    }
+
+    window.THEautour=function(coord, nom){
+      centre=coord||(LASTORIGIN&&LASTORIGIN.coord); label=nom||'';
+      deQui.textContent=label ? ('📍 '+label) : '';
+      if(!centre){ return; }
+      remplir(); mod.style.display='flex';
+    };
+
+    /* Bouton d'accès : à côté de « J'ai fait une halte ici », donc visible dans
+       tous les modes une fois un itinéraire ouvert. */
+    function poser(){
+      var h=document.getElementById('haltebtn');
+      if(!h || document.getElementById('autourbtn')) return;
+      var b=document.createElement('button');
+      b.id='autourbtn'; b.type='button';
+      b.textContent='🔎 '+T('autour.bouton','Ce qui est autour de moi');
+      b.style.cssText=h.style.cssText;
+      b.onclick=function(){
+        if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
+          function(p){ THEautour([p.coords.longitude,p.coords.latitude], T('autour.ma.position','ma position')); },
+          function(){ THEautour(null, (LASTORIGIN&&LASTORIGIN.label)||''); },
+          {enableHighAccuracy:true, timeout:8000, maximumAge:120000});
+        else THEautour(null, (LASTORIGIN&&LASTORIGIN.label)||'');
+      };
+      h.parentNode.insertBefore(b, h.nextSibling);
+    }
+    var t=setInterval(function(){ poser(); }, 700);
+    setTimeout(function(){ clearInterval(t); }, 20000);
+  })();
+  </script>
 </body>
 </html>

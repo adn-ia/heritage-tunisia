@@ -343,5 +343,10 @@
   "itin.quatre.facons": "Quatre façons de partir — choisissez la vôtre.",
   "m_pr_t": "Circuits",
   "m_pr_s": "des parcours déjà tracés",
-  "itin.cinq.facons": "Cinq façons de partir — choisissez la vôtre."
+  "itin.cinq.facons": "Cinq façons de partir — choisissez la vôtre.",
+  "autour.titre": "Autour de moi",
+  "autour.bouton": "Ce qui est autour de moi",
+  "autour.ma.position": "ma position",
+  "autour.rien": "Aucun lieu trouvé.",
+  "autour.rien.rayon": "Rien de sourcé dans ce rayon — essayez plus large."
 }

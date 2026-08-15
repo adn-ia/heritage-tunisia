@@ -2272,5 +2272,10 @@
   "itin.quatre.facons": "Four ways to set off — choose the one that suits you best.",
   "m_pr_t": "Tours",
   "m_pr_s": "pre-planned routes",
-  "itin.cinq.facons": "Five ways to set off — choose the one that suits you best."
+  "itin.cinq.facons": "Five ways to set off — choose the one that suits you best.",
+  "autour.titre": "Near me",
+  "autour.bouton": "What’s around me",
+  "autour.ma.position": "My location",
+  "autour.rien": "No places found.",
+  "autour.rien.rayon": "No results found in this category — try a broader search."
 }

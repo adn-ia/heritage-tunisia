@@ -2272,5 +2272,10 @@
   "itin.quatre.facons": "Quattro modi per partire: scegli quello che preferisci.",
   "m_pr_t": "Itinerari",
   "m_pr_s": "percorsi già tracciati",
-  "itin.cinq.facons": "Cinque modi per partire: scegli quello che preferisci."
+  "itin.cinq.facons": "Cinque modi per partire: scegli quello che preferisci.",
+  "autour.titre": "Intorno a me",
+  "autour.bouton": "Cosa c'è nei miei dintorni",
+  "autour.ma.position": "la mia posizione",
+  "autour.rien": "Nessun luogo trovato.",
+  "autour.rien.rayon": "Nessun risultato in questa categoria — provate a estendere la ricerca."
 }
