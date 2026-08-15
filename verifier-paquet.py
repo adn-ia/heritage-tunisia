@@ -251,13 +251,29 @@ brouillons = [f for f in ('cgu.html','cgv.html','mentions-legales.html',
               if os.path.exists(f)]
 dire(not brouillons, '16. Aucun brouillon ni schéma interne', '', ', '.join(brouillons))
 
-# ── 17. les fichiers cachés voyagent (sans le point) ───────────────────────
-#    ← FileZilla les masque : livrés avec le point, ils ne partaient jamais
-caches = [] if GABARIT else [f for f in os.listdir('.') if f.startswith('.') and f not in ('.', '..')]
-a_plat = GABARIT or os.path.exists('well-known') or os.path.exists('htaccess')
-dire(a_plat and not caches, '17. Fichiers cachés livrables',
-     'htaccess + well-known/ sans le point',
-     ('encore cachés : ' + ', '.join(caches)) if caches else 'well-known/ ou htaccess absent')
+# ── 17. les fichiers cachés arrivent VRAIMENT sur le serveur ───────────────
+#    ← D'abord écrit pour FileZilla, qui masquait les fichiers commençant par un
+#      point : on les livrait donc SANS le point, à renommer en ligne à la main.
+#      Depuis le passage au SFTP (deployer.sh, mirror), plus personne ne renomme :
+#      ce qui est nommé « well-known » ici arrive « well-known » là-bas, et Android
+#      ne trouve plus l'assetlinks. La règle s'inverse : il faut LE POINT.
+#      Constaté le 15/08/2026 sur le Maroc, où materialiser.sh visait .well-known/
+#      et ne trouvait rien, sans rien signaler.
+attendus = {'.htaccess': 'htaccess',
+            os.path.join('.well-known', 'assetlinks.json'): os.path.join('well-known', 'assetlinks.json')}
+manquants, sans_point = [], []
+for bon, mauvais in attendus.items():
+    if os.path.exists(bon):
+        continue
+    (sans_point if os.path.exists(mauvais) else manquants).append(mauvais if os.path.exists(mauvais) else bon)
+if GABARIT:
+    dire(True, '17. Fichiers cachés livrables', 'gabarit')
+else:
+    dire(not sans_point and not manquants, '17. Fichiers cachés livrables',
+         '.htaccess + .well-known/ avec leur point',
+         (f"sans le point (n'arriveront pas au bon endroit) : {', '.join(sans_point)}" if sans_point else '')
+         + ('  ' if sans_point and manquants else '')
+         + (f"absents : {', '.join(manquants)}" if manquants else ''))
 
 # ── 18. liens Android cohérents ────────────────────────────────────────────
 #    ← assetlinks pointait sur un AUTRE paquet, avec une seule empreinte
