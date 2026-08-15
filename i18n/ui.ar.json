@@ -2195,5 +2195,16 @@
   "Toutes les images proviennent de , sous licences libres (domaine public, CC0, CC BY, CC BY-SA). Chaque photo conserve, sur sa page Commons, le nom de son auteur et sa licence.": "جميع الصور مأخوذة من ، بموجب تراخيص حرة (الملكية العامة، CC0، CC BY، CC BY-SA). تحتفظ كل صورة، على صفحتها في كومنز، باسم مؤلفها وترخيصها.",
   "de Google (AR) — Apache 2.0 ·  (tuiles claires) ·  (scan musée) · polices  — SIL Open Font License.": "من Google (AR) — Apache 2.0 ·  (بلاطات فاتحة) ·  (مسح ضوئي من المتحف) · الخطوط  — رخصة SIL Open Font.",
   "— synthèse d'après des travaux académiques et encyclopédiques. Notamment, pour l' et les  en Ifriqiya : R. W. Bulliet (chronologie des conversions, ~800-1000), Dominique Valérian (survie du christianisme maghrébin), et les notices Wikipédia": "— ملخص مستمد من أعمال أكاديمية وموسوعية. وعلى وجه الخصوص، فيما يتعلق بـ «و» و«ال» في إفريقية: ر. و. بولييت (التسلسل الزمني لعمليات التحول إلى المسيحية، ~800-1000)، ودومينيك فاليريان (استمرار المسيحية المغاربية)، والمقالات في ويكيبيديا",
-  "garde.pitch": "المواقع الأثرية والمعالم التاريخية والمناظر الطبيعية في تونس — <b style=\"color:#ece1cf\">مع شرحها وتحديد مواقعها الجغرافية ومصادر المعلومات المتعلقة بها</b>. قم بتخطيط مسار رحلتك، وسجل زياراتك بالصور والملاحظات، وقم بتصدير ذكرياتك — <b style=\"color:#ece1cf\">كل ذلك يبقى على جهازك</b>."
+  "garde.pitch": "المواقع الأثرية والمعالم التاريخية والمناظر الطبيعية في تونس — <b style=\"color:#ece1cf\">مع شرحها وتحديد مواقعها الجغرافية ومصادر المعلومات المتعلقة بها</b>. قم بتخطيط مسار رحلتك، وسجل زياراتك بالصور والملاحظات، وقم بتصدير ذكرياتك — <b style=\"color:#ece1cf\">كل ذلك يبقى على جهازك</b>.",
+  "itin.perimetre.pays": "استكشاف جميع أنحاء تونس",
+  "itin.a.travers.le.pays": "في جميع أنحاء تونس",
+  "itin.rien.trouve.conseil": "جرب نطاقًا أوسع (المنطقة / البلد بأكمله)، أو فترة زمنية أطول، أو موضوعًا آخر",
+  "itin.se.deplacer.titre": "ℹ️ التنقل في تونس",
+  "itin.mon.itineraire": "🧭 مسار رحلتي",
+  "itin.pays.nom": "__PAYS__",
+  "itin.mail.sujet": "رحلتي في تونس (Tunisia Heritage)",
+  "itin.se.deplacer.corps": "بين المدن: <b>سيارات الأجرة</b> الجماعية (تاكسيات جماعية، متكررة ورخيصة) <b>والحافلات الإقليمية</b>؛ للمسافات الطويلة: حافلات <b>SNTRI</b>. <b>القطار</b> (SNCFT) عملي ولكنه يقتصر على خطوط معينة (محور تونس–سوسة–صفاقس–قابس، ضواحي تونس). غالبًا ما تكون <b>غير مكيفة</b> — احرص على اصطحاب الماء معك. يمكن الوصول إلى معظم المدن والمواقع الكبرى بهذه الوسائل؛ بينما تتطلب بعض المواقع النائية سيارة أو سيارة أجرة.",
+  "index.periode.exemples": "قرطاج، روما، الإسلام في العصور الوسطى… في جميع أنحاء تونس",
+  "index.depart.exemples": "مثل: القيروان، دوجة، سوسة…",
+  "itin.pays.maj": "__PAYS_MAJ__"
 }

@@ -258,5 +258,17 @@
   "Toutes les images proviennent de , sous licences libres (domaine public, CC0, CC BY, CC BY-SA). Chaque photo conserve, sur sa page Commons, le nom de son auteur et sa licence.": "Toutes les images proviennent de , sous licences libres (domaine public, CC0, CC BY, CC BY-SA). Chaque photo conserve, sur sa page Commons, le nom de son auteur et sa licence.",
   "de Google (AR) — Apache 2.0 ·  (tuiles claires) ·  (scan musée) · polices  — SIL Open Font License.": "de Google (AR) — Apache 2.0 ·  (tuiles claires) ·  (scan musée) · polices  — SIL Open Font License.",
   "— synthèse d'après des travaux académiques et encyclopédiques. Notamment, pour l' et les  en Ifriqiya : R. W. Bulliet (chronologie des conversions, ~800-1000), Dominique Valérian (survie du christianisme maghrébin), et les notices Wikipédia": "— synthèse d'après des travaux académiques et encyclopédiques. Notamment, pour l' et les  en Ifriqiya : R. W. Bulliet (chronologie des conversions, ~800-1000), Dominique Valérian (survie du christianisme maghrébin), et les notices Wikipédia",
-  "garde.pitch": "Sites antiques, monuments et paysages de Tunisie — <b style=\"color:#ece1cf\">expliqués, géolocalisés et sourcés</b>. Composez votre itinéraire, gardez une trace de vos visites en photos et notes, et exportez vos souvenirs — <b style=\"color:#ece1cf\">le tout reste sur votre appareil</b>."
+  "garde.pitch": "Sites antiques, monuments et paysages de Tunisie — <b style=\"color:#ece1cf\">expliqués, géolocalisés et sourcés</b>. Composez votre itinéraire, gardez une trace de vos visites en photos et notes, et exportez vos souvenirs — <b style=\"color:#ece1cf\">le tout reste sur votre appareil</b>.",
+  "index.periode.exemples": "Carthage, Rome, Islam médiéval… sur toute la Tunisie",
+  "index.depart.exemples": "Ex. Kairouan, Dougga, Sousse…",
+  "itin.perimetre.pays": "Parcourir toute la Tunisie",
+  "itin.a.travers.le.pays": "à travers la Tunisie",
+  "itin.rien.trouve.conseil": "Essayez un périmètre plus large (la région / tout le pays), une durée plus longue, ou un autre thème",
+  "itin.se.deplacer.titre": "ℹ️ Se déplacer en Tunisie",
+  "itin.mon.itineraire": "🧭 Mon itinéraire",
+  "itin.pays.nom": "__PAYS__",
+  "itin.mail.sujet": "Mon itinéraire en Tunisie (Tunisia Heritage)",
+  "lead_h1": "Votre voyage en Tunisie",
+  "itin.se.deplacer.corps": "Entre villes : <b>louages</b> (taxis collectifs, fréquents et bon marché) et <b>bus régionaux</b> ; longues distances : autocars <b>SNTRI</b>. <b>Train</b> (SNCFT) pratique mais limité à certaines lignes (axe Tunis–Sousse–Sfax–Gabès, banlieue de Tunis). Souvent <b>non climatisé</b> — prévoyez de l'eau. La plupart des villes et grands sites sont accessibles ainsi ; quelques sites isolés demandent une voiture ou un taxi.",
+  "itin.pays.maj": "__PAYS_MAJ__"
 }

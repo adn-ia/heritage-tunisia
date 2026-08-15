@@ -2195,5 +2195,16 @@
   "Toutes les images proviennent de , sous licences libres (domaine public, CC0, CC BY, CC BY-SA). Chaque photo conserve, sur sa page Commons, le nom de son auteur et sa licence.": "Tutte le immagini provengono da , sotto licenze libere (dominio pubblico, CC0, CC BY, CC BY-SA). Ogni foto conserva, sulla propria pagina di Commons, il nome dell'autore e la licenza.",
   "de Google (AR) — Apache 2.0 ·  (tuiles claires) ·  (scan musée) · polices  — SIL Open Font License.": "da Google (AR) — Apache 2.0 ·  (piastrelle chiare) ·  (scansione dal museo) · caratteri tipografici  — SIL Open Font License.",
   "— synthèse d'après des travaux académiques et encyclopédiques. Notamment, pour l' et les  en Ifriqiya : R. W. Bulliet (chronologie des conversions, ~800-1000), Dominique Valérian (survie du christianisme maghrébin), et les notices Wikipédia": "— sintesi tratta da lavori accademici ed enciclopedici. In particolare, per l' e le  in Ifriqiya: R. W. Bulliet (cronologia delle conversioni, ~800-1000), Dominique Valérian (sopravvivenza del cristianesimo magrebino) e le voci di Wikipedia",
-  "garde.pitch": "Siti antichi, monumenti e paesaggi della Tunisia — <b style=\"color:#ece1cf\">descritti, geolocalizzati e con indicazione delle fonti</b>. Crea il tuo itinerario, conserva una traccia delle tue visite con foto e appunti ed esporta i tuoi ricordi — <b style=\"color:#ece1cf\">il tutto rimane sul tuo dispositivo</b>."
+  "garde.pitch": "Siti antichi, monumenti e paesaggi della Tunisia — <b style=\"color:#ece1cf\">descritti, geolocalizzati e con indicazione delle fonti</b>. Crea il tuo itinerario, conserva una traccia delle tue visite con foto e appunti ed esporta i tuoi ricordi — <b style=\"color:#ece1cf\">il tutto rimane sul tuo dispositivo</b>.",
+  "itin.perimetre.pays": "Esplora tutta la Tunisia",
+  "itin.a.travers.le.pays": "in tutta la Tunisia",
+  "itin.rien.trouve.conseil": "Prova un ambito più ampio (la regione / l'intero Paese), un periodo più lungo o un altro tema",
+  "itin.se.deplacer.titre": "ℹ️ Spostarsi in Tunisia",
+  "itin.mon.itineraire": "🧭 Il mio itinerario",
+  "itin.pays.nom": "__PAYS__",
+  "itin.mail.sujet": "Il mio itinerario in Tunisia (Tunisia Heritage)",
+  "itin.se.deplacer.corps": "Tra una città e l’altra: <b>louages</b> (taxi collettivi, frequenti ed economici) e <b>autobus regionali</b>; lunghe distanze: pullman <b>SNTRI</b>. <b>Il treno</b> (SNCFT) è comodo ma limitato ad alcune linee (asse Tunisi–Sousse–Sfax–Gabès, periferia di Tunisi). Spesso <b>senza aria condizionata</b> — portatevi dell’acqua. La maggior parte delle città e dei principali siti turistici è raggiungibile con questi mezzi; alcuni siti isolati richiedono l’uso di un’auto o di un taxi.",
+  "index.periode.exemples": "Cartagine, Roma, Islam medievale… in tutta la Tunisia",
+  "index.depart.exemples": "Es. Kairouan, Dougga, Sousse…",
+  "itin.pays.maj": "__PAYS_MAJ__"
 }

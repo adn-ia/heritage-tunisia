@@ -375,7 +375,7 @@
       <a href="index.html">Carte ›</a>
     </div>
     <div class="lead">
-      <h1 data-i18n="lead_h1">Votre voyage en Tunisie</h1>
+      <h1 data-i18n="lead_h1">Votre voyage</h1>
       <p data-i18n="lead_p">Trois façons de partir — choisissez la vôtre.</p>
     </div>
 
@@ -420,7 +420,7 @@
         <select id="perimetre">
           <option value="ville">Rester sur place — la ville et ses abords (à pied / court trajet)</option>
           <option value="region">Explorer la région autour du départ</option>
-          <option value="tunisie">Parcourir toute la Tunisie</option>
+          <option value="pays" data-i18n="itin.perimetre.pays">Parcourir tout le pays</option>
         </select>
         <div class="hint">Les deux se combinent librement : on peut passer <i>plusieurs jours dans une même ville</i>, ou traverser le pays en une semaine.</div>
       </div>
@@ -754,8 +754,8 @@
   }
 
   // ---------- thèmes (regroupement des 161 époques) ----------
-  /* Thèmes de voyage — DÉCOUPAGE INCHANGÉ, repris tel quel : Carthage & Puniques,
-     royaumes numides, Tunisie romaine, Byzance, islam médiéval, ottoman & beylical,
+  /* Thèmes de voyage — DÉCOUPAGE INCHANGÉ de l'édition, repris tel quel de la
+     périodisation officielle du pays (voir HConf.themes),
      andalou & morisque, berbère & ksour, colonial & XXe, Seconde Guerre mondiale,
      oasis & Sahara, décors de cinéma. Deux changements seulement :
        • les libellés ne sont plus écrits en dur — ils viennent de HConf.themes,
@@ -789,14 +789,12 @@
   const PERIM = {
     ville:   {radius:9,     lib:'sur place, autour du départ'},
     region:  {radius:120,   lib:'dans la région'},
-    tunisie: {radius:99999, lib:'à travers la Tunisie'},
+    pays:    {radius:99999, lib:uiT('itin.a.travers.le.pays')},   // clé NEUTRE : jamais un nom de pays
   };
   const CPKEY = Object.keys(PERIM).find(k=>k!=='ville'&&k!=='region')||'region';   // clé périmètre « pays » (dynamique par édition)
 
   let SITES=[];            // [{p, c:[lon,lat], layer, genre}]
   let GOUV={};             // gouvernorat -> centroïde [lon,lat]
-  let GASTRO=null;         // spécialités culinaires par gouvernorat (gastronomie.json)
-  fetch('gastronomie.json').then(r=>r.json()).then(d=>{ GASTRO=d; }).catch(()=>{});
   let selectedThemes=new Set();   // plusieurs thèmes cumulables (mix)
   let mapObj=null;
   let LASTORIGIN=null, LASTRES=null;   // dernier itinéraire (pour ajout de lieu)
@@ -913,7 +911,6 @@
     const dur=DUREE[dureeKey], per=PERIM[perimKey];
     const ids=Array.isArray(themeIds)?themeIds:(themeIds?[themeIds]:[]);   // accepte 1 id ou une liste
     const themes=ids.map(id=>THEMES.find(t=>t.id===id)).filter(Boolean);
-    const foodOn=false;                                   // gastronomie retirée (15/08)
     const filterT=themes;
     const useTheme = filterT.length>0 && genreFilter!=='nature';
     let cand=SITES.slice();
@@ -924,7 +921,7 @@
     if(_oLand!=null) cand=cand.filter(s=>s._land===_oLand);
     const themeLbl = themes.length===0?null : (themes.length===1?themes[0]:{ic:'🎯',label:themes.map(t=>t.label).join(' + ')});
     const _island=(_oLand!=null && _oLand!==MAINLAND)?(LAND_NAME[_oLand]||null):null;
-    return {route:nearestOrder(origin.coord, cand, dur.max), theme:themeLbl, food:foodOn, dur, per, forme:forme||'oneway', island:_island};
+    return {route:nearestOrder(origin.coord, cand, dur.max), theme:themeLbl, dur, per, forme:forme||'oneway', island:_island};
   }
 
   // ---------- « À voir en chemin » : pépites sourcées près d'un tronçon A→B ----------
@@ -1248,23 +1245,6 @@
     return '<div class="src">Source : '+(isUrl?'<a href="'+src+'" target="_blank" rel="noopener">'+src.replace(/^https?:\/\/(www\.)?/,'').slice(0,48)+'…</a>':src)+'</div>';
   }
 
-  // bloc « À déguster ici » selon le gouvernorat (thème Gastronomie)
-  function gastroBlock(gov){
-    if(!GASTRO) return '';
-    const r=(GASTRO.regions||{})[gov]||null, nat=GASTRO._national, juive=GASTRO._juive;
-    const isJ = gov==='Médenine' || gov==='Tunis';
-    let lines=[];
-    if(r){
-      const it=[].concat(r.plats||[], (r.fruits||[]).map(f=>'🍊 '+f));
-      if(it.length) lines.push(it.slice(0,4).join(' · '));
-      if(r.festivals&&r.festivals.length) lines.push('🎉 '+r.festivals.map(f=>f.nom+' — '+f.periode).join(' · '));
-    }
-    if(isJ&&juive) lines.push('✡️ <b>'+juive.titre+'</b> : '+juive.plats.slice(0,2).join(' · '));
-    if(!lines.length && nat) lines.push((nat.plats||[]).slice(0,3).join(' · ')+' <span class="tag-ind">national</span>');
-    const src=(r&&r.source)||(nat&&nat.source)||'';
-    return '<div class="kv food"><b>🍽️ '+uiT('À déguster')+(gov?' ('+gov+')':'')+' :</b> '+lines.join('<br>')+
-      '<div style="font-size:11px;color:var(--stone);font-style:italic;margin-top:3px">'+src+' <span class="tag-ind">à vérifier sur place</span></div></div>';
-  }
   // libellés de champs traduits (interface)
   function LBL(key){
     const FR={avoir:'À voir :',conseil:'Conseil :',horaires:'Horaires :'};
@@ -1291,7 +1271,7 @@
     if(!route.length){
       rsum.innerHTML = res.mode==='libre'
         ? '<h2>🆓 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
-        : '<h2>Rien trouvé pour ces critères</h2><div class="meta">Essayez un périmètre plus large (la région / toute la Tunisie), une durée plus longue, ou un autre thème.</div>';
+        : '<h2>Rien trouvé pour ces critères</h2><div class="meta">'+uiT('itin.rien.trouve.conseil')+'.</div>';
       document.getElementById('map').style.display='none';
       document.getElementById('stops').innerHTML='';
       window.scrollTo({top:0,behavior:'smooth'}); return;
@@ -1320,7 +1300,7 @@
       (res.island?'<div class="advis">🏝️ <b>'+uiT('Exploration limitée à')+' '+res.island+'</b> — '+uiT('île : pas de route vers le continent. Ajoutez une étape à la main pour un trajet en ferry ou en avion.')+'</div>':'')+
       (tour&&tour.note?'<div class="advis">🗓️ <b>Rythme conseillé :</b> '+tour.note+'</div>':'')+
       (hasNature?'<div class="advis">⚠️ <b>Balades nature :</b> renseignez-vous (météo, état du terrain, balisage) et partez de préférence avec un <b>groupe ou un guide local</b> plutôt que seul à l\'aventure. Selon les sites (parcs, réserves, zones du Sud), l\'accès peut exiger une <b>autorisation</b> (Eaux &amp; Forêts, patrimoine, parfois l\'armée).</div>':'')+
-      '<details class="tnote"><summary>ℹ️ Se déplacer en Tunisie</summary><div>Entre villes : <b>louages</b> (taxis collectifs, fréquents et bon marché) et <b>bus régionaux</b> ; longues distances : autocars <b>SNTRI</b>. <b>Train</b> (SNCFT) pratique mais limité à certaines lignes (axe Tunis–Sousse–Sfax–Gabès, banlieue de Tunis). Souvent <b>non climatisé</b> — prévoyez de l\'eau. La plupart des villes et grands sites sont accessibles ainsi ; quelques sites isolés demandent une voiture ou un taxi.</div></details>';
+      '<details class="tnote"><summary>'+uiT('itin.se.deplacer.titre')+'</summary><div>'+uiT('itin.se.deplacer.corps')+'</div></details>';
 
     // carte
     if(mapObj){ mapObj.remove(); mapObj=null; }
@@ -1393,7 +1373,6 @@
         stops.appendChild(ec);
       }
       const p=s.p, svc=servicesNote(s), nat=s.genre==='nature', acc=accesNote(s);
-      const foodHtml = (res && res.food && !s.halte) ? gastroBlock(p.gouvernorat) : '';
       const tr = (window.THEi18n && !THEi18n.isFr() && !s.halte && s.genre!=='perso') ? THEi18n.site(p.nom) : null;
       
       const desc=((tr&&tr.d) || p.description || '').trim();
@@ -1422,7 +1401,6 @@
         (p.acces_note?'<div class="kv acc"><b>🅿️ Accès / GPS :</b> '+p.acces_note+'</div>':'')+
         '<div class="svc'+(svc.iso?' iso':'')+'">'+(nat?'🥾 ':(svc.iso?'⚑ ':'🛏️ '))+svc.txt+' <span class="tag-ind">indicatif</span></div>'+
         (acc?'<div class="svc iso">⚖️ <b>Accès réglementé —</b> '+acc+' <span class="tag-ind">indicatif</span></div>':'')+
-        foodHtml+
         srcHtml(p.source)+
         '<div class="the-carnet" data-place="'+placeKey(s)+'" data-nom="'+String(p.nom||'').replace(/"/g,'&quot;')+'" data-ville="'+String(p.gouvernorat||'').replace(/"/g,'&quot;')+'" data-lat="'+s.c[1]+'" data-lng="'+s.c[0]+'"></div>';
       stops.appendChild(el);
@@ -1477,7 +1455,7 @@
       }
       if(_notice) res.notice='<div style="background:#fff8e6;border:1px solid #e5c869;border-radius:6px;padding:9px 12px;margin-bottom:12px;font-size:14px;color:#7a5c00;line-height:1.4">🛈 '+_notice+'</div>';
       if(randomize && (!res.route || !res.route.length)){
-        // garantir un résultat : on élargit (toute la Tunisie, tout genre, autre thème) jusqu'à trouver
+        // garantir un résultat : on élargit (tout le pays, tout genre, autre thème) jusqu'à trouver
         const viable=THEMES.filter(themeViable);
         for(let tries=0; tries<8 && (!res.route || !res.route.length); tries++){
           const th=viable[Math.floor(Math.random()*viable.length)].id;
@@ -1506,7 +1484,7 @@
       found.sort((a,b)=>haversine(LASTORIGIN.coord,a.c)-haversine(LASTORIGIN.coord,b.c));
       stop={...found[0]};
     } else {
-      // 2) sinon géocodage par le nom (OpenStreetMap, Tunisie) — d'où l'orthographe à respecter
+      // 2) sinon géocodage par le nom (OpenStreetMap, limité au pays) — d'où l'orthographe à respecter
       try{
         const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=fr&countrycodes='+((window.HConf&&HConf.iso)||'')+'&q='+encodeURIComponent(q));
         const j=await r.json();
@@ -1554,7 +1532,7 @@
   function shareText(){
     if(!LASTRES) return '';
     const {route,theme}=LASTRES;
-    const head=(theme?theme.ic+' '+theme.label:'🧭 Mon itinéraire')+' — Tunisie';
+    const head=(theme?theme.ic+' '+theme.label:uiT('itin.mon.itineraire'))+' — '+uiT('itin.pays.nom');
     const lines=route.map((s,i)=>(i+1)+'. '+s.p.nom+(s.p.gouvernorat?' ('+s.p.gouvernorat+')':''));
     return head+'\n'+lines.join('\n')+'\n\nComposé avec THE · '+((window.HConf&&HConf.marqueCourte)||'Heritage');
   }
@@ -1632,7 +1610,7 @@
           (extraTags?'<div class="pp-media">'+extraTags+'</div>':'')+
           (audioTags?'<div class="pp-media">'+audioTags+'</div>':'')+
           '<textarea class="pp-note album-cap" placeholder="Un mot, un souvenir…">'+cap+'</textarea>'+
-          '<div class="pp-no">TUNISIE · '+String(i+1).padStart(2,'0')+'</div>';
+          '<div class="pp-no">'+uiT('itin.pays.maj')+' · '+String(i+1).padStart(2,'0')+'</div>';
       } else {
         let pics='';
         photos.forEach(ph=>{ const url=URL.createObjectURL(ph.blob); ALBUM_URLS.push(url);
@@ -1670,7 +1648,7 @@
 
   // ---------- partage (au choix de l'utilisateur, local-first) ----------
   function shareWhatsApp(){ window.open('https://wa.me/?text='+encodeURIComponent(shareText()),'_blank'); }
-  function shareEmail(){ location.href='mailto:?subject='+encodeURIComponent('Mon itinéraire en Tunisie (THE)')+'&body='+encodeURIComponent(shareText()); }
+  function shareEmail(){ location.href='mailto:?subject='+encodeURIComponent(uiT('itin.mail.sujet'))+'&body='+encodeURIComponent(shareText()); }
   let SHARE_FILES=[];
   function buildShareFiles(){            // pré-charge les photos AVANT le clic (le geste iOS doit rester intact au moment du partage)
     SHARE_FILES=[];

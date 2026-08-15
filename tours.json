@@ -4,7 +4,7 @@
   "titre": "Sur les pas de Rome en Afrique",
   "soustitre": "Les grandes cités romaines, par Le Kef",
   "duree": "4 jours / 3 nuits",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Tunis",
    "coord": [
@@ -131,7 +131,7 @@
   "titre": "Tatooine : la Tunisie de Star Wars",
   "soustitre": "Décors de cinéma du Sud, du Chott aux ksour",
   "duree": "2 à 3 jours",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Tozeur",
    "coord": [
@@ -168,7 +168,7 @@
   "titre": "Tozeur et le Djérid",
   "soustitre": "Médina de brique, oasis et mer de sel, au départ de Tozeur",
   "duree": "2 jours / 1 nuit",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Tozeur",
    "coord": [
@@ -212,7 +212,7 @@
   "titre": "Douz, porte du Sahara",
   "soustitre": "Oasis sahariennes et grand erg, au départ de Douz",
   "duree": "2 jours / 1 nuit",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Douz",
    "coord": [
@@ -264,7 +264,7 @@
   "titre": "Gafsa, du Capsien au bassin minier",
   "soustitre": "Oasis antique, préhistoire et épopée minière",
   "duree": "2 jours / 1 nuit",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Gafsa",
    "coord": [
@@ -435,7 +435,7 @@
   "titre": "Zarzis, Gightis et les ksour de Médenine",
   "soustitre": "Du golfe de Bou Ghrara aux greniers fortifiés",
   "duree": "2 jours / 1 nuit",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Zarzis",
    "coord": [
@@ -537,7 +537,7 @@
   "titre": "Hammamet et le Cap Bon",
   "soustitre": "Kasbah, sites romains et Kerkouane la punique",
   "duree": "2 jours / 1 nuit",
-  "echelle": "tunisie",
+  "echelle": "pays",
   "depart": {
    "label": "Hammamet",
    "coord": [

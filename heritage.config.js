@@ -37,8 +37,31 @@
     appStoreId:   "6785249427",   // id App Store (deep-link go.html / apps.html) — propre à l'édition
     support:      "support@threshold-analytics.com",   // e-mail contact/signalement (briques)
     iapPrefix:    "the",   // préfixe produit App Store (the_sub_annual) — propre à l'édition
+    // Android — repris de l'assetlinks EN LIGNE (2 empreintes : upload + signature Play).
+    androidPackage: "com.thresholdanalytics.heritage.tunisia",
+    androidFingerprints: [
+      "DA:9D:8A:4B:8E:0F:9F:FA:5F:B3:8E:3C:0D:76:EE:74:0F:AB:F7:37:20:56:6D:89:C5:3F:18:81:7C:04:3C:96",
+      "BA:00:02:0A:02:A2:BD:4D:08:11:BE:04:DD:02:2A:BD:31:9E:28:00:F9:70:0F:B3:38:62:5B:64:DF:92:B1:54"
+    ],
     checkout:     "https://boutique.threshold-analytics.com/checkout/buy/be44afe6-f994-4429-b1fc-fc0cd377b0ed",  // Lemon Squeezy (web) ; vide = pas de vente web
     tip:          "https://boutique.threshold-analytics.com/checkout/buy/3987d8ab-b0cb-4833-b110-a4d6893dd264",  // pourboire/soutien (web) ; vide = pas de bouton
+    // Champ du géojson qui porte le découpage administratif de l'édition
+    // (region ailleurs, gouvernorat ici). Sert à DÉRIVER les points de départ
+    // de l'assistant d'itinéraire — aucune ville n'est écrite dans le code.
+    // Nom du pays PAR LANGUE — alimente les tokens __PAYS__, __PAYS_MAJ__,
+    // __LE_PAYS__ et __PAYS_DE__ des libellés i18n. Le code ne le nomme jamais.
+    pays:   { fr:"Tunisie", en:"Tunisia", ar:"تونس", de:"Tunesien", it:"Tunisia" },
+    paysLe: { fr:"la Tunisie", en:"Tunisia", ar:"تونس", de:"Tunesien", it:"la Tunisia" },
+    paysDe: { fr:"de Tunisie", en:"of Tunisia", ar:"من تونس", de:"von Tunesien", it:"della Tunisia" },
+    champRegion: "gouvernorat",
+    // Points de départ SUPPLÉMENTAIRES propres à l'édition : villes très
+    // demandées qui ne sont pas des chefs-lieux. [nom, latitude, longitude].
+    departs: [
+      ["Hammamet", 36.400, 10.612],
+      ["Djerba (Houmt Souk)", 33.875, 10.857],
+      ["Tabarka", 36.954, 8.758],
+      ["La Marsa", 36.878, 10.324]
+    ],
     patrimoineEmail: "patrimoine_tunisie@threshold-analytics.com",  // veille citoyenne (contribuer.html) ; vide = formulaire inactif
     invites:      [   // codes offerts (SHA-256), propres à l'édition
       "05784113a6edb6b845007d07f3f3b5547ee521bdb69d3910957a9686ec210801",

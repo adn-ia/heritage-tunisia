@@ -9,6 +9,24 @@
   var lang; try{ lang=localStorage.getItem('the_lang')||'fr'; }catch(e){ lang='fr'; }
   if(!LANGS[lang]) lang='fr';
   var DATA=null, UI=null;
+  // « UN FICHIER, UN PAYS » — interpolation à l'exécution : les libellés ui.*.json peuvent
+  // contenir des tokens (__MARQUE__, __MARQUE_COURTE__, __PAYS__, __PAYS_MAJ__, __LE_PAYS__,
+  // __PAYS_DE__) remplis depuis HConf → le CODE reste générique, seul heritage.config.js change.
+  // Porté du socle (HERITAGE-SOCLE/the-i18n.js) — même comportement, mêmes noms de tokens.
+  function _pick(v){ if(v && typeof v==='object') return v[lang]||v.fr||v.en||''; return v||''; }
+  function fillStr(s){
+    if(typeof s!=='string' || s.indexOf('__')<0) return s;
+    var H=window.HConf||{}, pays=_pick(H.pays);
+    return s.replace(/__MARQUE_MARK__/g,   H.marqueMark||H.marque||'')
+            .replace(/__MARQUE_COURTE__/g, H.marqueCourte||'')
+            .replace(/__MARQUE__/g,        H.marque||'')
+            .replace(/__PAYS_DE__/g,       (_pick(H.paysDe)|| ('de '+pays)))
+            .replace(/__LE_PAYS__/g,       (_pick(H.paysLe)|| pays))
+            .replace(/__PAYS_MAJ__/g,      (pays||'').toLocaleUpperCase())
+            .replace(/__PAYS__/g,          pays);
+  }
+  function fillAll(o){ if(o) for(var k in o){ if(typeof o[k]==='string') o[k]=fillStr(o[k]); } return o; }
+
   function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim(); }
 
   if(lang==='ar') document.documentElement.setAttribute('dir','rtl');
@@ -69,7 +87,7 @@
   // Le contenu des fiches (i18n/<lang>.json) reste FR-source (pas de fr.json).
   var ready = Promise.all([
     (lang==='fr') ? Promise.resolve() : fetch('i18n/'+lang+'.json').then(function(r){return r.json();}).then(function(d){DATA=d;}).catch(function(){}),
-    fetch('i18n/ui.'+lang+'.json').then(function(r){return r.json();}).then(function(d){UI=d;}).catch(function(){})
+    fetch('i18n/ui.'+lang+'.json').then(function(r){return r.json();}).then(function(d){UI=fillAll(d);}).catch(function(){})
   ]);
   function startObserver(){
     if(!UI||!window.MutationObserver) return;

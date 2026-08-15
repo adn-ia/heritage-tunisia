@@ -439,7 +439,7 @@
       if(chLevel==='root'){
         if(picks.length) opt('<span class="ic">🧭</span><span class="tx">Mes lieux choisis<small>revoir votre sélection sur la carte</small></span><span class="cnt">'+picks.length+'</span>', ()=>showPicksOnMap(), 'all');
         opt('<span class="ic">📍</span><span class="tx">Autour de moi'+(aroundOn?' ✓':'')+'<small>ce qu\'il y a près de vous, dans un rayon au choix</small></span>', ()=> aroundOn ? applyChoice('all') : openChooser('around'), aroundOn?'all':'');
-        opt('<span class="ic">🕰️</span><span class="tx">Par thème / période<small>Carthage, Rome, Islam médiéval… sur toute la Tunisie</small></span>', ()=>openChooser('per'));
+        opt('<span class="ic">🕰️</span><span class="tx">Par thème / période<small>'+uiT('index.periode.exemples')+'</small></span>', ()=>openChooser('per'));
         opt('<span class="ic">📍</span><span class="tx">Par région<small>un gouvernorat à la fois</small></span>', ()=>openChooser('gov'));
         opt('<span class="ic">🎭</span><span class="tx">Par thème<small>musées, marchés, festivals, nature</small></span>', ()=>openChooser('theme'));
         opt('<span class="ic">🌍</span><span class="tx">Tout afficher<small>peu lisible sur petit écran</small></span>', ()=>applyChoice('all'), 'all');
@@ -677,23 +677,33 @@
     const tourBtn=document.getElementById('tourBtn');
     let tInterest='tout', tMode='pied', tLieu='', tStart=null;
 
-    // Villes/points de départ usuels (coordonnées approximatives — sert d'origine de calcul)
-    const VILLES=[
-      ['Tunis',36.806,10.181],['Sousse',35.825,10.636],['Sfax',34.740,10.760],
-      ['Kairouan',35.678,10.096],['Hammamet',36.400,10.612],['Nabeul',36.456,10.738],
-      ['Djerba (Houmt Souk)',33.875,10.857],['Tozeur',33.919,8.134],['Tabarka',36.954,8.758],
-      ['Bizerte',37.274,9.873],['Gabès',33.881,10.098],['Monastir',35.778,10.826],
-      ['Mahdia',35.504,11.062],['Le Kef',36.174,8.705],['Gafsa',34.425,8.784],
-      ['Médenine',33.354,10.505],['Tataouine',32.929,10.451],['Béja',36.725,9.187],
-      ['Jendouba',36.501,8.780],['Zaghouan',36.402,10.142],['Kasserine',35.167,8.836],
-      ['Sidi Bouzid',35.038,9.485],['Kébili',33.704,8.969],['Siliana',36.084,9.370],
-      ['Ariana',36.866,10.164],['La Marsa',36.878,10.324]
-    ];
+    // Points de départ DÉRIVÉS des données : découpage administratif réel des
+    // lieux (HConf.champRegion), centre = moyenne des sites. Aucune ville en dur.
+    // HConf.departs complète avec les villes demandées qui ne sont pas chefs-lieux.
+    let _VILLES=null;
+    function villes(){
+      if(_VILLES) return _VILLES;
+      const champ=(window.HConf&&HConf.champRegion)||'region', g={};
+      for(const o of markers){
+        const r=String((o.f.properties&&o.f.properties[champ])||'').trim(); if(!r) continue;
+        const c=o.f.geometry && o.f.geometry.coordinates; if(!c) continue;
+        (g[r]||(g[r]=[])).push([c[1],c[0]]);
+      }
+      const der=Object.keys(g).map(r=>{
+        const pts=g[r], la=pts.reduce((s,p)=>s+p[0],0)/pts.length, lo=pts.reduce((s,p)=>s+p[1],0)/pts.length;
+        return [r,la,lo,pts.length];
+      }).sort((a,b)=>b[3]-a[3]).map(([r,la,lo])=>[r,la,lo]);
+      const sup=((window.HConf&&HConf.departs)||[]).filter(d=>Array.isArray(d)&&d.length>=3);
+      const vus=new Set(der.map(v=>strip(v[0])));
+      const out=der.concat(sup.filter(d=>!vus.has(strip(d[0]))));
+      if(der.length) _VILLES=out;   // on ne fige le cache QUE si les données sont chargées
+      return out;
+    }
     // Recherche d'un point de départ par nom (villes + nos sites), orthographe supposée correcte
     function startCandidates(q){
       const s=strip(q); if(s.length<2) return [];
       const out=[];
-      VILLES.forEach(([nm,lat,lon])=>{ if(strip(nm).includes(s)) out.push({nm,lat,lon,kind:'ville'}); });
+      villes().forEach(([nm,lat,lon])=>{ if(strip(nm).includes(s)) out.push({nm,lat,lon,kind:'ville'}); });
       for(const o of markers){ const nm=o.f.properties.nom; if(nm && strip(nm).includes(s)){ const [lon,lat]=o.f.geometry.coordinates; out.push({nm,lat,lon,kind:'site'}); } }
       return out.slice(0,8);
     }
@@ -793,10 +803,10 @@
         <div class="sub">D'où partez-vous&nbsp;?</div>
         <button class="go" id="useGps">📍 Utiliser ma position actuelle</button>
         <div class="q">Ou tapez une ville, un site…</div>
-        <input id="startInput" class="tin" placeholder="Ex. Kairouan, Dougga, Sousse…" autocomplete="off">
+        <input id="startInput" class="tin" data-i18n-placeholder="index.depart.exemples" placeholder="Ville ou site…" autocomplete="off">
         <div class="opts" id="startSugg" style="margin-top:10px"></div>
         <div class="q">Départs fréquents</div>
-        <div class="opts" id="startVilles">${VILLES.slice(0,12).map(([nm,lat,lon])=>`<button class="opt" data-lat="${lat}" data-lon="${lon}" data-nm="${escapeH(nm)}">${escapeH(nm)}</button>`).join('')}</div>`;
+        <div class="opts" id="startVilles">${villes().slice(0,12).map(([nm,lat,lon])=>`<button class="opt" data-lat="${lat}" data-lon="${lon}" data-nm="${escapeH(nm)}">${escapeH(nm)}</button>`).join('')}</div>`;
       document.getElementById('useGps').onclick=pickGps;
       const inp=document.getElementById('startInput'), sugg=document.getElementById('startSugg');
       inp.oninput=()=>{

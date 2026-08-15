@@ -2195,5 +2195,16 @@
   "Toutes les images proviennent de , sous licences libres (domaine public, CC0, CC BY, CC BY-SA). Chaque photo conserve, sur sa page Commons, le nom de son auteur et sa licence.": "All images are sourced from , under free licences (public domain, CC0, CC BY, CC BY-SA). Each photo retains the name of its author and its licence on its Commons page.",
   "de Google (AR) — Apache 2.0 ·  (tuiles claires) ·  (scan musée) · polices  — SIL Open Font License.": "from Google (AR) — Apache 2.0 ·  (light-coloured tiles) ·  (museum scan) · fonts  — SIL Open Font License.",
   "— synthèse d'après des travaux académiques et encyclopédiques. Notamment, pour l' et les  en Ifriqiya : R. W. Bulliet (chronologie des conversions, ~800-1000), Dominique Valérian (survie du christianisme maghrébin), et les notices Wikipédia": "— summary based on academic and encyclopaedic works. In particular, regarding the ‘et’ and ‘les’ in Ifriqiya: R. W. Bulliet (chronology of conversions, c. 800–1000), Dominique Valérian (survival of Maghreb Christianity), and the Wikipedia entries",
-  "garde.pitch": "Ancient sites, monuments and landscapes in Tunisia — <b style=\"color:#ece1cf\">explained, geolocated and sourced</b>. Plan your itinerary, keep a record of your visits with photos and notes, and export your memories — <b style=\"color:#ece1cf\">everything stays on your device</b>."
+  "garde.pitch": "Ancient sites, monuments and landscapes in Tunisia — <b style=\"color:#ece1cf\">explained, geolocated and sourced</b>. Plan your itinerary, keep a record of your visits with photos and notes, and export your memories — <b style=\"color:#ece1cf\">everything stays on your device</b>.",
+  "itin.perimetre.pays": "Explore the whole of Tunisia",
+  "itin.a.travers.le.pays": "across Tunisia",
+  "itin.rien.trouve.conseil": "Try a wider scope (the region / the whole country), a longer time period, or a different theme",
+  "itin.se.deplacer.titre": "ℹ️ Getting around in Tunisia",
+  "itin.mon.itineraire": "🧭 My itinerary",
+  "itin.pays.nom": "__PAYS__",
+  "itin.mail.sujet": "My itinerary in Tunisia (Tunisia Heritage)",
+  "itin.se.deplacer.corps": "Between towns: <b>louages</b> (shared taxis, frequent and inexpensive) and <b>regional buses</b>; long distances: <b>SNTRI</b> coaches. <b>Trains</b> (SNCFT) are convenient but limited to certain routes (the Tunis–Sousse–Sfax–Gabès line and the Tunis suburbs). Often <b>not air-conditioned</b> — make sure you take water with you. Most towns and major attractions are accessible this way; a few remote sites require a car or a taxi.",
+  "index.periode.exemples": "Carthage, Rome, medieval Islam… across the whole of Tunisia",
+  "index.depart.exemples": "E.g. Kairouan, Dougga, Sousse…",
+  "itin.pays.maj": "__PAYS_MAJ__"
 }

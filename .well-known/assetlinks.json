@@ -1,8 +1,11 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.threshold_analytics.heritage.twa",
-        "sha256_cert_fingerprints": ["A3:F9:85:F3:BE:63:3D:9D:49:24:23:31:43:B3:A8:A0:54:E8:61:7E:66:89:04:AE:EF:8B:6C:ED:AA:5A:CE:43"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.thresholdanalytics.heritage.tunisia",
+    "sha256_cert_fingerprints": [
+      "DA:9D:8A:4B:8E:0F:9F:FA:5F:B3:8E:3C:0D:76:EE:74:0F:AB:F7:37:20:56:6D:89:C5:3F:18:81:7C:04:3C:96",
+      "BA:00:02:0A:02:A2:BD:4D:08:11:BE:04:DD:02:2A:BD:31:9E:28:00:F9:70:0F:B3:38:62:5B:64:DF:92:B1:54"
+    ]
+  }
+}]

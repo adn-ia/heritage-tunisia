@@ -2195,5 +2195,16 @@
   "Toutes les images proviennent de , sous licences libres (domaine public, CC0, CC BY, CC BY-SA). Chaque photo conserve, sur sa page Commons, le nom de son auteur et sa licence.": "Alle Bilder stammen von Commons und stehen unter freien Lizenzen (gemeinfrei, CC0, CC BY, CC BY-SA). Auf der jeweiligen Commons-Seite ist für jedes Foto der Name des Urhebers und die Lizenz angegeben.",
   "de Google (AR) — Apache 2.0 ·  (tuiles claires) ·  (scan musée) · polices  — SIL Open Font License.": "von Google (AR) — Apache 2.0 ·  (helle Kacheln) ·  (Museumsscan) · Schriftarten  — SIL Open Font License.",
   "— synthèse d'après des travaux académiques et encyclopédiques. Notamment, pour l' et les  en Ifriqiya : R. W. Bulliet (chronologie des conversions, ~800-1000), Dominique Valérian (survie du christianisme maghrébin), et les notices Wikipédia": "— Zusammenfassung auf der Grundlage wissenschaftlicher und enzyklopädischer Arbeiten. Insbesondere zu den „et“ und „les“ in Ifriqiya: R. W. Bulliet (Chronologie der Bekehrungen, ~800–1000), Dominique Valérian (Fortbestand des maghrebinischen Christentums) sowie die Wikipedia-Einträge",
-  "garde.pitch": "Antike Stätten, Denkmäler und Landschaften in Tunesien – <b style=\"color:#ece1cf\">erklärt, geolokalisiert und mit Quellenangaben versehen</b>. Stellen Sie Ihre Reiseroute zusammen, halten Sie Ihre Besuche mit Fotos und Notizen fest und exportieren Sie Ihre Erinnerungen – <b style=\"color:#ece1cf\">alles bleibt auf Ihrem Gerät gespeichert</b>."
+  "garde.pitch": "Antike Stätten, Denkmäler und Landschaften in Tunesien – <b style=\"color:#ece1cf\">erklärt, geolokalisiert und mit Quellenangaben versehen</b>. Stellen Sie Ihre Reiseroute zusammen, halten Sie Ihre Besuche mit Fotos und Notizen fest und exportieren Sie Ihre Erinnerungen – <b style=\"color:#ece1cf\">alles bleibt auf Ihrem Gerät gespeichert</b>.",
+  "itin.perimetre.pays": "Ganz Tunesien erkunden",
+  "itin.a.travers.le.pays": "in ganz Tunesien",
+  "itin.rien.trouve.conseil": "Versuchen Sie es mit einem größeren Suchbereich (Region / ganzes Land), einem längeren Zeitraum oder einem anderen Thema",
+  "itin.se.deplacer.titre": "ℹ️ Unterwegs in Tunesien",
+  "itin.mon.itineraire": "🧭 Meine Route",
+  "itin.pays.nom": "__PAYS__",
+  "itin.mail.sujet": "Meine Reiseroute in Tunesien (Tunisia Heritage)",
+  "itin.se.deplacer.corps": "Zwischen den Städten: <b>„Louages“</b> (Sammeltaxis, häufig verkehrend und günstig) und <b>Regionalbusse</b>; auf langen Strecken: <b>SNTRI-Reisebusse</b>. <b>Der Zug</b> (SNCFT) ist praktisch, aber auf bestimmte Strecken beschränkt (Achse Tunis–Sousse–Sfax–Gabès, Vororte von Tunis). Oft <b>nicht klimatisiert</b> – nehmen Sie Wasser mit. Die meisten Städte und wichtigen Sehenswürdigkeiten sind auf diese Weise erreichbar; für einige abgelegene Orte benötigen Sie ein Auto oder ein Taxi.",
+  "index.periode.exemples": "Karthago, Rom, der Islam im Mittelalter … in ganz Tunesien",
+  "index.depart.exemples": "Beispiele: Kairouan, Dougga, Sousse…",
+  "itin.pays.maj": "__PAYS_MAJ__"
 }

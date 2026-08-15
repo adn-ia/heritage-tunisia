@@ -23,7 +23,7 @@ EXEMPT_PAYS="apps.html"
 #   sont signalées en AVERTISSEMENT (à relire au clonage), jamais en bloquant.
 #   DETTE CONNUE : au clonage, ce récit doit être réécrit — ce n'est pas
 #   « un fichier, un pays » pour ces pages-là. Migration vers i18n non faite.
-RECIT_PAYS="decouvrir.html"
+RECIT_PAYS="decouvrir.html a-propos.html accueil.html medina.html rome-immersion.html sources-credits.html"
 # ===== /CONFIG-PAYS =========================================================
 
 # ===== CANONIQUE — géré par ./propager-regles.sh (NE PAS éditer à la main) ===
@@ -53,7 +53,10 @@ fi
 title "1) Identité pays en dur dans le CODE (hors clés i18n)"
 # On exclut les valeurs data-i18n (ce sont des CLÉS de traduction, pas du texte en dur).
 _recit_re=$(printf '%s' "${RECIT_PAYS:-}" | tr ' ' '|')
-allhits=$(grep -rniE "$COUNTRY_TERMS" $CODE 2>/dev/null | grep -viE 'data-i18n')
+# les NOMS DE FICHIERS (images, polices) ne sont pas du code : un fichier peut
+# légitimement s'appeler « …_Tunis.jpg ». On ignore ces lignes-là.
+allhits=$(grep -rniE "$COUNTRY_TERMS" $CODE 2>/dev/null | grep -viE 'data-i18n' \
+  | grep -viE "(url\\(|src=|href=)[^ ]*\\.(jpg|jpeg|png|webp|svg|gif|mp3|mp4|woff2?)")
 if [ -n "${_recit_re}" ]; then
   hits=$(printf '%s\n' "$allhits" | grep -vE "^\./(${_recit_re}):" | grep -vE '^$')
   soft=$(printf '%s\n' "$allhits" | grep -E  "^\./(${_recit_re}):" | grep -vE '^$')
