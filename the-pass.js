@@ -357,7 +357,15 @@
   function iapExpire(){ deactivate(); return true; }
 
   /* ─── Petits bandeaux (toasts) ───────────────────────────────────────── */
-  function uiT(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
+  function uiT(fr){ try{
+    if(!window.THEi18n || !THEi18n.ui) return fr;
+    /* une CLÉ abstraite (« prem.ask.titre ») se cherche dans TOUTES les langues,
+       français compris ; un texte français reste traité à l'ancienne. */
+    if(typeof fr==='string' && /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(fr)){
+      var v=THEi18n.ui(fr); return (v==null||v===fr) ? fr : v;
+    }
+    return (!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
+  }catch(e){ return fr; } }
   function toast(html, ms){
     var add=function(){
       var d=document.createElement('div'); d.setAttribute('role','status');

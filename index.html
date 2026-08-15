@@ -272,7 +272,15 @@
     function isRevealed(f){ if(!DISCOVERY||!userPos) return true; const [lon,lat]=f.geometry.coordinates; return distanceM(userPos,[lat,lon])<=REVEAL_DISTANCE; }
 
     function trSite(p){ return (window.THEi18n && !THEi18n.isFr()) ? THEi18n.site(p.nom) : null; }
-    function uiT(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }
+    function uiT(fr){ try{
+    if(!window.THEi18n || !THEi18n.ui) return fr;
+    /* une CLÉ abstraite (« prem.ask.titre ») se cherche dans TOUTES les langues,
+       français compris ; un texte français reste traité à l'ancienne. */
+    if(typeof fr==='string' && /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(fr)){
+      var v=THEi18n.ui(fr); return (v==null||v===fr) ? fr : v;
+    }
+    return (!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
+  }catch(e){ return fr; } }
     function trCat(v){ return (window.THEi18n && !THEi18n.isFr()) ? THEi18n.cat(v) : v; }
     function lblI(key){ var FR={avoir:'À voir',conseil:'Conseil'};
       if(!window.THEi18n || THEi18n.isFr()) return FR[key];

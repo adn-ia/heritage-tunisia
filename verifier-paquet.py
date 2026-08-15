@@ -166,7 +166,20 @@ dire(a_carte == a_liste, '10. Filtres carte ↔ liste alignés',
 #    ← 18 mots en gras restaient en français : le seuil de 2 mots les ratait
 # Exceptions déclarées par l'édition (noms propres, marque) — une par ligne,
 # avec sa justification en commentaire. Voir .audit-exceptions.txt
-EXCEPT = {l.split('#')[0].strip() for l in lire('.audit-exceptions.txt').split('\n')
+# Le fichier d'exceptions n'est PAS livré (il fait partie des fichiers de travail que
+# le contrôle 15 refuse). Or l'audit tourne justement SUR le paquet : cherché dans le
+# seul dossier courant, il disparaissait et rendait 2 faux positifs bloquants.
+# On le cherche donc aussi à côté du script, qui lui reste dans le dossier de travail.
+def _exceptions():
+    import os
+    for chemin in ('.audit-exceptions.txt',
+                   os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                '.audit-exceptions.txt')):
+        txt = lire(chemin)
+        if txt.strip():
+            return txt
+    return ''
+EXCEPT = {l.split('#')[0].strip() for l in _exceptions().split('\n')
           if l.strip() and not l.strip().startswith('#')}
 PROPRE = EXCEPT | {H.get('marque',''), H.get('marqueCourte',''), 'Heritage', 'Experience',
           'Heritage Experience', 'Heritage\u00a0Experience',

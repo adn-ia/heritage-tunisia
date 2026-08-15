@@ -121,7 +121,15 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
      Tout ce qui est construit en JS doit attendre THEi18n.ready, sinon uiT()
      retombe sur le français alors que le reste de la page est traduit. */
   function __render(){
-  function uiT(fr){ try{ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
+  function uiT(fr){ try{
+    if(!window.THEi18n || !THEi18n.ui) return fr;
+    /* une CLÉ abstraite (« prem.ask.titre ») se cherche dans TOUTES les langues,
+       français compris ; un texte français reste traité à l'ancienne. */
+    if(typeof fr==='string' && /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(fr)){
+      var v=THEi18n.ui(fr); return (v==null||v===fr) ? fr : v;
+    }
+    return (!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
+  }catch(e){ return fr; } }
 
   /* App de store (iOS OU Android) ? On masque les portes de paiement externes (LS, café, code)
      et l'achat passe par le store natif. Aligné socle : isStoreApp. */

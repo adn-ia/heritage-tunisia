@@ -349,7 +349,15 @@ body.narr-on{padding-bottom:76px;}
   function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : false; }catch(e){ return false; } }
   function mp3url(){ return 'voix/decouvrir-' + curLang() + '.mp3'; }
   // Traduction des libellés (manquait -> setUI plantait et bloquait la lecture). FR = tel quel.
-  function uiT(fr){ try{ return (window.THEi18n && THEi18n.ui && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
+  function uiT(fr){ try{
+    if(!window.THEi18n || !THEi18n.ui) return fr;
+    /* une CLÉ abstraite (« prem.ask.titre ») se cherche dans TOUTES les langues,
+       français compris ; un texte français reste traité à l'ancienne. */
+    if(typeof fr==='string' && /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(fr)){
+      var v=THEi18n.ui(fr); return (v==null||v===fr) ? fr : v;
+    }
+    return (!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
+  }catch(e){ return fr; } }
 
   function setUI(){
     var playing = mode === 'playing';

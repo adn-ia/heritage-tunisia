@@ -969,7 +969,15 @@
   }
 
   // ---------- planification réaliste en journées (vaut pour TOUT itinéraire) ----------
-  function uiT(fr){ return (window.THEi18n && !THEi18n.isFr() && THEi18n.ui(fr)) || fr; }
+  function uiT(fr){ try{
+    if(!window.THEi18n || !THEi18n.ui) return fr;
+    /* une CLÉ abstraite (« prem.ask.titre ») se cherche dans TOUTES les langues,
+       français compris ; un texte français reste traité à l'ancienne. */
+    if(typeof fr==='string' && /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(fr)){
+      var v=THEi18n.ui(fr); return (v==null||v===fr) ? fr : v;
+    }
+    return (!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
+  }catch(e){ return fr; } }
   function trCat(v){ return (window.THEi18n && !THEi18n.isFr()) ? THEi18n.cat(v) : v; }
   function fmtDur(m){ m=Math.round(m); if(m<60) return m+' min'; const h=Math.floor(m/60), r=m%60; return r? h+'h'+(r<10?'0'+r:r) : h+'h'; }
   function visitMin(s){
