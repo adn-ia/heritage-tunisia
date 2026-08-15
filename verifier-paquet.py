@@ -308,6 +308,11 @@ dire(not morts, '20. Liens internes', 'aucun mort', ', '.join(morts))
 
 # ── 21. couverture des filtres par les données ─────────────────────────────
 #    ← les filtres étaient clonés d'une autre édition : 2 à 24 % des lieux couverts
+#    ← 15/08/2026 : la condition était « part >= 40 OU repli présent ». Dès qu'un
+#      filtre « Autres lieux » existait, la couverture n'était PLUS regardée. Le
+#      Maroc est ainsi passé au vert à 43 % thématisés — plus d'un lieu sur deux
+#      invisible aux filtres — et a été livré sans que rien ne s'allume. Les deux
+#      questions sont désormais séparées : le repli ne rachète plus la couverture.
 ids = {t['id'] for t in H.get('themes', [])}
 tot = sans_theme = 0
 if ids:
@@ -317,9 +322,17 @@ if ids:
             th = ft.get('properties', {}).get('themes')
             if not (th if isinstance(th, list) else [th] if th else []): sans_theme += 1
     part = 100 * (tot - sans_theme) / tot if tot else 0
-    dire(part >= 40 or a_carte, '21. Filtres couvrant les données',
-         f'{tot} lieux · {part:.0f}% thématisés' + (' · repli « Autres lieux »' if a_carte else ''),
-         f'seulement {part:.0f}% et pas de filtre « Autres »')
+    etat = f'{tot} lieux · {part:.0f}% thématisés' + (' · repli « Autres lieux »' if a_carte else '')
+    if not a_carte and part < 70:
+        ko('21. Filtres couvrant les données', '', f'{part:.0f}% et aucun filtre « Autres »')
+    elif part < 50:
+        ko('21. Filtres couvrant les données', '',
+           f'{part:.0f}% seulement — {sans_theme} lieux sur {tot} hors de tout filtre')
+    elif part < 70:
+        wn('21. Filtres couvrant les données', '',
+           f'{part:.0f}% — {sans_theme} lieux sur {tot} ne sortent que dans « Autres »')
+    else:
+        ok('21. Filtres couvrant les données', '', etat)
 else:
     wn('21. Filtres couvrant les données', '', 'HConf.themes non déclaré')
 
@@ -336,4 +349,42 @@ print()
 if _fail:
     print(f'  {ROUGE}💥 {_fail} bloquant(s), {_warn} avertissement(s) — NE PAS LIVRER.{RAZ}\n')
     sys.exit(1)
+# ── 24. le service worker se recharge vraiment ─────────────────────────────
+#    ← sans updateViaCache:'none', le navigateur sert un sw.js mis en cache par
+#      HTTP : l'ancien fichier de langue restait servi partout SAUF en navigation
+#      privée, ce qui rendait le défaut invisible à la relecture. Constaté le
+#      15/08/2026 : le socle l'avait, la Tunisie et le Maroc l'avaient perdu.
+inscrits = [f for f in HTML if 'serviceWorker.register' in lire(f)]
+sans_opt = [f for f in inscrits if not re.search(r"serviceWorker\.register\([^)]*updateViaCache", lire(f))]
+dire(not inscrits or not sans_opt, '24. Service worker rechargé sans cache HTTP',
+     f'{len(inscrits)} page(s) avec updateViaCache', ', '.join(sans_opt[:3]))
+
+# ── 25. le manifeste PWA ne trahit pas une AUTRE édition ───────────────────
+#    ← installer le Portugal ouvrait l'Europe : le manifeste avait été cloné tel
+#      quel avec le nom d'une autre édition. Le manifest.json statique est
+#      VOLONTAIREMENT neutre (« Heritage Experience ») : le vrai manifeste est
+#      fabriqué à l'exécution depuis HConf. On ne vérifie donc pas qu'il porte le
+#      nom du pays — on vérifie qu'il ne porte pas celui d'un AUTRE.
+AUTRES = ('Tunisia', 'Tunisie', 'Maroc', 'Morocco', 'Estonia', 'Estonie', 'Portugal',
+          'Italy', 'Italie', 'Czechia', 'Tchequie', 'Croatia', 'Croatie', 'Ireland',
+          'Irlande', 'Norvege', 'Norway', 'Quebec', 'Québec')
+man = lire('manifest.json')
+mauvais = ''
+if man.strip().startswith('{'):
+    try:
+        mj = json.loads(man)
+        nom = f"{mj.get('name','')} {mj.get('short_name','')}"
+        mien = f"{H.get('marque','')} {H.get('marqueCourte','')}"
+        intrus = [a for a in AUTRES if a.lower() in nom.lower() and a.lower() not in mien.lower()]
+        if intrus:
+            mauvais = f"« {mj.get('name','')[:34]} » nomme une autre édition : {', '.join(intrus)}"
+    except Exception:
+        mauvais = 'manifest.json illisible'
+    dyn = any('manifest+json' in lire(f) or 'rel="manifest"' in lire(f) for f in JS + ['heritage.config.js'])
+    dire(not mauvais, '25. Manifeste PWA de cette édition',
+         ('généré depuis HConf' if dyn else 'statique') + (f" — « {mj.get('name','?')[:26]} »" if not mauvais else ''),
+         mauvais)
+else:
+    dire(GABARIT, '25. Manifeste PWA de cette édition', 'gabarit', 'manifest.json absent')
+
 print(f'  {VERT}✅ 23 contrôles passés ({_warn} avertissement(s)). Prouvé, pas affirmé.{RAZ}\n')

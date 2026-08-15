@@ -863,7 +863,7 @@
     tourBtn.addEventListener('click',openTour);
     tourOv.addEventListener('click',e=>{ if(e.target===tourOv) closeTour(); });
   </script>
-  <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+  <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});});}</script>
   <script src="analytics.js"></script>
 <script src="the-postcard.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>

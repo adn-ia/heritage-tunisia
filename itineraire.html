@@ -808,7 +808,13 @@
   let LASTORIGIN=null, LASTRES=null;   // dernier itinéraire (pour ajout de lieu)
   let ENTRY='funnel';                  // provenance : 'funnel' | 'tour' | 'picks' → règle le bouton « retour »
   const REJECTED=new Set();            // détours « pas pour moi » : ne plus les re-proposer
-  const VU=new Set((function(){ try{ return JSON.parse(localStorage.getItem('the_vu')||'[]'); }catch(e){ return []; } })());  // lieux marqués « vu » (scan QR)
+  const VU=new Set((function(){ try{ var v=JSON.parse(localStorage.getItem('the_vu')||'[]');
+      /* Une AUTRE fonction a longtemps écrit the_vu='1' (« il est entré une fois ») dans
+         cette même clé. JSON.parse rendait alors le nombre 1, et new Set(1) levait
+         « 1 is not iterable » : le script mourait ICI, silencieusement, emportant les
+         lieux, les thèmes et les boutons Composer / Surprenez-moi / Voyage libre. On
+         n'accepte plus qu'une liste. */
+      return Array.isArray(v) ? v : []; }catch(e){ return []; } })());  // lieux marqués « vu » (scan QR)
   function saveVu(){ try{ localStorage.setItem('the_vu', JSON.stringify([...VU])); }catch(e){} }
 
   const isMusee = p => norm(p.nom).includes('musee');
@@ -819,44 +825,54 @@
   }
 
   // ---------- chargement données (histoire + nature) ----------
-  Promise.all([
-    fetch('sites.geojson').then(r=>r.json()).catch(()=>({features:[]})),
-    fetch('sites-nature.geojson').then(r=>r.json()).catch(()=>({features:[]})),
-    (window.THEi18n ? THEi18n.ready : Promise.resolve())   // traductions chargées avant le rendu
-  ]).then(([hist,nat])=>{
-    const take=(geo,layer)=>geo.features
-      .filter(f=>f.geometry && f.geometry.type==='Point')
-      .map(f=>({p:f.properties, c:f.geometry.coordinates, layer, genre:genreOf(f.properties,layer)}));
-    SITES = take(hist,'histoire').concat(take(nat,'nature'));
-    computeLandmasses();
-    renderThemeChips();   // SITES charge -> les themes historiques/typologiques deviennent viables (fix rendu 0 chip)
-    // centroïdes par gouvernorat (toutes couches)
-    const acc={};
-    SITES.forEach(s=>{ const g=s.p.gouvernorat||'—'; (acc[g]=acc[g]||[]).push(s.c); });
-    const sel=document.getElementById('origin');
-    Object.keys(acc).sort((a,b)=>a.localeCompare(b,'fr')).forEach(g=>{
-      const cs=acc[g];
-      GOUV[g]=[ cs.reduce((t,c)=>t+c[0],0)/cs.length, cs.reduce((t,c)=>t+c[1],0)/cs.length ];
-      const o=document.createElement('option'); o.value='g:'+g; o.textContent=uiT('Depuis')+' '+g; sel.appendChild(o);
+    /* Le chargement était lancé ICI, au milieu du script. Quand le service worker
+       sert sites.geojson depuis son cache, la réponse arrive AVANT que la fin du
+       script soit évaluée : le callback touchait alors isMusee, SEA_GAP et chipsEl
+       encore dans leur zone morte (let/const non initialisés). L'erreur partait en
+       rejet de promesse — silencieuse — et emportait TOUT le bloc : aucun lieu,
+       aucun thème, et les boutons Composer / Surprenez-moi / Voyage libre sans
+       gestionnaire. Le défaut n'apparaissait qu'une fois le cache chaud, donc
+       jamais au premier essai. On déclare, et on n'appelle qu'à la toute fin. */
+    function chargerDonnees(){
+    Promise.all([
+      fetch('sites.geojson').then(r=>r.json()).catch(()=>({features:[]})),
+      fetch('sites-nature.geojson').then(r=>r.json()).catch(()=>({features:[]})),
+      (window.THEi18n ? THEi18n.ready : Promise.resolve())   // traductions chargées avant le rendu
+    ]).then(([hist,nat])=>{
+      const take=(geo,layer)=>geo.features
+        .filter(f=>f.geometry && f.geometry.type==='Point')
+        .map(f=>({p:f.properties, c:f.geometry.coordinates, layer, genre:genreOf(f.properties,layer)}));
+      SITES = take(hist,'histoire').concat(take(nat,'nature'));
+      computeLandmasses();
+      renderThemeChips();   // SITES charge -> les themes historiques/typologiques deviennent viables (fix rendu 0 chip)
+      // centroïdes par gouvernorat (toutes couches)
+      const acc={};
+      SITES.forEach(s=>{ const g=s.p.gouvernorat||'—'; (acc[g]=acc[g]||[]).push(s.c); });
+      const sel=document.getElementById('origin');
+      Object.keys(acc).sort((a,b)=>a.localeCompare(b,'fr')).forEach(g=>{
+        const cs=acc[g];
+        GOUV[g]=[ cs.reduce((t,c)=>t+c[0],0)/cs.length, cs.reduce((t,c)=>t+c[1],0)/cs.length ];
+        const o=document.createElement('option'); o.value='g:'+g; o.textContent=uiT('Depuis')+' '+g; sel.appendChild(o);
+      });
+      initPresets();
+      renderSaved();   // affiche « Mes itinéraires enregistrés » s'il y en a
+      // autocomplétion du champ « ajouter un lieu » : suggestions sur tous les lieux sourcés
+      const dl=document.getElementById('placeList');
+      if(dl){ const seen=new Set();
+        SITES.forEach(s=>{ const n=s.p.nom; if(n && !seen.has(n)){ seen.add(n); const o=document.createElement('option'); o.value=n; dl.appendChild(o); } }); }
+      const params=new URLSearchParams(location.search);
+      const picksParam=params.get('picks'), tourId=params.get('tour'), tripParam=params.get('trip');
+      let ret=false; try{ ret=sessionStorage.getItem('the_return')==='1'; }catch(e){}
+      if(tripParam) loadTrip(tripParam);                 // lien partagé reçu d'un ami → on charge son itinéraire
+      else if(picksParam) loadPicks(picksParam, params.get('add')==='1');
+      else if(tourId){ (function w(){ if(TOURS) loadTour(tourId); else setTimeout(w,80); })(); }   // attendre que TOURS (async) soit chargé
+      else if(params.get('reprendre')){                  // « Reprendre l'itinéraire » depuis le menu
+        const cur=readCurrent();
+        if(cur && cur.steps && cur.steps.length) renderRecord(cur);
+      }
+      else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
     });
-    initPresets();
-    renderSaved();   // affiche « Mes itinéraires enregistrés » s'il y en a
-    // autocomplétion du champ « ajouter un lieu » : suggestions sur tous les lieux sourcés
-    const dl=document.getElementById('placeList');
-    if(dl){ const seen=new Set();
-      SITES.forEach(s=>{ const n=s.p.nom; if(n && !seen.has(n)){ seen.add(n); const o=document.createElement('option'); o.value=n; dl.appendChild(o); } }); }
-    const params=new URLSearchParams(location.search);
-    const picksParam=params.get('picks'), tourId=params.get('tour'), tripParam=params.get('trip');
-    let ret=false; try{ ret=sessionStorage.getItem('the_return')==='1'; }catch(e){}
-    if(tripParam) loadTrip(tripParam);                 // lien partagé reçu d'un ami → on charge son itinéraire
-    else if(picksParam) loadPicks(picksParam, params.get('add')==='1');
-    else if(tourId){ (function w(){ if(TOURS) loadTour(tourId); else setTimeout(w,80); })(); }   // attendre que TOURS (async) soit chargé
-    else if(params.get('reprendre')){                  // « Reprendre l'itinéraire » depuis le menu
-      const cur=readCurrent();
-      if(cur && cur.steps && cur.steps.length) renderRecord(cur);
     }
-    else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
-  });
 
   // ---------- chips thèmes ----------
   const chipsEl=document.getElementById('themes');
@@ -2025,6 +2041,7 @@
     const resultShown=document.getElementById('result').style.display==='block' || document.getElementById('album').style.display==='block';
     if(resultShown){ e.preventDefault(); backToBuilder(); }
   });
+    chargerDonnees();   // tout est déclaré : on peut charger sans course avec le cache
   </script>
   <script src="the-footer.js" defer></script>
 <script>(function(){

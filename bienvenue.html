@@ -118,7 +118,7 @@
     (function(){
       try{
         if(new URLSearchParams(location.search).get('garde')) return;   // venu exprès
-        if(!localStorage.getItem('the_vu')) return;                     // première fois
+        if(!localStorage.getItem('the_bienvenue_vue')) return;                     // première fois
         location.replace('decouvrir.html');
       }catch(e){}
     })();
@@ -130,7 +130,7 @@
     const btn = document.getElementById('enter');
     let going = false;
     function go(){ if(going) return; going = true;
-      try{ localStorage.setItem('the_vu','1'); }catch(e){}   // il est entré une fois
+      try{ localStorage.setItem('the_bienvenue_vue','1'); }catch(e){}   // il est entré une fois
       window.location.href = NEXT; }
     btn.addEventListener('click', () => {
       btn.disabled = true;
@@ -147,7 +147,7 @@
       }
     });
   </script>
-  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}</script>
+  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(function(){});}</script>
   <script>/* accroche Premium : jours d'essai / état réel. Aligné sur le socle — le texte de
      repli vient de l'i18n (data-i18n sur #promoT), il n'est plus écrit en dur en français. */
   (function(){function set(){try{var P=window.THEPass,el=document.getElementById('promoT');if(!P||!el||!P.info)return;var t=function(k){return (window.THEi18n&&THEi18n.ui&&THEi18n.ui(k))||k;};var inf=P.info();if(inf.active&&inf.trial)el.textContent='🎁 '+t('bienvenue.essai.reste')+' '+inf.daysLeft+' '+t('bienvenue.jours');else if(inf.active&&(inf.paid||inf.invite))el.textContent='✅ '+t('bienvenue.premium.actif');}catch(e){}}if(window.THEi18n&&THEi18n.ready)THEi18n.ready.then(set);else set();})();</script>
