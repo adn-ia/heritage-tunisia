@@ -505,5 +505,23 @@ body.narr-on{padding-bottom:76px;}
 </script>
 
 
+
+  <script>
+  /* Relance du guide demandée depuis une autre page (brique-modes) : on remet
+     le compteur à zéro et on relance. La brique du guide reste maîtresse de son
+     propre stockage — on ne touche à rien d'autre. */
+  (function(){
+    try{ if(new URLSearchParams(location.search).get('guide')!=='1') return; }catch(e){ return; }
+    var essais=0;
+    var t=setInterval(function(){
+      essais++;
+      if(window.HTour && HTour.start){
+        clearInterval(t);
+        try{ HTour.reset && HTour.reset(); }catch(e){}
+        try{ HTour.start(); }catch(e){}
+      } else if(essais>40) clearInterval(t);
+    }, 250);
+  })();
+  </script>
 </body>
 </html>

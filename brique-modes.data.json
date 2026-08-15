@@ -1,0 +1,58 @@
+{
+  "_lisezmoi": [
+    "Données de la brique « Comprendre les modes d'itinéraire ». Auto-portée :",
+    "TOUS les libellés vivent ici, rien n'est emprunté à l'hôte. Langue décidée",
+    "par l'hôte (localStorage 'the_lang'), repli anglais si absente.",
+    "Ajouter une langue = ajouter sa clé. Ne jamais nommer un pays ici."
+  ],
+  "fr": {
+    "titre": "ℹ️ À quoi servent ces options ?",
+    "composer": "<b>🧭 Composer</b> — vous réglez le départ, la durée, la distance et les thèmes ; l'application trace le parcours. C'est le mode de celui qui prépare avant de partir.",
+    "surprise": "<b>🎲 Surprenez-moi</b> — les mêmes réglages, mais le parcours est tiré au sort. On part sans savoir ce qu'on va voir.",
+    "libre": "<b>🎒 Voyage libre</b> — aucun plan. Vous avancez, et chaque halte rejoint votre carnet. C'est le mode de celui qui découvre en chemin.",
+    "circuits": "<b>✨ Circuits</b> — des parcours déjà tracés, à suivre tels quels.",
+    "sauves": "<b>📚 Itinéraires sauvegardés</b> — ceux que vous avez créés. On peut en mener plusieurs de front : chacun garde son nom et son carnet.",
+    "commun": "Dans tous les cas, chaque étape accepte photos, notes et voix, et le trajet s'exporte vers l'application de navigation de votre choix.",
+    "rejouer": "▶ Rejouer le guide"
+  },
+  "en": {
+    "titre": "ℹ️ What are these options for?",
+    "composer": "<b>🧭 Compose</b> — you set the starting point, the length, the distance and the themes; the app draws the route. This is the mode for someone planning ahead.",
+    "surprise": "<b>🎲 Surprise me</b> — the same settings, but the route is drawn at random. You set off without knowing what you will see.",
+    "libre": "<b>🎒 Free trip</b> — no plan at all. You move, and every stop joins your notebook. This is the mode for someone discovering as they go.",
+    "circuits": "<b>✨ Ready-made routes</b> — journeys already mapped out, to follow as they are.",
+    "sauves": "<b>📚 Saved itineraries</b> — the ones you have created. Several can run side by side: each keeps its own name and its own notebook.",
+    "commun": "In every case each stop takes photos, notes and voice, and the route exports to the navigation app of your choice.",
+    "rejouer": "▶ Play the guide again"
+  },
+  "ar": {
+    "titre": "ℹ️ ما الغرض من هذه الخيارات؟",
+    "composer": "<b>🧭 «التخطيط»</b> — تحدد نقطة الانطلاق والمدة والمسافة والمواضيع؛ ويقوم التطبيق برسم المسار. هذه هي الطريقة المناسبة لمن يفضل التخطيط قبل الانطلاق.",
+    "surprise": "<b>🎲 فاجئني</b> — نفس الإعدادات، لكن المسار يتم تحديده عشوائيًا. ننطلق دون أن نعرف ما سنراه.",
+    "libre": "<b>🎒 السفر الحر</b> — بدون خطة. تمضي قدمًا، وتُضاف كل محطة إلى دفتر ملاحظاتك. هذه هي طريقة من يكتشف الأشياء أثناء رحلته.",
+    "circuits": "<b>✨ مسارات</b> — مسارات محددة مسبقًا، يمكن اتباعها كما هي.",
+    "sauves": "<b>📚 مسارات السفر المحفوظة</b> — تلك التي قمت بإنشائها. يمكنك إدارة عدة مسارات في آن واحد: يحتفظ كل منها باسمه ودفتره الخاص.",
+    "commun": "في جميع الأحوال، يمكنك إضافة الصور والملاحظات والتسجيلات الصوتية إلى كل محطة، كما يمكن تصدير المسار إلى تطبيق الملاحة الذي تختاره.",
+    "rejouer": "▶ إعادة تشغيل الدليل"
+  },
+  "de": {
+    "titre": "ℹ️ Wozu dienen diese Optionen?",
+    "composer": "<b>🧭 „Erstellen“</b> – Sie legen Startpunkt, Dauer, Entfernung und Themen fest; die App berechnet die Route. Dies ist der Modus für alle, die sich vor der Abreise vorbereiten möchten.",
+    "surprise": "<b>🎲 Überrasche mich</b> – dieselben Einstellungen, aber die Route wird zufällig ausgewählt. Wir machen uns auf den Weg, ohne zu wissen, was uns erwartet.",
+    "libre": "<b>🎒 Freies Reisen</b> – ganz ohne Plan. Du bist einfach unterwegs, und jeder Zwischenstopp wird in dein Reisetagebuch eingetragen. Das ist der Modus für alle, die unterwegs Neues entdecken.",
+    "circuits": "<b>✨ Touren</b> – bereits vorgegebene Routen, die man einfach so nachfahren kann.",
+    "sauves": "<b>📚 Gespeicherte Routen</b> – die, die Sie erstellt haben. Man kann mehrere gleichzeitig bearbeiten: Jede behält ihren Namen und ihr Notizbuch.",
+    "commun": "In jedem Fall können Sie zu jeder Etappe Fotos, Notizen und Sprachaufnahmen hinzufügen, und die Route lässt sich in die Navigations-App Ihrer Wahl exportieren.",
+    "rejouer": "▶ Den Reiseführer noch einmal abspielen"
+  },
+  "it": {
+    "titre": "ℹ️ A cosa servono queste opzioni?",
+    "composer": "<b>🧭 Crea</b> — imposti il punto di partenza, la durata, la distanza e i temi; l&#x27;app traccia il percorso. È la modalità ideale per chi si organizza prima di partire.",
+    "surprise": "<b>🎲 Sorprendimi</b> — le stesse impostazioni, ma il percorso viene generato a caso. Si parte senza sapere cosa si vedrà.",
+    "libre": "<b>🎒 Viaggio libero</b> — nessun programma. Si procede e ogni tappa viene aggiunta al proprio diario di viaggio. È la modalità di chi scopre lungo il percorso.",
+    "circuits": "<b>✨ Itinerari</b> — percorsi già tracciati, da seguire così come sono.",
+    "sauves": "<b>📚 Itinerari salvati</b> — quelli che hai creato tu. Puoi gestirne diversi contemporaneamente: ognuno mantiene il proprio nome e il proprio diario di viaggio.",
+    "commun": "In ogni caso, per ogni tappa è possibile aggiungere foto, note e registrazioni vocali, e il percorso può essere esportato nell&#x27;app di navigazione che preferisci.",
+    "rejouer": "▶ Riascolta la guida"
+  }
+}
