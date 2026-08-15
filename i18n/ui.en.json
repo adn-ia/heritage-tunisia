@@ -1746,7 +1746,7 @@
   "➕ Nouvel itinéraire ›": "➕ New route ›",
   "⭐ Votre avis sur l'application": "⭐ Your feedback on the app",
   "🅿️ Accès / GPS :": "🅿️ Access / GPS:",
-  "🆓 Voyage libre": "🆓 Independent travel",
+  "🎒 Voyage libre": "🎒 Independent travel",
   "🌍 OpenStreetMap": "🌍 OpenStreetMap",
   "🌍 Publier sur le site": "🌍 Publish on the website",
   "🍏 Apple Plans": "🍏 Apple Maps",
@@ -2253,5 +2253,6 @@
   "menu.mes.itineraires": "My itineraries",
   "menu.itineraire.sans.nom": "Untitled",
   "menu.voyage.libre": "self-guided tour",
-  "menu.etapes": "Steps"
+  "menu.etapes": "Steps",
+  "itin.retour.trois": "The three ways to set off"
 }

@@ -524,7 +524,7 @@ body.narr-on{padding-bottom:76px;}
         var nb=(r.steps&&r.steps.length)||0;
         var a=document.createElement('a');
         a.className='sm-item'; a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
-        a.innerHTML='<span class="i">'+(r.mode==='libre'?'🆓':'↩')+'</span><span class="t">'
+        a.innerHTML='<span class="i">'+(r.mode==='libre'?'🎒':'↩')+'</span><span class="t">'
           + String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,'')
           + '<small>' + (r.mode==='libre'
               ? T('menu.voyage.libre','voyage libre') + (nb?' · '+nb:'')

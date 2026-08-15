@@ -324,5 +324,6 @@
   "menu.mes.itineraires": "Mes itinéraires",
   "menu.itineraire.sans.nom": "Sans nom",
   "menu.voyage.libre": "voyage libre",
-  "menu.etapes": "étapes"
+  "menu.etapes": "étapes",
+  "itin.retour.trois": "Les trois façons de partir"
 }

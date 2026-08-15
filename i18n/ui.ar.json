@@ -1746,7 +1746,7 @@
   "➕ Nouvel itinéraire ›": "➕ مسار جديد ›",
   "⭐ Votre avis sur l'application": "⭐ رأيك في التطبيق",
   "🅿️ Accès / GPS :": "🅿️ الوصول / GPS:",
-  "🆓 Voyage libre": "🆓 رحلة حرة",
+  "🎒 Voyage libre": "🎒 رحلة حرة",
   "🌍 OpenStreetMap": "🌍 OpenStreetMap",
   "🌍 Publier sur le site": "🌍 النشر على الموقع",
   "🍏 Apple Plans": "🍏 خرائط Apple",
@@ -2253,5 +2253,6 @@
   "menu.mes.itineraires": "مساراتي",
   "menu.itineraire.sans.nom": "بدون اسم",
   "menu.voyage.libre": "رحلة حرة",
-  "menu.etapes": "الخطوات"
+  "menu.etapes": "الخطوات",
+  "itin.retour.trois": "الطرق الثلاثة للانطلاق"
 }

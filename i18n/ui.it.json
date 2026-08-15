@@ -1746,7 +1746,7 @@
   "➕ Nouvel itinéraire ›": "➕ Nuovo itinerario ›",
   "⭐ Votre avis sur l'application": "⭐ La tua opinione sull’app",
   "🅿️ Accès / GPS :": "🅿️ Accesso / GPS:",
-  "🆓 Voyage libre": "🆓 Viaggio libero",
+  "🎒 Voyage libre": "🎒 Viaggio libero",
   "🌍 OpenStreetMap": "🌍 OpenStreetMap",
   "🌍 Publier sur le site": "🌍 Pubblica sul sito",
   "🍏 Apple Plans": "🍏 Mappe Apple",
@@ -2253,5 +2253,6 @@
   "menu.mes.itineraires": "I miei itinerari",
   "menu.itineraire.sans.nom": "Senza nome",
   "menu.voyage.libre": "viaggio libero",
-  "menu.etapes": "fasi"
+  "menu.etapes": "fasi",
+  "itin.retour.trois": "I tre modi di partire"
 }

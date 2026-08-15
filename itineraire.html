@@ -371,6 +371,10 @@
 .prem-ask .pa-d{font-size:14px;color:#6b5a39;line-height:1.6;margin-bottom:16px;}
 .prem-ask .pa-go{display:block;text-align:center;background:#a8884f;color:#2b2318;text-decoration:none;padding:12px;border-radius:7px;font-size:15px;margin-bottom:8px;}
 .prem-ask .pa-no{display:block;width:100%;background:none;border:1px solid #e3d8c4;color:#8a7c66;padding:11px;border-radius:7px;font-size:14.5px;cursor:pointer;}
+
+/* Trois options à l'arrivée : la règle CSS l'emporte sur les scripts qui
+   réaffichent « Mon voyage » ou « Circuits prêts » après nous. */
+#builder.trois-seules > *:not(.modes){ display:none !important; }
 </style>
   <script src="the-pass.js"></script>
   <script src="the-i18n.js"></script>
@@ -392,7 +396,7 @@
       <div class="modes">
         <button class="mode-card" id="mGo" type="button"><span class="mc-ic">🧭</span><span class="mc-t" data-i18n="m_go_t">Composer</span><span class="mc-s" data-i18n="m_go_s">sur mesure — vous réglez vos critères</span></button>
         <button class="mode-card" id="mSurprise" type="button"><span class="mc-ic">🎲</span><span class="mc-t" data-i18n="m_su_t">Surprenez-moi</span><span class="mc-s" data-i18n="m_su_s">un itinéraire au hasard, tout de suite</span></button>
-        <button class="mode-card" id="mLibre" type="button"><span class="mc-ic">🆓</span><span class="mc-t" data-i18n="m_li_t">Voyage libre</span><span class="mc-s" data-i18n="m_li_s">sans plan — on capture au fil de la route</span></button>
+        <button class="mode-card" id="mLibre" type="button"><span class="mc-ic">🎒</span><span class="mc-t" data-i18n="m_li_t">Voyage libre</span><span class="mc-s" data-i18n="m_li_s">sans plan — on capture au fil de la route</span></button>
       </div>
 
       <div class="q" id="savedBox" style="display:none">
@@ -1357,7 +1361,7 @@
 
     if(!route.length){
       rsum.innerHTML = res.mode==='libre'
-        ? '<h2>🆓 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
+        ? '<h2>🎒 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
         : '<h2>Rien trouvé pour ces critères</h2><div class="meta">'+uiT('itin.rien.trouve.conseil')+'.</div>';
       document.getElementById('map').style.display='none';
       document.getElementById('stops').innerHTML='';
@@ -1609,7 +1613,7 @@
     if(_nomLibre===null) return;                    // annulé : on ne lance rien
     _nomLibre = (_nomLibre||'').trim().slice(0,80) || uiT('itin.libre.defaut');
     render({coord:[10.18,36.8], label:'Ma position'},
-      { route:[], theme:{ic:'🆓',label:'Voyage libre'}, dur:{max:99,lib:'libre'}, per:{radius:99999,lib:'libre'},
+      { route:[], theme:{ic:'🎒',label:'Voyage libre'}, dur:{max:99,lib:'libre'}, per:{radius:99999,lib:'libre'},
         forme:'oneway', pepites:[], mode:'libre', tour:{titre:_nomLibre, soustitre:uiT('itin.libre.soustitre')} });
     /* enregistré tout de suite : il apparaît dans le menu, on peut y revenir */
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
@@ -1617,7 +1621,7 @@
        arr.unshift({ id:'it'+Date.now(), title:_nomLibre, forme:'oneway', mode:'libre',
          origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null, steps:[] });
        writeSaved(arr.slice(0,40)); renderSaved(); })();
-    showGuide('🆓 <b>Voyage libre</b> lancé ! Déplacez-vous, puis marquez chaque moment avec <b>« 📍 J\'ai fait une halte ici »</b> (plus bas) — tout va dans votre carnet.', 9000);
+    showGuide('🎒 <b>Voyage libre</b> lancé ! Déplacez-vous, puis marquez chaque moment avec <b>« 📍 J\'ai fait une halte ici »</b> (plus bas) — tout va dans votre carnet.', 9000);
     // on cale l'origine sur la position réelle si dispo (pour ordonner les haltes autour de soi)
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
       p=>{ if(LASTRES&&LASTRES.mode==='libre') LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:'Ma position'}; },()=>{},
@@ -2051,6 +2055,8 @@
     document.getElementById('builder').style.display='block';    // garde tous les choix saisis
     window.scrollTo({top:0,behavior:'smooth'});
   }
+  /* rouvrir le formulaire : on revient d'un résultat, pas des trois cartes */
+  document.getElementById('restart').addEventListener('click',function(){ if(window.THEmodes) THEmodes.ouvrir(); });
   document.getElementById('restart').onclick=backToBuilder;
   document.getElementById('result').addEventListener('change',function(e){
     if(e.target && e.target.classList && e.target.classList.contains('vis-select')){
@@ -2088,5 +2094,59 @@
 <script src="the-print.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
+
+  <script>
+  /* TROIS FAÇONS DE PARTIR — et rien d'autre à l'arrivée.
+     La page déballait tout d'un coup : les 3 cartes, les circuits prêts, les six
+     questions et le bouton final. On ne savait plus où l'on était ni comment sortir.
+     Désormais : trois options seules ; on entre dans l'une, on en ressort par
+     « ‹ Les trois façons de partir ». Rien n'est supprimé, seulement mis en ordre. */
+  (function(){
+    var builder=document.getElementById('builder'); if(!builder) return;
+    var modes=builder.querySelector('.modes'); if(!modes) return;
+    var suite=[].slice.call(builder.children).filter(function(e){ return e!==modes; });
+
+    var retour=document.createElement('button');
+    retour.type='button'; retour.id='retourModes'; retour.className='backlink';
+    retour.style.cssText='display:block;margin:2px 0 14px;background:none;border:none;'
+      + 'color:var(--stone,#8a7c66);font:inherit;font-size:15px;cursor:pointer;padding:6px 0';
+    retour.textContent='‹ ' + (function(){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui('itin.retour.trois'));
+      return (v&&v!=='itin.retour.trois')?v:'Les trois façons de partir'; })();
+    modes.parentNode.insertBefore(retour, modes.nextSibling);
+    suite.unshift(retour);
+
+    function cacher(){
+      suite.forEach(function(e){
+        if(e.dataset.avant===undefined) e.dataset.avant = e.style.display || '';
+        e.style.display='none';
+      });
+      modes.style.display='';
+      builder.classList.add('trois-seules');
+    }
+    function ouvrir(){
+      /* On rend la main à chaque bloc plutôt que de restaurer un display figé :
+         « Circuits prêts » et « Mon voyage » se remplissent APRÈS nous, et un
+         display:none mémorisé trop tôt les faisait disparaître pour de bon.
+         On les montre s'ils ont du contenu, on les laisse cachés sinon. */
+      suite.forEach(function(e){ e.style.display=''; });
+      [['presetsBox','presets'],['savedBox','savedList']].forEach(function(p){
+        var bloc=document.getElementById(p[0]), liste=document.getElementById(p[1]);
+        if(bloc && liste && !liste.children.length) bloc.style.display='none';
+      });
+      builder.classList.remove('trois-seules');
+      retour.style.display='block';
+    }
+    window.THEmodes={ouvrir:ouvrir, cacher:cacher};
+    retour.onclick=function(){
+      cacher();
+      var r=document.getElementById('result'); if(r) r.style.display='none';
+      try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+    };
+    cacher();   // à l'arrivée : les trois options, un point c'est tout
+
+    var go=document.getElementById('mGo');
+    if(go) go.addEventListener('click', function(){ ouvrir(); }, true);
+  })();
+  </script>
 </body>
 </html>
