@@ -7,6 +7,9 @@
 (function () {
   var C = {
     iso:          "tn",
+    // langues de CETTE édition en plus du français et de l'anglais.
+    // Le drapeau se déduit de « iso » — jamais écrit en dur.
+    langNatCode: ["ar","de","it"],
     domaine:      "heritage.threshold-analytics.com",
     marque:       "Tunisia Heritage Experience",
     marqueCourte: "Tunisia Heritage",
