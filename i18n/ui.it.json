@@ -2410,5 +2410,12 @@
   "autour.ajouter.aucun": "Nessun luogo selezionato",
   "autour.ajoutes": "Aggiunto al tuo itinerario. Puoi modificarne l'ordine (↑ ↓ in «Modifica») e completare ciascuna voce: data, nota, foto.",
   "autour.tout": "Seleziona tutto",
-  "autour.rien.choisir": "Deseleziona tutto"
+  "autour.rien.choisir": "Deseleziona tutto",
+  "itin.libre.choix.titre": "Viaggio libero",
+  "itin.libre.nouveau": "Iniziare un nuovo viaggio in libertà",
+  "itin.libre.nouveau.sous": "Lo si nomina, poi si compie il primo passo.",
+  "itin.libre.reprendre.sous": "Riprendere da dove avevate interrotto.",
+  "itin.libre.etapes": "fasi",
+  "itin.groupe.libres": "🎒 Viaggi in autonomia",
+  "itin.groupe.composes": "🧭 Itinerari composti"
 }

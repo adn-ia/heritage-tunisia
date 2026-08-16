@@ -2461,7 +2461,22 @@
         v.textContent=T('menu.aucun.itineraire','Aucun itinéraire enregistré pour le moment.');
         liste.appendChild(v); return;
       }
-      arr.slice(0,20).forEach(function(r){
+      /* DEUX FAMILLES, PAS UN TAS. Un voyage libre et un itinéraire composé ne
+         se mènent pas pareil : on les range sous leur propre titre au lieu de
+         les mêler et d'obliger à lire chaque ligne pour les distinguer. */
+      function titreGroupe(txt){
+        var h=document.createElement('div');
+        h.style.cssText='font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:#a8884f;margin:14px 0 4px';
+        h.textContent=txt; liste.appendChild(h);
+      }
+      var libres=arr.filter(function(r){ return r && r.mode==='libre'; });
+      var composes=arr.filter(function(r){ return !r || r.mode!=='libre'; });
+      var ordonne=[];
+      if(libres.length){ ordonne.push({t:T('itin.groupe.libres','🎒 Voyages libres'), l:libres}); }
+      if(composes.length){ ordonne.push({t:T('itin.groupe.composes','🧭 Itinéraires composés'), l:composes}); }
+      ordonne.forEach(function(g){
+        if(ordonne.length>1) titreGroupe(g.t);
+        g.l.slice(0,20).forEach(function(r){
         var nb=(r.steps&&r.steps.length)||0;
         var a=document.createElement('a');
         a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
@@ -2506,6 +2521,7 @@
           remplir(); };
         a.appendChild(sup);
         liste.appendChild(a);
+        });
       });
     }
     function ouvrir(){ remplir(); mod.style.display='flex'; }
@@ -2578,6 +2594,42 @@
     ligne(T('menu.nouvel.itineraire','Nouvel itinéraire'), '', '＋', function(){ apres(null); });
     mod.style.display='flex';
   };
+
+    /* VOYAGE LIBRE : ON DEMANDE D'ABORD S'IL EST NEUF OU S'IL REPREND
+       Cliquer sur « Voyage libre » lançait aussitôt la création d'un nouveau
+       voyage : celui qu'on avait commencé la veille était introuvable par là.
+       On propose donc les deux, et les voyages libres déjà enregistrés sont
+       listés à part — ils se reconnaissent à leur mode, pas à leur nom. */
+    window.THElibreChoisir = function(neuf, reprendre){
+      var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      var arr=[]; try{ var a=JSON.parse(localStorage.getItem('the_saved')||'[]'); arr=Array.isArray(a)?a:[]; }catch(e){}
+      var libres=arr.filter(function(r){ return r && r.mode==='libre'; });
+      if(!libres.length){ neuf(); return; }               // rien à reprendre : on va droit au but
+      var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
+          titre=document.getElementById('itiTitre');
+      if(!mod||!liste){ neuf(); return; }
+      titre.textContent='🎒 '+T('itin.libre.choix.titre','Voyage libre');
+      liste.innerHTML='';
+      function ligne(txt, sous, ic, cb){
+        var b=document.createElement('button'); b.type='button';
+        b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:11px 4px;'
+          + 'border:none;border-bottom:1px solid #efe7d8;background:none;font:inherit;cursor:pointer';
+        b.innerHTML='<span style="font-size:19px">'+ic+'</span><span style="flex:1"><b>'+txt+'</b>'
+          + (sous?'<br><small style="color:#8a7c66">'+sous+'</small>':'')+'</span>';
+        b.onclick=function(){ mod.style.display='none'; cb(); };
+        liste.appendChild(b);
+      }
+      ligne(T('itin.libre.nouveau','Commencer un nouveau voyage libre'),
+            T('itin.libre.nouveau.sous','On le nomme, puis on pose sa première étape.'), '＋', neuf);
+      libres.slice(0,20).forEach(function(r){
+        var nb=(r.steps&&r.steps.length)||0;
+        var sous=(window.THEdatePuce?THEdatePuce(r):'')
+               + (nb ? nb+' '+T('itin.libre.etapes','étapes') : T('itin.libre.reprendre.sous','Reprendre là où vous en étiez.'));
+        ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
+              sous, '🎒', function(){ reprendre(r); });
+      });
+      mod.style.display='flex';
+    };
   </script>
   <script src="brique-modes.js" defer></script>
 
@@ -2894,8 +2946,21 @@
         setTimeout(function(){ if(window.THEetape) THEetape.ouvrir({premiere:true}); }, 900);
         return r;
       };
+      /* On demande d'abord : neuf, ou l'un de ceux déjà commencés ? Sans cela,
+         un voyage libre entamé la veille n'était atteignable que par « Mes
+         itinéraires », alors que sa place est ici. */
       var mL=document.getElementById('mLibre');
-      if(mL) mL.onclick=function(){ requirePass(uiT('itin.feature.libre'), window.startLibre); };
+      if(mL) mL.onclick=function(){
+        requirePass(uiT('itin.feature.libre'), function(){
+          if(!window.THElibreChoisir){ window.startLibre(); return; }
+          THElibreChoisir(
+            function(){ window.startLibre(); },                       // un nouveau
+            function(rec){                                            // on en reprend un
+              try{ if(rec && rec.id) localStorage.setItem('the_actif', rec.id); }catch(e){}
+              location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
+            });
+        });
+      };
     }
   })();
   </script>

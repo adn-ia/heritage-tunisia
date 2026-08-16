@@ -2410,5 +2410,12 @@
   "autour.ajouter.aucun": "لم يتم اختيار أي مكان",
   "autour.ajoutes": "تمت إضافتها إلى خط سير رحلتك. يمكنك إعادة ترتيبها (↑ ↓ في «تعديل») وإكمال كل منها: التاريخ، الملاحظة، الصور.",
   "autour.tout": "اختيار الكل",
-  "autour.rien.choisir": "إلغاء تحديد الكل"
+  "autour.rien.choisir": "إلغاء تحديد الكل",
+  "itin.libre.choix.titre": "رحلة حرة",
+  "itin.libre.nouveau": "الانطلاق في رحلة جديدة حرة",
+  "itin.libre.nouveau.sous": "نسميه، ثم نخطو خطوته الأولى.",
+  "itin.libre.reprendre.sous": "استأنف من حيث توقفت.",
+  "itin.libre.etapes": "المراحل",
+  "itin.groupe.libres": "🎒 رحلات حرة",
+  "itin.groupe.composes": "🧭 مسارات مركبة"
 }

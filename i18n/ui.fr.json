@@ -482,5 +482,12 @@
   "autour.ajouter.aucun": "Aucun lieu choisi",
   "autour.ajoutes": "Ajouté à votre itinéraire. Vous pouvez les réordonner (↑ ↓ dans « Modifier ») et compléter chacune : date, note, photos.",
   "autour.tout": "Tout choisir",
-  "autour.rien.choisir": "Tout désélectionner"
+  "autour.rien.choisir": "Tout désélectionner",
+  "itin.libre.choix.titre": "Voyage libre",
+  "itin.libre.nouveau": "Commencer un nouveau voyage libre",
+  "itin.libre.nouveau.sous": "On le nomme, puis on pose sa première étape.",
+  "itin.libre.reprendre.sous": "Reprendre là où vous en étiez.",
+  "itin.libre.etapes": "étapes",
+  "itin.groupe.libres": "🎒 Voyages libres",
+  "itin.groupe.composes": "🧭 Itinéraires composés"
 }

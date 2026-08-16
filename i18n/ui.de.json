@@ -2410,5 +2410,12 @@
   "autour.ajouter.aucun": "Kein Ort ausgewählt",
   "autour.ajoutes": "Zu Ihrer Reiseroute hinzugefügt. Sie können die Reihenfolge ändern (↑ ↓ unter „Bearbeiten“) und die einzelnen Einträge vervollständigen: Datum, Notiz, Fotos.",
   "autour.tout": "Alles auswählen",
-  "autour.rien.choisir": "Alle abwählen"
+  "autour.rien.choisir": "Alle abwählen",
+  "itin.libre.choix.titre": "Freie Fahrt",
+  "itin.libre.nouveau": "Eine neue Reise beginnen",
+  "itin.libre.nouveau.sous": "Man benennt es und legt dann die erste Etappe fest.",
+  "itin.libre.reprendre.sous": "Machen Sie dort weiter, wo Sie aufgehört haben.",
+  "itin.libre.etapes": "Schritte",
+  "itin.groupe.libres": "🎒 Individuelle Reisen",
+  "itin.groupe.composes": "🧭 Zusammengestellte Routen"
 }

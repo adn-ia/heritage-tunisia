@@ -2410,5 +2410,12 @@
   "autour.ajouter.aucun": "No location selected",
   "autour.ajoutes": "Added to your itinerary. You can reorder them (↑ ↓ under ‘Edit’) and add details to each one: date, notes, photos.",
   "autour.tout": "Select all",
-  "autour.rien.choisir": "Deselect all"
+  "autour.rien.choisir": "Deselect all",
+  "itin.libre.choix.titre": "Independent travel",
+  "itin.libre.nouveau": "Start a new independent trip",
+  "itin.libre.nouveau.sous": "We name it, then we take the first step.",
+  "itin.libre.reprendre.sous": "Pick up where you left off.",
+  "itin.libre.etapes": "steps",
+  "itin.groupe.libres": "🎒 Independent travel",
+  "itin.groupe.composes": "🧭 Combined routes"
 }
