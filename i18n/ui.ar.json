@@ -2441,5 +2441,7 @@
   "itin.surprise.nouveau": "إحداث مفاجأة جديدة",
   "itin.surprise.nouveau.sous": "مسار عشوائي، انطلاقاً من نقطة انطلاقك والوقت الذي حددته.",
   "itin.nom.valider": "متابعة",
-  "itin.nom.annuler": "إلغاء"
+  "itin.nom.annuler": "إلغاء",
+  "picks.ajouter.a": "➕ إضافة إلى «{n}»",
+  "picks.compose.en.cours": "أنت تتصل بـ: {n}"
 }

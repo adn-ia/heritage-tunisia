@@ -872,5 +872,30 @@
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
 <script src="brique-legende.js" defer></script>
+
+<script>
+/* ON COMPOSE UN ITINÉRAIRE QUI A DÉJÀ UN NOM
+   On arrive ici depuis « Composer » après l'avoir nommé. Les boutons disaient
+   « Nouvel itinéraire » et « Au parcours » : rien ne rappelait POUR QUOI on
+   choisissait des lieux, et l'itinéraire qu'on venait de nommer semblait perdu.
+   Ils portent son nom, et le second — qui vise un parcours en cours — s'efface,
+   puisque le parcours en cours, c'est justement celui-là. */
+(function(){
+  var nom=''; try{ nom=sessionStorage.getItem('the_nom_attente')||''; }catch(e){}
+  if(!nom) return;
+  function T(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; }
+  function poser(){
+    var principal=document.getElementById('pbGo'),
+        second=document.getElementById('pbAdd');
+    if(!principal) return false;
+    principal.textContent=T('picks.ajouter.a','➕ Ajouter à « {n} »').split('{n}').join(nom);
+    principal.removeAttribute('data-i18n');          // sinon l'i18n réécrit par-dessus
+    if(second) second.style.display='none';
+    return true;
+  }
+  if(!poser()){ var n=0, t=setInterval(function(){ n++; if(poser()||n>40) clearInterval(t); }, 250); }
+  else { setTimeout(poser, 1200); }                  // l'i18n s'applique après : on repasse
+})();
+</script>
 </body>
 </html>

@@ -2441,5 +2441,7 @@
   "itin.surprise.nouveau": "Come up with another surprise",
   "itin.surprise.nouveau.sous": "A random route, based on your starting point and the time you’ve set.",
   "itin.nom.valider": "Continue",
-  "itin.nom.annuler": "Cancel"
+  "itin.nom.annuler": "Cancel",
+  "picks.ajouter.a": "➕ Add to ‘{n}’",
+  "picks.compose.en.cours": "You are dialling: {n}"
 }

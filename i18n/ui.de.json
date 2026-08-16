@@ -2441,5 +2441,7 @@
   "itin.surprise.nouveau": "Eine neue Überraschung aus dem Ärmel schütteln",
   "itin.surprise.nouveau.sous": "Eine zufällige Route, ausgehend von Ihrem Startpunkt und Ihrer Zeit.",
   "itin.nom.valider": "Weiter",
-  "itin.nom.annuler": "Abbrechen"
+  "itin.nom.annuler": "Abbrechen",
+  "picks.ajouter.a": "➕ Zu „{n}“ hinzufügen",
+  "picks.compose.en.cours": "Sie wählen: {n}"
 }

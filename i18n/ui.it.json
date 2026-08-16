@@ -2441,5 +2441,7 @@
   "itin.surprise.nouveau": "Tirare fuori una nuova sorpresa",
   "itin.surprise.nouveau.sous": "Un percorso casuale, a partire dal punto di partenza e dall'orario specificati.",
   "itin.nom.valider": "Continua",
-  "itin.nom.annuler": "Annulla"
+  "itin.nom.annuler": "Annulla",
+  "picks.ajouter.a": "➕ Aggiungi a « {n} »",
+  "picks.compose.en.cours": "Si compone: {n}"
 }

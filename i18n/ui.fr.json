@@ -513,5 +513,7 @@
   "itin.surprise.nouveau": "Tirer une nouvelle surprise",
   "itin.surprise.nouveau.sous": "Un parcours au hasard, à partir de votre départ et de votre temps.",
   "itin.nom.valider": "Continuer",
-  "itin.nom.annuler": "Annuler"
+  "itin.nom.annuler": "Annuler",
+  "picks.ajouter.a": "➕ Ajouter à « {n} »",
+  "picks.compose.en.cours": "Vous composez : {n}"
 }
