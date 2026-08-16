@@ -2417,5 +2417,8 @@
   "itin.libre.reprendre.sous": "Pick up where you left off.",
   "itin.libre.etapes": "steps",
   "itin.groupe.libres": "🎒 Independent travel",
-  "itin.groupe.composes": "🧭 Combined routes"
+  "itin.groupe.composes": "🧭 Combined routes",
+  "itin.compose.choix.titre": "Plan a route",
+  "itin.compose.nouveau": "Create a new route",
+  "itin.compose.nouveau.sous": "You name it, then set the start time, duration and themes."
 }

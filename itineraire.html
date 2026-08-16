@@ -2329,7 +2329,21 @@
     };
     cacher();   // à l'arrivée : les trois options, un point c'est tout
 
+    /* COMPOSER COMMENCE COMME LE VOYAGE LIBRE : reprendre, ou repartir de zéro.
+       Cliquer sur « Composer » demandait aussitôt un nom neuf ; un itinéraire
+       déjà composé n'était atteignable que par « Mes itinéraires ». */
     var go=document.getElementById('mGo');
+    if(go) go.addEventListener('click', function(ev){
+      if(window.__composeSuite){ window.__composeSuite=false; return; }   // second passage : on laisse faire
+      if(!window.THEcomposeChoisir) return;
+      ev.stopImmediatePropagation();
+      THEcomposeChoisir(
+        function(){ window.__composeSuite=true; go.click(); },          // un nouveau
+        function(rec){                                                   // on en reprend un
+          try{ if(rec && rec.id) localStorage.setItem('the_actif', rec.id); }catch(e){}
+          location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
+        });
+    }, true);
     if(go) go.addEventListener('click', function(){
       /* Le nom AVANT les critères : on sait dès le départ quel voyage on prépare,
          et la question ne vient plus surprendre une fois le parcours dressé. */
@@ -2410,7 +2424,11 @@
       LASTRES._nomme = true;
       try{
         var arr=readSaved();
-        arr.unshift({ id:'it'+Date.now(), cree:Date.now(), title:n, forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
+        /* On garde D'OÙ vient l'itinéraire : sans mode, un parcours composé et un
+           parcours tiré au sort se ressemblaient dans la liste, et rien ne permettait
+           de ne proposer que les siens au moment de reprendre. */
+        arr.unshift({ id:'it'+Date.now(), cree:Date.now(), title:n, forme:LASTRES.forme||'oneway',
+          mode:LASTRES.mode || (defaut===T('itin.nom.surprise','Ma surprise') ? 'surprise' : 'compose'),
           origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour,
           steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
             halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||''}; }) });
@@ -2481,7 +2499,7 @@
         var a=document.createElement('a');
         a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
         a.style.cssText='display:flex;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid #efe7d8;text-decoration:none;color:inherit';
-        a.innerHTML='<span style="font-size:19px">'+(r.mode==='libre'?'🎒':'🧭')+'</span>'
+        a.innerHTML='<span style="font-size:19px">'+(r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':'🧭'))+'</span>'
           + '<span style="flex:1"><b>'+String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,'')+'</b>'
           + '<br><small style="color:#8a7c66">'
           + (window.THEdatePuce?THEdatePuce(r):'')
@@ -2589,7 +2607,7 @@
       var nb=(r.steps&&r.steps.length)||0;
       ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
             (window.THEdatePuce?THEdatePuce(r):'')+(r.mode==='libre' ? T('menu.voyage.libre','voyage libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes','étapes')),
-            (r.mode==='libre'?'🎒':'🧭'), function(){ apres(r); });
+            (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':'🧭')), function(){ apres(r); });
     });
     ligne(T('menu.nouvel.itineraire','Nouvel itinéraire'), '', '＋', function(){ apres(null); });
     mod.style.display='flex';
@@ -2600,15 +2618,19 @@
        voyage : celui qu'on avait commencé la veille était introuvable par là.
        On propose donc les deux, et les voyages libres déjà enregistrés sont
        listés à part — ils se reconnaissent à leur mode, pas à leur nom. */
-    window.THElibreChoisir = function(neuf, reprendre){
+    /* Un seul sélecteur pour toutes les façons de partir. « garder » dit quelles
+       fiches ce mode-là peut reprendre : un voyage libre ne rouvre pas un
+       itinéraire composé, et l'inverse non plus. */
+    window.THEchoisirDepart = function(opts, neuf, reprendre){
+      opts=opts||{};
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       var arr=[]; try{ var a=JSON.parse(localStorage.getItem('the_saved')||'[]'); arr=Array.isArray(a)?a:[]; }catch(e){}
-      var libres=arr.filter(function(r){ return r && r.mode==='libre'; });
-      if(!libres.length){ neuf(); return; }               // rien à reprendre : on va droit au but
+      var siens=arr.filter(opts.garder || function(){ return true; });
+      if(!siens.length){ neuf(); return; }                 // rien à reprendre : on va droit au but
       var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
           titre=document.getElementById('itiTitre');
       if(!mod||!liste){ neuf(); return; }
-      titre.textContent='🎒 '+T('itin.libre.choix.titre','Voyage libre');
+      titre.textContent=opts.titre||'';
       liste.innerHTML='';
       function ligne(txt, sous, ic, cb){
         var b=document.createElement('button'); b.type='button';
@@ -2619,16 +2641,36 @@
         b.onclick=function(){ mod.style.display='none'; cb(); };
         liste.appendChild(b);
       }
-      ligne(T('itin.libre.nouveau','Commencer un nouveau voyage libre'),
-            T('itin.libre.nouveau.sous','On le nomme, puis on pose sa première étape.'), '＋', neuf);
-      libres.slice(0,20).forEach(function(r){
+      ligne(opts.libelleNeuf||'', opts.sousNeuf||'', '＋', neuf);
+      siens.slice(0,20).forEach(function(r){
         var nb=(r.steps&&r.steps.length)||0;
         var sous=(window.THEdatePuce?THEdatePuce(r):'')
                + (nb ? nb+' '+T('itin.libre.etapes','étapes') : T('itin.libre.reprendre.sous','Reprendre là où vous en étiez.'));
         ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
-              sous, '🎒', function(){ reprendre(r); });
+              sous, opts.icone||'🧭', function(){ reprendre(r); });
       });
       mod.style.display='flex';
+    };
+
+    window.THElibreChoisir = function(neuf, reprendre){
+      var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      THEchoisirDepart({
+        titre:'🎒 '+T('itin.libre.choix.titre','Voyage libre'), icone:'🎒',
+        garder:function(r){ return r && r.mode==='libre'; },
+        libelleNeuf:T('itin.libre.nouveau','Commencer un nouveau voyage libre'),
+        sousNeuf:T('itin.libre.nouveau.sous','On le nomme, puis on pose sa première étape.')
+      }, neuf, reprendre);
+    };
+    window.THEcomposeChoisir = function(neuf, reprendre){
+      var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      THEchoisirDepart({
+        titre:'🧭 '+T('itin.compose.choix.titre','Composer un itinéraire'), icone:'🧭',
+        /* tout ce qui n'est pas un voyage libre : les fiches d'avant ce jour
+           n'ont pas de mode, elles restent donc reprenables ici. */
+        garder:function(r){ return r && r.mode!=='libre'; },
+        libelleNeuf:T('itin.compose.nouveau','Composer un nouvel itinéraire'),
+        sousNeuf:T('itin.compose.nouveau.sous','On le nomme, puis on règle départ, durée et thèmes.')
+      }, neuf, reprendre);
     };
   </script>
   <script src="brique-modes.js" defer></script>

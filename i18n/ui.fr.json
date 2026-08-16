@@ -489,5 +489,8 @@
   "itin.libre.reprendre.sous": "Reprendre là où vous en étiez.",
   "itin.libre.etapes": "étapes",
   "itin.groupe.libres": "🎒 Voyages libres",
-  "itin.groupe.composes": "🧭 Itinéraires composés"
+  "itin.groupe.composes": "🧭 Itinéraires composés",
+  "itin.compose.choix.titre": "Composer un itinéraire",
+  "itin.compose.nouveau": "Composer un nouvel itinéraire",
+  "itin.compose.nouveau.sous": "On le nomme, puis on règle départ, durée et thèmes."
 }

@@ -2417,5 +2417,8 @@
   "itin.libre.reprendre.sous": "استأنف من حيث توقفت.",
   "itin.libre.etapes": "المراحل",
   "itin.groupe.libres": "🎒 رحلات حرة",
-  "itin.groupe.composes": "🧭 مسارات مركبة"
+  "itin.groupe.composes": "🧭 مسارات مركبة",
+  "itin.compose.choix.titre": "تحديد مسار الرحلة",
+  "itin.compose.nouveau": "إنشاء مسار جديد",
+  "itin.compose.nouveau.sous": "نقوم بتسميته، ثم نضبط وقت البدء والمدة والمواضيع."
 }

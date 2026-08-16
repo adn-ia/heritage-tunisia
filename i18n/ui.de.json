@@ -2417,5 +2417,8 @@
   "itin.libre.reprendre.sous": "Machen Sie dort weiter, wo Sie aufgehört haben.",
   "itin.libre.etapes": "Schritte",
   "itin.groupe.libres": "🎒 Individuelle Reisen",
-  "itin.groupe.composes": "🧭 Zusammengestellte Routen"
+  "itin.groupe.composes": "🧭 Zusammengestellte Routen",
+  "itin.compose.choix.titre": "Eine Route zusammenstellen",
+  "itin.compose.nouveau": "Eine neue Route erstellen",
+  "itin.compose.nouveau.sous": "Man gibt den Namen ein und stellt dann Startzeit, Dauer und Themen ein."
 }
