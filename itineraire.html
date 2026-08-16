@@ -931,7 +931,10 @@
         const cur=readCurrent();
         if(cur && (cur.mode==='libre' || (cur.steps && cur.steps.length))) renderRecord(cur);
       }
-      else if((function(){ try{ return localStorage.getItem('the_actif'); }catch(e){ return null; } })()){
+      /* « Créer un itinéraire » veut dire CHOISIR : on ne saute pas dans le voyage
+         marqué actif, sinon il faut revenir en arrière pour voir les options.
+         L'ouverture directe reste pour une arrivée sans demande explicite. */
+      else if(!params.get('choix') && (function(){ try{ return localStorage.getItem('the_actif'); }catch(e){ return null; } })()){
         /* voyage en cours désigné par l'utilisateur : on l'ouvre directement,
            la sortie « ‹ Les cinq façons de partir » reste disponible. */
         var _a=localStorage.getItem('the_actif');
@@ -2418,7 +2421,8 @@
       THEcomposeChoisir(
         function(){ window.__composeSuite=true; go.click(); },          // un nouveau
         function(rec){                                                   // on en reprend un
-          try{ if(rec && rec.id) localStorage.setItem('the_actif', rec.id); }catch(e){}
+              /* on OUVRE la fiche, on ne la décrète pas « actif au démarrage » :
+                 l'étoile de la liste reste le seul geste qui fixe ça. */
           location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
         });
     }, true);
@@ -2725,7 +2729,8 @@
         var sous=(window.THEdatePuce?THEdatePuce(r):'')
                + (nb ? nb+' '+T('itin.libre.etapes','étapes') : T('itin.libre.reprendre.sous','Reprendre là où vous en étiez.'));
         ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
-              sous, opts.icone||'🧭', function(){ reprendre(r); });
+              sous, (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(opts.icone||'🧭'))),
+              function(){ reprendre(r); });
       });
       mod.style.display='flex';
     };
@@ -2743,9 +2748,10 @@
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
         titre:'🧭 '+T('itin.compose.choix.titre','Composer un itinéraire'), icone:'🧭',
-        /* tout ce qui n'est pas un voyage libre : les fiches d'avant ce jour
-           n'ont pas de mode, elles restent donc reprenables ici. */
-        garder:function(r){ return r && r.mode!=='libre'; },
+        /* TOUS les itinéraires enregistrés, pas seulement les composés : on
+           demande « reprendre un itinéraire sauvegardé », et un voyage libre en
+           est un. Les icônes (🎒 🎲 🧭) disent d'où chacun vient. */
+        garder:function(r){ return !!r; },
         libelleNeuf:T('itin.compose.nouveau','Composer un nouvel itinéraire'),
         sousNeuf:T('itin.compose.nouveau.sous','On le nomme, puis on règle départ, durée et thèmes.')
       }, neuf, reprendre);
@@ -3076,7 +3082,8 @@
           THElibreChoisir(
             function(){ window.startLibre(); },                       // un nouveau
             function(rec){                                            // on en reprend un
-              try{ if(rec && rec.id) localStorage.setItem('the_actif', rec.id); }catch(e){}
+              /* on OUVRE la fiche, on ne la décrète pas « actif au démarrage » :
+                 l'étoile de la liste reste le seul geste qui fixe ça. */
               location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
             });
         });
