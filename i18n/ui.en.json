@@ -2449,5 +2449,6 @@
   "itin.sortie.menu.sous": "Discover the map, the list and everything else.",
   "itin.sortie.options": "Ways to set off",
   "itin.sortie.options.sous": "Independent travel, tailor-made, surprise, package tours, pre-booked.",
-  "itin.sortie.rester": "Stay on this route"
+  "itin.sortie.rester": "Stay on this route",
+  "itin.etape.autour": "🔎 What’s around this stage"
 }

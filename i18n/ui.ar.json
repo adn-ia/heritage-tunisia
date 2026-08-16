@@ -2449,5 +2449,6 @@
   "itin.sortie.menu.sous": "اكتشف الخريطة والقائمة وكل ما عدا ذلك.",
   "itin.sortie.options": "طرق السفر",
   "itin.sortie.options.sous": "رحلة حرة، تنظيم، مفاجأة، جولات، مسجلة.",
-  "itin.sortie.rester": "البقاء على هذا المسار"
+  "itin.sortie.rester": "البقاء على هذا المسار",
+  "itin.etape.autour": "🔎 ما يوجد حول هذه المحطة"
 }

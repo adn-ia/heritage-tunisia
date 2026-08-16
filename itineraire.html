@@ -3186,6 +3186,17 @@
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
           if(window.HMeteo) HMeteo.ouvrir({lat:s.c[1], lon:s.c[0], nom:s.p.nom});
+        } },
+      /* AUTOUR DE CETTE ÉTAPE — pas autour de moi.
+         Le bouton « ce qu'il y a autour » existait, mais un seul, global, centré
+         sur la position du voyageur. Or on prépare souvent depuis chez soi : ce
+         qu'on veut savoir, c'est ce qui entoure Dougga, pas ce qui entoure son
+         salon. La fenêtre acceptait déjà un centre — on lui donne l'étape. */
+      { id:'autour',
+        label:function(){ return T('itin.etape.autour','🔎 Ce qu\'il y a autour de cette étape'); },
+        run:function(i){
+          var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
+          if(window.THEautour) THEautour(s.c, s.p.nom);
         } }
     ];
 

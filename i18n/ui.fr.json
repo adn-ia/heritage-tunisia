@@ -521,5 +521,6 @@
   "itin.sortie.menu.sous": "Découvrir, la carte, la liste, tout le reste.",
   "itin.sortie.options": "Les façons de partir",
   "itin.sortie.options.sous": "Voyage libre, composer, surprise, circuits, enregistrés.",
-  "itin.sortie.rester": "Rester sur cet itinéraire"
+  "itin.sortie.rester": "Rester sur cet itinéraire",
+  "itin.etape.autour": "🔎 Ce qu'il y a autour de cette étape"
 }
