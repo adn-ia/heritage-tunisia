@@ -1310,6 +1310,12 @@
   function loadPicks(str, addMode){
     if(!SITES.length) return;
     window.__surpriseRegle=false;      // une sélection n'est pas un tirage
+    /* La sélection est CONSOMMÉE ici : les noms voyagent désormais dans
+       l'adresse, et « the_picks » n'a plus lieu d'être. Sans cela les cases
+       restaient cochées d'un voyage à l'autre, invisibles derrière un filtre,
+       et le voyageur retrouvait dans son nouvel itinéraire des lieux qu'il
+       avait choisis pour le précédent. */
+    try{ localStorage.removeItem('the_picks'); }catch(e){}
     ENTRY='picks';
     const byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
     let names=str.split('|').map(s=>norm(decodeURIComponent(s))).filter(Boolean);
