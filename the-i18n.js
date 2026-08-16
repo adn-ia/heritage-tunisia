@@ -73,16 +73,21 @@
   function fillStr(s){
     if(typeof s!=='string' || s.indexOf('__')<0) return s;
     var H=window.HConf||{}, pays=_pick(H.pays), langueNat=_pick(H.langueNat);
-    return s.replace(/__MARQUE_MARK__/g,   H.marqueMark||H.marque||'')
-            .replace(/__MARQUE_COURTE__/g, H.marqueCourte||'')
-            .replace(/__MARQUE__/g,        H.marque||'')
-            .replace(/__PAYS_DE__/g,       (H.paysDe|| ('de '+pays)))
+    /* TOUT passe par _pick : une valeur de HConf peut être une chaîne OU un
+       objet par langue. « paysDe » était lu brut et rendait « [object Object] »
+       en pleine page d'accueil — « Sites antiques, monuments et paysages
+       [object Object] ». Les autres jetons sont filtrés par prudence : sur une
+       chaîne, _pick ne fait rien. */
+    return s.replace(/__MARQUE_MARK__/g,   _pick(H.marqueMark)||_pick(H.marque)||'')
+            .replace(/__MARQUE_COURTE__/g, _pick(H.marqueCourte)||'')
+            .replace(/__MARQUE__/g,        _pick(H.marque)||'')
+            .replace(/__PAYS_DE__/g,       (_pick(H.paysDe)|| ('de '+pays)))
             .replace(/__LE_PAYS__/g,       (_pick(H.paysLe)|| pays))
             .replace(/__PAYS_MAJ__/g,      (pays||'').toLocaleUpperCase())
             .replace(/__PAYS__/g,          pays)
             .replace(/__LANGUE_NAT__/g,    langueNat)
             .replace(/__langue_nat__/g,    (langueNat||'').toLocaleLowerCase())
-            .replace(/__ENDONYME__/g,      H.endonyme||'');
+            .replace(/__ENDONYME__/g,      _pick(H.endonyme)||'');
   }
   function fillAll(o){ if(o) for(var k in o){ if(typeof o[k]==='string') o[k]=fillStr(o[k]); } return o; }
 
@@ -102,8 +107,8 @@
   var READY=null;
   /* Le drapeau de la LANGUE NATIONALE se déduit du code pays de HConf : deux
      lettres ISO donnent l'emoji correspondant. Sans cela on écrivait un drapeau
-     en dur — et le site marocain affichait celui de la Tunisie, tandis que la
-     table générique proposait 🇸🇦 pour l'arabe, ce qui n'est le pays de personne.
+     en dur — et une édition affichait celui d'une autre, tandis que la table
+     générique proposait pour l'arabe un drapeau qui n'est le pays de personne.
      Une langue n'est pas un pays : seul le pays de l'ÉDITION a un drapeau. */
   function drapeauNational(code) {
     var nat = [].concat((window.HConf && HConf.langNatCode) || []);

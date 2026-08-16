@@ -222,7 +222,7 @@
      Si le fichier manque pour cette étape ou cette langue, on ne bloque pas :
      l'avance redevient manuelle, sans un mot d'erreur.
 
-     Deux corrections par rapport à la version qui tournait en Tunisie :
+     Deux corrections par rapport à la version qui tournait auparavant :
        · ▶ RELANÇAIT RIEN. On remettait `paused` à false et on redessinait, sans
          rappeler narrate() : le voyageur appuyait sur lecture et devait attendre
          l'étape suivante pour entendre quoi que ce soit.
