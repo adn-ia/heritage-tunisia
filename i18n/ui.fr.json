@@ -492,5 +492,21 @@
   "itin.groupe.composes": "🧭 Itinéraires composés",
   "itin.compose.choix.titre": "Composer un itinéraire",
   "itin.compose.nouveau": "Composer un nouvel itinéraire",
-  "itin.compose.nouveau.sous": "On le nomme, puis on règle départ, durée et thèmes."
+  "itin.compose.nouveau.sous": "On le nomme, puis on règle départ, durée et thèmes.",
+  "filtre.fil.rouge.tous": "Tous les fils rouges",
+  "itin.compose.porte.carte": "🗺️ Choisir sur la carte",
+  "itin.compose.porte.liste": "📋 Choisir dans la liste",
+  "itin.compose.porte.auto": "✨ Laissez-moi le composer pour vous",
+  "itin.compose.porte.titre": "Comment voulez-vous le composer ?",
+  "itin.compose.porte.aide": "Filtrez, choisissez les lieux qui vous parlent, et votre itinéraire se trace à partir d'eux.",
+  "itin.compose.porte.auto.aide": "Vous réglez départ, durée et fil rouge ; l'application trace le parcours.",
+  "itin.picks.titre": "⚙️ Vos réglages",
+  "itin.picks.nb": "Lieux que vous avez choisis :",
+  "itin.picks.depart": "Vous partez d'où ?",
+  "itin.picks.duree": "Vous avez combien de temps ?",
+  "itin.picks.forme": "Boucle ou pas ?",
+  "itin.picks.go": "Tracer l'itinéraire avec ces lieux",
+  "itin.picks.enrichi": "Mon itinéraire enrichi",
+  "itin.picks.defaut": "Ma sélection",
+  "itin.picks.sous": "Les lieux que vous avez choisis"
 }

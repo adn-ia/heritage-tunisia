@@ -2420,5 +2420,21 @@
   "itin.groupe.composes": "🧭 مسارات مركبة",
   "itin.compose.choix.titre": "تحديد مسار الرحلة",
   "itin.compose.nouveau": "إنشاء مسار جديد",
-  "itin.compose.nouveau.sous": "نقوم بتسميته، ثم نضبط وقت البدء والمدة والمواضيع."
+  "itin.compose.nouveau.sous": "نقوم بتسميته، ثم نضبط وقت البدء والمدة والمواضيع.",
+  "filtre.fil.rouge.tous": "جميع الخيوط الحمراء",
+  "itin.compose.porte.carte": "🗺️ اختر من الخريطة",
+  "itin.compose.porte.liste": "📋 اختر من القائمة",
+  "itin.compose.porte.auto": "✨ دعوني أعدها لكم",
+  "itin.compose.porte.titre": "كيف تريد أن تكتبه؟",
+  "itin.compose.porte.aide": "قم بالتصفية، واختر الأماكن التي تثير اهتمامك، وستُحدد مسار رحلتك انطلاقاً منها.",
+  "itin.compose.porte.auto.aide": "أنت تحدد نقطة الانطلاق والمدة والمسار العام؛ ويقوم التطبيق برسم المسار.",
+  "itin.picks.titre": "⚙️ إعداداتك",
+  "itin.picks.nb": "الأماكن التي اخترتموها:",
+  "itin.picks.depart": "من أين ستنطلق؟",
+  "itin.picks.duree": "كم من الوقت لديك؟",
+  "itin.picks.forme": "حلقة أم لا؟",
+  "itin.picks.go": "تحديد المسار باستخدام هذه المواقع",
+  "itin.picks.enrichi": "مساري المُثري",
+  "itin.picks.defaut": "اختياراتي",
+  "itin.picks.sous": "الأماكن التي اخترتموها"
 }

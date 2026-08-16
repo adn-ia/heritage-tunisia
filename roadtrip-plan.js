@@ -353,15 +353,33 @@
       }
     });
 
-    /* 4) PLUS DE « AJOUTER UNE ÉTAPE ICI » ENTRE LES CARTES
-       Il y avait deux boutons pour le même geste : celui-ci, répété à chaque
-       position, et le bouton principal. Un seul suffit : l'écran de saisie
-       demande déjà OÙ placer l'étape (« au début », « après tel arrêt »), donc
-       la position n'a plus besoin d'un bouton par emplacement. On nettoie
-       aussi les barres laissées par un rendu précédent. */
-    var vieilles=document.querySelectorAll(".rtp-ins");
-    for(var vi=0; vi<vieilles.length; vi++)
-      if(vieilles[vi].parentNode) vieilles[vi].parentNode.removeChild(vieilles[vi]);
+    /* 4) « AJOUTER UNE ÉTAPE ICI », ENTRE DEUX ÉTAPES
+       Descendre tout en bas pour insérer au milieu du parcours ne se lit pas.
+       Le lien se pose donc là où l'étape ira. Il n'ouvre PAS un second écran :
+       c'est le même que « Ajouter une étape », à qui il transmet seulement la
+       position à laquelle il est ancré. */
+    cards.forEach(function(card, i){
+      var apres=card.nextElementSibling;
+      if(apres && apres.classList && apres.classList.contains("rtp-ins")) return;
+      var ins=document.createElement("div"); ins.className="rtp-ins";
+      var b=document.createElement("button"); b.type="button";
+      b.textContent="＋ "+T("plan.inserer.ici");
+      (function(pos, node){ b.onclick=function(){ ouvrirSaisie(pos, null, node); }; })(i, ins);
+      ins.appendChild(b);
+      card.parentNode.insertBefore(ins, card.nextSibling);
+    });
+    /* et un pour ouvrir le parcours, avant la première étape */
+    if(cards.length){
+      var avant=cards[0].previousElementSibling;
+      if(!(avant && avant.classList && avant.classList.contains("rtp-ins"))){
+        var ins0=document.createElement("div"); ins0.className="rtp-ins";
+        var b0=document.createElement("button"); b0.type="button";
+        b0.textContent="＋ "+T("plan.inserer.ici");
+        b0.onclick=function(){ ouvrirSaisie(-1, null, ins0); };
+        ins0.appendChild(b0);
+        cards[0].parentNode.insertBefore(ins0, cards[0]);
+      }
+    }
   }
 
   /* Un seul écran de saisie d'étape pour toute l'application.

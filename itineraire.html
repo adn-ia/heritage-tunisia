@@ -1222,10 +1222,62 @@
     let origin, route, best=Infinity;
     chosen.forEach(start=>{ const r=nearestOrder(start.c, chosen.map(x=>({...x})), null); const L=routeLen(r);
       if(L<best){ best=L; route=r; origin={coord:start.c, label:start.p.nom}; } });
-    const dur={max:route.length, lib:'votre sélection sur la carte'};
-    const per={radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'};
-    render(origin, {route, theme:null, dur, per, forme:'oneway', pepites:[],
-      tour:{titre: addMode?'Mon itinéraire enrichi':'Ma sélection', soustitre:'Lieux choisis un à un sur la carte'}});
+    /* ON DEMANDE MAINTENANT CE QU'ON NE POUVAIT PAS DEMANDER AVANT
+       La sélection devenait un itinéraire sur-le-champ : aller simple d'office,
+       départ imposé par le calcul, durée déduite du nombre de lieux. Ces trois
+       questions n'ont de sens qu'UNE FOIS les lieux choisis. Les pépites et les
+       choses à voir sur le chemin se calculent au rendu : rien à faire pour ça. */
+    reglagesApresChoix(chosen, origin, addMode);
+  }
+
+  function reglagesApresChoix(chosen, originAuto, addMode){
+    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var boite=document.getElementById('picksReglages');
+    if(!boite){
+      boite=document.createElement('div'); boite.id='picksReglages'; boite.className='exp-group';
+      boite.innerHTML='<div class="exp-lbl" data-i18n="itin.picks.titre">Vos réglages</div>'
+        + '<div class="hint" id="picksNb"></div>'
+        + '<div class="q"><div class="lbl" data-i18n="itin.picks.depart">Vous partez d\'où ?</div><select id="pkOrigin"></select></div>'
+        + '<div class="q"><div class="lbl" data-i18n="itin.picks.duree">Vous avez combien de temps ?</div><select id="pkDuree"></select></div>'
+        + '<div class="q"><div class="lbl" data-i18n="itin.picks.forme">Boucle ou pas ?</div><select id="pkForme"></select></div>'
+        + '<div class="actions"><button class="btn go" type="button" id="pkGo" data-i18n="itin.picks.go">Tracer l\'itinéraire avec ces lieux</button></div>';
+      var hote=document.getElementById('builder') || document.body;
+      hote.insertBefore(boite, hote.firstChild);
+    }
+    /* On recopie les choix du formulaire existant : mêmes libellés, déjà traduits,
+       et un seul endroit où ils sont définis. */
+    function cloner(de, vers){
+      var a=document.getElementById(de), b=document.getElementById(vers);
+      if(!a||!b) return; b.innerHTML='';
+      [].forEach.call(a.options, function(o){ b.add(new Option(o.textContent, o.value)); });
+      b.value=a.value;
+    }
+    cloner('origin','pkOrigin'); cloner('duree','pkDuree'); cloner('forme','pkForme');
+    var nb=document.getElementById('picksNb');
+    if(nb) nb.textContent=T2('itin.picks.nb','Vos lieux choisis :')+' '+chosen.length;
+    ['savedBox','critStart'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
+    var modes=document.querySelector('.modes'); if(modes) modes.style.display='none';
+    boite.style.display='';
+    try{ boite.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+
+    document.getElementById('pkGo').onclick=function(){
+      var selD=document.getElementById('pkDuree'), selF=document.getElementById('pkForme'), selO=document.getElementById('pkOrigin');
+      document.getElementById('duree').value=selD.value;     // le rendu lit ces réglages
+      document.getElementById('forme').value=selF.value;
+      document.getElementById('origin').value=selO.value;
+      var libDuree=(selD.options[selD.selectedIndex]||{}).textContent||'';
+      boite.style.display='none';
+      resolveOrigin(false).then(function(orig){
+        var dep = orig || originAuto;                        // sans position : on garde le départ calculé
+        var r = nearestOrder(dep.coord, chosen.map(function(x){ var o={}; for(var k in x) o[k]=x[k]; return o; }), null);
+        render(dep, {route:r, theme:null,
+          dur:{max:r.length, lib:libDuree},
+          per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'},
+          forme:selF.value||'oneway', pepites:[], manualOrder:true,
+          tour:{titre: addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection'),
+                soustitre:T2('itin.picks.sous','Les lieux que vous avez choisis')}});
+      });
+    };
   }
 
   // ---------- Enregistrer / reprendre un itinéraire (100% local) ----------
@@ -1780,7 +1832,33 @@
      requirePass renvoie au paywall quand aucun paiement web n'est configuré. */
   document.getElementById('generate').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>run(false));
   document.getElementById('mSurprise').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>{ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); });
-  document.getElementById('mGo').onclick=()=>{ const c=document.getElementById('critStart'); if(c) c.scrollIntoView({behavior:'smooth',block:'start'}); showGuide('👇 Réglez vos critères (<b>départ, durée, ce qui vous intéresse</b>), puis appuyez sur <b>« Composer mon itinéraire »</b>.'); };
+  /* COMPOSER, C'EST LE VOYAGEUR QUI COMPOSE
+     Le bouton dépliait un formulaire et l'application traçait le parcours à sa
+     place — ce que « Surprenez-moi » fait déjà. Ici on ouvre les deux portes où
+     il choisit LUI-MÊME ses lieux, avec les filtres et le fil rouge. Les réglages
+     (départ, durée, forme) viennent APRÈS la sélection, quand ils ont un sens.
+     Le formulaire reste dans la page : « Surprenez-moi » lit ses valeurs. */
+  document.getElementById('mGo').onclick=()=>{
+    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
+        titre=document.getElementById('itiTitre');
+    if(!mod||!liste){ var c=document.getElementById('critStart'); if(c) c.scrollIntoView({behavior:'smooth',block:'start'}); return; }
+    titre.textContent=T2('itin.compose.porte.titre','Comment voulez-vous le composer ?');
+    liste.innerHTML='';
+    function porte(txt, sous, ic, url){
+      var b=document.createElement('button'); b.type='button';
+      b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:12px 4px;'
+        + 'border:none;border-bottom:1px solid #efe7d8;background:none;font:inherit;cursor:pointer';
+      b.innerHTML='<span style="font-size:19px">'+ic+'</span><span style="flex:1"><b>'+txt+'</b>'
+        + (sous?'<br><small style="color:#8a7c66">'+sous+'</small>':'')+'</span>';
+      b.onclick=function(){ mod.style.display='none'; location.href=url; };
+      liste.appendChild(b);
+    }
+    var aide=T2('itin.compose.porte.aide','Filtrez, choisissez les lieux qui vous parlent, et votre itinéraire se trace à partir d\'eux.');
+    porte(T2('itin.compose.porte.carte','🗺️ Choisir sur la carte'), aide, '🗺️', 'index.html?depuis=composer');
+    porte(T2('itin.compose.porte.liste','📋 Choisir dans la liste'), aide, '📋', 'liste.html?depuis=composer');
+    mod.style.display='flex';
+  };
   // ---------- Voyage libre : pas de plan, on capture au fil de la route ----------
   function startLibre(){
     ENTRY='libre';

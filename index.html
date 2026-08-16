@@ -194,7 +194,10 @@
     </div>
     <div class="filters2">
       <select class="sel" id="selGov"><option value="all">Tous les gouvernorats</option></select>
-      <select class="sel" id="selPer"><option value="all">Toutes les périodes</option></select>
+      <!-- Ce menu n'a jamais listé des périodes : il est peuplé depuis HConf.themes,
+           donc il porte les FILS ROUGES, exactement comme celui de la liste. Le nom
+           induisait en erreur, la fonction était juste. -->
+      <select class="sel" id="selPer"><option value="all" data-i18n="filtre.fil.rouge.tous">Tous les fils rouges</option></select>
       <button class="chip" id="filterReset" title="Réinitialiser la carte">↺ Réinitialiser</button>
     </div>
   </div>

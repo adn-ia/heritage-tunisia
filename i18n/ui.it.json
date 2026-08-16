@@ -2420,5 +2420,21 @@
   "itin.groupe.composes": "🧭 Itinerari composti",
   "itin.compose.choix.titre": "Creare un itinerario",
   "itin.compose.nouveau": "Creare un nuovo itinerario",
-  "itin.compose.nouveau.sous": "Lo si seleziona, quindi si impostano l'ora di inizio, la durata e i temi."
+  "itin.compose.nouveau.sous": "Lo si seleziona, quindi si impostano l'ora di inizio, la durata e i temi.",
+  "filtre.fil.rouge.tous": "Tutti i fili conduttori",
+  "itin.compose.porte.carte": "🗺️ Scegli sulla mappa",
+  "itin.compose.porte.liste": "📋 Scegliere dall'elenco",
+  "itin.compose.porte.auto": "✨ Lasciate che ve lo prepari io",
+  "itin.compose.porte.titre": "Come volete comporlo?",
+  "itin.compose.porte.aide": "Filtra, scegli i luoghi che ti colpiscono e il tuo itinerario si definirà a partire da quelli.",
+  "itin.compose.porte.auto.aide": "Imposta il punto di partenza, la durata e il percorso di riferimento; l'app traccia il percorso.",
+  "itin.picks.titre": "⚙️ Le tue impostazioni",
+  "itin.picks.nb": "Luoghi che avete scelto:",
+  "itin.picks.depart": "Da dove parti?",
+  "itin.picks.duree": "Quanto tempo avete a disposizione?",
+  "itin.picks.forme": "Fare il giro o no?",
+  "itin.picks.go": "Traccia il percorso passando per questi luoghi",
+  "itin.picks.enrichi": "Il mio itinerario arricchito",
+  "itin.picks.defaut": "La mia selezione",
+  "itin.picks.sous": "I luoghi che avete scelto"
 }

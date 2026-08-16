@@ -2420,5 +2420,21 @@
   "itin.groupe.composes": "🧭 Zusammengestellte Routen",
   "itin.compose.choix.titre": "Eine Route zusammenstellen",
   "itin.compose.nouveau": "Eine neue Route erstellen",
-  "itin.compose.nouveau.sous": "Man gibt den Namen ein und stellt dann Startzeit, Dauer und Themen ein."
+  "itin.compose.nouveau.sous": "Man gibt den Namen ein und stellt dann Startzeit, Dauer und Themen ein.",
+  "filtre.fil.rouge.tous": "Alle roten Fäden",
+  "itin.compose.porte.carte": "🗺️ Auf der Karte auswählen",
+  "itin.compose.porte.liste": "📋 Aus der Liste auswählen",
+  "itin.compose.porte.auto": "✨ Lassen Sie mich das für Sie zusammenstellen",
+  "itin.compose.porte.titre": "Wie möchten Sie ihn zusammenstellen?",
+  "itin.compose.porte.aide": "Filtern Sie die Ergebnisse, wählen Sie die Orte aus, die Sie ansprechen, und schon entsteht daraus Ihre Reiseroute.",
+  "itin.compose.porte.auto.aide": "Sie geben Startpunkt, Dauer und Route vor; die App berechnet die Strecke.",
+  "itin.picks.titre": "⚙️ Ihre Einstellungen",
+  "itin.picks.nb": "Von Ihnen ausgewählte Orte:",
+  "itin.picks.depart": "Wo fahren Sie von dort aus los?",
+  "itin.picks.duree": "Wie viel Zeit haben Sie?",
+  "itin.picks.forme": "Schleife oder nicht?",
+  "itin.picks.go": "Route mit diesen Orten planen",
+  "itin.picks.enrichi": "Meine erweiterte Reiseroute",
+  "itin.picks.defaut": "Meine Auswahl",
+  "itin.picks.sous": "Die Orte, die Sie ausgewählt haben"
 }

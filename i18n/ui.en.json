@@ -2420,5 +2420,21 @@
   "itin.groupe.composes": "🧭 Combined routes",
   "itin.compose.choix.titre": "Plan a route",
   "itin.compose.nouveau": "Create a new route",
-  "itin.compose.nouveau.sous": "You name it, then set the start time, duration and themes."
+  "itin.compose.nouveau.sous": "You name it, then set the start time, duration and themes.",
+  "filtre.fil.rouge.tous": "All the common threads",
+  "itin.compose.porte.carte": "🗺️ Select from the map",
+  "itin.compose.porte.liste": "📋 Select from the list",
+  "itin.compose.porte.auto": "✨ Let me put it together for you",
+  "itin.compose.porte.titre": "How would you like to put it together?",
+  "itin.compose.porte.aide": "Filter the results, choose the places that appeal to you, and your itinerary will be mapped out based on them.",
+  "itin.compose.porte.auto.aide": "You set the start point, duration and route; the app plots the route.",
+  "itin.picks.titre": "⚙️ Your settings",
+  "itin.picks.nb": "Places you have chosen:",
+  "itin.picks.depart": "Where are you setting off from?",
+  "itin.picks.duree": "How much time do you have?",
+  "itin.picks.forme": "To loop or not to loop?",
+  "itin.picks.go": "Plan a route including these places",
+  "itin.picks.enrichi": "My enhanced itinerary",
+  "itin.picks.defaut": "My selection",
+  "itin.picks.sous": "The places you have chosen"
 }
