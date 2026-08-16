@@ -2404,6 +2404,37 @@
   document.getElementById('shpublish').onclick=publishOptin;
   document.getElementById('addbtn').onclick=addPlace;
   document.getElementById('addinput').addEventListener('keydown',e=>{ if(e.key==='Enter') addPlace(); });
+  /* SORTIR D'UN ITINÉRAIRE, C'EST UN CHOIX — PAS UN RETOUR EN ARRIÈRE
+     « Menu » renvoyait à la CARTE dès que l'itinéraire venait d'une sélection :
+     on croyait revenir au menu et on se retrouvait sur la carte. Depuis un
+     itinéraire fini, les deux sorties sensées sont le menu principal et les
+     façons de partir. On les propose, au lieu de deviner. */
+  function sortirVersMenu(){
+    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
+        titre=document.getElementById('itiTitre');
+    if(!mod||!liste){ location.href='decouvrir.html'; return; }
+    titre.textContent=T2('itin.sortie.titre','Où voulez-vous aller ?');
+    liste.innerHTML='';
+    function ligne(txt, sous, ic, cb){
+      var b=document.createElement('button'); b.type='button';
+      b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:12px 4px;'
+        + 'border:none;border-bottom:1px solid #efe7d8;background:none;font:inherit;cursor:pointer';
+      b.innerHTML='<span style="font-size:19px">'+ic+'</span><span style="flex:1"><b>'+txt+'</b>'
+        + (sous?'<br><small style="color:#8a7c66">'+sous+'</small>':'')+'</span>';
+      b.onclick=function(){ mod.style.display='none'; cb(); };
+      liste.appendChild(b);
+    }
+    ligne(T2('itin.sortie.menu','Le menu principal'),
+          T2('itin.sortie.menu.sous','Découvrir, la carte, la liste, tout le reste.'), '🏛️',
+          function(){ location.href='decouvrir.html'; });
+    ligne(T2('itin.sortie.options','Les façons de partir'),
+          T2('itin.sortie.options.sous','Voyage libre, composer, surprise, circuits, enregistrés.'), '🧭',
+          function(){ location.href='itineraire.html?choix=1'; });
+    ligne(T2('itin.sortie.rester','Rester sur cet itinéraire'), '', '↩', function(){});
+    mod.style.display='flex';
+  }
+
   function backToBuilder(){
     if(ENTRY==='picks'){ location.href='index.html'; return; }   // venu de la carte → on y retourne
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');
@@ -2424,7 +2455,7 @@
   // Retour intelligent de la barre du haut : résultat → formulaire/carte ; formulaire → le hub (decouvrir)
   document.getElementById('backNav').addEventListener('click',function(e){
     const resultShown=document.getElementById('result').style.display==='block' || document.getElementById('album').style.display==='block';
-    if(resultShown){ e.preventDefault(); backToBuilder(); }
+    if(resultShown){ e.preventDefault(); sortirVersMenu(); }
   });
     chargerDonnees();   // tout est déclaré : on peut charger sans course avec le cache
   </script>

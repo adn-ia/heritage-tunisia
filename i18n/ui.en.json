@@ -2443,5 +2443,11 @@
   "itin.nom.valider": "Continue",
   "itin.nom.annuler": "Cancel",
   "picks.ajouter.a": "➕ Add to ‘{n}’",
-  "picks.compose.en.cours": "You are dialling: {n}"
+  "picks.compose.en.cours": "You are dialling: {n}",
+  "itin.sortie.titre": "Where would you like to go?",
+  "itin.sortie.menu": "The main menu",
+  "itin.sortie.menu.sous": "Discover the map, the list and everything else.",
+  "itin.sortie.options": "Ways to set off",
+  "itin.sortie.options.sous": "Independent travel, tailor-made, surprise, package tours, pre-booked.",
+  "itin.sortie.rester": "Stay on this route"
 }

@@ -2443,5 +2443,11 @@
   "itin.nom.valider": "Weiter",
   "itin.nom.annuler": "Abbrechen",
   "picks.ajouter.a": "➕ Zu „{n}“ hinzufügen",
-  "picks.compose.en.cours": "Sie wählen: {n}"
+  "picks.compose.en.cours": "Sie wählen: {n}",
+  "itin.sortie.titre": "Wohin möchten Sie fahren?",
+  "itin.sortie.menu": "Das Hauptmenü",
+  "itin.sortie.menu.sous": "Entdecken Sie die Speisekarte, die Liste und alles andere.",
+  "itin.sortie.options": "Die verschiedenen Möglichkeiten, sich auf den Weg zu machen",
+  "itin.sortie.options.sous": "Freie Reise, selbst zusammengestellt, Überraschung, Rundreisen, gebucht.",
+  "itin.sortie.rester": "Auf dieser Route bleiben"
 }

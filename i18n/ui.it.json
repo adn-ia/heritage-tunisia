@@ -2443,5 +2443,11 @@
   "itin.nom.valider": "Continua",
   "itin.nom.annuler": "Annulla",
   "picks.ajouter.a": "➕ Aggiungi a « {n} »",
-  "picks.compose.en.cours": "Si compone: {n}"
+  "picks.compose.en.cours": "Si compone: {n}",
+  "itin.sortie.titre": "Dove volete andare?",
+  "itin.sortie.menu": "Il menu principale",
+  "itin.sortie.menu.sous": "Scopri la mappa, l'elenco e tutto il resto.",
+  "itin.sortie.options": "I modi per partire",
+  "itin.sortie.options.sous": "Viaggio libero, personalizzato, a sorpresa, itinerari prestabiliti.",
+  "itin.sortie.rester": "Rimanere su questo percorso"
 }

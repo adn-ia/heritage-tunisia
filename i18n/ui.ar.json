@@ -2443,5 +2443,11 @@
   "itin.nom.valider": "متابعة",
   "itin.nom.annuler": "إلغاء",
   "picks.ajouter.a": "➕ إضافة إلى «{n}»",
-  "picks.compose.en.cours": "أنت تتصل بـ: {n}"
+  "picks.compose.en.cours": "أنت تتصل بـ: {n}",
+  "itin.sortie.titre": "إلى أين تريدون الذهاب؟",
+  "itin.sortie.menu": "القائمة الرئيسية",
+  "itin.sortie.menu.sous": "اكتشف الخريطة والقائمة وكل ما عدا ذلك.",
+  "itin.sortie.options": "طرق السفر",
+  "itin.sortie.options.sous": "رحلة حرة، تنظيم، مفاجأة، جولات، مسجلة.",
+  "itin.sortie.rester": "البقاء على هذا المسار"
 }

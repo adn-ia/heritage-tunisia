@@ -515,5 +515,11 @@
   "itin.nom.valider": "Continuer",
   "itin.nom.annuler": "Annuler",
   "picks.ajouter.a": "➕ Ajouter à « {n} »",
-  "picks.compose.en.cours": "Vous composez : {n}"
+  "picks.compose.en.cours": "Vous composez : {n}",
+  "itin.sortie.titre": "Où voulez-vous aller ?",
+  "itin.sortie.menu": "Le menu principal",
+  "itin.sortie.menu.sous": "Découvrir, la carte, la liste, tout le reste.",
+  "itin.sortie.options": "Les façons de partir",
+  "itin.sortie.options.sous": "Voyage libre, composer, surprise, circuits, enregistrés.",
+  "itin.sortie.rester": "Rester sur cet itinéraire"
 }
