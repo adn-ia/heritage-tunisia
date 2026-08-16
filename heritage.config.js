@@ -16,6 +16,9 @@
     marqueMark:   "Tunisia&nbsp;Heritage<br>Experience",   // marque du LOGO (HTML, <br> permis) — data-brand-mark
     monogram:     "THE",   // monogramme court du logo (data-brand-mono)
     carte:        { lat: 34.5, lon: 9.5, zoom: 7 },
+    // Point de départ d'un voyage libre sans GPS. Tunis : c'est là que le
+    // voyageur arrive, et c'est ce que l'application faisait déjà.
+    departDefaut: { lat: 36.8, lon: 10.18 },
     cloudflare:   "de37166feb0649ccb405647109e25906",
     exportNom:    "Tunisia-Heritage",
     description:  "Découvrir, comprendre et garder un souvenir du patrimoine tunisien — sites, itinéraires et carnet de voyage, hors-ligne.",   // manifest PWA/SEO

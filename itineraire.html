@@ -2202,10 +2202,29 @@
       startLibreAvecNom(_nomLibre);
     });
   }
+  /* Sans GPS, on part du centre déclaré par l'édition. Repli : rien plutôt
+     qu'un pays au hasard — on ne devine pas où est le voyageur. */
+  function departParDefaut(){
+    var H = window.HConf || {};
+    /* Deux sources, dans cet ordre : le départ que l'édition a CHOISI, puis à
+       défaut le centre de sa carte. Le premier existe parce que le milieu
+       géographique d'un pays n'est pas forcément là où un voyageur arrive :
+       une capitale, un aéroport, une ville d'entrée sont souvent plus justes. */
+    var d = H.departDefaut || H.carte || {};
+    var lat = parseFloat(d.lat), lon = parseFloat(d.lon);
+    if (isFinite(lat) && isFinite(lon)) return [lon, lat];
+    return [0, 0];
+  }
+
   function startLibreAvecNom(_nomLibre){
-    render({coord:[10.18,36.8], label:'Ma position'},
+    /* Le point de départ par défaut se lit dans HConf.carte — le seul fichier
+       qui change par pays. Il était écrit en dur : une édition partait donc du
+       pays d'une autre. */
+    render({coord:departParDefaut(), label:uiT('itin.ma.position')},
       { route:[], theme:{ic:'🎒',label:'Voyage libre'}, dur:{max:99,lib:'libre'}, per:{radius:99999,lib:'libre'},
         forme:'oneway', pepites:[], mode:'libre', tour:{titre:_nomLibre, soustitre:uiT('itin.libre.soustitre')} });
+    /* la première étape se demande MAINTENANT : le voyage existe, elle a où aller */
+    setTimeout(function(){ if(window.THEetape) THEetape.ouvrir({premiere:true}); }, 350);
     /* enregistré tout de suite : il apparaît dans le menu, on peut y revenir */
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
     (function(){ var arr=readSaved();
@@ -3412,12 +3431,11 @@
 
     /* Au lancement d'un voyage libre : la première étape tout de suite. */
     if(typeof startLibre==='function'){
-      var origine=startLibre;
-      window.startLibre=function(){
-        var r=origine.apply(this, arguments);
-        setTimeout(function(){ if(window.THEetape) THEetape.ouvrir({premiere:true}); }, 900);
-        return r;
-      };
+      /* L'écran de la première étape s'ouvrait sur une minuterie de 900 ms lancée
+         au clic — donc PENDANT la fenêtre « quel nom ? », et AVANT que
+         l'itinéraire n'existe. L'étape saisie là tombait dans le vide, puis le
+         rendu du voyage neuf l'écrasait : le voyageur perdait sa première halte
+         sans un mot. Elle s'ouvre maintenant quand l'itinéraire est là. */
       /* On demande d'abord : neuf, ou l'un de ceux déjà commencés ? Sans cela,
          un voyage libre entamé la veille n'était atteignable que par « Mes
          itinéraires », alors que sa place est ici. */
