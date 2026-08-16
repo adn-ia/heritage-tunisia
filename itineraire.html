@@ -2748,10 +2748,12 @@
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
         titre:'🧭 '+T('itin.compose.choix.titre','Composer un itinéraire'), icone:'🧭',
-        /* TOUS les itinéraires enregistrés, pas seulement les composés : on
-           demande « reprendre un itinéraire sauvegardé », et un voyage libre en
-           est un. Les icônes (🎒 🎲 🧭) disent d'où chacun vient. */
-        garder:function(r){ return !!r; },
+        /* Chaque façon de partir ne rouvre QUE les siens : le voyage libre ne
+           propose que des voyages libres, Composer que des itinéraires composés.
+           Les avoir mélangés ici était mon erreur — la raison pour laquelle le
+           choix ne s'affichait pas était ailleurs (l'ouverture automatique).
+           Les fiches d'avant ce jour n'ont pas de mode : elles restent ici. */
+        garder:function(r){ return r && r.mode!=='libre'; },
         libelleNeuf:T('itin.compose.nouveau','Composer un nouvel itinéraire'),
         sousNeuf:T('itin.compose.nouveau.sous','On le nomme, puis on règle départ, durée et thèmes.')
       }, neuf, reprendre);
