@@ -2450,5 +2450,7 @@
   "itin.sortie.options": "I modi per partire",
   "itin.sortie.options.sous": "Viaggio libero, personalizzato, a sorpresa, itinerari prestabiliti.",
   "itin.sortie.rester": "Rimanere su questo percorso",
-  "itin.etape.autour": "🔎 Cosa c'è nei dintorni di questa tappa"
+  "itin.etape.autour": "🔎 Cosa c'è nei dintorni di questa tappa",
+  "itin.surprise.reglages": "🎲 Scegli ciò che conta per te: il resto verrà deciso a sorte.",
+  "itin.surprise.bouton": "🎲 Sorprendimi"
 }

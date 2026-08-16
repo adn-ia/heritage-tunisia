@@ -2450,5 +2450,7 @@
   "itin.sortie.options": "Ways to set off",
   "itin.sortie.options.sous": "Independent travel, tailor-made, surprise, package tours, pre-booked.",
   "itin.sortie.rester": "Stay on this route",
-  "itin.etape.autour": "🔎 What’s around this stage"
+  "itin.etape.autour": "🔎 What’s around this stage",
+  "itin.surprise.reglages": "🎲 Choose what matters to you — the rest will be decided by lot.",
+  "itin.surprise.bouton": "🎲 Surprise me"
 }

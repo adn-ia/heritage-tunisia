@@ -1218,6 +1218,7 @@
   // ---------- arrivée depuis la carte : lieux choisis un à un (index.html?picks=…) ----------
   function loadPicks(str, addMode){
     if(!SITES.length) return;
+    window.__surpriseRegle=false;      // une sélection n'est pas un tirage
     ENTRY='picks';
     const byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
     let names=str.split('|').map(s=>norm(decodeURIComponent(s))).filter(Boolean);
@@ -1678,7 +1679,7 @@
       '<div class="b">THE</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
       new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>';
     const hasNature=route.some(s=>s.genre==='nature');
-    rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+theme.label:uiT('🧭 Itinéraire libre')))+'</h2>'+
+    rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
       (tour&&tour.soustitre?'<div style="font-style:italic;color:var(--stone);margin:-2px 0 6px;font-size:14px">'+tour.soustitre+'</div>':'')+
       '<div class="meta"><b>'+route.length+' '+uiT('étapes')+'</b> · '+durLabel+' · '+per.lib+
       ' · '+formeLbl+' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label+'.<span class="tag-ind">durées indicatives</span><span id="carnet-total"></span></div>'+
@@ -1804,15 +1805,24 @@
   function run(randomize){
     ENTRY='funnel';
     if(randomize){
-      // 🎲 Surprenez-moi : on ne garde que le DÉPART + la DURÉE choisis,
-      // et on tire le reste au hasard (périmètre, forme, thème). Genre = « un peu de tout » (évite un résultat vide).
+      /* 🎲 SURPRENEZ-MOI — le hasard remplit ce qu'on n'a PAS dit.
+         Le tirage écrasait le périmètre, la forme, le genre et le fil rouge,
+         même quand le voyageur venait de les régler : il réglait, appuyait,
+         et retrouvait autre chose. Le hasard ne comble plus que les blancs ;
+         un fil rouge laissé libre est tiré au sort — la surprise est là. */
       const rnd=sel=>{ sel.selectedIndex=Math.floor(Math.random()*sel.options.length); };
-      document.getElementById('perimetre').value='region';   // #5 : surprise limitée à la RÉGION de départ (pas « tout le pays » → évite le débordement, ex. Açores + continent)
-      rnd(document.getElementById('forme'));
-      document.getElementById('genre').value='all';
-      const viable=THEMES.filter(themeViable);
-      selectedThemes=new Set([viable[Math.floor(Math.random()*viable.length)].id]);
-      [...chipsEl.children].forEach(x=>x.classList.toggle('on', selectedThemes.has(x.dataset.id)));
+      if(!window.__surpriseRegle){          // tirage à la volée : rien n'a été réglé
+        document.getElementById('perimetre').value='region';
+        rnd(document.getElementById('forme'));
+        document.getElementById('genre').value='all';
+      }
+      if(!selectedThemes || !selectedThemes.size){
+        const viable=THEMES.filter(themeViable);
+        if(viable.length){
+          selectedThemes=new Set([viable[Math.floor(Math.random()*viable.length)].id]);
+          [...chipsEl.children].forEach(x=>x.classList.toggle('on', selectedThemes.has(x.dataset.id)));
+        }
+      }
     }
     const genreFilter=document.getElementById('genre').value;
     const dureeKey=document.getElementById('duree').value;
@@ -1920,7 +1930,40 @@
   /* Une surprise enregistrée se rouvre par SA porte, pas par celle de Composer :
      elle n'y avait rien à faire. Tirer une nouvelle surprise reste un clic. */
   document.getElementById('mSurprise').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>{
-    var lancer=function(){ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); };
+    /* SURPRENEZ-MOI OUVRE D'ABORD LES RÉGLAGES
+       Le tirage partait aussitôt : on ne pouvait rien dire de son départ, de
+       son temps, ni de son fil rouge. Le formulaire — celui que Composer a
+       quitté — sert ici : on règle ce qu'on veut, on laisse le reste vide, et
+       c'est le bouton qui déclenche le tirage sur ces bases. */
+    var lancer=function(){
+      var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      var bld=document.getElementById('builder');
+      var crit=document.getElementById('critStart');
+      var gen=document.getElementById('generate');
+      if(!bld||!crit||!gen){ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); return; }
+      window.__surpriseRegle=true;                    // ses choix seront respectés
+      bld.classList.remove('trois-seules');
+      /* On MONTRE les questions et on cache le reste. Les blocs avaient été
+         éteints un à un par les écrans précédents : lever la classe ne suffit
+         pas, il faut rallumer ce qu'on veut voir. */
+      [].forEach.call(bld.children, function(e){
+        var cacher = (e.id==='savedBox' || e.id==='presetsBox' || e.id==='picksReglages'
+                      || (e.classList && e.classList.contains('modes')));
+        e.style.display = cacher ? 'none' : '';
+      });
+      var aide=document.getElementById('surpriseAide');
+      if(!aide){
+        aide=document.createElement('div'); aide.id='surpriseAide'; aide.className='hint';
+        aide.style.cssText='margin:0 0 10px;color:#a8884f';
+        crit.parentNode.insertBefore(aide, crit);
+      }
+      aide.textContent=T2('itin.surprise.reglages','🎲 Réglez ce qui compte pour vous — le reste sera tiré au sort.');
+      aide.style.display='';
+      /* le bouton du bas déclenche LE TIRAGE, pas la composition */
+      gen.innerHTML=T2('itin.surprise.bouton','🎲 Surprenez-moi');
+      gen.onclick=function(){ requirePass(uiT('itin.feature.composer'), function(){ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); }); };
+      try{ crit.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){}
+    };
     if(!window.THEsurpriseChoisir){ lancer(); return; }
     THEsurpriseChoisir(lancer, function(rec){
       location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
@@ -1993,7 +2036,7 @@
   function shareText(){
     if(!LASTRES) return '';
     const {route,theme}=LASTRES;
-    const head=(theme?theme.ic+' '+theme.label:uiT('itin.mon.itineraire'))+' — '+uiT('itin.pays.nom');
+    const head=(theme?theme.ic+' '+uiT(theme.label):uiT('itin.mon.itineraire'))+' — '+uiT('itin.pays.nom');
     const lines=route.map((s,i)=>(i+1)+'. '+s.p.nom+(s.p.gouvernorat?' ('+s.p.gouvernorat+')':''));
     return head+'\n'+lines.join('\n')+'\n\nComposé avec THE · '+((window.HConf&&HConf.marqueCourte)||'Heritage');
   }
@@ -2010,7 +2053,7 @@
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
     const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
     const coverHtml='<div class="album-cover"><div class="ac-brand">'+(((window.HConf&&HConf.marque)||'Heritage Experience').toUpperCase())+'</div>'+
-      '<h2>'+(theme?theme.ic+' '+theme.label:'🧭 Mon itinéraire')+'</h2>'+
+      '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
       (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+'</div>';
     if(isDep){ doc.innerHTML='<div class="depliant-strip" id="depStrip">'+coverHtml+'</div>'; }
@@ -2539,6 +2582,7 @@
        déjà composé n'était atteignable que par « Mes itinéraires ». */
     var go=document.getElementById('mGo');
     if(go) go.addEventListener('click', function(ev){
+      window.__surpriseRegle=false;                       // on quitte le tirage
       if(window.__composeSuite){ window.__composeSuite=false; return; }   // second passage : on laisse faire
       if(!window.THEcomposeChoisir) return;
       ev.stopImmediatePropagation();
@@ -2621,15 +2665,26 @@
      sien au départ ; les deux autres l'obtiennent une fois l'itinéraire dressé. */
   (function(){
     var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    /* La DERNIÈRE boîte native du nommage, et elle se trouvait sur le chemin de
+       « Surprenez-moi » : même panne que Composer si le navigateur cesse
+       d'afficher les dialogues — le parcours restait sans nom et sans fiche,
+       sans un mot. On passe par la fenêtre de l'application. */
     function nommer(defaut){
       if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
       if(LASTRES._nomme) return;                       // on ne redemande pas à chaque retouche
       var n=window.THEnomEnAttente;
       if(!n){
-        n=prompt(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut);
-        if(n===null) return;                            // refusé : l'itinéraire vit quand même
+        if(!window.THEdemanderNom) return;
+        THEdemanderNom(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut,
+                       function(v){ nommerAvec(v, defaut); });
+        return;
       }
+      nommerAvec(n, defaut);
+    }
+    function nommerAvec(n, defaut){
+      if(typeof LASTRES==='undefined' || !LASTRES || LASTRES._nomme) return;
       window.THEnomEnAttente=null;
+      try{ sessionStorage.removeItem('the_nom_attente'); }catch(e){}
       n=(n||'').trim().slice(0,80) || defaut;
       LASTRES.tour = LASTRES.tour || {};
       LASTRES.tour.titre = n;
@@ -2656,7 +2711,11 @@
     ['generate','mSurprise'].forEach(function(bid){
       var b=document.getElementById(bid); if(!b) return;
       b.addEventListener('click', function(){
-        apres(bid==='mSurprise' ? T('itin.nom.surprise','Ma surprise') : T('itin.nom.compose','Mon itinéraire'));
+        /* Le tirage se déclenche maintenant par le bouton du bas : sans ce témoin,
+         la surprise était nommée « Mon itinéraire » et rangée avec les composés —
+         donc introuvable par sa propre porte. */
+      apres((bid==='mSurprise' || window.__surpriseRegle)
+            ? T('itin.nom.surprise','Ma surprise') : T('itin.nom.compose','Mon itinéraire'));
       });
     });
   })();

@@ -2450,5 +2450,7 @@
   "itin.sortie.options": "طرق السفر",
   "itin.sortie.options.sous": "رحلة حرة، تنظيم، مفاجأة، جولات، مسجلة.",
   "itin.sortie.rester": "البقاء على هذا المسار",
-  "itin.etape.autour": "🔎 ما يوجد حول هذه المحطة"
+  "itin.etape.autour": "🔎 ما يوجد حول هذه المحطة",
+  "itin.surprise.reglages": "🎲 حدد ما يهمك — أما الباقي فسيتم تحديده بالقرعة.",
+  "itin.surprise.bouton": "🎲 فاجئني"
 }

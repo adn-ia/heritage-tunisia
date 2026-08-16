@@ -2450,5 +2450,7 @@
   "itin.sortie.options": "Die verschiedenen Möglichkeiten, sich auf den Weg zu machen",
   "itin.sortie.options.sous": "Freie Reise, selbst zusammengestellt, Überraschung, Rundreisen, gebucht.",
   "itin.sortie.rester": "Auf dieser Route bleiben",
-  "itin.etape.autour": "🔎 Was es rund um diese Etappe zu entdecken gibt"
+  "itin.etape.autour": "🔎 Was es rund um diese Etappe zu entdecken gibt",
+  "itin.surprise.reglages": "🎲 Lege fest, was dir wichtig ist – der Rest wird ausgelost.",
+  "itin.surprise.bouton": "🎲 Überrasche mich"
 }
