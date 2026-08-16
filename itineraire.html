@@ -928,6 +928,13 @@
         else THEchoisirCible(function(rec){
           if(rec){ try{ localStorage.setItem('the_current', JSON.stringify(rec)); }catch(e){} }
           else { try{ localStorage.removeItem('the_current'); }catch(e){} }
+          /* ON ENRICHIT LA FICHE CHOISIE — ON N'EN CRÉE PAS UNE SECONDE
+             « À quel itinéraire ajouter ? » demandait où verser les lieux, puis
+             écrivait une fiche neuve « Mon itinéraire enrichi » à côté : le voyage
+             du voyageur restait tel quel, et il se retrouvait avec deux carnets
+             pour un seul voyage. La cible garde son identifiant, son nom et son
+             mode ; c'est ELLE qu'on réécrit. */
+          window.__cibleAjout = rec || null;
           loadPicks(picksParam, !!rec);
         });
       }
@@ -1235,6 +1242,37 @@
         libDuree: t.duree||''
       });
     }
+    /* VERSER LE CIRCUIT DANS UN ITINÉRAIRE EXISTANT
+       Un circuit n'est pas forcément un voyage neuf : le couple qui a déjà son
+       voyage libre veut souvent y ajouter les étapes d'un circuit, pas ouvrir un
+       second carnet. On demande alors où le verser, et on fusionne — leurs
+       propres haltes comprises, qui ne sont dans aucune base. */
+    var ajout=false; try{ ajout=new URLSearchParams(location.search).get('add')==='1'; }catch(e){}
+    if(ajout && window.THEchoisirCible){
+      THEchoisirCible(function(rec){
+        if(!rec){ if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut, tracer); else tracer(defaut); return; }
+        var byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
+        var dejaLa=new Set(route.map(s=>norm(s.p.nom)));
+        var avant=[];
+        (rec.steps||[]).forEach(function(st){
+          if(dejaLa.has(norm(st.nom))) return;
+          var trouve = st.genre!=='perso' && byName.get(norm(st.nom));
+          var s = trouve ? {...trouve} : { c:st.c, layer:'perso', genre:st.genre||'perso',
+            p:{nom:st.nom, type:'', gouvernorat:'', description:st.desc||'', source:st.src||'', a_voir:'', conseil:''} };
+          if(st.c) s.c=st.c;
+          s.nuit=st.nuit; s.sejour=st.sejour; s.ville=st.ville; s.tnote=st.tnote;
+          if(st.halte){ s.halte=true; s.htype=st.htype||''; }
+          if(s.c) avant.push(s);
+        });
+        var fusion=avant.concat(route);
+        reglagesApresChoix(fusion, origin, true, {
+          nom: rec.title, mode: rec.mode||'', idCible: rec.id,
+          tour: rec.tour || {titre: rec.title, soustitre: ''},
+          pepites: pepites
+        });
+      });
+      return;
+    }
     if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut, tracer);
     else tracer(defaut);
   }
@@ -1246,8 +1284,31 @@
     ENTRY='picks';
     const byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
     let names=str.split('|').map(s=>norm(decodeURIComponent(s))).filter(Boolean);
-    if(addMode){ const cur=readCurrent(); if(cur&&cur.steps&&cur.steps.length){ const ex=cur.steps.map(st=>norm(st.nom)); names=[...new Set(ex.concat(names))]; } }
     const chosen=names.map(n=>byName.get(n)).filter(Boolean).map(s=>({...s}));
+    /* LES ÉTAPES DU VOYAGEUR NE SONT PAS DANS LA BASE
+       On fusionnait par NOM : les étapes déjà là étaient recherchées dans les
+       lieux sourcés, et celles que le voyageur avait posées lui-même — un riad,
+       une adresse, une halte — n'y figurent pas. Elles disparaissaient à la
+       fusion. On reprend donc les étapes existantes telles qu'elles sont
+       enregistrées, comme le fait la réouverture d'une fiche. */
+    if(addMode){
+      const cur=readCurrent();
+      if(cur && cur.steps && cur.steps.length){
+        const dejaLa=new Set(chosen.map(s=>norm(s.p.nom)));
+        const avant=[];
+        cur.steps.forEach(function(st){
+          if(dejaLa.has(norm(st.nom))) return;                    // pas deux fois le même lieu
+          const trouve = st.genre!=='perso' && byName.get(norm(st.nom));
+          const s = trouve ? {...trouve} : { c:st.c, layer:'perso', genre:st.genre||'perso',
+            p:{nom:st.nom, type:'', gouvernorat:'', description:st.desc||'', source:st.src||'', a_voir:'', conseil:''} };
+          if(st.c) s.c=st.c;
+          s.nuit=st.nuit; s.sejour=st.sejour; s.ville=st.ville; s.tnote=st.tnote;
+          if(st.halte){ s.halte=true; s.htype=st.htype||''; }
+          if(s.c) avant.push(s);
+        });
+        chosen.unshift.apply(chosen, avant);                       // les siennes d'abord
+      }
+    }
     if(!chosen.length) return;
     // anti-zigzag : on essaie chaque lieu comme départ et on garde le parcours le plus court
     const routeLen=r=>{ let L=0; for(let i=1;i<r.length;i++) L+=haversine(r[i-1].c,r[i].c); return L; };
@@ -1259,7 +1320,13 @@
        départ imposé par le calcul, durée déduite du nombre de lieux. Ces trois
        questions n'ont de sens qu'UNE FOIS les lieux choisis. Les pépites et les
        choses à voir sur le chemin se calculent au rendu : rien à faire pour ça. */
-    reglagesApresChoix(chosen, origin, addMode);
+    /* si le voyageur a désigné un itinéraire à enrichir, c'est CELUI-LÀ qu'on
+       réécrit — pas une seconde fiche à côté. */
+    var cible = window.__cibleAjout || null;
+    reglagesApresChoix(chosen, origin, addMode, cible ? {
+      nom: cible.title, mode: cible.mode || '', idCible: cible.id,
+      tour: cible.tour || {titre: cible.title, soustitre: ''}
+    } : undefined);
   }
 
 
@@ -1268,16 +1335,21 @@
      parcours composé à partir d'une sélection ne passait pas par là : on le
      traçait, on le nommait, et il n'existait nulle part — introuvable dans
      « Itinéraires sauvegardés » comme au moment de reprendre. */
-  function enregistrerCompose(titre, origine){
+  function enregistrerCompose(titre, origine, idCible){
     try{
       if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
       var arr=readSaved();
       var nom = titre || (LASTRES.tour && LASTRES.tour.titre) || '';
-      var id  = 'it'+Date.now();
-      arr.unshift({ id:id, cree:Date.now(), title:nom, forme:LASTRES.forme||'oneway', mode:origine||'compose',
+      /* si on enrichit une fiche existante, on la REMPLACE : même identifiant,
+         même date de création, même origine — c'est le même voyage. */
+      var place = idCible ? arr.findIndex(function(r){ return r && r.id===idCible; }) : -1;
+      var id  = (place>=0) ? arr[place].id : 'it'+Date.now();
+      var fiche = { id:id, cree:(place>=0 ? (arr[place].cree||Date.now()) : Date.now()),
+        title:nom, forme:LASTRES.forme||'oneway', mode:(place>=0 ? (arr[place].mode||origine||'compose') : (origine||'compose')),
         origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
         steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
-          halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||''}; }) });
+          halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||''}; }) };
+      if(place>=0) arr[place]=fiche; else arr.unshift(fiche);
       writeSaved(arr.slice(0,40));
       LASTRES._id=id; LASTRES._nomme=true;      // les ajouts suivants iront dans CETTE fiche
       renderSaved();
@@ -1355,7 +1427,8 @@
           mode:opts.mode||'compose',
           tour: opts.tour || {titre: nomVoulu || (addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection')),
                 soustitre:T2('itin.picks.sous','Les lieux que vous avez choisis')}});
-        enregistrerCompose(_titre, opts.mode||'compose');
+        enregistrerCompose(_titre, opts.mode||'compose', opts.idCible);
+        window.__cibleAjout=null;
       });
     };
   }

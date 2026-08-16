@@ -63,6 +63,10 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function premium(){ try{ return window.THEPass ? THEPass.isActive() : false; }catch(e){ return false; } }
+  function dejaDesItineraires(){
+    try{ var a=JSON.parse(localStorage.getItem('the_saved')||'[]'); return Array.isArray(a) && a.length>0; }
+    catch(e){ return false; }
+  }
 
   var FREE_TOURS = 4;                      // même règle que l'écran d'itinéraire
   var url = (window.THEi18n && THEi18n.data) ? THEi18n.data('tours') : 'tours.json';
@@ -90,6 +94,17 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
         if(verrou){ location.href='premium.html'; return; }
         location.href = 'itineraire.html?tour=' + encodeURIComponent(id);
       };
+      /* ON DOIT POUVOIR TOUT CROISER : un circuit n'est pas forcément un voyage
+         neuf. S'il existe déjà des itinéraires, on propose de VERSER celui-ci
+         dans l'un d'eux — le voyage libre en cours, par exemple. */
+      if(!verrou && dejaDesItineraires()){
+        var plus = document.createElement('button');
+        plus.className = 'go'; plus.type = 'button';
+        plus.style.cssText = 'background:#fff;color:#6b5a39;border:1px solid var(--line);margin-top:6px';
+        plus.textContent = T('circ.ajouter','➕ L\'ajouter à un itinéraire existant');
+        plus.onclick = function(){ location.href = 'itineraire.html?tour=' + encodeURIComponent(id) + '&add=1'; };
+        carte.appendChild(plus);
+      }
       grille.appendChild(carte);
     });
   }).catch(function(){ document.getElementById('vide').style.display=''; });
