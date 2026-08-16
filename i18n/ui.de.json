@@ -2439,5 +2439,7 @@
   "itin.picks.sous": "Die Orte, die Sie ausgewählt haben",
   "itin.surprise.choix.titre": "Überrasche mich",
   "itin.surprise.nouveau": "Eine neue Überraschung aus dem Ärmel schütteln",
-  "itin.surprise.nouveau.sous": "Eine zufällige Route, ausgehend von Ihrem Startpunkt und Ihrer Zeit."
+  "itin.surprise.nouveau.sous": "Eine zufällige Route, ausgehend von Ihrem Startpunkt und Ihrer Zeit.",
+  "itin.nom.valider": "Weiter",
+  "itin.nom.annuler": "Abbrechen"
 }

@@ -375,6 +375,10 @@
 /* Trois options à l'arrivée : la règle CSS l'emporte sur les scripts qui
    réaffichent « Mon voyage » ou « Circuits prêts » après nous. */
 #builder.trois-seules > *:not(.modes):not([data-brique="modes"]){ display:none !important; }
+/* Après avoir choisi ses lieux, la seule question est « d'où, combien de temps,
+   boucle ou pas ». Une règle, pas un masquage en JavaScript : les circuits se
+   réaffichaient tout seuls après coup, et revenaient par-dessus le panneau. */
+#builder.reglages-picks > *:not(#picksReglages){ display:none !important; }
 /* L'aide explicative fait partie de l'accueil : c'est elle qui dit à quoi
    servent les options. La masquer avec le reste la rendait inatteignable. */
 </style>
@@ -1256,10 +1260,24 @@
       b.value=a.value;
     }
     cloner('origin','pkOrigin'); cloner('duree','pkDuree'); cloner('forme','pkForme');
+    /* on retrouve le nom donné avant d'aller choisir ses lieux */
+    var nomVoulu=window.THEnomEnAttente;
+    if(!nomVoulu){ try{ nomVoulu=sessionStorage.getItem('the_nom_attente')||''; }catch(e){} }
     var nb=document.getElementById('picksNb');
     if(nb) nb.textContent=T2('itin.picks.nb','Vos lieux choisis :')+' '+chosen.length;
     ['savedBox','critStart'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
     var modes=document.querySelector('.modes'); if(modes) modes.style.display='none';
+    /* Tant que « #builder » porte trois-seules, une règle masque TOUT sauf les
+       cartes de mode — y compris ce panneau, créé mais invisible. On a choisi ses
+       lieux : on n'est plus à l'écran des façons de partir. Mais lever le masque
+       découvrait AUSSI les circuits et les réglages du générateur : à cet instant
+       la seule question est « d'où, combien de temps, boucle ou pas ». On ne
+       montre donc que ce panneau. */
+    var bld=document.getElementById('builder');
+    if(bld){
+      bld.classList.remove('trois-seules');
+      bld.classList.add('reglages-picks');
+    }
     boite.style.display='';
     try{ boite.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
 
@@ -1273,11 +1291,14 @@
       resolveOrigin(false).then(function(orig){
         var dep = orig || originAuto;                        // sans position : on garde le départ calculé
         var r = nearestOrder(dep.coord, chosen.map(function(x){ var o={}; for(var k in x) o[k]=x[k]; return o; }), null);
+        try{ sessionStorage.removeItem('the_nom_attente'); }catch(e){}
+        window.THEnomEnAttente=null;
+        if(bld) bld.classList.remove('reglages-picks');     // l'itinéraire reprend toute la page
         render(dep, {route:r, theme:null,
           dur:{max:r.length, lib:libDuree},
           per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'},
-          forme:selF.value||'oneway', pepites:[], manualOrder:true,
-          tour:{titre: addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection'),
+          forme:selF.value||'oneway', pepites:[], manualOrder:true, mode:'compose',
+          tour:{titre: nomVoulu || (addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection')),
                 soustitre:T2('itin.picks.sous','Les lieux que vous avez choisis')}});
       });
     };
@@ -1310,7 +1331,9 @@
     if(!_libre && !LASTRES.route.length) return;
     if(!isPremium() && readSaved().length >= 2){ premAsk(uiT('itin.feature.enregistrer')); return; }   // 2 itinéraires max sans abonnement
     const def=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:(uiT('Itinéraire —')+' '+LASTRES.route.length+' '+uiT('étapes'));
-    const name=prompt(uiT('Nom de cet itinéraire :'), def); if(name===null) return;
+    THEdemanderNom(uiT('Nom de cet itinéraire :'), def, function(name){ saveAvecNom(name, def); });
+  }
+  function saveAvecNom(name, def){
     const arr=readSaved();
     arr.unshift({ id:'it'+Date.now(), cree:Date.now(), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
@@ -1450,6 +1473,41 @@
     d.querySelector('.pa-no').onclick=ferme;
   }
   let _passOk=null;
+
+  /* DEMANDER UN NOM SANS BOÎTE NATIVE
+     Le nom d'un itinéraire était demandé par prompt(). Après quelques dialogues,
+     Chrome propose « Empêcher cette page de créer des boîtes supplémentaires » :
+     une fois cochée, prompt() rend null sur-le-champ, et le code lisait ça comme
+     une annulation. Composer ne faisait alors plus rien, sans un mot. Un navigateur
+     ne doit pas pouvoir couper une fonction de l'application : on demande le nom
+     dans une fenêtre à nous. */
+  window.THEdemanderNom = function(titre, defaut, ok){
+    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var vieux=document.getElementById('nomModal'); if(vieux) vieux.remove();
+    var f=document.createElement('div'); f.id='nomModal';
+    f.style.cssText='position:fixed;inset:0;z-index:10001;background:rgba(20,15,10,.55);'
+      + 'display:flex;align-items:center;justify-content:center;padding:18px';
+    f.innerHTML='<div style="background:#fffdf8;border-radius:12px;max-width:420px;width:100%;padding:20px">'
+      + '<div id="nomT" style="font-family:\'Cormorant Garamond\',serif;font-weight:700;font-size:20px;color:#4b3f2a;margin-bottom:12px"></div>'
+      + '<input id="nomI" type="text" style="width:100%;padding:12px;border:1px solid #e3d8c4;border-radius:8px;font:inherit;font-size:16px">'
+      + '<div style="display:flex;gap:8px;margin-top:14px">'
+      + '<button id="nomOk" type="button" style="flex:1;border:none;background:#a8884f;color:#fff;border-radius:8px;padding:12px;font:inherit;font-size:15px;cursor:pointer"></button>'
+      + '<button id="nomNon" type="button" style="border:1px solid #e3d8c4;background:#fff;color:#6b5a39;border-radius:8px;padding:12px 16px;font:inherit;font-size:15px;cursor:pointer"></button>'
+      + '</div></div>';
+    document.body.appendChild(f);
+    f.querySelector('#nomT').textContent=titre;
+    var champ=f.querySelector('#nomI'); champ.value=defaut||'';
+    f.querySelector('#nomOk').textContent=T2('itin.nom.valider','Continuer');
+    f.querySelector('#nomNon').textContent=T2('itin.nom.annuler','Annuler');
+    function fermer(){ f.remove(); }
+    function valider(){ var v=(champ.value||'').trim().slice(0,80) || (defaut||''); fermer(); ok(v); }
+    f.querySelector('#nomOk').onclick=valider;
+    f.querySelector('#nomNon').onclick=fermer;
+    f.addEventListener('click', function(e){ if(e.target===f) fermer(); });
+    champ.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); valider(); } });
+    setTimeout(function(){ try{ champ.focus(); champ.select(); }catch(e){} }, 60);
+  };
+
   function requirePass(feat, onOk){ if(isPremium() || (window.THEPass&&THEPass.hasFeature&&THEPass.hasFeature(feat))){ onOk(); return; }
     var _live=window.THEPass && (THEPass.checkoutURL('semaine')||THEPass.checkoutURL('mois'));
     if(!_live){ premAsk(feat); return; }   // pas de paiement web : on AVERTIT, on ne redirige pas sèchement
@@ -1875,9 +1933,11 @@
     ENTRY='libre';
     /* On demande son nom AU DÉPART : un voyage libre se remplit en chemin, il doit
        donc exister — et être retrouvable — avant d'avoir la moindre halte. */
-    var _nomLibre = prompt(uiT('itin.libre.nom'), uiT('itin.libre.defaut'));
-    if(_nomLibre===null) return;                    // annulé : on ne lance rien
-    _nomLibre = (_nomLibre||'').trim().slice(0,80) || uiT('itin.libre.defaut');
+    THEdemanderNom(uiT('itin.libre.nom'), uiT('itin.libre.defaut'), function(_nomLibre){
+      startLibreAvecNom(_nomLibre);
+    });
+  }
+  function startLibreAvecNom(_nomLibre){
     render({coord:[10.18,36.8], label:'Ma position'},
       { route:[], theme:{ic:'🎒',label:'Voyage libre'}, dur:{max:99,lib:'libre'}, per:{radius:99999,lib:'libre'},
         forme:'oneway', pepites:[], mode:'libre', tour:{titre:_nomLibre, soustitre:uiT('itin.libre.soustitre')} });
@@ -2438,15 +2498,21 @@
       /* Le nom AVANT les critères : on sait dès le départ quel voyage on prépare,
          et la question ne vient plus surprendre une fois le parcours dressé. */
       var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
-      if(!window.THEnomEnAttente){
-        var n=prompt(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'),
-                     T2('itin.nom.compose','Mon itinéraire'));
-        if(n===null) return;                                  // annulé : on ne déplie rien
-        window.THEnomEnAttente=(n||'').trim().slice(0,80) || T2('itin.nom.compose','Mon itinéraire');
+      function suite(){
+        ouvrir();
+        var r=document.getElementById('raccourcisChoix');
+        if(r) r.style.display='';
       }
-      ouvrir();
-      var r=document.getElementById('raccourcisChoix');
-      if(r) r.style.display='';
+      if(window.THEnomEnAttente){ suite(); return; }
+      THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'),
+                     T2('itin.nom.compose','Mon itinéraire'),
+                     /* Le nom est rangé pour le voyage : aller choisir ses lieux sur la
+                        carte RECHARGE la page, et une variable de page n'y survit pas.
+                        Sans ça on revenait avec une sélection sans nom, et l'itinéraire
+                        qu'on venait de nommer semblait s'être évaporé. */
+                     function(nom){ window.THEnomEnAttente=nom;
+                       try{ sessionStorage.setItem('the_nom_attente', nom); }catch(e){}
+                       suite(); });
     }, true);
   })();
   </script>

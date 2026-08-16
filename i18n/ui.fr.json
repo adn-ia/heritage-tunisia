@@ -511,5 +511,7 @@
   "itin.picks.sous": "Les lieux que vous avez choisis",
   "itin.surprise.choix.titre": "Surprenez-moi",
   "itin.surprise.nouveau": "Tirer une nouvelle surprise",
-  "itin.surprise.nouveau.sous": "Un parcours au hasard, à partir de votre départ et de votre temps."
+  "itin.surprise.nouveau.sous": "Un parcours au hasard, à partir de votre départ et de votre temps.",
+  "itin.nom.valider": "Continuer",
+  "itin.nom.annuler": "Annuler"
 }
