@@ -316,11 +316,15 @@
         drow.innerHTML='<span>📅 '+xe(T("plan.quand"))+'</span>'
           + '<input type="date" data-rtp-date value="'+xe(md.date||"")+'">'
           + '<input type="time" data-rtp-heure value="'+xe(md.heure||"")+'">';
-        /* La date se lit avec le nom de l'étape, comme le sous-titre d'une carte
-           de RoadTrip : elle se place juste après lui, pas au milieu des gestes. */
+        /* La date se lit avec le nom de l'étape, comme le sous-titre d'une carte de
+           RoadTrip : elle se place juste après lui. On insère chez SON parent —
+           le nom est niché dans l'en-tête, donc son voisin n'est pas un enfant de
+           la carte. L'oublier levait une erreur qui tuait toute la décoration :
+           plus de liens « ajouter ici », plus de visites, et une seule carte
+           garnie sur trois. Une seule ligne fautive, tout le reste emporté. */
         var nomEl=card.querySelector(".nm");
-        if(nomEl && nomEl.nextSibling) card.insertBefore(drow, nomEl.nextSibling);
-        else if(nomEl) card.appendChild(drow);
+        var hote=nomEl && nomEl.parentNode;
+        if(hote) hote.insertBefore(drow, nomEl.nextSibling);
         else card.insertBefore(drow, card.firstChild);
         drow.querySelector("[data-rtp-date]").onchange=function(e){ setDate(i, e.target.value); };
         drow.querySelector("[data-rtp-heure]").onchange=function(e){ setHeure(i, e.target.value); };
