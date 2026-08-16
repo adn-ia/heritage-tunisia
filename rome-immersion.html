@@ -59,34 +59,42 @@ a.exit{position:fixed;top:16px;left:16px;z-index:40;color:var(--gold);text-decor
   <script src="the-pass.js"></script>
 </head>
 <body>
-<a class="exit" href="decouvrir.html">‹ Quitter</a>
+<a class="exit" href="decouvrir.html" data-i18n="doc.quitter">‹ Quitter</a>
 <div id="bar"></div>
-<div id="stage"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#b7a888" id="loading">Chargement de l'immersion…</div></div>
-<button class="ctl" id="prev" title="Précédent">‹</button>
-<button class="ctl" id="next" title="Suivant">›</button>
+<div id="stage"><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#b7a888" id="loading" data-i18n="doc.rome.chargement">Chargement de l'immersion…</div></div>
+<button class="ctl" id="prev" title="Précédent" data-i18n-title="doc.precedent">‹</button>
+<button class="ctl" id="next" title="Suivant" data-i18n-title="doc.suivant">›</button>
 <div id="topctl">
-  <button class="ctl" id="sound" title="Musique de fond">🔇</button>
-  <button class="ctl" id="playpause" title="Lecture / pause">⏸</button>
+  <button class="ctl" id="sound" title="Musique de fond" data-i18n-title="doc.musique">🔇</button>
+  <button class="ctl" id="playpause" title="Lecture / pause" data-i18n-title="doc.lecture.pause">⏸</button>
 </div>
 <div id="counter"></div>
-<div id="hint">Touchez pour avancer · maintenez pour mettre en pause</div>
+<div id="hint" data-i18n="doc.rome.aide">Touchez pour avancer · maintenez pour mettre en pause</div>
 
 <!-- Musique de fond : déposez un fichier « immersion-rome.mp3 » dans le dossier (libre de droits / CC).
      Tant qu'il est absent, le bouton son reste sans effet. -->
 <audio id="bgm" loop preload="none"><source src="immersion-rome.mp3" type="audio/mpeg"></audio>
 
 <script>
+
+  /* Le récit et les libellés vivent désormais dans l'i18n. Le français reste
+     ici EN REPLI : une clé manquante ne doit jamais rendre un écran vide. */
+  function TR(k, fr){ var v=(window.THEi18n && THEi18n.ui && THEi18n.ui(k)); return (v && v!==k) ? v : fr; }
+  /* Les descriptions des lieux SONT traduites (i18n/<langue>.json) : l'immersion
+     lisait le géojson brut, donc du français quelle que soit la langue. */
+  function trSite(p){ return (window.THEi18n && !THEi18n.isFr()) ? THEi18n.site(p.nom) : null; }
+
   // Récit liminaire + séquence (lieux RÉELS de la base, dans un ordre narratif).
   // Sous-titres = descriptions sourcées (chargées depuis sites.geojson). Narratif de liaison = histoire établie.
   const INTROS = [
-    { type:'text', mark:((window.HConf&&HConf.marqueCourte)||'Heritage')+' — Immersion', titre:'Rome en Afrique',
+    { k:'doc.rome.r1', type:'text', mark:((window.HConf&&HConf.marqueCourte)||'Heritage')+' — '+TR('doc.rome.immersion','Immersion'), titre:'Rome en Afrique',
       texte:'Un voyage à travers l\'Africa romaine, telle que la Tunisie la porte encore — de la mer au seuil du désert.' },
-    { type:'text', mark:'146 av. J.-C. — 439 apr. J.-C.', titre:'L\'Africa Proconsulaire',
+    { k:'doc.rome.r2', type:'text', mark:'146 av. J.-C. — 439 apr. J.-C.', titre:'L\'Africa Proconsulaire',
       texte:'Après la destruction de Carthage en 146 av. J.-C., Rome fonde la province d\'Africa, bientôt dite « proconsulaire ». Terre du blé et de l\'huile d\'olive, elle devient l\'un des greniers et l\'une des provinces les plus riches de l\'Empire — pavée de routes, semée de cités.' },
-    { type:'text', mark:'Le cœur de la province', titre:'La Tunisie antique',
+    { k:'doc.rome.r3', type:'text', mark:'Le cœur de la province', titre:'La Tunisie antique',
       texte:'C\'est ici, sur le sol de la Tunisie actuelle, que bat le cœur de l\'Africa : des dizaines de cités à capitole, théâtres et thermes, des mosaïques par milliers, et une frontière — le limes — qui veille face au Sahara. Laissez-vous porter, image après image.' }
   ];
-  const OUTRO = { type:'text', mark:'Fin de l\'immersion', titre:'…jusqu\'au seuil du désert',
+  const OUTRO = { k:'doc.rome.r4', type:'text', mark:'Fin de l\'immersion', titre:'…jusqu\'au seuil du désert',
     texte:'De Carthage au limes saharien, l\'Africa romaine a laissé des pierres que le pays porte encore. À vous, maintenant, d\'aller les lire sur place.' };
   // ordre narratif : la capitale → les grandes cités du Tell → le Sud et la frontière
   const SEQ = [
@@ -133,6 +141,14 @@ a.exit{position:fixed;top:16px;left:16px;z-index:40;color:var(--gold);text-decor
     {nom:'Tisavar (Ksar Rhilane)', act:'La frontière du désert'},
     {nom:'Limes Tripolitanus (frontiere saharienne)', act:'La frontière du désert'}
   ];
+
+  /* Actes et légendes : la clé est trouvée à partir du texte français, ce qui
+     évite de réécrire les quarante lignes de la séquence. */
+  var ACTES={"Autour de Carthage": "doc.rome.acte1", "Dougga, la mieux conservée": "doc.rome.acte2", "L'eau et l'abondance": "doc.rome.acte3", "La capitale": "doc.rome.acte4", "La frontière du désert": "doc.rome.acte5", "Le Sahel antique": "doc.rome.acte6", "Les grandes cités du Tell": "doc.rome.acte7", "Les hautes plaines": "doc.rome.acte8", "Les ports": "doc.rome.acte9", "Les premiers chrétiens": "doc.rome.acte10", "Sur la grande voie": "doc.rome.acte11", "Vers le Sud": "doc.rome.acte12"};
+  var LEGS={"Le forum, cœur civique de la cité, bordé de portiques.": "doc.rome.leg1", "La place de la Rose des Vents : un cadran gravé y nommait les douze vents.": "doc.rome.leg2", "Les latrines des Cyclopes — douze sièges en fer à cheval, lieu de sociabilité.": "doc.rome.leg3", "Les thermes des Cyclopes, chauffés par hypocauste.": "doc.rome.leg4", "Le Capitole vu depuis le théâtre, dominant la ville.": "doc.rome.leg5", "Les thermes d'Antonin en bord de mer — parmi les plus vastes de l'Empire.": "doc.rome.leg6", "L'entrée monumentale du forum de Sufetula et ses trois temples.": "doc.rome.leg7", "Le forum de Bulla Regia.": "doc.rome.leg8", "Mosaïque d'une villa souterraine : on s'enterrait pour fuir la chaleur.": "doc.rome.leg9"};
+  function trActe(a){ return ACTES[a] ? TR(ACTES[a], a) : a; }
+  function trLeg(c){ return LEGS[c] ? TR(LEGS[c], c) : c; }
+
   const VOICE = false;   // passez à true quand vous aurez ajouté les voix ElevenLabs (voix-rome/0.mp3, 1.mp3, …)
   const DURATION = 9000; // ms par image
 
@@ -162,24 +178,31 @@ a.exit{position:fixed;top:16px;left:16px;z-index:40;color:var(--gold);text-decor
 
   let slides=[], idx=0, timer=null, playing=true, voiceEl=null;
 
+  /* On attend l'i18n : bâtir avant elle affichait le français une seconde,
+     puis rien ne le corrigeait — les écrans sont construits une seule fois. */
+  var pretI18n = (window.THEi18n && THEi18n.ready) ? THEi18n.ready : Promise.resolve();
+  pretI18n.catch(function(){}).then(function(){
   fetch('sites.geojson').then(r=>r.json()).then(g=>{
     const by=new Map(g.features.map(f=>[norm(f.properties.nom), f.properties]));
     const built=[...INTROS];
     SEQ.forEach(s=>{ const p=by.get(norm(s.nom)); if(!p) return;
-      if(p.photo) built.push({ type:'photo', act:s.act, nom:p.nom, desc:(p.description||'').trim(),
+      const tr=trSite(p);
+      const nomAff=(tr&&tr.n)||p.nom, descAff=((tr&&tr.d)||p.description||'').trim();
+      if(p.photo) built.push({ type:'photo', act:trActe(s.act), nom:nomAff, desc:descAff,
         photo:big(p.photo), credit:p.photo_credit||'', source:p.source||'' });
-      (EXTRA[s.nom]||[]).forEach(x=>built.push({ type:'photo', act:s.act, nom:p.nom, desc:x.cap,
+      (EXTRA[s.nom]||[]).forEach(x=>built.push({ type:'photo', act:trActe(s.act), nom:nomAff, desc:trLeg(x.cap),
         photo:wm(x.f), credit:'Wikimedia Commons', source:p.source||'Wikimedia Commons' })); });
     built.push(OUTRO);
     slides=built; buildDOM(); show(0); play();
-  }).catch(()=>{ document.getElementById('loading').textContent=uiT('Impossible de charger l\'immersion (connexion ?).'); });
+  }).catch(()=>{ document.getElementById('loading').textContent=TR('doc.rome.erreur','Impossible de charger l\'immersion (connexion ?).'); });
+  });
 
   function buildDOM(){
     const stage=document.getElementById('stage'); stage.innerHTML='';
     slides.forEach((s,i)=>{
       const d=document.createElement('div'); d.className='slide'+(s.type==='text'?' text':''); d.dataset.i=i;
       if(s.type==='text'){
-        d.innerHTML='<div class="cap"><div class="mark">'+s.mark+'</div><h2>'+s.titre+'</h2><p>'+s.texte+'</p></div>';
+        d.innerHTML='<div class="cap"><div class="mark">'+TR(s.k+'.mark',s.mark)+'</div>'+'<h2>'+TR(s.k+'.titre',s.titre)+'</h2>'+'<p>'+TR(s.k+'.texte',s.texte)+'</p></div>';
       } else {
         const bg = s.photo ? 'style="background-image:url(\''+s.photo+'\')"' : 'style="background:#1a140d"';
         d.innerHTML='<div class="bg" '+bg+'></div><div class="veil"></div>'+

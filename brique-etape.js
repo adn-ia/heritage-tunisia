@@ -64,7 +64,7 @@
       "padding:13px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;margin-top:16px}" +
       "#betModal .bet-no{display:block;width:100%;background:none;border:1px solid #e3d8c4;color:#8a7c66;" +
       "border-radius:8px;padding:11px;font:inherit;cursor:pointer;margin-top:8px}" +
-      "#betModal .bet-res button{display:block;width:100%;text-align:left;background:none;border:none;" +
+      "#betModal .bet-res button{display:block;width:100%;text-align:left;background:none;border:none;.bet-tag{display:inline-block;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#a8884f;margin-right:6px}" +
       "border-bottom:1px solid #efe7d8;padding:9px 2px;font:inherit;font-size:14.5px;cursor:pointer;color:#2b2318}" +
       "#betModal .bet-pos{font-size:13.5px;color:#a8884f;margin:8px 0 0}";
     document.head.appendChild(s);
@@ -118,33 +118,53 @@
     return m;
   }
 
+  /* Une seule recherche pour deux besoins. Il y avait deux façons d'ajouter :
+     un encart qui fouillait les lieux du guide sans rien demander d'autre, et
+     cet écran qui ne connaissait que les adresses. On cherche désormais les
+     DEUX ici — les lieux du guide d'abord, les adresses ensuite — et l'encart
+     disparaît. La brique reste autonome : si l'hôte n'offre pas ses lieux,
+     elle se contente des adresses, sans rien casser. */
+  function proposer(res, pos, etiquette, libelle, coord, estAdresse) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = '<span class="bet-tag">' + ech(etiquette) + "</span> " + ech(libelle);
+    b.onclick = function () {
+      POS = coord; ADRESSE = estAdresse ? libelle : "";
+      pos.textContent = "📍 " + libelle;
+      res.innerHTML = "";
+      var nom = document.getElementById("bet-nom");
+      if (nom && !nom.value.trim()) nom.value = String(libelle).split(",")[0];
+    };
+    res.appendChild(b);
+  }
+
   function chercher() {
     var q = (document.getElementById("bet-q").value || "").trim();
     var pos = document.getElementById("bet-pos"), res = document.getElementById("bet-res");
     if (!q) return;
     pos.textContent = L("position.recherche"); res.innerHTML = "";
+
+    var locaux = [];
+    try {
+      if (typeof window.THEsitesRecherche === "function") locaux = window.THEsitesRecherche(q) || [];
+    } catch (e) { locaux = []; }
+    locaux.slice(0, 5).forEach(function (s) {
+      if (s && s.nom && s.coord) proposer(res, pos, L("source.guide"), s.nom, s.coord, false);
+    });
+
     var iso = (window.HConf && HConf.iso) || "";
     fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=" + langue() +
           (iso ? "&countrycodes=" + iso : "") + "&q=" + encodeURIComponent(q))
       .then(function (r) { return r.json(); })
       .then(function (j) {
-        if (!j || !j.length) { pos.textContent = L("position.introuvable"); return; }
-        pos.textContent = "";
-        j.forEach(function (x) {
-          var b = document.createElement("button");
-          b.type = "button"; b.textContent = x.display_name;
-          b.onclick = function () {
-            POS = [parseFloat(x.lon), parseFloat(x.lat)];
-            ADRESSE = x.display_name;
-            pos.textContent = "📍 " + x.display_name;
-            res.innerHTML = "";
-            var nom = document.getElementById("bet-nom");
-            if (nom && !nom.value.trim()) nom.value = String(x.display_name).split(",")[0];
-          };
-          res.appendChild(b);
+        if ((!j || !j.length) && !locaux.length) { pos.textContent = L("position.introuvable"); return; }
+        if (pos.textContent === L("position.recherche")) pos.textContent = "";
+        (j || []).forEach(function (x) {
+          proposer(res, pos, L("source.adresse"), x.display_name,
+                   [parseFloat(x.lon), parseFloat(x.lat)], true);
         });
       })
-      .catch(function () { pos.textContent = L("position.introuvable"); });
+      .catch(function () { if (!locaux.length) pos.textContent = L("position.introuvable"); });
   }
 
   function gps() {

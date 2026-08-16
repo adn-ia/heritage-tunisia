@@ -32,7 +32,9 @@
     "inserer": "Insérer dans l'itinéraire :",
     "inserer.debut": "Au début",
     "inserer.fin": "À la fin",
-    "inserer.apres": "Après « {n} »"
+    "inserer.apres": "Après « {n} »",
+    "source.guide": "lieu répertorié",
+    "source.adresse": "adresse"
   },
   "en": {
     "titre": "➕ Add a stop",
@@ -61,7 +63,9 @@
     "inserer": "Place it in the route:",
     "inserer.debut": "At the beginning",
     "inserer.fin": "At the end",
-    "inserer.apres": "After « {n} »"
+    "inserer.apres": "After « {n} »",
+    "source.guide": "listed site",
+    "source.adresse": "address"
   },
   "ar": {
     "titre": "➕ إضافة محطة",
@@ -90,7 +94,9 @@
     "inserer": "إدراج في مسار الرحلة:",
     "inserer.debut": "في البداية",
     "inserer.fin": "في النهاية",
-    "inserer.apres": "بعد «{n}»"
+    "inserer.apres": "بعد «{n}»",
+    "source.guide": "موقع مُدرج في السجل",
+    "source.adresse": "العنوان"
   },
   "de": {
     "titre": "➕ Zwischenstopp hinzufügen",
@@ -119,7 +125,9 @@
     "inserer": "In die Reiseroute einfügen:",
     "inserer.debut": "Zu Beginn",
     "inserer.fin": "Am Ende",
-    "inserer.apres": "Nach „{n}“"
+    "inserer.apres": "Nach „{n}“",
+    "source.guide": "gelisteter Ort",
+    "source.adresse": "Adresse"
   },
   "it": {
     "titre": "➕ Aggiungi una tappa",
@@ -148,6 +156,8 @@
     "inserer": "Inserisci nell'itinerario:",
     "inserer.debut": "All'inizio",
     "inserer.fin": "Alla fine",
-    "inserer.apres": "Dopo «{n}»"
+    "inserer.apres": "Dopo «{n}»",
+    "source.guide": "luogo catalogato",
+    "source.adresse": "indirizzo"
   }
 }
