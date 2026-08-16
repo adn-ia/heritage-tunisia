@@ -1834,7 +1834,6 @@
   "🛣️ À voir en chemin": "🛣️ Sehenswürdigkeiten entlang der Route",
   "🛣️ À voir en chemin vers": "🛣️ Sehenswürdigkeiten auf dem Weg nach",
   "🟢 WhatsApp": "🟢 WhatsApp",
-  "🤝 Contribuer & signaler": "🤝 Mitwirken & melden",
   "🧭 '+T('cette étape dans Maps')+'": "🧭 '+T('diese Etappe in Maps')+'",
   "🧭 0 lieu": "🧭 0 Orte",
   "🧭 Baroudeur": "🧭 Abenteurer",
@@ -1924,7 +1923,7 @@
   "soutien.paiement.securise.via.lemonsqueezy": "Sichere Zahlung über Lemon Squeezy – wir erhalten keine Bankdaten. Tipp: Bei Beträgen unter ~1 € machen die Transaktionsgebühren den Großteil aus.",
   "soutien.sobre.par.choix.on": "Schlicht aus Überzeugung: Wir verlangen so wenig wie möglich von Ihnen, und es wird nichts verkauft.",
   "accueil.sources.credits": "Quellen &amp; Bildnachweise",
-  "soutien.contribuer.signaler": "🤝 Mitwirken &amp; melden",
+  "soutien.contribuer.signaler": "Mitwirken &amp; melden",
   "soutien.du.contenu.humiliant.diffamatoire": "Inhalte, die erniedrigend, diffamierend, hasserfüllt, rassistisch, diskriminierend oder belästigend gegenüber Personen sind;",
   "soutien.soutenir.le.projet": "☕ Das Projekt unterstützen",
   "soutien.rich.vos.itineraires.et.votre": "Ihre Routen und Ihr Tagebuch (Fotos, Notizen, Sprachaufnahmen) sind <b>auf diesem Gerät</b> gespeichert. Um sie <b>zu sichern</b> oder <b>auf ein anderes Smartphone/Tablet zu</b> <b>übertragen</b>, exportieren Sie sie in eine Datei – und importieren Sie diese Datei anschließend auf das andere Gerät.",
@@ -2283,5 +2282,8 @@
   "itin.choisir.autrement": "Oder wählen Sie Ihre Orte selbst aus",
   "itin.choisir.carte": "🗺️ Auf der Karte",
   "itin.choisir.liste": "📋 In der Liste",
-  "itin.choisir.aide": "Markieren Sie dort Orte und klicken Sie dann auf „Zur Reiseroute hinzufügen“: Sie werden dann in die Reiseroute aufgenommen."
+  "itin.choisir.aide": "Markieren Sie dort Orte und klicken Sie dann auf „Zur Reiseroute hinzufügen“: Sie werden dann in die Reiseroute aufgenommen.",
+  "menu.groupe.documentaires": "Thematische Dokumentationen",
+  "menu.documentaires": "Thematische Dokumentarfilme",
+  "menu.documentaires.sub": "Rom in Afrika · Die Medina von Tunis"
 }

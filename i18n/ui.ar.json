@@ -1834,7 +1834,6 @@
   "🛣️ À voir en chemin": "🛣️ معالم سياحية على الطريق",
   "🛣️ À voir en chemin vers": "🛣️ أماكن تستحق الزيارة في طريقك إلى",
   "🟢 WhatsApp": "🟢 واتساب",
-  "🤝 Contribuer & signaler": "🤝 المساهمة والإبلاغ",
   "🧭 '+T('cette étape dans Maps')+'": "🧭 '+T('هذه المرحلة في خرائط')+'",
   "🧭 0 lieu": "🧭 0 مكان",
   "🧭 Baroudeur": "🧭 مغامر",
@@ -1924,7 +1923,7 @@
   "soutien.paiement.securise.via.lemonsqueezy": "دفع آمن عبر Lemon Squeezy — لا تصلنا أي بيانات مصرفية. نصيحة: بالنسبة للمبالغ التي تقل عن 1 يورو تقريبًا، تستهلك رسوم المعاملة الجزء الأكبر منها.",
   "soutien.sobre.par.choix.on": "بساطة باختيارنا: نطلب منكم أقل ما يمكن، ولا نبيع أي شيء.",
   "accueil.sources.credits": "المصادر والاعتمادات",
-  "soutien.contribuer.signaler": "🤝 المساهمة والإبلاغ",
+  "soutien.contribuer.signaler": "المساهمة والإبلاغ",
   "soutien.du.contenu.humiliant.diffamatoire": "المحتوى المهين أو التشهيري أو الذي يحض على الكراهية أو العنصري أو التمييزي أو الذي يشكل مضايقة تجاه الأشخاص؛",
   "soutien.soutenir.le.projet": "☕ دعم المشروع",
   "soutien.rich.vos.itineraires.et.votre": "يتم حفظ مساراتك ودفتر ملاحظاتك (الصور والملاحظات والتسجيلات الصوتية) <b>على هذا الجهاز</b>. <b>لحفظها</b> أو <b>نقلها إلى هاتف أو جهاز لوحي آخر</b>، قم بتصديرها إلى ملف — ثم أعد استيراد هذا الملف إلى الجهاز الآخر.",
@@ -2283,5 +2282,8 @@
   "itin.choisir.autrement": "أو اختر وجهاتك بنفسك",
   "itin.choisir.carte": "🗺️ على الخريطة",
   "itin.choisir.liste": "📋 في القائمة",
-  "itin.choisir.aide": "حدد المواقع هناك، ثم انقر على «إضافة إلى مسار الرحلة»: وستُضاف إلى المسار."
+  "itin.choisir.aide": "حدد المواقع هناك، ثم انقر على «إضافة إلى مسار الرحلة»: وستُضاف إلى المسار.",
+  "menu.groupe.documentaires": "أفلام وثائقية مواضيعية",
+  "menu.documentaires": "أفلام وثائقية مواضيعية",
+  "menu.documentaires.sub": "روما في إفريقيا · المدينة القديمة في تونس"
 }

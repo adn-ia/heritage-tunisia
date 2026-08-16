@@ -45,7 +45,7 @@
   "soutien.paiement.securise.via.lemonsqueezy": "Paiement sécurisé via Lemon Squeezy — aucune coordonnée bancaire ne nous parvient. Astuce : sous ~1 €, les frais de transaction absorbent l'essentiel.",
   "soutien.sobre.par.choix.on": "Sobre par choix : on vous en demande le moins possible, et rien ne se vend.",
   "accueil.sources.credits": "Sources & crédits",
-  "soutien.contribuer.signaler": "🤝 Contribuer & signaler",
+  "soutien.contribuer.signaler": "Contribuer & signaler",
   "soutien.du.contenu.humiliant.diffamatoire": "du contenu humiliant, diffamatoire, haineux, raciste, discriminatoire ou harcelant envers des personnes ;",
   "soutien.soutenir.le.projet": "☕ Soutenir le projet",
   "soutien.rich.vos.itineraires.et.votre": "Vos itinéraires et votre carnet (photos, notes, voix) sont enregistrés <b>sur cet appareil</b>. Pour les <b>mettre à l'abri</b> ou les <b>transférer sur un autre téléphone/tablette</b>, exportez-les dans un fichier — puis réimportez ce fichier sur l'autre appareil.",
@@ -354,5 +354,8 @@
   "itin.choisir.autrement": "Ou choisissez vos lieux vous-même",
   "itin.choisir.carte": "🗺️ Sur la carte",
   "itin.choisir.liste": "📋 Dans la liste",
-  "itin.choisir.aide": "Cochez des lieux là-bas, puis « ajouter à l'itinéraire » : ils viendront dans celui-ci."
+  "itin.choisir.aide": "Cochez des lieux là-bas, puis « ajouter à l'itinéraire » : ils viendront dans celui-ci.",
+  "menu.groupe.documentaires": "Documentaires thématiques",
+  "menu.documentaires": "Documentaires thématiques",
+  "menu.documentaires.sub": "Rome en Afrique · La Médina de Tunis"
 }

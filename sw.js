@@ -3,7 +3,7 @@
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'heritage-79aa8fe6';
+const VERSION = 'heritage-8db2f541';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 const TILES   = 'the-tiles-' + VERSION;
@@ -71,6 +71,23 @@ self.addEventListener('fetch', e => {
         if (res && res.ok) { const copy = res.clone(); caches.open(RUNTIME).then(c => c.put(req, copy)); }
         return res;
       }).catch(() => caches.match(req, { ignoreSearch: true }).then(hit => hit || caches.match('decouvrir.html')))
+    );
+    return;
+  }
+
+  // Code de l'application (.js) : network-first, comme les données.
+  //    ← il était en cache-first avec tout le reste. Or heritage.config.js, the-pass.js
+  //      et les briques changent à chaque correctif : servis depuis le cache, un défaut
+  //      corrigé restait visible chez l'utilisateur. Pire, le serveur n'envoyant aucun
+  //      Cache-Control, le navigateur rendait AU service worker sa propre copie périmée,
+  //      qui repartait alors dans le cache neuf. Constaté le 16/08/2026 : une clé
+  //      ajoutée à la configuration n'arrivait jamais jusqu'à la page.
+  if (/\.js(\?|$)/.test(req.url) && new URL(req.url).origin === self.location.origin) {
+    e.respondWith(
+      fetch(req, { cache: 'no-cache' }).then(res => {
+        if (res && res.ok) { const copy = res.clone(); caches.open(RUNTIME).then(c => c.put(req, copy)); }
+        return res;
+      }).catch(() => caches.match(req))
     );
     return;
   }

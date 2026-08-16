@@ -1834,7 +1834,6 @@
   "🛣️ À voir en chemin": "🛣️ Places to see along the way",
   "🛣️ À voir en chemin vers": "🛣️ Things to see on the way to",
   "🟢 WhatsApp": "🟢 WhatsApp",
-  "🤝 Contribuer & signaler": "🤝 Contribute & report",
   "🧭 '+T('cette étape dans Maps')+'": "🧭 '+T('this step in Maps')+'",
   "🧭 0 lieu": "🧭 0 locations",
   "🧭 Baroudeur": "🧭 Adventurer",
@@ -1924,7 +1923,7 @@
   "soutien.paiement.securise.via.lemonsqueezy": "Secure payment via Lemon Squeezy — we do not receive any bank details. Tip: for amounts under ~€1, the transaction fees take up most of it.",
   "soutien.sobre.par.choix.on": "Minimalist by choice: we ask as little of you as possible, and nothing is for sale.",
   "accueil.sources.credits": "Sources & credits",
-  "soutien.contribuer.signaler": "🤝 Contribute & report",
+  "soutien.contribuer.signaler": "Contribute & report",
   "soutien.du.contenu.humiliant.diffamatoire": "content that is humiliating, defamatory, hateful, racist, discriminatory or harassing towards individuals;",
   "soutien.soutenir.le.projet": "☕ Support the project",
   "soutien.rich.vos.itineraires.et.votre": "Your routes and your journal (photos, notes, voice recordings) are stored <b>on this device</b>. To <b>back</b> them <b>up</b> or <b>transfer</b> them <b>to another phone or tablet</b>, export them to a file — then re-import that file onto the other device.",
@@ -2283,5 +2282,8 @@
   "itin.choisir.autrement": "Or choose your own destinations",
   "itin.choisir.carte": "🗺️ On the map",
   "itin.choisir.liste": "📋 In the list",
-  "itin.choisir.aide": "Tick the places there, then select ‘Add to itinerary’: they’ll be added to it."
+  "itin.choisir.aide": "Tick the places there, then select ‘Add to itinerary’: they’ll be added to it.",
+  "menu.groupe.documentaires": "Thematic documentaries",
+  "menu.documentaires": "Themed documentaries",
+  "menu.documentaires.sub": "Rome in Africa · The Medina of Tunis"
 }

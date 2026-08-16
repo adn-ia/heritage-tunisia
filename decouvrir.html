@@ -111,6 +111,12 @@ body.narr-on{padding-bottom:76px;}
 .narrbar .nb{appearance:none;-webkit-appearance:none;border:1px solid var(--gold);background:transparent;color:var(--gold-soft);font-size:16px;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
 .narrbar .nb-main{width:50px;height:50px;font-size:22px;background:var(--gold);color:#2b2318;border-color:var(--gold);}
 .narrbar .nb:active{transform:scale(.94);}
+/* Referme un groupe sans ajouter de mot : le titre précédent ne doit pas
+   déborder sur les entrées qui suivent. */
+.sm-sep{height:1px;background:rgba(255,255,255,.12);margin:10px 14px 4px;}
+.doc-lien{display:flex;gap:10px;align-items:center;padding:12px 4px;border-bottom:1px solid #efe7d8;text-decoration:none;color:#2b2318;font-size:16px}
+.doc-lien:last-of-type{border-bottom:none}
+.doc-lien span:first-child{font-size:20px}
 </style>
   <script src="the-i18n.js"></script>
   <script src="the-pass.js"></script>
@@ -139,15 +145,14 @@ body.narr-on{padding-bottom:76px;}
       <div class="sm-title">Le menu</div>
       <div class="sm-group" data-i18n="menu.groupe.decouvrir"></div>
       <a class="sm-item primary" href="#recit" data-tour-step="recit"><span class="i">📖</span><span class="t">Découvrir la Tunisie<small>le récit — à lire ou à écouter 🔊 ↓</small></span></a>
-      <a class="sm-item" href="itineraire.html?reprendre=1" id="smReprendre" style="display:none"><span class="i">↩</span><span class="t"><span data-i18n="menu.reprendre"></span><small><span id="smReprendreN"></span> <span id="smReprendreU" data-i18n="menu.reprendre.sub"></span></small></span></a>
+      <a class="sm-item" href="voyage.html" data-tour-step="voyage"><span class="i">🎞️</span><span class="t">Voyage immersif</span></a>
       <a class="sm-item" href="itineraire.html" data-tour-step="itineraire"><span class="i">🧭</span><span class="t">Créer un itinéraire<small>parcours sur mesure + carte</small></span></a>
+      <a class="sm-item" id="smItiSauves" href="itineraire.html?mes=1"><span class="i">📚</span><span class="t"><span data-i18n="menu.mes.itineraires">Itinéraires sauvegardés</span><small data-i18n="menu.mes.itineraires.sub">composés, surprises, voyages libres</small></span></a>
       <a class="sm-item" href="index.html" data-tour-step="carte"><span class="i">🗺️</span><span class="t">Explorer la carte</span></a>
       <a class="sm-item" href="liste.html" data-tour-step="liste"><span class="i">📋</span><span class="t">Tous les lieux (liste)<small>parcourir sans la carte</small></span></a>
       <a class="sm-item" href="liste.html?around=1" data-tour-step="autour"><span class="i">📍</span><span class="t">Autour de moi<small>ce qu'il y a à voir près de vous</small></span></a>
       <a class="sm-item" href="patrimoine/" data-tour-step="patrimoine"><span class="i">🏛️</span><span class="t"><span data-i18n="patrimoine.menu.titre"></span><small data-i18n="patrimoine.menu.sous"></small></span></a>
-      <a class="sm-item" href="voyage.html" data-tour-step="voyage"><span class="i">🎞️</span><span class="t">Voyage immersif</span></a>
-      <a class="sm-item" href="rome-immersion.html"><span class="i">🏛️</span><span class="t"><span data-i18n="menu.rome"></span><small data-i18n="menu.rome.sub"></small></span></a>
-      <a class="sm-item" href="medina.html"><span class="i">🕌</span><span class="t"><span data-i18n="menu.medina"></span><small data-i18n="menu.medina.sub"></small></span></a>
+      <a class="sm-item" id="smDocs" href="#"><span class="i">🎬</span><span class="t"><span data-i18n="menu.documentaires">Documentaires thématiques</span><small></small></span></a>
       <a class="sm-item" href="premium.html" data-tour-step="premium"><span class="i">💛</span><span class="t"><span data-i18n="menu.premium"></span><small data-i18n="menu.premium.sub"></small></span></a>
       <a class="sm-item soon" href="musee/"><span class="i">🏛️</span><span class="t"><span data-i18n="menu.musee"></span> <span class="dev" data-i18n="menu.en.developpement"></span></span></a>
       <a class="sm-item soon" href="webar/"><span class="i">✨</span><span class="t"><span data-i18n="menu.ar"></span> <span class="dev" data-i18n="menu.en.developpement"></span></span></a>
@@ -474,23 +479,6 @@ body.narr-on{padding-bottom:76px;}
 <script src="the-lightbox.js" defer></script>
 <script src="brique-tour.js" defer></script>
 <script>
-  // « Reprendre l'itinéraire » : visible UNIQUEMENT s'il y a un itinéraire en cours
-  // (the_current, autosauvegardé par itineraire.html). Affiche son nombre d'étapes.
-  (function(){
-    try{
-      var c=JSON.parse(localStorage.getItem('the_current')||'null');
-      if(!c || !c.steps || !c.steps.length) return;
-      var a=document.getElementById('smReprendre'); if(!a) return;
-      var nb=c.steps.length;
-      var n=document.getElementById('smReprendreN'); if(n) n.textContent=nb;
-      // singulier / pluriel : « 1 étape » et non « 1 étapes »
-      var u=document.getElementById('smReprendreU');
-      if(u){ var k=(nb>1)?'menu.reprendre.sub':'menu.reprendre.sub1';
-             u.setAttribute('data-i18n',k);
-             var t=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); if(t) u.textContent=t; }
-      a.style.display='';
-    }catch(e){}
-  })();
 </script>
 <script>
   // Aide : ouvre la page de support publique dans la langue affichée.
@@ -521,6 +509,53 @@ body.narr-on{padding-bottom:76px;}
         try{ HTour.start(); }catch(e){}
       } else if(essais>40) clearInterval(t);
     }, 250);
+  })();
+  </script>
+
+  <div id="docsModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,15,10,.55);align-items:center;justify-content:center;padding:18px">
+    <div style="background:#fffdf8;border-radius:12px;max-width:420px;width:100%;padding:20px;position:relative;max-height:80vh;overflow:auto">
+      <button id="docsX" type="button" aria-label="Fermer" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:19px;cursor:pointer;color:#8a7c66">✕</button>
+      <div id="docsTitre" data-i18n="menu.documentaires" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:12px;color:#2b2318">Documentaires thématiques</div>
+      <div id="docsListe"></div>
+    </div>
+  </div>
+  <script>
+  /* DOCUMENTAIRES THÉMATIQUES — une entrée pour plusieurs récits situés.
+     Les pages sont PROPRES À L'ÉDITION : elles viennent de HConf.documentaires,
+     jamais du code. Une édition qui n'en déclare aucun ne voit pas l'entrée —
+     plutôt qu'un lien vers une page absente. */
+  (function(){
+    var btn=document.getElementById('smDocs'), mod=document.getElementById('docsModal'),
+        liste=document.getElementById('docsListe');
+    var docs=(window.HConf&&HConf.documentaires)||[];
+    if(!btn||!mod||!liste) return;
+    if(!docs.length){ btn.style.display='none'; return; }
+    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:(d||k); };
+    docs.forEach(function(x){
+      var a=document.createElement('a');
+      a.className='doc-lien'; a.href=x[0];
+      /* on pose l'attribut par le DOM : écrit dans une chaîne, il ressemblait à
+         une clé i18n bidon (« '+x[1]+' ») et le contrôle des traductions le voyait. */
+      var ic=document.createElement('span'); ic.textContent=x[2]||'';
+      var nom=document.createElement('b'); nom.setAttribute('data-i18n', x[1]); nom.textContent=T(x[1]);
+      var enveloppe=document.createElement('span'); enveloppe.appendChild(nom);
+      a.appendChild(ic); a.appendChild(enveloppe);
+      liste.appendChild(a);
+    });
+    /* Le sous-titre reprend les titres traduits : il faut donc ATTENDRE l'i18n,
+       sinon il affiche les clés brutes (« menu.rome · menu.medina »). */
+    var sub=btn.querySelector('small');
+    function ecrireSousTitre(){
+      if(!sub) return;
+      sub.textContent=docs.map(function(x){ return T(x[1]); }).join(' \u00b7 ');
+    }
+    if(window.THEi18n && THEi18n.ready && THEi18n.ready.then) THEi18n.ready.then(ecrireSousTitre);
+    else ecrireSousTitre();
+    setTimeout(ecrireSousTitre, 1200);   // filet, si l'i18n arrive autrement
+    function fermer(){ mod.style.display='none'; }
+    btn.addEventListener('click', function(e){ e.preventDefault(); mod.style.display='flex'; });
+    document.getElementById('docsX').onclick=fermer;
+    mod.addEventListener('click', function(e){ if(e.target===mod) fermer(); });
   })();
   </script>
 </body>

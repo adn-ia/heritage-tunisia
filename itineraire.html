@@ -2446,7 +2446,7 @@
   <div id="autourModal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(20,15,10,.55);align-items:center;justify-content:center;padding:18px">
     <div style="background:#fffdf8;border-radius:12px;max-width:440px;width:100%;padding:20px;position:relative;max-height:82vh;overflow:auto">
       <button id="autourX" type="button" aria-label="Fermer" style="position:absolute;top:8px;right:10px;background:none;border:none;font-size:19px;cursor:pointer;color:#8a7c66">✕</button>
-      <div id="autourTitre" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:4px">Autour de moi</div>
+      <div id="autourTitre" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:4px" data-i18n="autour.titre">Autour de moi</div>
       <div id="autourDe" style="font-size:13.5px;color:#a8884f;margin-bottom:12px"></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="autourRayons"></div>
       <div id="autourListe"></div>
@@ -2549,6 +2549,19 @@
     }
     var t=setInterval(function(){ poser(); }, 700);
     setTimeout(function(){ clearInterval(t); }, 20000);
+  })();
+  </script>
+
+  <script>
+  /* Arrivée depuis l'entrée « Itinéraires sauvegardés » du menu : on ouvre
+     directement la fenêtre, sans obliger à repérer la cinquième carte. */
+  (function(){
+    try{ if(new URLSearchParams(location.search).get('mes')!=='1') return; }catch(e){ return; }
+    var n=0, t=setInterval(function(){
+      n++;
+      if(window.THEitineraires && THEitineraires.ouvrir){ clearInterval(t); THEitineraires.ouvrir(); }
+      else if(n>40) clearInterval(t);
+    }, 200);
   })();
   </script>
 </body>

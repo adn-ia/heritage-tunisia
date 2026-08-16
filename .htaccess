@@ -1,2 +1,12 @@
 # Page d'accueil = la garde (pas la carte index.html)
 DirectoryIndex bienvenue.html
+
+# Revalidation obligatoire du code, des pages et des données.
+# Sans en-tête, le navigateur applique une fraîcheur « au jugé » et peut garder
+# des heures un fichier corrigé — y compris en le rendant au service worker.
+# L'ETag rend la revalidation quasi gratuite : 304 si rien n'a changé.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|js|json|geojson)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

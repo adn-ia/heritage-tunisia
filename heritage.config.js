@@ -17,6 +17,13 @@
     exportNom:    "Tunisia-Heritage",
     description:  "Découvrir, comprendre et garder un souvenir du patrimoine tunisien — sites, itinéraires et carnet de voyage, hors-ligne.",   // manifest PWA/SEO
     appStore:     "https://apps.apple.com/app/id6785249427",   // lien App Store (badge pied de page) — vide = masqué
+      // Pages de RÉCIT propres à l'édition, regroupées derrière une seule entrée de
+      // menu. Vide ou absent → l'entrée ne s'affiche pas : une édition sans
+      // documentaire ne montre pas de lien mort. [fichier, clé i18n du titre, icône]
+      documentaires: [
+        ["rome-immersion.html", "menu.rome",   "\uD83C\uDFDB\uFE0F"],
+        ["medina.html",         "menu.medina", "\uD83D\uDD4C"]
+      ],
     themes: [
       {id:"punique",    ic:"⚓", label:"theme.punique",      pri: 1, kw:["punique"]},
       {id:"numide",     ic:"🐎", label:"theme.numide",       pri: 2, kw:["numide"]},

@@ -1834,7 +1834,6 @@
   "🛣️ À voir en chemin": "🛣️ Da vedere lungo il percorso",
   "🛣️ À voir en chemin vers": "🛣️ Da vedere lungo il percorso verso",
   "🟢 WhatsApp": "🟢 WhatsApp",
-  "🤝 Contribuer & signaler": "🤝 Contribuisci e segnala",
   "🧭 '+T('cette étape dans Maps')+'": "🧭 '+T('questo punto su Maps')+'",
   "🧭 0 lieu": "🧭 0 località",
   "🧭 Baroudeur": "🧭 Avventuriero",
@@ -1924,7 +1923,7 @@
   "soutien.paiement.securise.via.lemonsqueezy": "Pagamento sicuro tramite Lemon Squeezy — non riceviamo alcun dato bancario. Consiglio: per importi inferiori a ~1 €, le commissioni di transazione incidono in modo significativo.",
   "soutien.sobre.par.choix.on": "Sobrio per scelta: vi chiediamo il minimo indispensabile e non vendiamo nulla.",
   "accueil.sources.credits": "Fonti e crediti",
-  "soutien.contribuer.signaler": "🤝 Contribuisci e segnala",
+  "soutien.contribuer.signaler": "Contribuisci e segnala",
   "soutien.du.contenu.humiliant.diffamatoire": "contenuti umilianti, diffamatori, che incitano all’odio, razzisti, discriminatori o molesti nei confronti di altre persone;",
   "soutien.soutenir.le.projet": "☕ Sostieni il progetto",
   "soutien.rich.vos.itineraires.et.votre": "I tuoi itinerari e il tuo diario (foto, appunti, registrazioni vocali) sono salvati <b>su questo dispositivo</b>. Per <b>salvarli</b> o <b>trasferirli su un altro telefono/tablet</b>, esportali in un file, quindi reimporta il file sull&#x27;altro dispositivo.",
@@ -2283,5 +2282,8 @@
   "itin.choisir.autrement": "Oppure scegliete voi stessi le vostre destinazioni",
   "itin.choisir.carte": "🗺️ Sulla mappa",
   "itin.choisir.liste": "📋 Nell'elenco",
-  "itin.choisir.aide": "Seleziona le località desiderate, quindi clicca su «Aggiungi all'itinerario»: verranno inserite nell'itinerario."
+  "itin.choisir.aide": "Seleziona le località desiderate, quindi clicca su «Aggiungi all'itinerario»: verranno inserite nell'itinerario.",
+  "menu.groupe.documentaires": "Documentari tematici",
+  "menu.documentaires": "Documentari tematici",
+  "menu.documentaires.sub": "Roma in Africa · La Medina di Tunisi"
 }
