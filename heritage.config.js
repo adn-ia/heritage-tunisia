@@ -335,6 +335,11 @@
       id: "/?app=heritage", start_url: "bienvenue.html", scope: "./",
       display: "standalone", orientation: "portrait",
       background_color: "#2b2318", theme_color: "#2b2318", lang: _lang,
+      // Feuille de partage du système : « Partager » dans Google Maps, Waze ou
+      // Plans propose l'application, et le lieu arrive sur l'écran d'itinéraire.
+      // (Android uniquement — iOS ne connaît pas le partage vers une application web.)
+      share_target: { action: "itineraire.html", method: "GET",
+                      params: { title: "titre", text: "texte", url: "lien" } },
       icons: [
         { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
         { src: "logo-the.png", sizes: "512x512", type: "image/png", purpose: "any" },

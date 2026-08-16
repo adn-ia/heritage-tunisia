@@ -1,0 +1,68 @@
+{
+  "_note": "Libellés de la brique « lieu partagé » — auto-portée stricte : ils vivent ICI, jamais dans i18n/ui.*.json. Langue = the_lang, puis la langue de la PAGE, puis l'anglais. Toute traduction passe par DeepL.",
+  "fr": {
+    "titre": "Ajouter un lieu partagé",
+    "intro": "Collez un lien de Google Maps, Waze, Plans ou OpenStreetMap. On en tire le point, vous confirmez ensuite comme pour n'importe quelle étape.",
+    "collez.ici": "Collez le lien ici…",
+    "ajouter": "Ajouter cette étape",
+    "fermer": "Fermer",
+    "recherche": "Recherche du lieu…",
+    "approx": "Position trouvée d'après le nom — vérifiez-la sur la carte avant de valider.",
+    "sans.nom": "Lieu partagé",
+    "rien.compris": "Ce texte ne contient ni lien de carte, ni coordonnées, ni nom de lieu.",
+    "nom.introuvable": "Ce nom n'a pas été trouvé sur la carte. Vous pouvez ajouter l'étape à la main.",
+    "lien.court": "Ce lien est raccourci : le navigateur n'a pas le droit de le suivre, et le nom n'a pas suffi. Dans Google Maps, ouvrez le lieu, puis « Partager » et choisissez le lien complet — ou saisissez l'étape à la main."
+  },
+  "en": {
+    "titre": "Add a shared place",
+    "intro": "Paste a link from Google Maps, Waze, Maps or OpenStreetMap. We extract the point; you confirm afterwards, just like any other stop.",
+    "collez.ici": "Paste the link here…",
+    "ajouter": "Add this stop",
+    "fermer": "Close",
+    "recherche": "Searching for the place…",
+    "approx": "Position found from the name — check it on the map before confirming.",
+    "sans.nom": "Shared place",
+    "rien.compris": "This text contains no map link, no coordinates and no place name.",
+    "nom.introuvable": "This name was not found on the map. You can add the stop manually.",
+    "lien.court": "This link is shortened: the browser is not allowed to follow it, and the name was not enough. In Google Maps, open the place, then tap Share and choose the full link — or enter the stop manually."
+  },
+  "de": {
+    "titre": "Einen gemeinsamen Ort hinzufügen",
+    "intro": "Fügen Sie einen Link von Google Maps, Waze, Karten oder OpenStreetMap ein. Daraus wird der Punkt ermittelt, den Sie anschließend wie bei jedem anderen Etappenziel bestätigen.",
+    "collez.ici": "Fügen Sie den Link hier ein…",
+    "ajouter": "Diesen Schritt hinzufügen",
+    "fermer": "Schließen",
+    "recherche": "Suche nach dem Ort…",
+    "approx": "Anhand des Namens gefundene Position – bitte überprüfen Sie diese auf der Karte, bevor Sie sie bestätigen.",
+    "sans.nom": "Gemeinsamer Ort",
+    "rien.compris": "Dieser Text enthält weder Kartenlinks noch Koordinaten noch Ortsnamen.",
+    "nom.introuvable": "Dieser Name wurde auf der Karte nicht gefunden. Sie können den Zwischenstopp manuell hinzufügen.",
+    "lien.court": "Dieser Link ist gekürzt: Der Browser darf ihm nicht folgen, und der Name allein reicht nicht aus. Öffnen Sie den Ort in Google Maps, klicken Sie auf „Teilen“ und wählen Sie den vollständigen Link aus – oder geben Sie die Adresse manuell ein."
+  },
+  "it": {
+    "titre": "Aggiungi un luogo condiviso",
+    "intro": "Inserisci un link da Google Maps, Waze, Maps o OpenStreetMap. Il sistema individua il punto; a quel punto devi confermare come per qualsiasi altra tappa.",
+    "collez.ici": "Inserisci il link qui…",
+    "ajouter": "Aggiungi questa fase",
+    "fermer": "Chiudi",
+    "recherche": "Ricerca del luogo…",
+    "approx": "Posizione individuata in base al nome — verificatela sulla mappa prima di confermare.",
+    "sans.nom": "Luogo condiviso",
+    "rien.compris": "Questo testo non contiene né collegamenti a mappe, né coordinate, né nomi di località.",
+    "nom.introuvable": "Questo nome non è stato trovato sulla mappa. È possibile aggiungere manualmente la tappa.",
+    "lien.court": "Questo link è abbreviato: il browser non può seguirlo e il nome non è sufficiente. Su Google Maps, apri la località, poi seleziona “Condividi” e scegli il link completo — oppure inserisci manualmente la tappa."
+  },
+  "ar": {
+    "titre": "إضافة مكان مشترك",
+    "intro": "الصق رابطًا من Google Maps أو Waze أو Maps أو OpenStreetMap. سيتم تحديد النقطة منه، ثم تقوم بالتأكيد كما هو الحال مع أي خطوة أخرى.",
+    "collez.ici": "الصق الرابط هنا…",
+    "ajouter": "إضافة هذه الخطوة",
+    "fermer": "إغلاق",
+    "recherche": "البحث عن الموقع…",
+    "approx": "تم العثور على الموقع بناءً على الاسم — يرجى التحقق منه على الخريطة قبل التأكيد.",
+    "sans.nom": "موقع مشترك",
+    "rien.compris": "لا يحتوي هذا النص على أي رابط لخريطة، ولا إحداثيات، ولا اسم مكان.",
+    "nom.introuvable": "لم يتم العثور على هذا الاسم على الخريطة. يمكنك إضافة هذه المحطة يدويًّا.",
+    "lien.court": "هذا الرابط مختصر: لا يُسمح للمتصفح بالانتقال إليه، ولم يكن الاسم كافياً. في خرائط Google، افتح الموقع، ثم انقر على «مشاركة» واختر الرابط الكامل — أو أدخل الرابط يدويًّا."
+  }
+}

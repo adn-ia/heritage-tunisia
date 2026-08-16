@@ -3218,6 +3218,7 @@
   <script src="brique-meteo.js" defer></script>
   <script src="brique-decouvrir-lieu.js" defer></script>
   <script src="brique-etape.js" defer></script>
+  <script src="brique-partage-lieu.js" defer></script>
 
   <script>
   /* VOYAGE LIBRE — on commence par UNE ÉTAPE, pas par un écran vide.
@@ -3385,8 +3386,29 @@
       b.onclick=function(){ if(window.THEetape) THEetape.ouvrir({premiere:false,
         etapes:(LASTRES&&LASTRES.route||[]).map(function(s){ return {nom:s.p.nom}; })}); };
       h.parentNode.insertBefore(b, h);
+
+      /* Le lieu trouvé ailleurs — un hôtel dans Google Maps, un restaurant dans
+         Waze — se colle ici. Sur Android l'application apparaît aussi dans la
+         feuille de partage ; sur iPhone, le collage est la seule porte, d'où ce
+         bouton qui existe partout. */
+      if(window.HPartage && !document.getElementById('betColler')){
+        var c=document.createElement('button');
+        c.id='betColler'; c.type='button';
+        c.textContent='🔗 '+T('itin.lien.coller','Coller un lien de carte');
+        c.style.cssText=h.style.cssText;
+        c.onclick=function(){ HPartage.ouvrir(); };
+        h.parentNode.insertBefore(c, h);
+      }
     }
     setInterval(poser, 900);
+
+    /* Arrivée depuis la feuille de partage du système : le lieu est déjà dans
+       l'adresse. On le traite dès que la brique est là, une seule fois. */
+    (function attendrePartage(n){
+      if(window.HPartage){ HPartage.auDemarrage(); return; }
+      if(n>40) return;                       // ~6 s : au-delà, la brique manque
+      setTimeout(function(){ attendrePartage(n+1); }, 150);
+    })(0);
 
     /* Au lancement d'un voyage libre : la première étape tout de suite. */
     if(typeof startLibre==='function'){
