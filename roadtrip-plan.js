@@ -284,46 +284,52 @@
         drow.querySelector("[data-rtp-heure]").onchange=function(e){ setHeure(i, e.target.value); };
       }
 
-      /* 3) AJOUTER UNE VISITE DEPUIS CETTE ÉTAPE
-         Le bouton n'apparaissait que si l'on avait D'ABORD marqué l'étape
-         comme « base » — un geste que personne ne devine, si bien que la
-         fonction existait sans être atteignable. Dans le RoadTrip, toute
-         étape est un séjour par défaut et accepte des visites : on fait
-         pareil. Seule une visite n'en reçoit pas (pas de visite de visite),
-         et l'étape qui en reçoit une devient une base d'elle-même. */
-      if(r!=="visite" && !(card.nextElementSibling && card.nextElementSibling.classList && card.nextElementSibling.classList.contains("rtp-addvisit"))){
+      /* 3) AJOUTER UNE VISITE — DANS LA CARTE DE L'ÉTAPE
+         Le bouton flottait sous la carte, comme un bloc à part : on ne voyait
+         pas de quelle étape il parlait. Il vit maintenant DANS la carte, avec
+         les autres gestes de cette étape. Il ouvre le même écran de saisie que
+         partout ailleurs — un seul écran d'étape dans toute l'application. */
+      if(r!=="visite" && !card.querySelector(".rtp-addvisit")){
         var av=document.createElement("div"); av.className="rtp-addvisit";
         var avb=document.createElement("button"); avb.type="button"; avb.textContent="➕ "+T("plan.ajouter.visite");
         (function(baseStop, pos){ avb.onclick=function(){
           if(role(baseStop)!=="base") metaPatch(baseStop, {kind:"base", baseKey:""});
-          openInsert(pos+1, av, {kind:"visite", baseKey:pkey(baseStop)}); }; })(s, i);
+          ouvrirSaisie(pos, {kind:"visite", baseKey:pkey(baseStop)}, av); }; })(s, i);
         av.appendChild(avb);
-        card.parentNode.insertBefore(av, card.nextSibling);
-      }
-
-      // 4) barre « intercaler ici » après chaque carte
-      var after=card.nextElementSibling;
-      // si une barre d'ajout-visite suit, on place l'intercalage après elle
-      if(after && after.classList && after.classList.contains("rtp-addvisit")) after=after.nextElementSibling;
-      if(!(after && after.classList && after.classList.contains("rtp-ins"))){
-        var ins=document.createElement("div"); ins.className="rtp-ins";
-        var b=document.createElement("button"); b.type="button"; b.textContent="＋ "+T("plan.inserer.ici");
-        (function(pos, node){ b.onclick=function(){ openInsert(pos+1, node); }; })(i, ins);
-        ins.appendChild(b);
-        var refNode=card.nextElementSibling;
-        if(refNode && refNode.classList && refNode.classList.contains("rtp-addvisit")) refNode=refNode.nextSibling;
-        card.parentNode.insertBefore(ins, refNode);
+        card.appendChild(av);
       }
     });
 
-    // barre « intercaler » tout en HAUT (position 0)
-    if(cards.length && !(cards[0].previousElementSibling && cards[0].previousElementSibling.classList && cards[0].previousElementSibling.classList.contains("rtp-ins"))){
-      var ins0=document.createElement("div"); ins0.className="rtp-ins";
-      var b0=document.createElement("button"); b0.type="button"; b0.textContent="＋ "+T("plan.inserer.ici");
-      b0.onclick=function(){ openInsert(0, ins0); };
-      cards[0].parentNode.insertBefore(ins0, cards[0]);
-    }
+    /* 4) PLUS DE « AJOUTER UNE ÉTAPE ICI » ENTRE LES CARTES
+       Il y avait deux boutons pour le même geste : celui-ci, répété à chaque
+       position, et le bouton principal. Un seul suffit : l'écran de saisie
+       demande déjà OÙ placer l'étape (« au début », « après tel arrêt »), donc
+       la position n'a plus besoin d'un bouton par emplacement. On nettoie
+       aussi les barres laissées par un rendu précédent. */
+    var vieilles=document.querySelectorAll(".rtp-ins");
+    for(var vi=0; vi<vieilles.length; vi++)
+      if(vieilles[vi].parentNode) vieilles[vi].parentNode.removeChild(vieilles[vi]);
   }
+
+  /* Un seul écran de saisie d'étape pour toute l'application.
+     apres = -1 pour « au début », sinon l'indice de l'étape qu'on suit.
+     meta = {kind:"visite", baseKey} quand l'étape naît comme visite. */
+  function ouvrirSaisie(apres, meta, noeud){
+    if(!window.THEetape || !THEetape.ouvrir){
+      openInsert(apres+1, noeud, meta||null);      // la brique n'est pas là : ancien panneau
+      return;
+    }
+    window.__rtpMetaEnAttente = meta || null;
+    var route=(window.LASTRES && LASTRES.route) || [];
+    THEetape.ouvrir({ premiere:false, apres:apres,
+      etapes: route.map(function(s){ return {nom:s.p.nom}; }) });
+  }
+  /* L'hôte insère l'étape, puis nous demande d'y coller son rôle. */
+  window.__planAppliquerMetaEnAttente = function(stop){
+    var m=window.__rtpMetaEnAttente; window.__rtpMetaEnAttente=null;
+    if(!m || !stop) return;
+    try{ metaPatch(stop, m); }catch(e){}
+  };
 
   /* --- patch de render : ré-injecte après chaque rendu --- */
   if(typeof render==="function"){

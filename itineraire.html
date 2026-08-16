@@ -2751,6 +2751,10 @@
         p:{ nom:x.nom, type:'Étape', gouvernorat:'', description:x.note||'',
             source:x.adresse ? ('Position : OpenStreetMap — '+x.adresse) : 'Position GPS relevée sur place',
             a_voir:'', conseil:'' } };
+      /* Si l'étape naît comme VISITE d'une autre, le planificateur nous l'a dit
+         avant d'ouvrir l'écran : on lui colle son rôle dès sa création, sinon
+         elle arrive comme une étape ordinaire et le lien avec sa base est perdu. */
+      try{ if(window.__planAppliquerMetaEnAttente) window.__planAppliquerMetaEnAttente(stop); }catch(err){}
       var base0=(LASTRES.route||[]).map(function(s){ var o={}; for(var k in s) o[k]=s[k]; return o; });
       var items;
       if(x.index!=null && base0[x.index]){

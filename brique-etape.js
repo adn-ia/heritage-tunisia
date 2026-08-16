@@ -235,7 +235,12 @@
         opt(String(i), (L("inserer.apres") || "").split("{n}").join(e && e.nom ? e.nom : "?"));
       });
       if (!etapes.length) { sel.innerHTML = ""; opt("-1", L("inserer.fin")); }
-      sel.value = etapes.length ? String(etapes.length - 1) : "-1";
+      /* Une position peut être IMPOSÉE par l'appelant : « ajouter ici », entre
+         deux étapes, ou « une visite depuis celle-ci ». Sans cela l'écran
+         proposait toujours la fin, et le geste précis était perdu. */
+      sel.value = (opts.apres != null && !isNaN(opts.apres))
+        ? String(opts.apres)
+        : (etapes.length ? String(etapes.length - 1) : "-1");
       document.getElementById("bet-ok").onclick = function () {
         if (!POS) { document.getElementById("bet-pos").textContent = L("manque.position"); return; }
         var nom = (document.getElementById("bet-nom").value || "").trim() || ADRESSE.split(",")[0] || L("nom");
