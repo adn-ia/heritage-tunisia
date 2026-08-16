@@ -10,3 +10,16 @@ DirectoryIndex bienvenue.html
     Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
 </IfModule>
+
+# ── Interdire l'accès aux dossiers de versionnage ─────────────────────────
+# Un dépôt Git servi sur une racine web se reconstitue en entier : /.git/config
+# donne le dépôt d'origine, /.git/index et les objets rendent tout l'historique,
+# y compris ce qui en a été retiré depuis. Sept éditions l'exposaient le 16/08/2026.
+# La règle ci-dessous ferme la porte même si un envoi y redépose le dossier.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule (^|/)\.(git|svn|hg)(/|$) - [F,L]
+</IfModule>
+<FilesMatch "^\.(git|gitignore|gitattributes|env)">
+  Require all denied
+</FilesMatch>
