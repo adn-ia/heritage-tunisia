@@ -2277,5 +2277,11 @@
   "autour.bouton": "ما يوجد حولي",
   "autour.ma.position": "موقعي",
   "autour.rien": "لم يتم العثور على أي مكان.",
-  "autour.rien.rayon": "لا توجد نتائج في هذا القسم — جرب توسيع نطاق البحث."
+  "autour.rien.rayon": "لا توجد نتائج في هذا القسم — جرب توسيع نطاق البحث.",
+  "itin.supprimer": "حذف مسار الرحلة هذا",
+  "itin.supprimer.sur": "هل تريد حذف «{n}»؟ سجل رحلاته يرافقه.",
+  "itin.choisir.autrement": "أو اختر وجهاتك بنفسك",
+  "itin.choisir.carte": "🗺️ على الخريطة",
+  "itin.choisir.liste": "📋 في القائمة",
+  "itin.choisir.aide": "حدد المواقع هناك، ثم انقر على «إضافة إلى مسار الرحلة»: وستُضاف إلى المسار."
 }

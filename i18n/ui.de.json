@@ -2277,5 +2277,11 @@
   "autour.bouton": "Was gibt es in meiner Umgebung?",
   "autour.ma.position": "Mein Standort",
   "autour.rien": "Es wurden keine Orte gefunden.",
-  "autour.rien.rayon": "In diesem Bereich wurden keine Ergebnisse gefunden – versuchen Sie es mit einer breiteren Suche."
+  "autour.rien.rayon": "In diesem Bereich wurden keine Ergebnisse gefunden – versuchen Sie es mit einer breiteren Suche.",
+  "itin.supprimer": "Diese Reiseroute löschen",
+  "itin.supprimer.sur": "„{n}“ löschen? Sein Reisetagebuch reist mit ihm.",
+  "itin.choisir.autrement": "Oder wählen Sie Ihre Orte selbst aus",
+  "itin.choisir.carte": "🗺️ Auf der Karte",
+  "itin.choisir.liste": "📋 In der Liste",
+  "itin.choisir.aide": "Markieren Sie dort Orte und klicken Sie dann auf „Zur Reiseroute hinzufügen“: Sie werden dann in die Reiseroute aufgenommen."
 }

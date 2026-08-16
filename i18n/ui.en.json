@@ -2277,5 +2277,11 @@
   "autour.bouton": "What’s around me",
   "autour.ma.position": "My location",
   "autour.rien": "No places found.",
-  "autour.rien.rayon": "No results found in this category — try a broader search."
+  "autour.rien.rayon": "No results found in this category — try a broader search.",
+  "itin.supprimer": "Delete this itinerary",
+  "itin.supprimer.sur": "Delete ‘{n}’? His travel journal goes with him.",
+  "itin.choisir.autrement": "Or choose your own destinations",
+  "itin.choisir.carte": "🗺️ On the map",
+  "itin.choisir.liste": "📋 In the list",
+  "itin.choisir.aide": "Tick the places there, then select ‘Add to itinerary’: they’ll be added to it."
 }

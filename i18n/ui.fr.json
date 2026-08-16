@@ -348,5 +348,11 @@
   "autour.bouton": "Ce qui est autour de moi",
   "autour.ma.position": "ma position",
   "autour.rien": "Aucun lieu trouvé.",
-  "autour.rien.rayon": "Rien de sourcé dans ce rayon — essayez plus large."
+  "autour.rien.rayon": "Rien de sourcé dans ce rayon — essayez plus large.",
+  "itin.supprimer": "Supprimer cet itinéraire",
+  "itin.supprimer.sur": "Supprimer « {n} » ? Son carnet part avec lui.",
+  "itin.choisir.autrement": "Ou choisissez vos lieux vous-même",
+  "itin.choisir.carte": "🗺️ Sur la carte",
+  "itin.choisir.liste": "📋 Dans la liste",
+  "itin.choisir.aide": "Cochez des lieux là-bas, puis « ajouter à l'itinéraire » : ils viendront dans celui-ci."
 }

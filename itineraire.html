@@ -374,7 +374,9 @@
 
 /* Trois options à l'arrivée : la règle CSS l'emporte sur les scripts qui
    réaffichent « Mon voyage » ou « Circuits prêts » après nous. */
-#builder.trois-seules > *:not(.modes){ display:none !important; }
+#builder.trois-seules > *:not(.modes):not([data-brique="modes"]){ display:none !important; }
+/* L'aide explicative fait partie de l'accueil : c'est elle qui dit à quoi
+   servent les options. La masquer avec le reste la rendait inatteignable. */
 </style>
   <script src="the-pass.js"></script>
   <script src="the-i18n.js"></script>
@@ -413,6 +415,14 @@
         <div class="hint">Des parcours curés, avec leurs <b>pépites « à voir en chemin »</b>. Ou composez le vôtre ci-dessous.</div>
       </div>
 
+          <div class="q" id="raccourcisChoix" style="display:none">
+            <div class="lbl" data-i18n="itin.choisir.autrement">Ou choisissez vos lieux vous-même</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <a href="index.html?from=itineraire" style="flex:1;min-width:150px;text-align:center;padding:11px;border:1px solid #e3d8c4;border-radius:7px;text-decoration:none;color:inherit" data-i18n="itin.choisir.carte">🗺️ Sur la carte</a>
+              <a href="liste.html?from=itineraire" style="flex:1;min-width:150px;text-align:center;padding:11px;border:1px solid #e3d8c4;border-radius:7px;text-decoration:none;color:inherit" data-i18n="itin.choisir.liste">📋 Dans la liste</a>
+            </div>
+            <div class="hint" data-i18n="itin.choisir.aide">Cochez des lieux là-bas, puis « ajouter à l'itinéraire » : ils viendront dans celui-ci.</div>
+          </div>
       <div class="q" id="critStart">
         <div class="lbl"><span class="n">1</span> Vous partez d'où ?</div>
         <select id="origin"><option value="gps">📍 Ma position (GPS)</option></select>
@@ -2140,7 +2150,9 @@
   (function(){
     var builder=document.getElementById('builder'); if(!builder) return;
     var modes=builder.querySelector('.modes'); if(!modes) return;
-    var suite=[].slice.call(builder.children).filter(function(e){ return e!==modes; });
+    var suite=[].slice.call(builder.children).filter(function(e){
+      return e!==modes && !e.hasAttribute('data-brique') && !e.querySelector('[data-brique="modes"]');
+    });
 
     var retour=document.createElement('button');
     retour.type='button'; retour.id='retourModes'; retour.className='backlink';
@@ -2181,7 +2193,20 @@
     cacher();   // à l'arrivée : les trois options, un point c'est tout
 
     var go=document.getElementById('mGo');
-    if(go) go.addEventListener('click', function(){ ouvrir(); }, true);
+    if(go) go.addEventListener('click', function(){
+      /* Le nom AVANT les critères : on sait dès le départ quel voyage on prépare,
+         et la question ne vient plus surprendre une fois le parcours dressé. */
+      var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      if(!window.THEnomEnAttente){
+        var n=prompt(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'),
+                     T2('itin.nom.compose','Mon itinéraire'));
+        if(n===null) return;                                  // annulé : on ne déplie rien
+        window.THEnomEnAttente=(n||'').trim().slice(0,80) || T2('itin.nom.compose','Mon itinéraire');
+      }
+      ouvrir();
+      var r=document.getElementById('raccourcisChoix');
+      if(r) r.style.display='';
+    }, true);
   })();
   </script>
 
@@ -2236,8 +2261,12 @@
     function nommer(defaut){
       if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
       if(LASTRES._nomme) return;                       // on ne redemande pas à chaque retouche
-      var n=prompt(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut);
-      if(n===null) return;                              // refusé : l'itinéraire vit quand même
+      var n=window.THEnomEnAttente;
+      if(!n){
+        n=prompt(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut);
+        if(n===null) return;                            // refusé : l'itinéraire vit quand même
+      }
+      window.THEnomEnAttente=null;
       n=(n||'').trim().slice(0,80) || defaut;
       LASTRES.tour = LASTRES.tour || {};
       LASTRES.tour.titre = n;
@@ -2318,6 +2347,26 @@
                else localStorage.setItem('the_actif', r.id); }catch(e){}
           remplir(); };
         a.appendChild(et);
+        /* Supprimer : un itinéraire d'essai ne doit pas encombrer la liste à vie.
+           On demande confirmation — c'est définitif, carnet compris. */
+        var sup=document.createElement('button');
+        sup.type='button';
+        sup.title=T('itin.supprimer','Supprimer cet itinéraire');
+        sup.style.cssText='background:none;border:none;font-size:17px;cursor:pointer;padding:4px 6px;opacity:.45';
+        sup.textContent='🗑';
+        sup.onclick=function(ev){ ev.preventDefault(); ev.stopPropagation();
+          var q=T('itin.supprimer.sur','Supprimer « {n} » ? Son carnet part avec lui.').replace('{n}', r.title||'');
+          if(!confirm(q)) return;
+          try{
+            var reste=lire().filter(function(x){ return x.id!==r.id; });
+            localStorage.setItem('the_saved', JSON.stringify(reste));
+            if(actif()===r.id) localStorage.removeItem('the_actif');
+            Object.keys(localStorage).forEach(function(k){
+              if(k.indexOf('the-cap:'+r.id+'#')===0) localStorage.removeItem(k);   // son carnet
+            });
+          }catch(e){}
+          remplir(); };
+        a.appendChild(sup);
         liste.appendChild(a);
       });
     }

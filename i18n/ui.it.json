@@ -2277,5 +2277,11 @@
   "autour.bouton": "Cosa c'è nei miei dintorni",
   "autour.ma.position": "la mia posizione",
   "autour.rien": "Nessun luogo trovato.",
-  "autour.rien.rayon": "Nessun risultato in questa categoria — provate a estendere la ricerca."
+  "autour.rien.rayon": "Nessun risultato in questa categoria — provate a estendere la ricerca.",
+  "itin.supprimer": "Elimina questo itinerario",
+  "itin.supprimer.sur": "Eliminare «{n}»? Il suo diario di viaggio parte con lui.",
+  "itin.choisir.autrement": "Oppure scegliete voi stessi le vostre destinazioni",
+  "itin.choisir.carte": "🗺️ Sulla mappa",
+  "itin.choisir.liste": "📋 Nell'elenco",
+  "itin.choisir.aide": "Seleziona le località desiderate, quindi clicca su «Aggiungi all'itinerario»: verranno inserite nell'itinerario."
 }
