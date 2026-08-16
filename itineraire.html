@@ -1237,6 +1237,29 @@
     reglagesApresChoix(chosen, origin, addMode);
   }
 
+
+  /* UN ITINÉRAIRE COMPOSÉ DOIT S'ENREGISTRER TOUT SEUL
+     L'enregistrement automatique était accroché au bouton du générateur. Un
+     parcours composé à partir d'une sélection ne passait pas par là : on le
+     traçait, on le nommait, et il n'existait nulle part — introuvable dans
+     « Itinéraires sauvegardés » comme au moment de reprendre. */
+  function enregistrerCompose(titre){
+    try{
+      if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
+      var arr=readSaved();
+      var nom = titre || (LASTRES.tour && LASTRES.tour.titre) || '';
+      var id  = 'it'+Date.now();
+      arr.unshift({ id:id, cree:Date.now(), title:nom, forme:LASTRES.forme||'oneway', mode:'compose',
+        origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
+        steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
+          halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||''}; }) });
+      writeSaved(arr.slice(0,40));
+      LASTRES._id=id; LASTRES._nomme=true;      // les ajouts suivants iront dans CETTE fiche
+      renderSaved();
+      localStorage.setItem('the_current', JSON.stringify(recordFromCurrent()));
+    }catch(e){}
+  }
+
   function reglagesApresChoix(chosen, originAuto, addMode){
     var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
     var boite=document.getElementById('picksReglages');
@@ -1294,12 +1317,14 @@
         try{ sessionStorage.removeItem('the_nom_attente'); }catch(e){}
         window.THEnomEnAttente=null;
         if(bld) bld.classList.remove('reglages-picks');     // l'itinéraire reprend toute la page
+        var _titre = nomVoulu || '';
         render(dep, {route:r, theme:null,
           dur:{max:r.length, lib:libDuree},
           per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'},
           forme:selF.value||'oneway', pepites:[], manualOrder:true, mode:'compose',
           tour:{titre: nomVoulu || (addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection')),
                 soustitre:T2('itin.picks.sous','Les lieux que vous avez choisis')}});
+        enregistrerCompose(_titre);
       });
     };
   }
