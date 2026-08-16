@@ -2289,5 +2289,6 @@
   "itin.etape.ajouter": "Etappe hinzufügen",
   "itin.etape.modifier": "Bearbeiten",
   "itin.etape.partager": "Teilen",
-  "itin.etape.partage.copie": "Etappe kopiert – fügen Sie sie ein, wo Sie möchten."
+  "itin.etape.partage.copie": "Etappe kopiert – fügen Sie sie ein, wo Sie möchten.",
+  "itin.partage.vide": "Derzeit gibt es nichts zu teilen: Fügen Sie dieser Route mindestens eine Etappe hinzu."
 }

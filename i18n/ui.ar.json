@@ -2289,5 +2289,6 @@
   "itin.etape.ajouter": "إضافة محطة",
   "itin.etape.modifier": "تعديل",
   "itin.etape.partager": "مشاركة",
-  "itin.etape.partage.copie": "تم نسخ المحطة — قم بلصقها في المكان الذي تريده."
+  "itin.etape.partage.copie": "تم نسخ المحطة — قم بلصقها في المكان الذي تريده.",
+  "itin.partage.vide": "لا يوجد ما يمكن مشاركته في الوقت الحالي: أضف خطوة واحدة على الأقل إلى هذا المسار."
 }

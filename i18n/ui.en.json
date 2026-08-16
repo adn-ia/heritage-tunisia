@@ -2289,5 +2289,6 @@
   "itin.etape.ajouter": "Add a stop",
   "itin.etape.modifier": "Edit",
   "itin.etape.partager": "Share",
-  "itin.etape.partage.copie": "Stage copied — paste it wherever you like."
+  "itin.etape.partage.copie": "Stage copied — paste it wherever you like.",
+  "itin.partage.vide": "Nothing to share at the moment: please add at least one stop to this itinerary."
 }

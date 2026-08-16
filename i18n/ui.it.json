@@ -2289,5 +2289,6 @@
   "itin.etape.ajouter": "Aggiungi una tappa",
   "itin.etape.modifier": "Modifica",
   "itin.etape.partager": "Condividi",
-  "itin.etape.partage.copie": "Tappa copiata — incollala dove preferisci."
+  "itin.etape.partage.copie": "Tappa copiata — incollala dove preferisci.",
+  "itin.partage.vide": "Al momento non c'è nulla da condividere: aggiungi almeno una tappa a questo itinerario."
 }

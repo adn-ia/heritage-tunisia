@@ -361,5 +361,6 @@
   "itin.etape.ajouter": "Ajouter une étape",
   "itin.etape.modifier": "Modifier",
   "itin.etape.partager": "Partager",
-  "itin.etape.partage.copie": "Étape copiée — collez-la où vous voulez."
+  "itin.etape.partage.copie": "Étape copiée — collez-la où vous voulez.",
+  "itin.partage.vide": "Rien à partager pour l'instant : ajoutez au moins une étape à cet itinéraire."
 }
