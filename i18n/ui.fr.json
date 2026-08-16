@@ -524,5 +524,8 @@
   "itin.sortie.rester": "Rester sur cet itinéraire",
   "itin.etape.autour": "🔎 Ce qu'il y a autour de cette étape",
   "itin.surprise.reglages": "🎲 Réglez ce qui compte pour vous — le reste sera tiré au sort.",
-  "itin.surprise.bouton": "🎲 Surprenez-moi"
+  "itin.surprise.bouton": "🎲 Surprenez-moi",
+  "itin.fermer": "✓ Fermer l'itinéraire",
+  "itin.fermer.fait": "Itinéraire enregistré. Vous le retrouverez dans « Itinéraires sauvegardés ».",
+  "itin.enregistre.maj": "Itinéraire mis à jour ✓"
 }

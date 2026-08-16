@@ -2452,5 +2452,8 @@
   "itin.sortie.rester": "البقاء على هذا المسار",
   "itin.etape.autour": "🔎 ما يوجد حول هذه المحطة",
   "itin.surprise.reglages": "🎲 حدد ما يهمك — أما الباقي فسيتم تحديده بالقرعة.",
-  "itin.surprise.bouton": "🎲 فاجئني"
+  "itin.surprise.bouton": "🎲 فاجئني",
+  "itin.fermer": "✓ إغلاق المسار",
+  "itin.fermer.fait": "تم حفظ المسار. ستجده في قسم «المسارات المحفوظة».",
+  "itin.enregistre.maj": "تم تحديث مسار الرحلة ✓"
 }

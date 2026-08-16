@@ -2452,5 +2452,8 @@
   "itin.sortie.rester": "Stay on this route",
   "itin.etape.autour": "🔎 What’s around this stage",
   "itin.surprise.reglages": "🎲 Choose what matters to you — the rest will be decided by lot.",
-  "itin.surprise.bouton": "🎲 Surprise me"
+  "itin.surprise.bouton": "🎲 Surprise me",
+  "itin.fermer": "✓ Close the route",
+  "itin.fermer.fait": "Route saved. You’ll find it under ‘Saved Routes’.",
+  "itin.enregistre.maj": "Route updated ✓"
 }

@@ -2452,5 +2452,8 @@
   "itin.sortie.rester": "Auf dieser Route bleiben",
   "itin.etape.autour": "🔎 Was es rund um diese Etappe zu entdecken gibt",
   "itin.surprise.reglages": "🎲 Lege fest, was dir wichtig ist – der Rest wird ausgelost.",
-  "itin.surprise.bouton": "🎲 Überrasche mich"
+  "itin.surprise.bouton": "🎲 Überrasche mich",
+  "itin.fermer": "✓ Route schließen",
+  "itin.fermer.fait": "Route gespeichert. Sie finden sie unter „Gespeicherte Routen“.",
+  "itin.enregistre.maj": "Route aktualisiert ✓"
 }

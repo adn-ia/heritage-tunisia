@@ -524,6 +524,7 @@
           <button id="sharebtn" type="button" data-i18n="itin.donner.qr">📱 Dupliquer l'itinéraire</button>
           <button id="albumbtn" type="button">📔 Album souvenir</button>
           <button id="printbtn" type="button">🖨️ PDF / Imprimer</button>
+          <button id="fermerIti" type="button" data-i18n="itin.fermer">✓ Fermer l'itinéraire</button>
         </div>
       </div>
         <div class="exp-group">
@@ -1359,14 +1360,26 @@
     const def=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:(uiT('Itinéraire —')+' '+LASTRES.route.length+' '+uiT('étapes'));
     THEdemanderNom(uiT('Nom de cet itinéraire :'), def, function(name){ saveAvecNom(name, def); });
   }
+  /* METTRE À JOUR, PAS DUPLIQUER
+     Un itinéraire s'enregistre déjà tout seul à sa création. Appuyer ensuite
+     sur « Enregistrer » en créait un SECOND, identique, et la liste se
+     remplissait de jumeaux. S'il a déjà sa fiche, on la réécrit. */
   function saveAvecNom(name, def){
     const arr=readSaved();
-    arr.unshift({ id:'it'+Date.now(), cree:Date.now(), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
+    const idExistant = LASTRES && LASTRES._id;
+    const place = idExistant ? arr.findIndex(function(r){ return r && r.id===idExistant; }) : -1;
+    const fiche = { id: (place>=0 ? arr[place].id : 'it'+Date.now()),
+      cree: (place>=0 ? (arr[place].cree||Date.now()) : Date.now()), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
-        desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) });
+        desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
+    if(place>=0) arr[place]=fiche; else arr.unshift(fiche);
+    if(LASTRES) LASTRES._id=fiche.id;
     writeSaved(arr.slice(0,40)); renderSaved();
-    alert(uiT('Itinéraire enregistré ✓\nVous le retrouverez dans « Mes itinéraires enregistrés » (en haut de la page de composition).'));
+    /* Un message dans la page, pas une boîte qui bloque tout : c'est la
+       dernière du parcours, et elle gelait l'écran après chaque sauvegarde. */
+    var _msg = (place>=0) ? uiT('itin.enregistre.maj') : uiT('itin.fermer.fait');
+    if(typeof showGuide==='function') showGuide('💾 '+_msg, 6000);
   }
   function deleteSaved(id){ writeSaved(readSaved().filter(r=>r.id!==id)); renderSaved(); }
   // reconstruit et affiche un itinéraire à partir d'un enregistrement sérialisé
@@ -1575,6 +1588,37 @@
     list.querySelectorAll('.saved-del[data-id]').forEach(b=>b.onclick=()=>{ if(confirm(uiT('Supprimer cet itinéraire enregistré ?'))) deleteSaved(b.dataset.id); });
   }
   document.getElementById('savebtn').onclick=saveCurrent;
+
+  /* FERMER L'ITINÉRAIRE — enregistrer, puis rendre la main
+     Une troisième sortie, à côté du menu et des façons de partir : on a fini
+     d'éditer, on veut ranger et sortir. Elle écrit dans LA fiche existante —
+     jamais une seconde — puis ramène au menu principal. */
+  (function(){
+    var b=document.getElementById('fermerIti'); if(!b) return;
+    b.onclick=function(){
+      try{
+        if(typeof LASTRES!=='undefined' && LASTRES && LASTRES.route && LASTRES.route.length){
+          var arr=readSaved();
+          var id=LASTRES._id;
+          var place = id ? arr.findIndex(function(r){ return r && r.id===id; }) : -1;
+          var titre=(LASTRES.tour&&LASTRES.tour.titre) || (place>=0 ? arr[place].title : '') || uiT('itin.nom.compose');
+          var fiche={ id:(place>=0?arr[place].id:'it'+Date.now()),
+            cree:(place>=0?(arr[place].cree||Date.now()):Date.now()),
+            title:titre, forme:LASTRES.forme||'oneway', mode:(place>=0?arr[place].mode:(LASTRES.mode||'compose')),
+            origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
+            steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
+              halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
+              desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''}; }) };
+          if(place>=0) arr[place]=fiche; else arr.unshift(fiche);
+          writeSaved(arr.slice(0,40));
+        }
+      }catch(e){}
+      /* on ne le laisse pas « actif au démarrage » : fermer, c'est fermer */
+      try{ localStorage.removeItem('the_current'); }catch(e){}
+      location.href='decouvrir.html';
+    };
+  })();
+
 
   /* SAUVEGARDER / RESTAURER SON CARNET — la fonction existait depuis longtemps
      (the-backup.js) mais ne se trouvait que sur la page hors-ligne, où personne
