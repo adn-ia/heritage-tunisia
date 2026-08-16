@@ -3103,6 +3103,7 @@
   </script>
   <script src="brique-qr.js" defer></script>
   <script src="brique-meteo.js" defer></script>
+  <script src="brique-decouvrir-lieu.js" defer></script>
   <script src="brique-etape.js" defer></script>
 
   <script>
@@ -3229,6 +3230,25 @@
          sur la position du voyageur. Or on prépare souvent depuis chez soi : ce
          qu'on veut savoir, c'est ce qui entoure Dougga, pas ce qui entoure son
          salon. La fenêtre acceptait déjà un centre — on lui donne l'étape. */
+      /* 📖 DÉCOUVRIR CE LIEU — le geste du RoadTrip qui manquait ici.
+         Une étape que le voyageur a posée (un hôtel, une adresse, un café)
+         n'a aucune description : on va en chercher une SOURCÉE et on propose
+         de la reprendre dans son carnet. On n'invente rien. */
+      { id:'decouvrir',
+        label:function(){ return T('itin.etape.decouvrir','📖 Découvrir ce lieu'); },
+        run:function(i){
+          var s=(LASTRES.route||[])[i]; if(!s||!window.HDecouvrir) return;
+          HDecouvrir.ouvrir({ nom:s.p.nom, lat:s.c&&s.c[1], lon:s.c&&s.c[0],
+            surPlace:function(txt){
+              /* on l'écrit dans le carnet de CETTE étape, là où le voyageur écrit */
+              try{
+                var cle=(typeof placeKey==='function') ? placeKey(s) : s.p.nom;
+                var vieux=localStorage.getItem('the-note-'+cle)||'';
+                localStorage.setItem('the-note-'+cle, vieux ? (vieux+'\n\n'+txt) : txt);
+              }catch(e){}
+              render(LASTORIGIN, LASTRES);
+            } });
+        } },
       { id:'autour',
         label:function(){ return T('itin.etape.autour','🔎 Ce qu\'il y a autour de cette étape'); },
         run:function(i){

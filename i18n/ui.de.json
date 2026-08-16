@@ -2465,5 +2465,15 @@
   "circ.verrou": "Nur für Passinhaber",
   "itin.circuit.choix.titre": "Rundreisen",
   "itin.circuit.nouveau": "Eine Tour auswählen",
-  "itin.circuit.nouveau.sous": "Ein bereits vorgezeichneter Weg, den Sie sich zu eigen machen werden."
+  "itin.circuit.nouveau.sous": "Ein bereits vorgezeichneter Weg, den Sie sich zu eigen machen werden.",
+  "Fichier son": "Audiodatei",
+  "Un mot sur ce souvenir…": "Ein paar Worte zu dieser Erinnerung…",
+  "Ajouter un média": "Medien hinzufügen",
+  "Prendre une photo": "Ein Foto machen",
+  "Photo, vidéo ou son — autant que vous voulez.": "Foto, Video oder Ton – so viel Sie wollen.",
+  "Appareil photo": "Kamera",
+  "Galerie": "Galerie",
+  "Enregistrer dans mes photos": "In „Meine Fotos“ speichern",
+  "Enregistré — regardez dans Photos ou Téléchargements.": "Gespeichert – schauen Sie unter „Fotos“ oder „Downloads“ nach.",
+  "itin.etape.decouvrir": "📖 Diesen Ort entdecken"
 }

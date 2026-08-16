@@ -2465,5 +2465,15 @@
   "circ.verrou": "For pass holders only",
   "itin.circuit.choix.titre": "Tours",
   "itin.circuit.nouveau": "Choose a tour",
-  "itin.circuit.nouveau.sous": "A path that has already been mapped out, which you will make your own."
+  "itin.circuit.nouveau.sous": "A path that has already been mapped out, which you will make your own.",
+  "Fichier son": "Audio file",
+  "Un mot sur ce souvenir…": "A few words about this memory…",
+  "Ajouter un média": "Add media",
+  "Prendre une photo": "Take a photo",
+  "Photo, vidéo ou son — autant que vous voulez.": "Photos, videos or audio — as many as you like.",
+  "Appareil photo": "Camera",
+  "Galerie": "Gallery",
+  "Enregistrer dans mes photos": "Save to my photos",
+  "Enregistré — regardez dans Photos ou Téléchargements.": "Saved — look in Photos or Downloads.",
+  "itin.etape.decouvrir": "📖 Discover this place"
 }

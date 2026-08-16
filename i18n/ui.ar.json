@@ -2465,5 +2465,15 @@
   "circ.verrou": "مخصص لحاملي البطاقة",
   "itin.circuit.choix.titre": "الجولات السياحية",
   "itin.circuit.nouveau": "اختيار جولة سياحية",
-  "itin.circuit.nouveau.sous": "مسار محدد مسبقًا، ستجعله مسارك الخاص."
+  "itin.circuit.nouveau.sous": "مسار محدد مسبقًا، ستجعله مسارك الخاص.",
+  "Fichier son": "ملف صوتي",
+  "Un mot sur ce souvenir…": "كلمة عن هذه الذكرى…",
+  "Ajouter un média": "إضافة ملف وسائط",
+  "Prendre une photo": "التقاط صورة",
+  "Photo, vidéo ou son — autant que vous voulez.": "صور أو مقاطع فيديو أو ملفات صوتية — بقدر ما تشاء.",
+  "Appareil photo": "كاميرا",
+  "Galerie": "معرض الصور",
+  "Enregistrer dans mes photos": "حفظ في «صوري»",
+  "Enregistré — regardez dans Photos ou Téléchargements.": "تم الحفظ — ابحث في «الصور» أو «التنزيلات».",
+  "itin.etape.decouvrir": "📖 اكتشف هذا المكان"
 }

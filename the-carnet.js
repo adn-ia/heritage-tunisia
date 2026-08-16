@@ -18,6 +18,13 @@
     var rq=d.transaction('photos','readwrite').objectStore('photos').add({place:place,name:name,blob:blob,type:type||(blob.type||'image'),ts:Date.now(),ord:Date.now()});
     rq.onsuccess=function(){res();}; rq.onerror=function(){rej(rq.error);}; }); }); }
   function delMedia(id){ return db().then(function(d){ return new Promise(function(res){ var rq=d.transaction('photos','readwrite').objectStore('photos').delete(id); rq.onsuccess=function(){res();}; rq.onerror=function(){res();}; }); }); }
+    /* modifier un média sans le recréer (légende, ordre…) */
+    function majMedia(id,patch){ return db().then(function(d){ return new Promise(function(res){
+      var os=d.transaction('photos','readwrite').objectStore('photos'); var g=os.get(id);
+      g.onsuccess=function(){ var v=g.result; if(!v){ res(); return; }
+        for(var k in patch) v[k]=patch[k];
+        var u=os.put(v); u.onsuccess=function(){res();}; u.onerror=function(){res();}; };
+      g.onerror=function(){res();}; }); }); }
   function setOrd(id,ord){ return db().then(function(d){ return new Promise(function(res){ var os=d.transaction('photos','readwrite').objectStore('photos'); var g=os.get(id); g.onsuccess=function(){ var v=g.result; if(v){v.ord=ord; os.put(v);} res(); }; g.onerror=function(){res();}; }); }); }
   /* LA NOTE NE DOIT PAS SE PERDRE QUAND L'ÉTAPE CHANGE DE CLÉ
      La clé d'une étape porte l'identifiant de son itinéraire (« it123#lieu@… »).
@@ -80,23 +87,71 @@
         var media = k==='video'?'<video src="'+url+'" controls playsinline style="width:100%;border-radius:8px"></video>'
           : k==='audio'?'<audio src="'+url+'" controls style="width:100%"></audio>'
           : '<img src="'+url+'" style="width:100%;border-radius:8px">';
-        return '<div class="cn-item">'+media+'<div class="cn-ctr">'+
+        /* UNE LÉGENDE PAR SOUVENIR — on pouvait écrire un mot sur l'étape, jamais
+           sur la photo elle-même. Elle voyage avec le média : les sauvegardes
+           l'emportent déjà, et la carte postale peut s'en servir. */
+        return '<div class="cn-item">'+media+
+          '<textarea class="cn-cap" data-cap="'+m.id+'" rows="2" placeholder="'+esc(T('Un mot sur ce souvenir…'))+'">'+esc(m.caption||'')+'</textarea>'+
+          '<div class="cn-ctr">'+
           '<button '+(i===0?'disabled':'')+' data-mv="'+m.id+'" data-dir="-1" title="Monter">↑</button>'+
           '<button '+(i===arr.length-1?'disabled':'')+' data-mv="'+m.id+'" data-dir="1" title="Descendre">↓</button>'+
+          '<button data-dl="'+m.id+'" title="'+esc(T('Enregistrer dans mes photos'))+'">⬇️ '+T('Enregistrer')+'</button>'+
           '<button class="cn-rm" data-del="'+m.id+'">🗑️ '+T('Supprimer')+'</button></div></div>'; }).join('')
         : '<div class="cn-empty">'+T('Aucun média pour l’instant. Ajoutez une photo, une vidéo ou un son ci-dessous.')+'</div>';
       modal('<button class="cn-x" onclick="THECarnet.close()">×</button>'+
         '<h3>🖼️ '+T('Carnet')+' — '+esc(nom)+'</h3>'+
         '<div class="cn-list">'+list+'</div>'+
         '<div class="cn-row" style="margin-top:12px">'+
-          '<label class="cn-btn">📷 '+T('Photo')+'<input type="file" accept="image/*" capture="environment" multiple hidden data-add="image"></label>'+
-          '<label class="cn-btn">🎥 '+T('Vidéo')+'<input type="file" accept="video/*" capture="environment" hidden data-add="video"></label>'+
+          /* UN SEUL BOUTON : C'EST UN MÉDIA.
+             Trois boutons séparés — photo, vidéo, son — obligeaient à savoir
+             d'avance ce qu'on déposait, et le son ne pouvait qu'être enregistré,
+             jamais importé. Un souvenir est un média : image, vidéo ou son, en
+             autant d'exemplaires qu'on veut. La prise de vue garde son bouton
+             (elle ouvre l'appareil), l'enregistrement aussi (il ouvre le micro). */
+          '<label class="cn-btn">📎 '+T('Ajouter un média')+'<input type="file" accept="image/*,video/*,audio/*" multiple hidden data-add="media"></label>'+
+          '<label class="cn-btn">📷 '+T('Prendre une photo')+'<input type="file" accept="image/*" capture="environment" multiple hidden data-add="image"></label>'+
           '<button class="cn-btn cn-rec">🎙️ '+T('Son')+'</button></div>'+
+        '<p class="cn-tip">'+T('Photo, vidéo ou son — autant que vous voulez.')+'</p>'+
         '<p class="cn-tip">🔒 '+T('Vos médias restent sur votre téléphone tant que vous ne les avez pas partagés.')+'</p>'+
         '<button class="cn-close-b" onclick="THECarnet.close()">'+T('Fermer')+'</button>');
       var w=document.getElementById('cn-modal');
       arr.forEach(function(){});
-      w.querySelectorAll('[data-add]').forEach(function(inp){ inp.onchange=function(e){ var fs=e.target.files?[].slice.call(e.target.files):[]; Promise.all(fs.map(function(f){return addMedia(place,f.name,f,e.target.getAttribute('data-add'));})).then(function(){ openManager(place,nom); refreshSections(place); }); }; });
+      /* Le bouton unique accepte tout : le type vient donc du FICHIER, pas du
+         bouton. Sans cela une vidéo déposée là s'affichait comme une image. */
+      function typeDu(f, indice){
+        var t=(f && f.type) || '';
+        if(/^video/.test(t)) return 'video';
+        if(/^audio/.test(t)) return 'audio';
+        if(/^image/.test(t)) return 'image';
+        return (indice && indice!=='media') ? indice : 'image';
+      }
+      w.querySelectorAll('[data-add]').forEach(function(inp){ inp.onchange=function(e){
+        var fs=e.target.files?[].slice.call(e.target.files):[];
+        var indice=e.target.getAttribute('data-add');
+        Promise.all(fs.map(function(f){ return addMedia(place, f.name, f, typeDu(f, indice)); }))
+          .then(function(){ openManager(place,nom); refreshSections(place); });
+        e.target.value='';                    // on peut redéposer le même fichier
+      }; });
+        /* ⬇️ ENREGISTRER — un média pris dans le carnet ne va PAS dans la
+           pellicule du téléphone. Sans ce bouton il reste prisonnier de
+           l'application. Repris tel quel du RoadTrip. */
+        w.querySelectorAll('[data-dl]').forEach(function(b){ b.onclick=function(){
+          getMedia(place).then(function(arr){
+            var m=arr.filter(function(x){ return x.id===+b.getAttribute('data-dl'); })[0];
+            if(!m||!m.blob) return;
+            var k=kind(m);
+            var ext = k==='video' ? ((m.blob.type&&m.blob.type.split('/')[1])||'mp4')
+                    : (k==='audio' ? ((m.blob.type&&m.blob.type.split('/')[1])||'webm') : 'jpg');
+            var u=URL.createObjectURL(m.blob), a=document.createElement('a');
+            a.href=u; a.download=(m.name||('souvenir.'+ext));
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(function(){ URL.revokeObjectURL(u); }, 4000);
+          });
+        }; });
+        /* la légende s'enregistre en quittant le champ */
+        w.querySelectorAll('[data-cap]').forEach(function(ta){
+          ta.onchange=function(){ majMedia(+ta.getAttribute('data-cap'), {caption: ta.value}); };
+        });
       w.querySelectorAll('[data-del]').forEach(function(b){ b.onclick=function(){ delMedia(+b.getAttribute('data-del')).then(function(){ openManager(place,nom); refreshSections(place); }); }; });
       w.querySelectorAll('[data-mv]').forEach(function(b){ b.onclick=function(){ moveItem(place,nom,+b.getAttribute('data-mv'),+b.getAttribute('data-dir')); }; });
       var rec=w.querySelector('.cn-rec'); if(rec)rec.onclick=function(){ recordAudio(place,nom); };
@@ -125,6 +180,7 @@
       +'.cn-th.cn-vid,.cn-th.cn-aud{background:#26201a;color:#f5ecd8}.cn-th.cn-addt{background:#f1e7d5;border:1px dashed #c9b896}'
       +'.the-carnet .cn-row{display:flex;gap:8px;flex-wrap:wrap}.cn-btn{flex:1;min-width:130px;padding:10px;border:1px solid #c9b896;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-align:center}'
       +'.the-carnet .cn-pc{background:#14305c}.the-carnet .cn-maps{display:inline-block;margin-top:8px;color:#9a6a2e;text-decoration:underline;font-size:13px}'
+      +'#cn-modal .cn-cap{width:100%;margin:6px 0 0;border:1px solid #e3d8c4;border-radius:7px;padding:7px;font:inherit;font-size:13.5px;background:#fffdf8;color:#4b3f2a}'
       +'.the-carnet .cn-note-priv{font-size:12px;color:#8a7c66;font-style:italic;margin-top:8px}'
       +'#cn-modal{position:fixed;inset:0;z-index:1450;background:rgba(20,15,10,.78);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:18px}'
       +'#cn-modal.on{display:flex}#cn-modal .cn-box{background:#fffdf8;border-radius:14px;padding:16px;max-width:440px;width:100%;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.5)}'

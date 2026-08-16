@@ -537,5 +537,16 @@
   "circ.verrou": "Réservé au passe",
   "itin.circuit.choix.titre": "Circuits",
   "itin.circuit.nouveau": "Choisir un circuit",
-  "itin.circuit.nouveau.sous": "Un parcours déjà tracé, que vous ferez vôtre."
+  "itin.circuit.nouveau.sous": "Un parcours déjà tracé, que vous ferez vôtre.",
+  "Fichier son": "Fichier son",
+  "Un mot sur ce souvenir…": "Un mot sur ce souvenir…",
+  "Enregistrer": "Enregistrer",
+  "Ajouter un média": "Ajouter un média",
+  "Prendre une photo": "Prendre une photo",
+  "Photo, vidéo ou son — autant que vous voulez.": "Photo, vidéo ou son — autant que vous voulez.",
+  "Appareil photo": "Appareil photo",
+  "Galerie": "Galerie",
+  "Enregistrer dans mes photos": "Enregistrer dans mes photos",
+  "Enregistré — regardez dans Photos ou Téléchargements.": "Enregistré — regardez dans Photos ou Téléchargements.",
+  "itin.etape.decouvrir": "📖 Découvrir ce lieu"
 }

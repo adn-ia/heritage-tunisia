@@ -2465,5 +2465,15 @@
   "circ.verrou": "Riservato ai possessori di pass",
   "itin.circuit.choix.titre": "Itinerari",
   "itin.circuit.nouveau": "Scegliere un itinerario",
-  "itin.circuit.nouveau.sous": "Un percorso già tracciato, che potrete fare vostro."
+  "itin.circuit.nouveau.sous": "Un percorso già tracciato, che potrete fare vostro.",
+  "Fichier son": "File audio",
+  "Un mot sur ce souvenir…": "Due parole su questo ricordo…",
+  "Ajouter un média": "Aggiungi un file multimediale",
+  "Prendre une photo": "Scattare una foto",
+  "Photo, vidéo ou son — autant que vous voulez.": "Foto, video o audio: quanto ne volete.",
+  "Appareil photo": "Fotocamera",
+  "Galerie": "Galleria",
+  "Enregistrer dans mes photos": "Salva nelle mie foto",
+  "Enregistré — regardez dans Photos ou Téléchargements.": "Salvato — controlla nella cartella “Foto” o “Download”.",
+  "itin.etape.decouvrir": "📖 Scopri questo luogo"
 }

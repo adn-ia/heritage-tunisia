@@ -1,0 +1,47 @@
+{
+  "_lisezmoi": [
+    "Données de la brique « Découvrir ce lieu ». Auto-portée : TOUS les libellés",
+    "vivent ici. Langue décidée par l'hôte (localStorage 'the_lang'), sinon la",
+    "langue de la page, repli anglais. Ne jamais nommer un pays ici."
+  ],
+  "fr": {
+    "recherche": "Recherche d'informations sourcées (Wikipédia)…",
+    "intro": "Introduction — bref historique",
+    "source": "Source",
+    "utiliser": "✍️ Reprendre ce texte dans mon carnet",
+    "rien": "Aucune information sourcée trouvée pour ce lieu — on n'invente rien. Écrivez votre propre note dans le carnet.",
+    "fermer": "Fermer"
+  },
+  "en": {
+    "recherche": "Search for sourced information (Wikipedia)…",
+    "intro": "Introduction — a brief history",
+    "source": "Source",
+    "utiliser": "✍️ Copy this text into my notebook",
+    "rien": "No sourced information has been found for this place — we don’t make anything up. Write your own note in the notebook.",
+    "fermer": "Close"
+  },
+  "it": {
+    "recherche": "Ricerca di informazioni con riferimenti alle fonti (Wikipedia)…",
+    "intro": "Introduzione — breve cenno storico",
+    "source": "Fonte",
+    "utiliser": "✍️ Copiare questo testo nel mio taccuino",
+    "rien": "Non sono state trovate informazioni attendibili su questo luogo — non inventiamo nulla. Scrivete la vostra nota nel quaderno.",
+    "fermer": "Chiudi"
+  },
+  "de": {
+    "recherche": "Suche nach belegten Informationen (Wikipedia)…",
+    "intro": "Einleitung – ein kurzer historischer Überblick",
+    "source": "Quelle",
+    "utiliser": "✍️ Diesen Text in mein Notizbuch übertragen",
+    "rien": "Zu diesem Ort wurden keine Quellenangaben gefunden – wir erfinden nichts. Schreiben Sie Ihren eigenen Eintrag ins Notizbuch.",
+    "fermer": "Schließen"
+  },
+  "ar": {
+    "recherche": "البحث عن معلومات موثقة (ويكيبيديا)…",
+    "intro": "مقدمة — نبذة تاريخية موجزة",
+    "source": "المصدر",
+    "utiliser": "✍️ نسخ هذا النص إلى دفتر ملاحظاتي",
+    "rien": "لم يتم العثور على أي معلومات موثقة عن هذا المكان — نحن لا نختلق شيئًا. اكتب ملاحظتك الخاصة في دفتر الملاحظات.",
+    "fermer": "إغلاق"
+  }
+}
