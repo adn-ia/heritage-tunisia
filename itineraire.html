@@ -389,7 +389,7 @@
   <div class="wrap">
     <div class="top">
       <a href="decouvrir.html" id="backNav">‹ Menu</a>
-      <div class="mark" data-brand-mono>THE</div>
+      <div class="mark" data-i18n-html="accueil.pays.mark"></div>
       <a href="index.html">Carte ›</a>
     </div>
     <div class="lead">
@@ -660,7 +660,7 @@
     </div>
 
     <div class="foot">
-      Données : THE / carto-historique (Wikidata · Wikipédia · INP).<br>
+      <span data-i18n="itineraire.donnees.carto.historique"></span><br>
       Carnet photo le long du parcours : vos photos restent sur votre appareil — rien n'est envoyé.<br>
       Bientôt : export en album &amp; partage au choix (WhatsApp · e-mail).
     </div>
@@ -1865,7 +1865,7 @@
     const durLabel = tour ? dur.lib : ('≈ '+plan.dayCount+' jour'+(plan.dayCount>1?'s':''));
     // en-tête visible seulement à l'impression / export PDF
     document.getElementById('printhead').innerHTML=
-      '<div class="b">THE</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
+      '<div class="b">'+((window.HConf&&HConf.marqueCourte)||'Heritage')+'</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
       new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>';
     const hasNature=route.some(s=>s.genre==='nature');
     rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+

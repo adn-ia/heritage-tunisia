@@ -1,1 +1,291 @@
-{"_note":"Visite guidée — THE. Libellés (labels) ET étapes (steps) dans SA donnée, langues fr/en/de/it/ar. Auto-portée stricte : le .js est générique, ne les lit qu'ici. Langue = the_lang → repli anglais. Étape sans cible [data-tour-step] = sautée. NE PAS mettre dans ui.*.json.","_config":{},"labels":{"skip":{"fr":"Passer","en":"Skip","de":"Überspringen","it":"Salta","ar":"تخطي"},"prev":{"fr":"Précédent","en":"Back","de":"Zurück","it":"Indietro","ar":"العودة"},"next":{"fr":"Suivant","en":"Next","de":"Weiter","it":"Avanti","ar":"التالي"},"done":{"fr":"Terminer","en":"Done","de":"Fertig","it":"Fatto","ar":"تم"},"stepOf":{"fr":"Étape {n} / {total}","en":"Step {n} / {total}","de":"Schritt {n} / {total}","it":"Passo {n} / {total}","ar":"الخطوة {n} / {total}"},"goto":{"fr":"Y aller ›","en":"Go there ›","de":"Dorthin gehen ›","it":"Vai lì ›","ar":"اذهب إلى هناك ›"},"menuLabel":{"fr":"Visite guidée","en":"Guided tour","de":"Führung","it":"Visita guidata","ar":"جولة بصحبة مرشد"},"menuSub":{"fr":"Revoir la présentation","en":"Replay the walkthrough","de":"Den Walkthrough noch einmal ansehen","it":"Rivedi la guida passo passo","ar":"إعادة تشغيل دليل الخطوات التفصيلي"}},"steps":[{"id":"welcome","icon":"👋","always":true,"title":{"fr":"Bienvenue 👋","en":"Welcome 👋","de":"Herzlich willkommen 👋","it":"Benvenuto 👋","ar":"مرحبًا 👋"},"body":{"fr":"L'application vous accompagne pas à pas. En quelques étapes, découvrez ses fonctions clés — vous pourrez revoir cette visite à tout moment.","en":"The app is here to help. In a few steps, discover its key features — you can replay this tour anytime.","de":"Die App soll Ihnen helfen. Entdecken Sie in wenigen Schritten die wichtigsten Funktionen – Sie können diese Führung jederzeit erneut ansehen.","it":"L&#x27;app è qui per aiutarti. In pochi passaggi, scopri le sue funzionalità principali: puoi rivedere questa guida in qualsiasi momento.","ar":"هذا التطبيق موجود لمساعدتك. اكتشف ميزاته الرئيسية في بضع خطوات — ويمكنك إعادة مشاهدة هذه الجولة في أي وقت."}},{"id":"recit","icon":"📖","title":{"fr":"Le récit à lire ou écouter","en":"The story to read or hear","de":"Die Geschichte zum Lesen oder Anhören","it":"La storia da leggere o da ascoltare","ar":"القصة التي يمكن قراءتها أو الاستماع إليها"},"body":{"fr":"Commencez par le récit : une présentation vivante, à lire à votre rythme ou à écouter en narration audio.","en":"Start with the story: a lively introduction, to read at your own pace or hear as audio narration.","de":"Beginnen Sie mit der Geschichte: eine lebhafte Einleitung, die Sie in Ihrem eigenen Tempo lesen oder als Hörbuch anhören können.","it":"Inizia dalla storia: un’introduzione vivace, da leggere al proprio ritmo o da ascoltare come narrazione audio.","ar":"ابدأ بالقصة: مقدمة مفعمة بالحيوية، يمكنك قراءتها بالسرعة التي تناسبك أو الاستماع إليها في شكل سرد صوتي."}},{"id":"itineraire","icon":"🧭","title":{"fr":"Créer un itinéraire","en":"Build an itinerary","de":"Reiseroute erstellen","it":"Crea un itinerario","ar":"وضع خط سير الرحلة"},"body":{"fr":"Composez un parcours sur mesure — votre départ, votre temps, vos thèmes — et l'application dessine le circuit et sa carte.","en":"Create a tailor-made route — your start, your time, your themes — and the app draws the trip and its map.","de":"Erstellen Sie eine maßgeschneiderte Route – Ihr Startpunkt, Ihre Zeit, Ihre Themen – und die App erstellt die Reise und die dazugehörige Karte.","it":"Crea un itinerario su misura — il punto di partenza, l&#x27;orario, i temi — e l&#x27;app ti proporrà il percorso e la relativa mappa.","ar":"قم بإنشاء مسار مخصص — من حيث نقطة الانطلاق والوقت والمواضيع التي تختارها — وسيقوم التطبيق برسم مسار الرحلة وخريطتها."}},{"id":"souvenirs","icon":"📸","always":true,"title":{"fr":"Gardez vos souvenirs","en":"Keep your memories","de":"Bewahre deine Erinnerungen","it":"Conserva i tuoi ricordi","ar":"احتفظ بذكرياتك"},"body":{"fr":"Ajoutez photos et notes à chaque étape de votre itinéraire, puis exportez-les (carte postale, PDF).","en":"Add photos and notes to each stop of your itinerary, then export them (postcard, souvenir file).","de":"Fügen Sie zu jedem Halt Ihrer Reiseroute Fotos und Notizen hinzu und exportieren Sie diese anschließend (als Postkarte oder Souvenir-Datei).","it":"Aggiungi foto e note a ciascuna tappa del tuo itinerario, quindi esportale (cartolina, cartella dei ricordi).","ar":"أضف الصور والملاحظات إلى كل محطة في خط سير رحلتك، ثم قم بتصديرها (بطاقة بريدية، ملف تذكاري)."}},{"id":"hors-ligne","icon":"📥","always":true,"title":{"fr":"Emportez tout hors-ligne","en":"Take it all offline","de":"Alles offline schalten","it":"Metti tutto in modalità offline","ar":"انقل كل شيء إلى وضع عدم الاتصال"},"body":{"fr":"Choisissez ce que vous téléchargez (voix, photos) et voyez le poids de chaque option, pour consulter sans réseau.","en":"Choose what to download (voices, photos) and see the size of each option, to use without a connection.","de":"Wählen Sie aus, was Sie herunterladen möchten (Stimmen, Fotos), und sehen Sie sich die Größe der einzelnen Optionen an, um sie offline zu nutzen.","it":"Scegli cosa scaricare (voci, foto) e controlla la dimensione di ciascuna opzione, per poterle utilizzare senza connessione.","ar":"اختر ما تريد تنزيله (الأصوات، الصور) واطلع على حجم كل خيار، لاستخدامه دون اتصال بالإنترنت."}},{"id":"carte","icon":"🗺️","title":{"fr":"Explorer la carte","en":"Explore the map","de":"Entdecke die Karte","it":"Esplora la mappa","ar":"استكشف الخريطة"},"body":{"fr":"Ouvrez la carte interactive pour repérer les lieux autour de vous et parcourir tout d'un coup d'œil.","en":"Open the interactive map to spot places around you and browse everything at a glance.","de":"Öffnen Sie die interaktive Karte, um Orte in Ihrer Umgebung zu entdecken und alles auf einen Blick zu sehen.","it":"Apri la mappa interattiva per individuare i luoghi nelle tue vicinanze e dare un&#x27;occhiata a tutto in un colpo d&#x27;occhio.","ar":"افتح الخريطة التفاعلية لتتعرف على الأماكن المحيطة بك وتستعرض كل شيء في لمحة سريعة."}},{"id":"voyage","icon":"🎞️","title":{"fr":"Voyage immersif","en":"Immersive journey","de":"Eine fesselnde Reise","it":"Un viaggio coinvolgente","ar":"رحلة غامرة"},"body":{"fr":"Un diaporama plein écran, pour se laisser porter d'un lieu à l'autre.","en":"A full-screen slideshow, drifting from one place to the next.","de":"Eine Vollbild-Diashow, die von einem Ort zum nächsten gleitet.","it":"Una presentazione a schermo intero, che passa da un luogo all’altro.","ar":"عرض شرائح بملء الشاشة، يتنقل من مكان إلى آخر."}},{"id":"liste","icon":"📋","title":{"fr":"Tous les lieux","en":"All places","de":"Alle Orte","it":"Tutti i luoghi","ar":"جميع الأماكن"},"body":{"fr":"Parcourez tous les sites en liste, classés par genre, sans passer par la carte.","en":"Browse every site as a list, sorted by type, without opening the map.","de":"Alle Standorte als Liste anzeigen, sortiert nach Typ, ohne die Karte zu öffnen.","it":"Visualizza tutti i siti sotto forma di elenco, ordinati per tipo, senza aprire la mappa.","ar":"تصفح كل موقع في شكل قائمة، مرتبة حسب النوع، دون فتح الخريطة."}},{"id":"autour","icon":"📍","title":{"fr":"Autour de moi","en":"Around me","de":"Um mich herum","it":"Intorno a me","ar":"من حولي"},"body":{"fr":"Activez la localisation pour voir en priorité ce qu'il y a à visiter tout près de vous.","en":"Turn on location to see what's worth visiting right near you first.","de":"Aktiviere die Standortbestimmung, um zuerst zu sehen, was es in deiner unmittelbaren Umgebung zu entdecken gibt.","it":"Attiva la localizzazione per scoprire subito cosa vale la pena visitare proprio nelle tue vicinanze.","ar":"قم بتشغيل ميزة تحديد الموقع لترى أولاً ما يستحق الزيارة بالقرب منك."}},{"id":"patrimoine","icon":"🏛️","title":{"fr":"Contribuer au patrimoine","en":"Contribute to heritage","de":"Zum Kulturerbe beitragen","it":"Contribuisci alla tutela del patrimonio culturale","ar":"المساهمة في الحفاظ على التراث"},"body":{"fr":"Documentez ou signalez un site : une contribution citoyenne, ouverte à tous.","en":"Document or report a site: a citizen contribution, open to everyone.","de":"Einen Ort dokumentieren oder melden: ein Bürgerbeitrag, an dem sich jeder beteiligen kann.","it":"Segnalare o documentare un sito: un contributo dei cittadini, aperto a tutti.","ar":"توثيق موقع أو الإبلاغ عنه: مساهمة مدنية، متاحة للجميع."}},{"id":"voix","icon":"🔊","title":{"fr":"Écouter","en":"Listen","de":"Anhören","it":"Ascolta","ar":"استمع"},"body":{"fr":"Ce bouton lit le récit à voix haute. Beaucoup de fiches proposent aussi une narration audio.","en":"This button reads the story aloud. Many entries also offer audio narration.","de":"Über diese Schaltfläche wird die Geschichte vorgelesen. Viele Einträge bieten zudem eine Audio-Erzählung an.","it":"Questo pulsante legge la storia ad alta voce. Molte voci offrono anche una narrazione audio.","ar":"يقرأ هذا الزر القصة بصوت عالٍ. كما تتضمن العديد من المقالات سردًا صوتيًا."}},{"id":"fin","icon":"✨","always":true,"title":{"fr":"À vous de jouer ✨","en":"You're all set ✨","de":"Das war&#x27;s schon ✨","it":"È tutto pronto ✨","ar":"كل شيء جاهز الآن ✨"},"body":{"fr":"Tout fonctionne hors-ligne et vos contenus restent sur votre appareil. Bonne découverte ! Pour revoir cette visite, retrouvez-la dans le menu.","en":"Everything works offline and your content stays on your device. Enjoy exploring! To replay this tour, find it in the menu.","de":"Alles funktioniert offline und Ihre Inhalte bleiben auf Ihrem Gerät gespeichert. Viel Spaß beim Entdecken! Um diese Tour erneut anzusehen, suchen Sie sie einfach im Menü.","it":"Tutto funziona offline e i tuoi contenuti rimangono sul tuo dispositivo. Divertiti a esplorare! Per rivedere questo tour, cercalo nel menu.","ar":"كل شيء يعمل دون اتصال بالإنترنت، ويبقى المحتوى الخاص بك مخزّنًا على جهازك. استمتع بالتجول! لإعادة مشاهدة هذه الجولة، ابحث عنها في القائمة."}}]}
+{
+ "_note": "Visite guidée — THE. Libellés (labels) ET étapes (steps) dans SA donnée, langues fr/en/de/it/ar. Auto-portée stricte : le .js est générique, ne les lit qu'ici. Langue = the_lang → repli anglais. Étape sans cible [data-tour-step] = sautée. NE PAS mettre dans ui.*.json.",
+ "_config": {},
+ "labels": {
+  "skip": {
+   "fr": "Passer",
+   "en": "Skip",
+   "de": "Überspringen",
+   "it": "Salta",
+   "ar": "تخطي"
+  },
+  "prev": {
+   "fr": "Précédent",
+   "en": "Back",
+   "de": "Zurück",
+   "it": "Indietro",
+   "ar": "العودة"
+  },
+  "next": {
+   "fr": "Suivant",
+   "en": "Next",
+   "de": "Weiter",
+   "it": "Avanti",
+   "ar": "التالي"
+  },
+  "done": {
+   "fr": "Terminer",
+   "en": "Done",
+   "de": "Fertig",
+   "it": "Fatto",
+   "ar": "تم"
+  },
+  "stepOf": {
+   "fr": "Étape {n} / {total}",
+   "en": "Step {n} / {total}",
+   "de": "Schritt {n} / {total}",
+   "it": "Passo {n} / {total}",
+   "ar": "الخطوة {n} / {total}"
+  },
+  "goto": {
+   "fr": "Y aller ›",
+   "en": "Go there ›",
+   "de": "Dorthin gehen ›",
+   "it": "Vai lì ›",
+   "ar": "اذهب إلى هناك ›"
+  },
+  "menuLabel": {
+   "fr": "Visite guidée",
+   "en": "Guided tour",
+   "de": "Führung",
+   "it": "Visita guidata",
+   "ar": "جولة بصحبة مرشد"
+  },
+  "menuSub": {
+   "fr": "Revoir la présentation",
+   "en": "Replay the walkthrough",
+   "de": "Den Walkthrough noch einmal ansehen",
+   "it": "Rivedi la guida passo passo",
+   "ar": "إعادة تشغيل دليل الخطوات التفصيلي"
+  },
+  "voice": {
+   "ar": "قراءة النص أو إيقاف الصوت مؤقتًا",
+   "de": "Vorlesen oder Wiedergabe anhalten",
+   "en": "Play or pause the voice",
+   "fr": "Lire ou mettre la voix en pause",
+   "it": "Leggere o mettere in pausa l'audio"
+  }
+ },
+ "steps": [
+  {
+   "id": "welcome",
+   "icon": "👋",
+   "always": true,
+   "title": {
+    "fr": "Bienvenue 👋",
+    "en": "Welcome 👋",
+    "de": "Herzlich willkommen 👋",
+    "it": "Benvenuto 👋",
+    "ar": "مرحبًا 👋"
+   },
+   "body": {
+    "fr": "L'application vous accompagne pas à pas. En quelques étapes, découvrez ses fonctions clés — vous pourrez revoir cette visite à tout moment.",
+    "en": "The app is here to help. In a few steps, discover its key features — you can replay this tour anytime.",
+    "de": "Die App soll Ihnen helfen. Entdecken Sie in wenigen Schritten die wichtigsten Funktionen – Sie können diese Führung jederzeit erneut ansehen.",
+    "it": "L&#x27;app è qui per aiutarti. In pochi passaggi, scopri le sue funzionalità principali: puoi rivedere questa guida in qualsiasi momento.",
+    "ar": "هذا التطبيق موجود لمساعدتك. اكتشف ميزاته الرئيسية في بضع خطوات — ويمكنك إعادة مشاهدة هذه الجولة في أي وقت."
+   }
+  },
+  {
+   "id": "recit",
+   "icon": "📖",
+   "title": {
+    "fr": "Le récit à lire ou écouter",
+    "en": "The story to read or hear",
+    "de": "Die Geschichte zum Lesen oder Anhören",
+    "it": "La storia da leggere o da ascoltare",
+    "ar": "القصة التي يمكن قراءتها أو الاستماع إليها"
+   },
+   "body": {
+    "fr": "Commencez par le récit : une présentation vivante, à lire à votre rythme ou à écouter en narration audio.",
+    "en": "Start with the story: a lively introduction, to read at your own pace or hear as audio narration.",
+    "de": "Beginnen Sie mit der Geschichte: eine lebhafte Einleitung, die Sie in Ihrem eigenen Tempo lesen oder als Hörbuch anhören können.",
+    "it": "Inizia dalla storia: un’introduzione vivace, da leggere al proprio ritmo o da ascoltare come narrazione audio.",
+    "ar": "ابدأ بالقصة: مقدمة مفعمة بالحيوية، يمكنك قراءتها بالسرعة التي تناسبك أو الاستماع إليها في شكل سرد صوتي."
+   }
+  },
+  {
+   "id": "itineraire",
+   "icon": "🧭",
+   "title": {
+    "fr": "Créer un itinéraire",
+    "en": "Build an itinerary",
+    "de": "Reiseroute erstellen",
+    "it": "Crea un itinerario",
+    "ar": "وضع خط سير الرحلة"
+   },
+   "body": {
+    "fr": "Composez un parcours sur mesure — votre départ, votre temps, vos thèmes — et l'application dessine le circuit et sa carte.",
+    "en": "Create a tailor-made route — your start, your time, your themes — and the app draws the trip and its map.",
+    "de": "Erstellen Sie eine maßgeschneiderte Route – Ihr Startpunkt, Ihre Zeit, Ihre Themen – und die App erstellt die Reise und die dazugehörige Karte.",
+    "it": "Crea un itinerario su misura — il punto di partenza, l&#x27;orario, i temi — e l&#x27;app ti proporrà il percorso e la relativa mappa.",
+    "ar": "قم بإنشاء مسار مخصص — من حيث نقطة الانطلاق والوقت والمواضيع التي تختارها — وسيقوم التطبيق برسم مسار الرحلة وخريطتها."
+   }
+  },
+  {
+   "id": "souvenirs",
+   "icon": "📸",
+   "always": true,
+   "title": {
+    "fr": "Gardez vos souvenirs",
+    "en": "Keep your memories",
+    "de": "Bewahre deine Erinnerungen",
+    "it": "Conserva i tuoi ricordi",
+    "ar": "احتفظ بذكرياتك"
+   },
+   "body": {
+    "fr": "Ajoutez photos et notes à chaque étape de votre itinéraire, puis exportez-les (carte postale, PDF).",
+    "en": "Add photos and notes to each stop of your itinerary, then export them (postcard, souvenir file).",
+    "de": "Fügen Sie zu jedem Halt Ihrer Reiseroute Fotos und Notizen hinzu und exportieren Sie diese anschließend (als Postkarte oder Souvenir-Datei).",
+    "it": "Aggiungi foto e note a ciascuna tappa del tuo itinerario, quindi esportale (cartolina, cartella dei ricordi).",
+    "ar": "أضف الصور والملاحظات إلى كل محطة في خط سير رحلتك، ثم قم بتصديرها (بطاقة بريدية، ملف تذكاري)."
+   }
+  },
+  {
+   "id": "hors-ligne",
+   "icon": "📥",
+   "always": true,
+   "title": {
+    "fr": "Emportez tout hors-ligne",
+    "en": "Take it all offline",
+    "de": "Alles offline schalten",
+    "it": "Metti tutto in modalità offline",
+    "ar": "انقل كل شيء إلى وضع عدم الاتصال"
+   },
+   "body": {
+    "fr": "Choisissez ce que vous téléchargez (voix, photos) et voyez le poids de chaque option, pour consulter sans réseau.",
+    "en": "Choose what to download (voices, photos) and see the size of each option, to use without a connection.",
+    "de": "Wählen Sie aus, was Sie herunterladen möchten (Stimmen, Fotos), und sehen Sie sich die Größe der einzelnen Optionen an, um sie offline zu nutzen.",
+    "it": "Scegli cosa scaricare (voci, foto) e controlla la dimensione di ciascuna opzione, per poterle utilizzare senza connessione.",
+    "ar": "اختر ما تريد تنزيله (الأصوات، الصور) واطلع على حجم كل خيار، لاستخدامه دون اتصال بالإنترنت."
+   }
+  },
+  {
+   "id": "carte",
+   "icon": "🗺️",
+   "title": {
+    "fr": "Explorer la carte",
+    "en": "Explore the map",
+    "de": "Entdecke die Karte",
+    "it": "Esplora la mappa",
+    "ar": "استكشف الخريطة"
+   },
+   "body": {
+    "fr": "Ouvrez la carte interactive pour repérer les lieux autour de vous et parcourir tout d'un coup d'œil.",
+    "en": "Open the interactive map to spot places around you and browse everything at a glance.",
+    "de": "Öffnen Sie die interaktive Karte, um Orte in Ihrer Umgebung zu entdecken und alles auf einen Blick zu sehen.",
+    "it": "Apri la mappa interattiva per individuare i luoghi nelle tue vicinanze e dare un&#x27;occhiata a tutto in un colpo d&#x27;occhio.",
+    "ar": "افتح الخريطة التفاعلية لتتعرف على الأماكن المحيطة بك وتستعرض كل شيء في لمحة سريعة."
+   }
+  },
+  {
+   "id": "voyage",
+   "icon": "🎞️",
+   "title": {
+    "fr": "Voyage immersif",
+    "en": "Immersive journey",
+    "de": "Eine fesselnde Reise",
+    "it": "Un viaggio coinvolgente",
+    "ar": "رحلة غامرة"
+   },
+   "body": {
+    "fr": "Un diaporama plein écran, pour se laisser porter d'un lieu à l'autre.",
+    "en": "A full-screen slideshow, drifting from one place to the next.",
+    "de": "Eine Vollbild-Diashow, die von einem Ort zum nächsten gleitet.",
+    "it": "Una presentazione a schermo intero, che passa da un luogo all’altro.",
+    "ar": "عرض شرائح بملء الشاشة، يتنقل من مكان إلى آخر."
+   }
+  },
+  {
+   "id": "liste",
+   "icon": "📋",
+   "title": {
+    "fr": "Tous les lieux",
+    "en": "All places",
+    "de": "Alle Orte",
+    "it": "Tutti i luoghi",
+    "ar": "جميع الأماكن"
+   },
+   "body": {
+    "fr": "Parcourez tous les sites en liste, classés par genre, sans passer par la carte.",
+    "en": "Browse every site as a list, sorted by type, without opening the map.",
+    "de": "Alle Standorte als Liste anzeigen, sortiert nach Typ, ohne die Karte zu öffnen.",
+    "it": "Visualizza tutti i siti sotto forma di elenco, ordinati per tipo, senza aprire la mappa.",
+    "ar": "تصفح كل موقع في شكل قائمة، مرتبة حسب النوع، دون فتح الخريطة."
+   }
+  },
+  {
+   "id": "autour",
+   "icon": "📍",
+   "title": {
+    "fr": "Autour de moi",
+    "en": "Around me",
+    "de": "Um mich herum",
+    "it": "Intorno a me",
+    "ar": "من حولي"
+   },
+   "body": {
+    "fr": "Activez la localisation pour voir en priorité ce qu'il y a à visiter tout près de vous.",
+    "en": "Turn on location to see what's worth visiting right near you first.",
+    "de": "Aktiviere die Standortbestimmung, um zuerst zu sehen, was es in deiner unmittelbaren Umgebung zu entdecken gibt.",
+    "it": "Attiva la localizzazione per scoprire subito cosa vale la pena visitare proprio nelle tue vicinanze.",
+    "ar": "قم بتشغيل ميزة تحديد الموقع لترى أولاً ما يستحق الزيارة بالقرب منك."
+   }
+  },
+  {
+   "id": "patrimoine",
+   "icon": "🏛️",
+   "title": {
+    "fr": "Contribuer au patrimoine",
+    "en": "Contribute to heritage",
+    "de": "Zum Kulturerbe beitragen",
+    "it": "Contribuisci alla tutela del patrimonio culturale",
+    "ar": "المساهمة في الحفاظ على التراث"
+   },
+   "body": {
+    "fr": "Documentez ou signalez un site : une contribution citoyenne, ouverte à tous.",
+    "en": "Document or report a site: a citizen contribution, open to everyone.",
+    "de": "Einen Ort dokumentieren oder melden: ein Bürgerbeitrag, an dem sich jeder beteiligen kann.",
+    "it": "Segnalare o documentare un sito: un contributo dei cittadini, aperto a tutti.",
+    "ar": "توثيق موقع أو الإبلاغ عنه: مساهمة مدنية، متاحة للجميع."
+   }
+  },
+  {
+   "id": "voix",
+   "icon": "🔊",
+   "title": {
+    "fr": "Écouter",
+    "en": "Listen",
+    "de": "Anhören",
+    "it": "Ascolta",
+    "ar": "استمع"
+   },
+   "body": {
+    "fr": "Ce bouton lit le récit à voix haute. Beaucoup de fiches proposent aussi une narration audio.",
+    "en": "This button reads the story aloud. Many entries also offer audio narration.",
+    "de": "Über diese Schaltfläche wird die Geschichte vorgelesen. Viele Einträge bieten zudem eine Audio-Erzählung an.",
+    "it": "Questo pulsante legge la storia ad alta voce. Molte voci offrono anche una narrazione audio.",
+    "ar": "يقرأ هذا الزر القصة بصوت عالٍ. كما تتضمن العديد من المقالات سردًا صوتيًا."
+   }
+  },
+  {
+   "id": "fin",
+   "icon": "✨",
+   "always": true,
+   "title": {
+    "fr": "À vous de jouer ✨",
+    "en": "You're all set ✨",
+    "de": "Das war&#x27;s schon ✨",
+    "it": "È tutto pronto ✨",
+    "ar": "كل شيء جاهز الآن ✨"
+   },
+   "body": {
+    "fr": "Tout fonctionne hors-ligne et vos contenus restent sur votre appareil. Bonne découverte ! Pour revoir cette visite, retrouvez-la dans le menu.",
+    "en": "Everything works offline and your content stays on your device. Enjoy exploring! To replay this tour, find it in the menu.",
+    "de": "Alles funktioniert offline und Ihre Inhalte bleiben auf Ihrem Gerät gespeichert. Viel Spaß beim Entdecken! Um diese Tour erneut anzusehen, suchen Sie sie einfach im Menü.",
+    "it": "Tutto funziona offline e i tuoi contenuti rimangono sul tuo dispositivo. Divertiti a esplorare! Per rivedere questo tour, cercalo nel menu.",
+    "ar": "كل شيء يعمل دون اتصال بالإنترنت، ويبقى المحتوى الخاص بك مخزّنًا على جهازك. استمتع بالتجول! لإعادة مشاهدة هذه الجولة، ابحث عنها في القائمة."
+   }
+  }
+ ]
+}

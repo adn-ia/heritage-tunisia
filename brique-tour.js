@@ -132,7 +132,9 @@
   }
 
   function teardown() {
-    if (typeof stopVoice === "function") stopVoice();   // couper la voix en cours
+    /* on quitte la visite : la voix se tait. Sans cela elle continuait de
+       raconter par-dessus l'écran qu'on venait de rouvrir. */
+    if (typeof stopVoice === "function") stopVoice();
     if (onResize) {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onResize, true);
@@ -186,7 +188,7 @@
       '<div class="htour-dots">' + dots + '</div>' +
       '<div class="htour-ft">' +
         '<span class="htour-count">' + esc(L("stepOf", { n: cur2 + 1, total: steps.length })) + '</span>' +
-        '<button class="htour-btn ic" data-act="voice" aria-label="voix">' + (paused ? "▶" : "⏸") + '</button>' +
+        '<button class="htour-btn ic" data-act="voice" aria-label="' + esc(L("voice")) + '">' + (paused ? "\u25B6" : "\u23F8") + '</button>' +
         (target ? '<button class="htour-btn go" data-act="goto">' + esc(L("goto")) + '</button>' : '') +
         (cur2 > 0 ? '<button class="htour-btn" data-act="prev">' + esc(L("prev")) + '</button>' : '') +
         '<button class="htour-btn prim" data-act="next">' + esc(last ? L("done") : L("next")) + '</button>' +
@@ -206,27 +208,51 @@
     cardEl.querySelectorAll(".htour-dots i").forEach(function (d) {
       d.addEventListener("click", function () { go(parseInt(d.getAttribute("data-i"), 10)); });
     });
-    narrate(); // lit l'étape courante (voix lente) → auto-avance à la fin de la voix
   }
 
-  function go(i) { if (i < 0 || i >= steps.length) return; cur2 = i; render(); }
+  function go(i) {
+    if (i < 0 || i >= steps.length) return;
+    stopVoice();                 // ne jamais laisser deux voix se chevaucher
+    cur2 = i; render(); narrate();
+  }
 
-  /* --- Voix (MP3 edge-tts, modèle de la gamme comme the-fiche-audio.js) :
-     joue voix/tour/<étape>-<lang>.mp3 (langue de la garde) ; la DURÉE de la
-     voix définit l'affichage → auto-avance à la fin (événement 'ended').
-     Bouton pause/lecture. Dégradation propre si le MP3 manque (avance manuelle). */
+  /* ---------------------------------------------------------------- la voix
+     La visite se raconte : chaque étape a son MP3 « voix/tour/<id>-<langue>.mp3 »
+     et la DURÉE de la voix commande l'affichage — à la fin, on avance tout seul.
+     Si le fichier manque pour cette étape ou cette langue, on ne bloque pas :
+     l'avance redevient manuelle, sans un mot d'erreur.
+
+     Deux corrections par rapport à la version qui tournait en Tunisie :
+       · ▶ RELANÇAIT RIEN. On remettait `paused` à false et on redessinait, sans
+         rappeler narrate() : le voyageur appuyait sur lecture et devait attendre
+         l'étape suivante pour entendre quoi que ce soit.
+       · l'étiquette du bouton était « voix », en français dans le code. Elle vient
+         maintenant de la donnée de la brique, comme tous ses autres libellés. */
   var paused = false, audio = null;
-  function stopVoice() { if (audio) { try { audio.pause(); } catch (e) {} audio = null; } }
+
+  function stopVoice() {
+    if (audio) { try { audio.pause(); } catch (e) {} audio = null; }
+  }
   function narrate() {
     stopVoice();
     if (paused) return;
     var s = steps[cur2]; if (!s || !s.id) return;
-    var a = new Audio("voix/tour/" + encodeURIComponent(s.id) + "-" + (cur() || "en") + ".mp3");
+    var a = new Audio("voix/tour/" + encodeURIComponent(s.id) + "-" + encodeURIComponent(cur() || "en") + ".mp3");
     audio = a;
-    a.addEventListener("ended", function () { if (a !== audio || paused) return; audio = null; if (cur2 < steps.length - 1) go(cur2 + 1); });
-    a.play().catch(function () { /* pas de MP3 pour cette étape/langue → avance manuelle */ });
+    a.addEventListener("ended", function () {
+      if (a !== audio || paused) return;
+      audio = null;
+      if (cur2 < steps.length - 1) go(cur2 + 1);
+    });
+    /* les navigateurs anciens rendent undefined au lieu d'une promesse */
+    var p = a.play();
+    if (p && p.catch) p.catch(function () { if (audio === a) audio = null; });
   }
-  function toggleVoice() { paused = !paused; if (paused) stopVoice(); render(); }
+  function toggleVoice() {
+    paused = !paused;
+    if (paused) stopVoice(); else narrate();   // ← ▶ relance vraiment
+    render();
+  }
 
   function _start() {
     injectCSS();
@@ -245,6 +271,7 @@
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", onResize, true);
     render();
+    narrate();          // la première étape se raconte, comme les suivantes
   }
   function start() { return load().then(_start); }
 
