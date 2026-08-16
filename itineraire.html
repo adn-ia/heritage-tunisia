@@ -493,6 +493,11 @@
     <!-- RESULTAT -->
     <div id="result">
       <div class="print-head" id="printhead"></div>
+      <!-- Fermer, AUSSI en haut : sur un itinéraire de quinze étapes, atteindre
+           le bas pour ranger et sortir est un trajet inutile. Même geste, même
+           libellé, même code — seulement à portée de main. -->
+      <button id="fermerItiHaut" type="button" class="btn go"
+              style="width:100%;margin:0 0 10px" data-i18n="itin.fermer">✓ Fermer l'itinéraire</button>
       <div class="rsum" id="rsum"></div>
       <div id="map"></div>
       <div id="stops"></div>
@@ -1594,8 +1599,10 @@
      d'éditer, on veut ranger et sortir. Elle écrit dans LA fiche existante —
      jamais une seconde — puis ramène au menu principal. */
   (function(){
-    var b=document.getElementById('fermerIti'); if(!b) return;
-    b.onclick=function(){
+    var boutons=[document.getElementById('fermerIti'), document.getElementById('fermerItiHaut')]
+                .filter(Boolean);
+    if(!boutons.length) return;
+    var fermer=function(){
       try{
         if(typeof LASTRES!=='undefined' && LASTRES && LASTRES.route && LASTRES.route.length){
           var arr=readSaved();
@@ -1617,6 +1624,7 @@
       try{ localStorage.removeItem('the_current'); }catch(e){}
       location.href='decouvrir.html';
     };
+    boutons.forEach(function(x){ x.onclick=fermer; });   // haut et bas : le même geste
   })();
 
 

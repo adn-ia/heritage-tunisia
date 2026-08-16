@@ -29,7 +29,16 @@
   function nrm(s){ return (typeof norm==="function")?norm(s):String(s||"").toLowerCase(); }
   function hav(a,b){ return (typeof haversine==="function")?haversine(a,b):0; }
   function haveRoute(){ return (typeof LASTRES!=="undefined") && LASTRES && LASTRES.route && LASTRES.route.length; }
-  function pkey(s){ try{ return (typeof placeKey==="function") ? placeKey(s) : (nrm(s.p.nom)+"@"+s.c[0].toFixed(4)+","+s.c[1].toFixed(4)); }catch(e){ return nrm(s&&s.p&&s.p.nom)+"@"+(s&&s.c); } }
+  /* Une étape peut arriver SANS coordonnée — un lien reçu porte c:null quand le
+     lieu n'est pas dans la base. toFixed levait alors une exception, et comme
+     pkey() est appelée dès la première ligne de la boucle de décoration, TOUT
+     sautait : gestes, dates, visites et liens d'insertion compris. */
+  function pkey(s){ try{
+    if(!s || !s.p) return "";
+    var c=s.c;
+    if(!Array.isArray(c) || !isFinite(c[0]) || !isFinite(c[1])) return nrm(s.p.nom||"");
+    return (typeof placeKey==="function") ? placeKey(s) : (nrm(s.p.nom)+"@"+c[0].toFixed(4)+","+c[1].toFixed(4));
+  }catch(e){ return nrm(s&&s.p&&s.p.nom)||""; } }
 
   /* --- métadonnées par étape (date, rôle, coord recalée) --- */
   var META_KEY="the_plan_meta";
@@ -240,6 +249,10 @@
 
     cards.forEach(function(card, i){
       var s=route[i]; if(!s) return;
+      /* CEINTURE : une carte qui échoue ne doit pas emporter les suivantes.
+         C'est exactement ce qui s'est produit — une insertion DOM invalide sur la
+         première carte laissait les deux autres nues, sans gestes ni liens. */
+      try{
       var r=role(s), md=metaFor(s);
 
       // rôle : classes + badge
@@ -355,6 +368,7 @@
         det.appendChild(dedans);
         card.appendChild(det);
       }
+      }catch(errCarte){}          // voir la ceinture ci-dessus
     });
 
     /* 4) « AJOUTER UNE ÉTAPE ICI », ENTRE DEUX ÉTAPES
