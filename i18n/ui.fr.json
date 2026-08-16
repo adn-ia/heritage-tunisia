@@ -362,5 +362,12 @@
   "itin.etape.modifier": "Modifier",
   "itin.etape.partager": "Partager",
   "itin.etape.partage.copie": "Étape copiée — collez-la où vous voulez.",
-  "itin.partage.vide": "Rien à partager pour l'instant : ajoutez au moins une étape à cet itinéraire."
+  "itin.partage.vide": "Rien à partager pour l'instant : ajoutez au moins une étape à cet itinéraire.",
+  "itin.donner.qr": "📱 Dupliquer l'itinéraire",
+  "itin.lien.copie": "Lien copié ✓",
+  "itin.lien.copier": "Copiez ce lien :",
+  "itin.lien.illisible": "Ce lien ne peut pas être lu sur cet appareil. Mettez l'application à jour, ou demandez le lien en clair.",
+  "itin.recu.titre": "Itinéraire reçu",
+  "itin.recu.depart": "Départ",
+  "itin.recu.soustitre": "Votre copie — modifiez-la et enregistrez-la comme la vôtre"
 }

@@ -2290,5 +2290,12 @@
   "itin.etape.modifier": "Edit",
   "itin.etape.partager": "Share",
   "itin.etape.partage.copie": "Stage copied — paste it wherever you like.",
-  "itin.partage.vide": "Nothing to share at the moment: please add at least one stop to this itinerary."
+  "itin.partage.vide": "Nothing to share at the moment: please add at least one stop to this itinerary.",
+  "itin.donner.qr": "📱 Duplicate the route",
+  "itin.lien.copie": "Link copied ✓",
+  "itin.lien.copier": "Copy this link:",
+  "itin.lien.illisible": "This link cannot be opened on this device. Please update the app, or ask for the link in plain text.",
+  "itin.recu.titre": "Itinerary received",
+  "itin.recu.depart": "Start",
+  "itin.recu.soustitre": "Your copy — edit it and save it as your own"
 }

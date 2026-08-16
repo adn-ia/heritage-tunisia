@@ -2290,5 +2290,12 @@
   "itin.etape.modifier": "Bearbeiten",
   "itin.etape.partager": "Teilen",
   "itin.etape.partage.copie": "Etappe kopiert – fügen Sie sie ein, wo Sie möchten.",
-  "itin.partage.vide": "Derzeit gibt es nichts zu teilen: Fügen Sie dieser Route mindestens eine Etappe hinzu."
+  "itin.partage.vide": "Derzeit gibt es nichts zu teilen: Fügen Sie dieser Route mindestens eine Etappe hinzu.",
+  "itin.donner.qr": "📱 Route duplizieren",
+  "itin.lien.copie": "Link kopiert ✓",
+  "itin.lien.copier": "Kopieren Sie diesen Link:",
+  "itin.lien.illisible": "Dieser Link kann auf diesem Gerät nicht angezeigt werden. Aktualisieren Sie die App oder bitten Sie um den Link im Klartext.",
+  "itin.recu.titre": "Erhaltene Wegbeschreibung",
+  "itin.recu.depart": "Start",
+  "itin.recu.soustitre": "Ihre Kopie – bearbeiten Sie sie und speichern Sie sie unter Ihrem Namen"
 }

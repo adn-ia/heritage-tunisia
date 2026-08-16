@@ -514,7 +514,7 @@
         <div class="exp-lbl">💾 Garder &amp; partager</div>
         <div class="exp">
           <button id="savebtn" type="button">💾 Enregistrer</button>
-          <button id="sharebtn" type="button">🔗 Partager le lien</button>
+          <button id="sharebtn" type="button" data-i18n="itin.donner.qr">📱 Dupliquer l'itinéraire</button>
           <button id="albumbtn" type="button">📔 Album souvenir</button>
           <button id="printbtn" type="button">🖨️ PDF / Imprimer</button>
         </div>
@@ -896,8 +896,10 @@
         SITES.forEach(s=>{ const n=s.p.nom; if(n && !seen.has(n)){ seen.add(n); const o=document.createElement('option'); o.value=n; dl.appendChild(o); } }); }
       const params=new URLSearchParams(location.search);
       const picksParam=params.get('picks'), tourId=params.get('tour'), tripParam=params.get('trip');
+      const tCourt=params.get('t');       // itinéraire dupliqué par QR : format court
       let ret=false; try{ ret=sessionStorage.getItem('the_return')==='1'; }catch(e){}
-      if(tripParam) loadTrip(tripParam);                 // lien partagé reçu d'un ami → on charge son itinéraire
+      if(tCourt) loadTripCourt(tCourt);           // reçu par QR
+      else if(tripParam) loadTrip(tripParam);                 // lien partagé reçu d'un ami → on charge son itinéraire
       else if(picksParam){
         var _add = params.get('add')==='1';
         if(!_add) loadPicks(picksParam, false);
@@ -1279,33 +1281,81 @@
   function autosaveCurrent(){ try{ if(LASTRES && (LASTRES.mode==='libre' || (LASTRES.route&&LASTRES.route.length))) localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){} }
   function readCurrent(){ try{ return JSON.parse(localStorage.getItem('the_current')||'null'); }catch(e){ return null; } }
 
-  // ---------- Partage : lien d'itinéraire (encodé dans l'URL, sans serveur) ----------
-  function tripCode(){
+  // ---------- Donner son itinéraire : QR + lien (aucun serveur) ----------
+  /* On ne « partage » rien au sens d'un carnet commun : il n'y a ni compte ni
+     synchronisation, et il n'en faut pas. Le lien porte l'itinéraire LUI-MÊME,
+     et celui qui le reçoit en obtient SA copie, qu'il édite à sa guise sans
+     toucher à la vôtre. Le QR fait les deux d'un coup : il porte l'itinéraire
+     et son adresse ouvre — ou fait installer — l'application. */
+  function tripMin(){
     const r=recordFromCurrent();
-    const min={ t:r.title, f:r.forme, o:r.origin.coord, ol:r.origin.label,
+    return { t:r.title, f:r.forme, o:r.origin.coord, ol:r.origin.label,
       s:r.steps.map(st=>{ const o={n:st.nom}; if(st.genre==='perso'){ o.p=1; o.c=st.c; if(st.desc)o.d=st.desc; if(st.src)o.r=st.src; } if(st.halte){ o.h=1; if(st.htype)o.ht=st.htype; } if(st.nuit){ o.u=1; if(st.sejour)o.j=st.sejour; if(st.ville)o.v=st.ville; } if(st.tnote)o.k=st.tnote; return o; }) };
-    return encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(min))));
+  }
+  function tripCode(){                       // ancien format, conservé pour les liens déjà émis
+    return encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(tripMin()))));
+  }
+  function b64url(u8){ var s=''; for(var i=0;i<u8.length;i++) s+=String.fromCharCode(u8[i]);
+    return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+  function deb64url(s){ s=String(s).replace(/-/g,'+').replace(/_/g,'/');
+    while(s.length%4) s+='='; var b=atob(s), u=new Uint8Array(b.length);
+    for(var i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
+  /* Format court : « 1 » = JSON tel quel, « 2 » = JSON compressé. L'ancien
+     format échappait le texte DEUX fois et pesait le double — il débordait de
+     tout QR. Celui-ci tient. */
+  function tripCourt(){
+    var oct=new TextEncoder().encode(JSON.stringify(tripMin()));
+    if(typeof CompressionStream==='undefined') return Promise.resolve('1'+b64url(oct));
+    try{
+      var cs=new CompressionStream('deflate-raw'), w=cs.writable.getWriter();
+      w.write(oct); w.close();
+      return new Response(cs.readable).arrayBuffer()
+        .then(function(ab){ return '2'+b64url(new Uint8Array(ab)); })
+        .catch(function(){ return '1'+b64url(oct); });
+    }catch(e){ return Promise.resolve('1'+b64url(oct)); }
   }
   function shareTrip(){
-    /* Le lien porte l'itinéraire LUI-MÊME (encodé dans l'adresse) : aucun
-       serveur, rien à synchroniser. Mais il ne peut rien porter tant qu'il
-       n'y a aucune étape — et jusqu'ici le bouton se taisait, ce qui le
-       faisait passer pour cassé. Il le dit maintenant. */
     if(!LASTRES) return;
     if(!LASTRES.route.length){ alert(uiT('itin.partage.vide')); return; }
-    const url=location.origin+location.pathname.replace(/[^/]*$/,'')+'itineraire.html?trip='+tripCode();
-    const txt=(LASTRES.tour&&LASTRES.tour.titre?LASTRES.tour.titre:uiT('Mon itinéraire'))+' — '+LASTRES.route.length+' '+uiT('étapes')+' (THE)';
-    if(navigator.share){ navigator.share({title:'Itinéraire — THE', text:txt, url}).catch(()=>{}); return; }
-    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(()=>alert(uiT('Lien copié ✓ — envoyez-le à votre groupe (ils l\'ouvrent et l\'itinéraire se charge).')), ()=>prompt(uiT('Copiez ce lien à partager :'), url)); return; }
-    prompt('Copiez ce lien à partager :', url);
+    var titre=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:'';
+    tripCourt().then(function(code){
+      var url=location.origin+location.pathname.replace(/[^/]*$/,'')+'itineraire.html?t='+code;
+      if(window.HQR && HQR.ouvrir){ HQR.ouvrir({url:url, titre:titre, etapes:LASTRES.route.length}); return; }
+      /* la brique n'est pas là : on ne laisse pas l'utilisateur sans rien */
+      if(navigator.share){ navigator.share({title:titre, url:url}).catch(function(){}); return; }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(url).then(function(){ alert(uiT('itin.lien.copie')); },
+                                               function(){ prompt(uiT('itin.lien.copier'), url); });
+        return;
+      }
+      prompt(uiT('itin.lien.copier'), url);
+    });
   }
-  function loadTrip(code){
-    let min; try{ min=JSON.parse(decodeURIComponent(atob(decodeURIComponent(code)))); }catch(e){ return; }
+  function appliquerTrip(min){
     if(!min || !min.s || !min.s.length) return;
-    const rec={ title:min.t||'Itinéraire partagé', forme:min.f||'oneway', entry:'shared',
-      origin:{coord:min.o, label:min.ol||'Départ'}, tour:{titre:min.t||'Itinéraire partagé', soustitre:'Partagé avec vous — vous pouvez l\'éditer et l\'enregistrer'},
+    const rec={ title:min.t||uiT('itin.recu.titre'), forme:min.f||'oneway', entry:'shared',
+      origin:{coord:min.o, label:min.ol||uiT('itin.recu.depart')}, tour:{titre:min.t||uiT('itin.recu.titre'), soustitre:uiT('itin.recu.soustitre')},
       steps:min.s.map(o=>({nom:o.n, c:o.c||null, genre:o.p?'perso':'', halte:!!o.h, htype:o.ht||'', nuit:!!o.u, sejour:o.j||'', ville:o.v||'', tnote:o.k||'', desc:o.d||'', src:o.r||''})) };
     renderRecord(rec, 'shared');
+  }
+  function loadTrip(code){                   // ancien format
+    let min; try{ min=JSON.parse(decodeURIComponent(atob(decodeURIComponent(code)))); }catch(e){ return; }
+    appliquerTrip(min);
+  }
+  function loadTripCourt(code){              // format court, compressé ou non
+    if(!code) return;
+    var mode=String(code).charAt(0), u;
+    try{ u=deb64url(String(code).slice(1)); }catch(e){ return; }
+    if(mode==='1'){ try{ appliquerTrip(JSON.parse(new TextDecoder().decode(u))); }catch(e){} return; }
+    if(mode!=='2') return;
+    if(typeof DecompressionStream==='undefined'){ alert(uiT('itin.lien.illisible')); return; }
+    try{
+      var ds=new DecompressionStream('deflate-raw'), w=ds.writable.getWriter();
+      w.write(u); w.close();
+      new Response(ds.readable).arrayBuffer()
+        .then(function(ab){ appliquerTrip(JSON.parse(new TextDecoder().decode(ab))); })
+        .catch(function(){ alert(uiT('itin.lien.illisible')); });
+    }catch(e){ alert(uiT('itin.lien.illisible')); }
   }
   // ---------- Le passe (freemium « généreux ») ----------
   function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : (localStorage.getItem('the_premium')==='1'); }catch(e){ return false; } }
@@ -1352,7 +1402,7 @@
   }
   applyPremiumUI();
 
-  document.getElementById('sharebtn').onclick=()=>requirePass('Lien partageable', shareTrip);
+  document.getElementById('sharebtn').onclick=()=>requirePass(uiT('itin.donner.qr'), shareTrip);
   function readMapPicks(){ try{ return JSON.parse(localStorage.getItem('the_picks')||'[]'); }catch(e){ return []; } }
   function renderSaved(){
     const box=document.getElementById('savedBox'), list=document.getElementById('savedList');
@@ -2594,6 +2644,7 @@
     }, 200);
   })();
   </script>
+  <script src="brique-qr.js" defer></script>
   <script src="brique-etape.js" defer></script>
 
   <script>

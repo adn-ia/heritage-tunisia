@@ -2290,5 +2290,12 @@
   "itin.etape.modifier": "Modifica",
   "itin.etape.partager": "Condividi",
   "itin.etape.partage.copie": "Tappa copiata — incollala dove preferisci.",
-  "itin.partage.vide": "Al momento non c'è nulla da condividere: aggiungi almeno una tappa a questo itinerario."
+  "itin.partage.vide": "Al momento non c'è nulla da condividere: aggiungi almeno una tappa a questo itinerario.",
+  "itin.donner.qr": "📱 Duplica il percorso",
+  "itin.lien.copie": "Link copiato ✓",
+  "itin.lien.copier": "Copia questo link:",
+  "itin.lien.illisible": "Questo link non può essere visualizzato su questo dispositivo. Aggiorna l'app oppure richiedi il link in formato testo.",
+  "itin.recu.titre": "Itinerario ricevuto",
+  "itin.recu.depart": "Partenza",
+  "itin.recu.soustitre": "La tua copia: modificala e salvala come tua"
 }

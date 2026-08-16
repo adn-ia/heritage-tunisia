@@ -1,0 +1,57 @@
+{
+  "_lisezmoi": [
+    "Données de la brique « Dupliquer un itinéraire par QR ». Auto-portée : TOUS",
+    "les libellés vivent ici. Langue décidée par l'hôte (localStorage 'the_lang'),",
+    "repli anglais. Ne jamais nommer un pays ici."
+  ],
+  "fr": {
+    "titre": "Dupliquer l'itinéraire",
+    "explique": "Scannez ce code depuis l'autre appareil.",
+    "dense": "Itinéraire long : le code est dense. Rapprochez les écrans et montez la luminosité, ou copiez le lien.",
+    "trop.long": "Cet itinéraire est trop long pour un code à scanner. Copiez le lien.",
+    "copier": "Copier le lien",
+    "copie": "Lien copié ✓",
+    "envoyer": "Envoyer le lien",
+    "fermer": "Fermer"
+  },
+  "en": {
+    "titre": "Duplicate the route",
+    "explique": "Scan this code using the other device.",
+    "dense": "Long read: the code is dense. Move the screens closer together and turn up the brightness, or copy the link.",
+    "trop.long": "This route is too long to be scanned as a QR code. Please copy the link.",
+    "copier": "Copy the link",
+    "copie": "Link copied ✓",
+    "envoyer": "Send the link",
+    "fermer": "Close"
+  },
+  "it": {
+    "titre": "Duplicare il percorso",
+    "explique": "Scansiona questo codice dall'altro dispositivo.",
+    "dense": "Itinerario lungo: il codice è denso. Avvicinate gli schermi e aumentate la luminosità, oppure copiate il link.",
+    "trop.long": "Questo percorso è troppo lungo per essere scansionato. Copia il link.",
+    "copier": "Copia il link",
+    "copie": "Link copiato ✓",
+    "envoyer": "Invia il link",
+    "fermer": "Chiudi"
+  },
+  "de": {
+    "titre": "Route duplizieren",
+    "explique": "Scannen Sie diesen Code mit dem anderen Gerät.",
+    "dense": "Lange Anleitung: Der Code ist sehr umfangreich. Bringen Sie die Bildschirme näher zusammen und erhöhen Sie die Helligkeit, oder kopieren Sie den Link.",
+    "trop.long": "Diese Route ist zu lang für einen QR-Code. Kopieren Sie den Link.",
+    "copier": "Link kopieren",
+    "copie": "Link kopiert ✓",
+    "envoyer": "Link senden",
+    "fermer": "Schließen"
+  },
+  "ar": {
+    "titre": "نسخ المسار",
+    "explique": "قم بمسح هذا الرمز ضوئيًا من الجهاز الآخر.",
+    "dense": "مسار طويل: النص كثيف. قم بتقريب الشاشات وزيادة السطوع، أو انسخ الرابط.",
+    "trop.long": "هذا المسار طويل جدًا بالنسبة لرمز يمكن مسحه ضوئيًا. انسخ الرابط.",
+    "copier": "نسخ الرابط",
+    "copie": "تم نسخ الرابط ✓",
+    "envoyer": "إرسال الرابط",
+    "fermer": "إغلاق"
+  }
+}
