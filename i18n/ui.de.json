@@ -2436,5 +2436,8 @@
   "itin.picks.go": "Route mit diesen Orten planen",
   "itin.picks.enrichi": "Meine erweiterte Reiseroute",
   "itin.picks.defaut": "Meine Auswahl",
-  "itin.picks.sous": "Die Orte, die Sie ausgewählt haben"
+  "itin.picks.sous": "Die Orte, die Sie ausgewählt haben",
+  "itin.surprise.choix.titre": "Überrasche mich",
+  "itin.surprise.nouveau": "Eine neue Überraschung aus dem Ärmel schütteln",
+  "itin.surprise.nouveau.sous": "Eine zufällige Route, ausgehend von Ihrem Startpunkt und Ihrer Zeit."
 }

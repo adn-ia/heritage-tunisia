@@ -2436,5 +2436,8 @@
   "itin.picks.go": "Traccia il percorso passando per questi luoghi",
   "itin.picks.enrichi": "Il mio itinerario arricchito",
   "itin.picks.defaut": "La mia selezione",
-  "itin.picks.sous": "I luoghi che avete scelto"
+  "itin.picks.sous": "I luoghi che avete scelto",
+  "itin.surprise.choix.titre": "Sorprendimi",
+  "itin.surprise.nouveau": "Tirare fuori una nuova sorpresa",
+  "itin.surprise.nouveau.sous": "Un percorso casuale, a partire dal punto di partenza e dall'orario specificati."
 }

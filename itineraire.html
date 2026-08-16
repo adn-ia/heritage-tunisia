@@ -1834,7 +1834,15 @@
   /* RÈGLE (Helmy, 15/08/2026) : composer un itinéraire est réservé au Premium.
      requirePass renvoie au paywall quand aucun paiement web n'est configuré. */
   document.getElementById('generate').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>run(false));
-  document.getElementById('mSurprise').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>{ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); });
+  /* Une surprise enregistrée se rouvre par SA porte, pas par celle de Composer :
+     elle n'y avait rien à faire. Tirer une nouvelle surprise reste un clic. */
+  document.getElementById('mSurprise').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>{
+    var lancer=function(){ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); };
+    if(!window.THEsurpriseChoisir){ lancer(); return; }
+    THEsurpriseChoisir(lancer, function(rec){
+      location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
+    });
+  });
   /* COMPOSER, C'EST LE VOYAGEUR QUI COMPOSE
      Le bouton dépliait un formulaire et l'application traçait le parcours à sa
      place — ce que « Surprenez-moi » fait déjà. Ici on ouvre les deux portes où
@@ -2744,6 +2752,15 @@
         sousNeuf:T('itin.libre.nouveau.sous','On le nomme, puis on pose sa première étape.')
       }, neuf, reprendre);
     };
+    window.THEsurpriseChoisir = function(neuf, reprendre){
+      var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      THEchoisirDepart({
+        titre:'🎲 '+T('itin.surprise.choix.titre','Surprenez-moi'), icone:'🎲',
+        garder:function(r){ return r && r.mode==='surprise'; },
+        libelleNeuf:T('itin.surprise.nouveau','Tirer une nouvelle surprise'),
+        sousNeuf:T('itin.surprise.nouveau.sous','Un parcours au hasard, à partir de votre départ et de votre temps.')
+      }, neuf, reprendre);
+    };
     window.THEcomposeChoisir = function(neuf, reprendre){
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
@@ -2753,7 +2770,9 @@
            Les avoir mélangés ici était mon erreur — la raison pour laquelle le
            choix ne s'affichait pas était ailleurs (l'ouverture automatique).
            Les fiches d'avant ce jour n'ont pas de mode : elles restent ici. */
-        garder:function(r){ return r && r.mode!=='libre'; },
+        /* ni les voyages libres, ni les surprises : chacun a sa porte.
+           Les fiches d'avant ce jour n'ont pas de mode et restent ici. */
+        garder:function(r){ return r && r.mode!=='libre' && r.mode!=='surprise'; },
         libelleNeuf:T('itin.compose.nouveau','Composer un nouvel itinéraire'),
         sousNeuf:T('itin.compose.nouveau.sous','On le nomme, puis on règle départ, durée et thèmes.')
       }, neuf, reprendre);

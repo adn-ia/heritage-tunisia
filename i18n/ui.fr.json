@@ -508,5 +508,8 @@
   "itin.picks.go": "Tracer l'itinéraire avec ces lieux",
   "itin.picks.enrichi": "Mon itinéraire enrichi",
   "itin.picks.defaut": "Ma sélection",
-  "itin.picks.sous": "Les lieux que vous avez choisis"
+  "itin.picks.sous": "Les lieux que vous avez choisis",
+  "itin.surprise.choix.titre": "Surprenez-moi",
+  "itin.surprise.nouveau": "Tirer une nouvelle surprise",
+  "itin.surprise.nouveau.sous": "Un parcours au hasard, à partir de votre départ et de votre temps."
 }

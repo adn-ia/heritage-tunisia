@@ -2436,5 +2436,8 @@
   "itin.picks.go": "تحديد المسار باستخدام هذه المواقع",
   "itin.picks.enrichi": "مساري المُثري",
   "itin.picks.defaut": "اختياراتي",
-  "itin.picks.sous": "الأماكن التي اخترتموها"
+  "itin.picks.sous": "الأماكن التي اخترتموها",
+  "itin.surprise.choix.titre": "فاجئني",
+  "itin.surprise.nouveau": "إحداث مفاجأة جديدة",
+  "itin.surprise.nouveau.sous": "مسار عشوائي، انطلاقاً من نقطة انطلاقك والوقت الذي حددته."
 }
