@@ -254,7 +254,12 @@
 
   /* ---- Données de langue -------------------------------------------------- */
   var I18N=null, LOADING=null;
-  function langue(){ try{ return (localStorage.getItem('the_lang')||'').slice(0,2) || 'en'; }catch(e){ return 'en'; } }
+  /* la langue de la PAGE avant l'anglais : sans cela, un premier visiteur
+     français voyait cette brique en anglais. */
+  function langue(){ var l='';
+    try{ l=(localStorage.getItem('the_lang')||'').slice(0,2); }catch(e){}
+    if(!l){ try{ l=(document.documentElement.lang||'').slice(0,2); }catch(e){} }
+    return l || 'en'; }
   function load(){
     if(LOADING) return LOADING;
     LOADING = fetch('brique-qr.data.json',{cache:'no-cache'})

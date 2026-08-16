@@ -2051,7 +2051,10 @@
      il choisit LUI-MÊME ses lieux, avec les filtres et le fil rouge. Les réglages
      (départ, durée, forme) viennent APRÈS la sélection, quand ils ont un sens.
      Le formulaire reste dans la page : « Surprenez-moi » lit ses valeurs. */
-  document.getElementById('mGo').onclick=()=>{
+  /* Les deux portes du choix des lieux. Nommée, pour que la suite du parcours
+     puisse l'appeler : deux gestionnaires sur le même bouton, le second écrasait
+     le premier et les portes ne s'ouvraient jamais. */
+  window.THEcomposerPortes = function(){
     var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
     var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
         titre=document.getElementById('itiTitre');
@@ -2068,10 +2071,15 @@
       liste.appendChild(b);
     }
     var aide=T2('itin.compose.porte.aide','Filtrez, choisissez les lieux qui vous parlent, et votre itinéraire se trace à partir d\'eux.');
-    porte(T2('itin.compose.porte.carte','🗺️ Choisir sur la carte'), aide, '🗺️', 'index.html?depuis=composer');
-    porte(T2('itin.compose.porte.liste','📋 Choisir dans la liste'), aide, '📋', 'liste.html?depuis=composer');
+    /* Le libellé traduit porte déjà son emoji : le répéter en icône donnait
+       « 🗺️🗺️ Choisir sur la carte ». On retire celui du texte. */
+    var sansIcone=function(t){ return String(t||'').replace(/^[^A-Za-zÀ-ÿ0-9]+/,''); };
+    porte(sansIcone(T2('itin.compose.porte.carte','🗺️ Choisir sur la carte')), aide, '🗺️', 'index.html?depuis=composer');
+    porte(sansIcone(T2('itin.compose.porte.liste','📋 Choisir dans la liste')), aide, '📋', 'liste.html?depuis=composer');
     mod.style.display='flex';
   };
+  document.getElementById('mGo').onclick=window.THEcomposerPortes;   // repli si la porte de choix manque
+
   // ---------- Voyage libre : pas de plan, on capture au fil de la route ----------
   function startLibre(){
     ENTRY='libre';
@@ -2656,144 +2664,37 @@
     /* COMPOSER COMMENCE COMME LE VOYAGE LIBRE : reprendre, ou repartir de zéro.
        Cliquer sur « Composer » demandait aussitôt un nom neuf ; un itinéraire
        déjà composé n'était atteignable que par « Mes itinéraires ». */
+    /* COMPOSER — UNE SEULE PORTE, SANS RE-CLIC SUR SOI-MÊME
+       On rejouait un clic sur le bouton pour enchaîner, avec un témoin pour
+       ne pas tourner en rond. Le témoin restait allumé quand l'enchaînement
+       ne se terminait pas, et le clic SUIVANT était avalé : Composer ne
+       faisait rien. On appelle maintenant la suite directement. */
     var go=document.getElementById('mGo');
-    if(go) go.addEventListener('click', function(ev){
-      window.__surpriseRegle=false;                       // on quitte le tirage
-      if(window.__composeSuite){ window.__composeSuite=false; return; }   // second passage : on laisse faire
-      if(!window.THEcomposeChoisir) return;
-      ev.stopImmediatePropagation();
-      THEcomposeChoisir(
-        function(){ window.__composeSuite=true; go.click(); },          // un nouveau
-        function(rec){                                                   // on en reprend un
-              /* on OUVRE la fiche, on ne la décrète pas « actif au démarrage » :
-                 l'étoile de la liste reste le seul geste qui fixe ça. */
-          location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
-        });
-    }, true);
-    if(go) go.addEventListener('click', function(){
-      /* Le nom AVANT les critères : on sait dès le départ quel voyage on prépare,
-         et la question ne vient plus surprendre une fois le parcours dressé. */
-      var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
-      function suite(){
-        ouvrir();
-        var r=document.getElementById('raccourcisChoix');
-        if(r) r.style.display='';
-      }
-      if(window.THEnomEnAttente){ suite(); return; }
+    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    function composerOuvrir(){
+      /* la suite de Composer, c'est CHOISIR SES LIEUX — carte ou liste */
+      if(window.THEcomposerPortes){ THEcomposerPortes(); return; }
+      ouvrir();
+      var r=document.getElementById('raccourcisChoix');
+      if(r) r.style.display='';
+    }
+    function composerNouveau(){
+      if(window.THEnomEnAttente){ composerOuvrir(); return; }
+      if(!window.THEdemanderNom){ composerOuvrir(); return; }
       THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'),
                      T2('itin.nom.compose','Mon itinéraire'),
-                     /* Le nom est rangé pour le voyage : aller choisir ses lieux sur la
-                        carte RECHARGE la page, et une variable de page n'y survit pas.
-                        Sans ça on revenait avec une sélection sans nom, et l'itinéraire
-                        qu'on venait de nommer semblait s'être évaporé. */
                      function(nom){ window.THEnomEnAttente=nom;
                        try{ sessionStorage.setItem('the_nom_attente', nom); }catch(e){}
-                       suite(); });
-    }, true);
-  })();
-  </script>
-
-  <script>
-  /* DÉPART PAR ADRESSE — on ne partait que de sa position GPS ou d'un chef-lieu.
-     Préparer son voyage avant de partir demande de dire « je pars de CET hôtel »,
-     « de CETTE rue ». Le géocodage OpenStreetMap est déjà dans la page pour
-     « Ajouter un lieu » : on le réutilise, on n'en ajoute pas un second. */
-  (function(){
-    var sel=document.getElementById('origin'), champ=document.getElementById('originAdr'),
-        msg=document.getElementById('originAdrMsg');
-    if(!sel||!champ) return;
-    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
-    champ.placeholder=T('itin.depart.adresse.exemple','Adresse, hôtel, gare, quartier…');
-    var o=document.createElement('option');
-    o.value='adr'; o.textContent='\u270D\uFE0F '+T('itin.depart.adresse','Une adresse précise…');
-    sel.insertBefore(o, sel.options[1]||null);
-    function bascule(){
-      var on=(sel.value==='adr');
-      champ.style.display=on?'':'none';
-      msg.style.display='none';
-      if(on) setTimeout(function(){ try{ champ.focus(); }catch(e){} },50);
+                       composerOuvrir(); });
     }
-    sel.addEventListener('change', bascule); bascule();
-    window.THEadresseDepart=function(){
-      var q=(champ.value||'').trim();
-      if(!q) return Promise.resolve(null);
-      msg.style.display=''; msg.textContent=T('itin.depart.adresse.recherche','Recherche de l\'adresse…');
-      var iso=(window.HConf&&HConf.iso)||'';
-      return fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language='
-          + ((window.THEi18n&&THEi18n.lang&&THEi18n.lang())||'fr')
-          + (iso?'&countrycodes='+iso:'') + '&q=' + encodeURIComponent(q))
-        .then(function(r){ return r.json(); })
-        .then(function(j){
-          if(!j||!j.length){ msg.textContent=T('itin.depart.adresse.introuvable','Adresse introuvable — précisez la ville.'); return null; }
-          msg.textContent='\uD83D\uDCCD '+j[0].display_name;
-          return {coord:[parseFloat(j[0].lon), parseFloat(j[0].lat)], label:(j[0].display_name||q).split(',')[0]};
-        })
-        .catch(function(){ msg.textContent=T('itin.depart.adresse.echec','Recherche impossible — vérifiez la connexion.'); return null; });
-    };
-  })();
-  </script>
-
-  <script>
-  /* CHAQUE ITINÉRAIRE PORTE UN NOM — les trois modes partagent le même carnet ;
-     ce qui les distingue, c'est la façon de naître : Composer prédit, Surprenez-moi
-     tire au sort, Voyage libre se remplit après coup. Sans nom, trois itinéraires
-     menés de front deviennent indiscernables dans le menu. Voyage libre demande le
-     sien au départ ; les deux autres l'obtiennent une fois l'itinéraire dressé. */
-  (function(){
-    var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
-    /* La DERNIÈRE boîte native du nommage, et elle se trouvait sur le chemin de
-       « Surprenez-moi » : même panne que Composer si le navigateur cesse
-       d'afficher les dialogues — le parcours restait sans nom et sans fiche,
-       sans un mot. On passe par la fenêtre de l'application. */
-    function nommer(defaut){
-      if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
-      if(LASTRES._nomme) return;                       // on ne redemande pas à chaque retouche
-      var n=window.THEnomEnAttente;
-      if(!n){
-        if(!window.THEdemanderNom) return;
-        THEdemanderNom(T('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut,
-                       function(v){ nommerAvec(v, defaut); });
-        return;
-      }
-      nommerAvec(n, defaut);
-    }
-    function nommerAvec(n, defaut){
-      if(typeof LASTRES==='undefined' || !LASTRES || LASTRES._nomme) return;
-      window.THEnomEnAttente=null;
-      try{ sessionStorage.removeItem('the_nom_attente'); }catch(e){}
-      n=(n||'').trim().slice(0,80) || defaut;
-      LASTRES.tour = LASTRES.tour || {};
-      LASTRES.tour.titre = n;
-      LASTRES._nomme = true;
-      try{
-        var arr=readSaved();
-        /* On garde D'OÙ vient l'itinéraire : sans mode, un parcours composé et un
-           parcours tiré au sort se ressemblaient dans la liste, et rien ne permettait
-           de ne proposer que les siens au moment de reprendre. */
-        arr.unshift({ id:'it'+Date.now(), cree:Date.now(), title:n, forme:LASTRES.forme||'oneway',
-          mode:LASTRES.mode || (defaut===T('itin.nom.surprise','Ma surprise') ? 'surprise' : 'compose'),
-          origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour,
-          steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
-            halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||''}; }) });
-        writeSaved(arr.slice(0,40)); renderSaved();
-        localStorage.setItem('the_current', JSON.stringify(recordFromCurrent()));
-      }catch(e){}
-      var h=document.querySelector('#rsum h2'); if(h) h.textContent=n;
-    }
-    function apres(defaut){ var t=0, id=setInterval(function(){
-        t++; if(t>40){ clearInterval(id); return; }
-        if(typeof LASTRES!=='undefined' && LASTRES && LASTRES.route && LASTRES.route.length){ clearInterval(id); nommer(defaut); }
-      }, 250); }
-    ['generate','mSurprise'].forEach(function(bid){
-      var b=document.getElementById(bid); if(!b) return;
-      b.addEventListener('click', function(){
-        /* Le tirage se déclenche maintenant par le bouton du bas : sans ce témoin,
-         la surprise était nommée « Mon itinéraire » et rangée avec les composés —
-         donc introuvable par sa propre porte. */
-      apres((bid==='mSurprise' || window.__surpriseRegle)
-            ? T('itin.nom.surprise','Ma surprise') : T('itin.nom.compose','Mon itinéraire'));
+    if(go) go.onclick=function(){
+      window.__surpriseRegle=false;                    // on quitte le tirage
+      if(!window.THEcomposeChoisir){ composerNouveau(); return; }
+      THEcomposeChoisir(composerNouveau, function(rec){
+        /* on OUVRE la fiche, on ne la décrète pas « actif au démarrage » */
+        location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||'');
       });
-    });
+    };
   })();
   </script>
 

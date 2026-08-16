@@ -24,9 +24,16 @@
 
   var I18N = null, LOADING = null;
 
+  /* LA LANGUE DE L'HÔTE, PAS L'ANGLAIS PAR DÉFAUT
+     Tant que le voyageur n'a rien choisi, rien n'est encore rangé : la brique
+     tombait sur l'anglais, et un premier visiteur français découvrait cet écran
+     en anglais. On lit d'abord son choix, sinon la langue DE LA PAGE — un attribut
+     HTML standard, donc aucune dépendance nouvelle — et l'anglais en dernier. */
   function langue() {
-    try { return (localStorage.getItem("the_lang") || "").slice(0, 2) || "en"; }
-    catch (e) { return "en"; }
+    var l = "";
+    try { l = (localStorage.getItem("the_lang") || "").slice(0, 2); } catch (e) {}
+    if (!l) { try { l = (document.documentElement.lang || "").slice(0, 2); } catch (e) {} }
+    return l || "en";
   }
 
   function load() {

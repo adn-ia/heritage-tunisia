@@ -19,7 +19,29 @@
     rq.onsuccess=function(){res();}; rq.onerror=function(){rej(rq.error);}; }); }); }
   function delMedia(id){ return db().then(function(d){ return new Promise(function(res){ var rq=d.transaction('photos','readwrite').objectStore('photos').delete(id); rq.onsuccess=function(){res();}; rq.onerror=function(){res();}; }); }); }
   function setOrd(id,ord){ return db().then(function(d){ return new Promise(function(res){ var os=d.transaction('photos','readwrite').objectStore('photos'); var g=os.get(id); g.onsuccess=function(){ var v=g.result; if(v){v.ord=ord; os.put(v);} res(); }; g.onerror=function(){res();}; }); }); }
-  function note(place,val){ try{ if(val==null) return localStorage.getItem('the-note-'+place)||''; localStorage.setItem('the-note-'+place,val); }catch(e){ return ''; } }
+  /* LA NOTE NE DOIT PAS SE PERDRE QUAND L'ÉTAPE CHANGE DE CLÉ
+     La clé d'une étape porte l'identifiant de son itinéraire (« it123#lieu@… »).
+     Une note écrite AVANT que l'itinéraire ait son identifiant est rangée sous la
+     clé nue (« lieu@… ») ; à la réouverture on cherchait sous la clé longue et la
+     note semblait effacée. On relit donc aussi la clé nue, et on la recopie sous
+     la clé du jour pour ne plus repasser par là. Même repli que la légende
+     d'album, qui l'avait déjà. */
+  function cleNue(place){ var i=String(place||'').indexOf('#'); return i>=0 ? place.slice(i+1) : place; }
+  function note(place,val){
+    try{
+      if(val==null){
+        var v=localStorage.getItem('the-note-'+place);
+        if(v) return v;
+        var nue=cleNue(place);
+        if(nue!==place){
+          var a=localStorage.getItem('the-note-'+nue);
+          if(a){ localStorage.setItem('the-note-'+place, a); return a; }
+        }
+        return '';
+      }
+      localStorage.setItem('the-note-'+place,val);
+    }catch(e){ return ''; }
+  }
   function kind(m){ var t=m.type||(m.blob&&m.blob.type)||''; if(/^video/.test(t))return'video'; if(/^audio/.test(t))return'audio'; return'image'; }
 
   /* ---- rendu de la section d'une étape ---- */
