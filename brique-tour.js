@@ -35,7 +35,15 @@
   var reduce = false;
   try { reduce = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches; } catch (e) {}
 
-  function cur() { try { return localStorage.getItem("the_lang") || ""; } catch (e) { return ""; } }
+  /* Au tout premier lancement, 'the_lang' est vide : la brique basculait en
+     anglais au milieu d'une page française. On lit donc la langue de la PAGE
+     avant de se rabattre sur l'anglais — même règle que les autres briques. */
+  function cur() {
+    var l = "";
+    try { l = localStorage.getItem("the_lang") || ""; } catch (e) {}
+    if (!l) { try { l = (document.documentElement.lang || "").slice(0, 2); } catch (e) {} }
+    return l;
+  }
   var RTL = { ar:1, he:1, fa:1, ur:1, arc:1, syr:1 };   // écriture droite-à-gauche
   function pick(o) {
     if (!o) return "";

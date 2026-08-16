@@ -957,6 +957,9 @@
         var _a=localStorage.getItem('the_actif');
         var _r=readSaved().filter(function(x){ return x.id===_a; })[0];
         if(_r){ renderRecord(_r); if(typeof LASTRES!=='undefined' && LASTRES) LASTRES._id=_r.id; }
+        /* la fiche a été supprimée depuis : le repère restait et l'écran restait
+           vide. On efface le repère et on laisse s'afficher les façons de partir. */
+        else { try{ localStorage.removeItem('the_actif'); }catch(e2){} }
       }
       else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
     });
@@ -1008,12 +1011,32 @@
 
   // ---------- génération ----------
   // ordre de visite : plus proche voisin depuis l'origine (max=null => sans plafond)
+  /* Un mot passager, pour ne jamais perdre quelque chose en silence.
+     Auto-porté : ni dépendance, ni dialogue natif (que le navigateur peut
+     désactiver, ce qui tuerait le message sans prévenir). */
+  function THEtoast(txt, ms){
+    try{
+      var d=document.getElementById('iti-toast');
+      if(!d){ d=document.createElement('div'); d.id='iti-toast';
+        d.style.cssText='position:fixed;left:50%;bottom:22px;transform:translateX(-50%);'
+          +'max-width:min(92vw,460px);background:#2b2318;color:#f6f0e4;padding:12px 16px;'
+          +'border-radius:10px;font:15px/1.5 Georgia,serif;box-shadow:0 8px 28px rgba(0,0,0,.4);'
+          +'z-index:4000;opacity:0;transition:opacity .25s';
+        document.body.appendChild(d); }
+      d.textContent=txt; requestAnimationFrame(function(){ d.style.opacity='1'; });
+      clearTimeout(d._t); d._t=setTimeout(function(){ d.style.opacity='0'; }, ms||5200);
+    }catch(e){}
+  }
+  window.THEtoast=THEtoast;
+
   function nearestOrder(originCoord, items, max){
     const route=[]; let cur=originCoord; const pool=items.slice();
     while((!max || route.length<max) && pool.length){
       let bi=0,bd=Infinity;
       for(let i=0;i<pool.length;i++){ const d=haversine(cur,pool[i].c); if(d<bd){bd=d;bi=i;} }
-      const next=pool.splice(bi,1)[0]; next.fromPrev=bd; route.push(next); cur=next.c;
+      /* copie : sans elle, fromPrev est écrit dans l'objet SITES lui-même et
+         la distance d'un itinéraire contamine tous les suivants. */
+      const next={...pool.splice(bi,1)[0]}; next.fromPrev=bd; route.push(next); cur=next.c;
     }
     return route;
   }
@@ -1253,7 +1276,7 @@
         if(!rec){ if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut, tracer); else tracer(defaut); return; }
         var byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
         var dejaLa=new Set(route.map(s=>norm(s.p.nom)));
-        var avant=[];
+        var avant=[], _sansCoord=[];   // une halte sans point ne se place pas — mais on le DIT
         (rec.steps||[]).forEach(function(st){
           if(dejaLa.has(norm(st.nom))) return;
           var trouve = st.genre!=='perso' && byName.get(norm(st.nom));
@@ -1262,9 +1285,15 @@
           if(st.c) s.c=st.c;
           s.nuit=st.nuit; s.sejour=st.sejour; s.ville=st.ville; s.tnote=st.tnote;
           if(st.halte){ s.halte=true; s.htype=st.htype||''; }
-          if(s.c) avant.push(s);
+          if(s.c) avant.push(s); else _sansCoord.push(st.nom);
         });
         var fusion=avant.concat(route);
+        /* Une halte sans point sur la carte ne peut pas être placée dans un
+           parcours qui se calcule en distances. Elle disparaissait sans un mot :
+           on la nomme, pour que le voyageur puisse la ressaisir lui-même. On
+           n'invente pas ses coordonnées à sa place. */
+        if(_sansCoord.length && window.THEtoast)
+          THEtoast(T2('itin.halte.sans.point','Halte sans point sur la carte, à ressaisir : ')+_sansCoord.join(', '));
         reglagesApresChoix(fusion, origin, true, {
           nom: rec.title, mode: rec.mode||'', idCible: rec.id,
           tour: rec.tour || {titre: rec.title, soustitre: ''},
@@ -1434,7 +1463,11 @@
   }
 
   // ---------- Enregistrer / reprendre un itinéraire (100% local) ----------
-  function readSaved(){ try{ return JSON.parse(localStorage.getItem('the_saved')||'[]'); }catch(e){ return []; } }
+  /* Le stockage peut contenir autre chose qu'un tableau (écriture d'une
+     version ancienne, réglage à moitié écrit) : JSON.parse réussit alors et
+     rend un objet, sur lequel .filter et .find explosent. On exige un tableau. */
+  function readSaved(){ try{ var v=JSON.parse(localStorage.getItem('the_saved')||'[]');
+    return Array.isArray(v) ? v.filter(function(r){ return r && r.id; }) : []; }catch(e){ return []; } }
   function writeSaved(a){ try{ localStorage.setItem('the_saved', JSON.stringify(a)); }catch(e){} }
 
   /* Un nom seul ne suffit pas : au bout de trois carnets « Cap Bon », on ne sait
@@ -1495,9 +1528,16 @@
       if(st.c) s.c=st.c; s.nuit=st.nuit; s.sejour=st.sejour; s.ville=st.ville; s.tnote=st.tnote;
       if(st.halte){ s.halte=true; s.htype=st.htype||''; } return s;
     });
-    let prev=rec.origin.coord; route.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
+    /* Une fiche ancienne (ou importée) peut n'avoir aucune origine : on prenait
+       rec.origin.coord et la page restait blanche. On se rabat sur la première
+       étape, et on ignore les étapes sans coordonnées plutôt que de casser. */
+    const _placees=route.filter(s=>s && s.c);
+    const _org = (rec.origin && rec.origin.coord) ? rec.origin
+               : { coord:(_placees[0]||{}).c, label:(rec.origin&&rec.origin.label)||uiT('itin.depart.inconnu') };
+    if(!_org.coord) return;
+    let prev=_org.coord; _placees.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
     ENTRY=entry||rec.entry||'funnel';
-    render(rec.origin, {route, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||'itinéraire enregistré'},
+    render(_org, {route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||'itinéraire enregistré'},
       per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'enregistré'}, forme:rec.forme||'oneway', pepites:[], mode:rec.mode||'',
       tour:rec.tour||{titre:rec.title, soustitre:'Itinéraire enregistré'}});
   }
