@@ -284,11 +284,19 @@
         drow.querySelector("[data-rtp-heure]").onchange=function(e){ setHeure(i, e.target.value); };
       }
 
-      // 3) sur une BASE : bouton « ajouter une visite depuis cette base »
-      if(r==="base" && !(card.nextElementSibling && card.nextElementSibling.classList && card.nextElementSibling.classList.contains("rtp-addvisit"))){
+      /* 3) AJOUTER UNE VISITE DEPUIS CETTE ÉTAPE
+         Le bouton n'apparaissait que si l'on avait D'ABORD marqué l'étape
+         comme « base » — un geste que personne ne devine, si bien que la
+         fonction existait sans être atteignable. Dans le RoadTrip, toute
+         étape est un séjour par défaut et accepte des visites : on fait
+         pareil. Seule une visite n'en reçoit pas (pas de visite de visite),
+         et l'étape qui en reçoit une devient une base d'elle-même. */
+      if(r!=="visite" && !(card.nextElementSibling && card.nextElementSibling.classList && card.nextElementSibling.classList.contains("rtp-addvisit"))){
         var av=document.createElement("div"); av.className="rtp-addvisit";
         var avb=document.createElement("button"); avb.type="button"; avb.textContent="➕ "+T("plan.ajouter.visite");
-        (function(baseStop, pos){ avb.onclick=function(){ openInsert(pos+1, av, {kind:"visite", baseKey:pkey(baseStop)}); }; })(s, i);
+        (function(baseStop, pos){ avb.onclick=function(){
+          if(role(baseStop)!=="base") metaPatch(baseStop, {kind:"base", baseKey:""});
+          openInsert(pos+1, av, {kind:"visite", baseKey:pkey(baseStop)}); }; })(s, i);
         av.appendChild(avb);
         card.parentNode.insertBefore(av, card.nextSibling);
       }

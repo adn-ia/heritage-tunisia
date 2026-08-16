@@ -181,9 +181,18 @@
         if (POS) q("bet-pos").textContent = "📍 " + (ADRESSE || (POS[1].toFixed(4) + ", " + POS[0].toFixed(4)));
       }
       m.style.display = "flex";
-      function fermer() { m.style.display = "none"; m.remove(); }
-      m.addEventListener("click", function (e) { if (e.target === m) fermer(); });
-      document.getElementById("bet-non").onclick = fermer;
+      function fermer(annule) {
+        m.style.display = "none"; m.remove();
+        /* On PRÉVIENT l'hôte d'un renoncement. Renoncer à la toute première
+           étape d'un voyage qu'on vient de nommer, c'est renoncer au voyage :
+           sans ce signal, l'hôte gardait une fiche vide dans la liste. */
+        if (annule === true) try {
+          document.dispatchEvent(new CustomEvent("the:etape:annule",
+            { detail: { premiere: !!opts.premiere } }));
+        } catch (e) {}
+      }
+      m.addEventListener("click", function (e) { if (e.target === m) fermer(true); });
+      document.getElementById("bet-non").onclick = function () { fermer(true); };
       document.getElementById("bet-go-q").onclick = chercher;
       document.getElementById("bet-q").addEventListener("keydown", function (e) {
         if (e.key === "Enter") { e.preventDefault(); chercher(); }

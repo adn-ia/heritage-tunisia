@@ -519,6 +519,15 @@
           <button id="printbtn" type="button">🖨️ PDF / Imprimer</button>
         </div>
       </div>
+        <div class="exp-group">
+          <div class="exp-lbl" data-i18n="itin.carnet.titre">🛟 Mettre mon carnet à l'abri</div>
+          <div class="exp">
+            <button id="bkExportIti" type="button" data-i18n="itin.carnet.sauver">💾 Sauvegarder mon carnet</button>
+            <button id="bkImportIti" type="button" data-i18n="itin.carnet.restaurer">📥 Restaurer un carnet</button>
+            <input type="file" id="bkFileIti" accept="application/json,.json" style="display:none">
+          </div>
+          <div class="hint" id="bkStatusIti" data-i18n="itin.carnet.pourquoi">Vos itinéraires, vos notes et vos photos ne vivent que dans cet appareil : rien n'est conservé chez nous. La sauvegarde les met dans un fichier qui reste chez vous — à garder pour changer de téléphone, ou pour tout retrouver si l'application est réinstallée.</div>
+        </div>
       <div class="hint" id="gmapshint" style="margin-top:-4px">🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google&nbsp;Maps, OpenStreetMap, Apple&nbsp;Plans, Waze) ou en <b>fichier GPX hors-ligne</b> (OsmAnd, Organic&nbsp;Maps…). Sur Google&nbsp;Maps, on vise l'<b>entrée officielle</b> des sites. Au-delà de ~10 arrêts, exportez jour par jour.</div>
       <button class="restart" id="restart">↻ Recommencer avec d'autres choix</button>
     </div>
@@ -921,7 +930,7 @@
       }
       else if((function(){ try{ return localStorage.getItem('the_actif'); }catch(e){ return null; } })()){
         /* voyage en cours désigné par l'utilisateur : on l'ouvre directement,
-           la sortie « ‹ Les trois façons de partir » reste disponible. */
+           la sortie « ‹ Les cinq façons de partir » reste disponible. */
         var _a=localStorage.getItem('the_actif');
         var _r=readSaved().filter(function(x){ return x.id===_a; })[0];
         if(_r){ renderRecord(_r); if(typeof LASTRES!=='undefined' && LASTRES) LASTRES._id=_r.id; }
@@ -1423,7 +1432,35 @@
     list.querySelectorAll('.saved-open[data-id]').forEach(b=>b.onclick=()=>resumeSaved(b.dataset.id));
     list.querySelectorAll('.saved-del[data-id]').forEach(b=>b.onclick=()=>{ if(confirm(uiT('Supprimer cet itinéraire enregistré ?'))) deleteSaved(b.dataset.id); });
   }
-  document.getElementById('savebtn').onclick=saveCurrent;   // gratuit : enregistrer/reprendre ses itinéraires
+  document.getElementById('savebtn').onclick=saveCurrent;
+
+  /* SAUVEGARDER / RESTAURER SON CARNET — la fonction existait depuis longtemps
+     (the-backup.js) mais ne se trouvait que sur la page hors-ligne, où personne
+     ne va la chercher. Elle est ici parce que c'est ici qu'on finit un voyage.
+     Tout reste chez l'utilisateur : le fichier ne part nulle part. */
+  (function(){
+    var ex=document.getElementById('bkExportIti'), im=document.getElementById('bkImportIti'),
+        fi=document.getElementById('bkFileIti'), st=document.getElementById('bkStatusIti');
+    if(!ex||!im||!fi||!st) return;
+    var repos=st.textContent;
+    ex.onclick=function(){
+      if(!window.THEBackup){ st.textContent='\u26a0\ufe0f '+uiT('itin.carnet.echec'); return; }
+      st.textContent=uiT('itin.carnet.preparation');
+      THEBackup.download().then(function(){ st.textContent=uiT('itin.carnet.faite'); },
+                                function(e){ st.textContent='\u26a0\ufe0f '+((e&&e.message)||uiT('itin.carnet.echec')); });
+    };
+    im.onclick=function(){ fi.click(); };
+    fi.onchange=function(e){
+      var f=e.target.files[0]; if(!f) return;
+      if(!confirm(uiT('itin.carnet.confirmer'))){ e.target.value=''; return; }
+      st.textContent=uiT('itin.carnet.restauration');
+      THEBackup.importFile(f).then(function(){ st.textContent=uiT('itin.carnet.restaure'); renderSaved(); },
+                                   function(err){ st.textContent='\u26a0\ufe0f '+((err&&err.message)||uiT('itin.carnet.echec')); });
+      e.target.value='';
+    };
+    window.addEventListener('pageshow', function(){ st.textContent=repos; });   // on remet l'explication au retour
+  })();
+   // gratuit : enregistrer/reprendre ses itinéraires
 
   // ---------- rendu ----------
   function servicesNote(s){
@@ -2225,7 +2262,7 @@
      La page déballait tout d'un coup : les 3 cartes, les circuits prêts, les six
      questions et le bouton final. On ne savait plus où l'on était ni comment sortir.
      Désormais : trois options seules ; on entre dans l'une, on en ressort par
-     « ‹ Les trois façons de partir ». Rien n'est supprimé, seulement mis en ordre. */
+     « ‹ Les cinq façons de partir ». Rien n'est supprimé, seulement mis en ordre. */
   (function(){
     var builder=document.getElementById('builder'); if(!builder) return;
     var modes=builder.querySelector('.modes'); if(!modes) return;
@@ -2238,7 +2275,7 @@
     retour.style.cssText='display:block;margin:2px 0 14px;background:none;border:none;'
       + 'color:var(--stone,#8a7c66);font:inherit;font-size:15px;cursor:pointer;padding:6px 0';
     retour.textContent='‹ ' + (function(){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui('itin.retour.trois'));
-      return (v&&v!=='itin.retour.trois')?v:'Les trois façons de partir'; })();
+      return (v&&v!=='itin.retour.trois')?v:'Les cinq façons de partir'; })();
     modes.parentNode.insertBefore(retour, modes.nextSibling);
     suite.unshift(retour);
 
@@ -2645,6 +2682,7 @@
   })();
   </script>
   <script src="brique-qr.js" defer></script>
+  <script src="brique-meteo.js" defer></script>
   <script src="brique-etape.js" defer></script>
 
   <script>
@@ -2658,6 +2696,31 @@
      Rien n'est à valider : l'itinéraire est enregistré au fur et à mesure. */
   (function(){
     function T(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; }
+
+
+    /* RENONCEMENT À LA PREMIÈRE ÉTAPE — on nomme un voyage libre, la saisie
+       s'ouvre, on ferme sans rien saisir : le voyage n'a jamais commencé. La
+       fiche vide restait pourtant dans « Itinéraires sauvegardés », où elle
+       n'avait rien à faire. On la retire, et on revient aux cartes. */
+    document.addEventListener('the:etape:annule', function(e){
+      if(!e.detail || !e.detail.premiere) return;
+      var id=window.THElibreId; if(!id) return;
+      try{
+        var arr=readSaved(), garde=[];
+        for(var i=0;i<arr.length;i++){
+          var r=arr[i];
+          if(r.id===id && (!r.steps || !r.steps.length)) continue;   // la fiche vide, et elle seule
+          garde.push(r);
+        }
+        if(garde.length!==arr.length){
+          writeSaved(garde); renderSaved();
+          try{ if(localStorage.getItem('the_actif')===id) localStorage.removeItem('the_actif'); }catch(e2){}
+          try{ localStorage.removeItem('the_current'); }catch(e3){}
+          window.THElibreId=null;
+          location.href='itineraire.html';                            // retour aux façons de partir
+        }
+      }catch(err){}
+    });
 
     document.addEventListener('the:etape', function(e){
       var x=e.detail; if(!x||!x.coord) return;
@@ -2743,6 +2806,20 @@
           prompt(T('itin.etape.partager','Partager'), txt+' '+lien);
         };
         rangee.appendChild(par);
+
+        /* LE TEMPS QU'IL FERA LÀ-BAS — au même endroit que les autres gestes de
+           l'étape. C'est la seule chose de cette page qui exige le réseau : une
+           prévision ne s'embarque pas. Le bouton n'apparaît donc que si l'étape
+           a une position, et la brique dit franchement quand ça ne répond pas. */
+        var met=document.createElement('button');
+        met.type='button'; met.className='bet-meteo';
+        met.textContent=T('itin.meteo','🌤️ Météo');
+        met.style.cssText=mod.style.cssText;
+        met.onclick=function(){
+          var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
+          if(window.HMeteo) HMeteo.ouvrir({lat:s.c[1], lon:s.c[0], nom:s.p.nom});
+        };
+        rangee.appendChild(met);
 
         if(carnet && carnet.parentNode) carnet.parentNode.insertBefore(rangee, carnet);
         else el.appendChild(rangee);
