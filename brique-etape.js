@@ -66,7 +66,9 @@
       "border-radius:8px;padding:11px;font:inherit;cursor:pointer;margin-top:8px}" +
       "#betModal .bet-res button{display:block;width:100%;text-align:left;background:none;border:none;.bet-tag{display:inline-block;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:#a8884f;margin-right:6px}" +
       "border-bottom:1px solid #efe7d8;padding:9px 2px;font:inherit;font-size:14.5px;cursor:pointer;color:#2b2318}" +
-      "#betModal .bet-pos{font-size:13.5px;color:#a8884f;margin:8px 0 0}";
+      "#betModal .bet-pos{font-size:13.5px;color:#a8884f;margin:8px 0 0}" +
+      "#betModal .bet-err{color:#b3402f;font-weight:600;border:1px solid #e3b6ad;background:#fbecec;border-radius:7px;padding:8px 10px}" +
+      "#betModal input.bet-err,#betModal textarea.bet-err{border-color:#b3402f}";
     document.head.appendChild(s);
   }
 
@@ -167,18 +169,44 @@
       .catch(function () { if (!locaux.length) pos.textContent = L("position.introuvable"); });
   }
 
+  /* Un manque doit SE VOIR : le message existait, en gris, noyé dans le reste. */
+  function erreur(el, on) {
+    if (!el) return;
+    el.classList.toggle("bet-err", !!on);
+    if (on) try { el.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (e) {}
+  }
+
+  /* LOCALISATION — dire CE QUI s'est passé, et ne pas exiger une puce GPS.
+     Toute erreur était annoncée « refusée ». Sur un ordinateur portable il n'y a
+     pas de GPS : la haute précision expire, et on lisait « refusé » sans avoir
+     rien refusé. On tente donc d'abord SANS haute précision (le wifi suffit à
+     quelques centaines de mètres), on réessaie une fois en précis, et chaque
+     cause a son propre message. */
   function gps() {
     var pos = document.getElementById("bet-pos");
-    if (!navigator.geolocation) { pos.textContent = L("position.refusee"); return; }
-    pos.textContent = L("position.recherche");
-    navigator.geolocation.getCurrentPosition(
-      function (p) {
-        POS = [p.coords.longitude, p.coords.latitude]; ADRESSE = "";
-        pos.textContent = "📍 " + POS[1].toFixed(4) + ", " + POS[0].toFixed(4);
-      },
-      function () { pos.textContent = L("position.refusee"); },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
+    if (!navigator.geolocation) { pos.textContent = L("position.indisponible"); erreur(pos, true); return; }
+    pos.textContent = L("position.recherche"); erreur(pos, false);
+
+    function reussi(p) {
+      POS = [p.coords.longitude, p.coords.latitude]; ADRESSE = "";
+      pos.textContent = "📍 " + POS[1].toFixed(4) + ", " + POS[0].toFixed(4);
+      erreur(pos, false);
+    }
+    function rate(e, second) {
+      var code = e && e.code;
+      if (code === 1) { pos.textContent = L("position.refusee"); erreur(pos, true); return; }
+      if (!second) {                                   // une seconde chance, en précis
+        navigator.geolocation.getCurrentPosition(reussi,
+          function (e2) { rate(e2, true); },
+          { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+        return;
+      }
+      pos.textContent = (code === 3) ? L("position.lente") : L("position.indisponible");
+      erreur(pos, true);
+    }
+    navigator.geolocation.getCurrentPosition(reussi,
+      function (e) { rate(e, false); },
+      { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 });
   }
 
   function ouvrir(opts) {
@@ -242,7 +270,13 @@
         ? String(opts.apres)
         : (etapes.length ? String(etapes.length - 1) : "-1");
       document.getElementById("bet-ok").onclick = function () {
-        if (!POS) { document.getElementById("bet-pos").textContent = L("manque.position"); return; }
+        /* CE QUI MANQUE DOIT SE VOIR. Le refus s'écrivait en gris, au milieu du
+           reste : on croyait à un bouton mort. Le champ fautif passe en rouge et
+           l'écran s'y déplace. La DATE, elle, n'a jamais été obligatoire — seule
+           la position l'est, sans elle il n'y a rien à poser sur la carte. */
+        var _pos = document.getElementById("bet-pos");
+        if (!POS) { _pos.textContent = L("manque.position"); erreur(_pos, true); return; }
+        erreur(_pos, false);
         var nom = (document.getElementById("bet-nom").value || "").trim() || ADRESSE.split(",")[0] || L("nom");
         var detail = {
           nom: nom.slice(0, 90),

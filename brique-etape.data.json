@@ -16,7 +16,7 @@
     "position.aucune": "Position : cherchez un lieu ci-dessus, ou prenez votre position.",
     "position.recherche": "Recherche…",
     "position.introuvable": "Rien trouvé — précisez la ville.",
-    "position.refusee": "Position indisponible ou refusée.",
+    "position.refusee": "Localisation refusée. Autorisez-la dans votre navigateur, ou cherchez une adresse ci-dessus.",
     "note": "Un mot, ce qu'il y a à voir… (facultatif)",
     "quand": "📅 Quand",
     "arrivee": "Arrivée",
@@ -25,7 +25,7 @@
     "aujourdhui": "Aujourd'hui",
     "valider": "Ajouter cette étape",
     "annuler": "Annuler",
-    "manque.position": "Il manque la position : cherchez un lieu ou prenez votre position.",
+    "manque.position": "Il manque la position : cherchez une adresse ou prenez votre position.",
     "auto": "✓ Enregistré au fur et à mesure — rien à valider.",
     "hier": "Hier",
     "avant.hier": "Avant-hier",
@@ -34,7 +34,10 @@
     "inserer.fin": "À la fin",
     "inserer.apres": "Après « {n} »",
     "source.guide": "lieu répertorié",
-    "source.adresse": "adresse"
+    "source.adresse": "adresse",
+    "position.indisponible": "Position introuvable depuis cet appareil. Cherchez plutôt une adresse ci-dessus.",
+    "position.lente": "La localisation ne répond pas. Réessayez, ou cherchez une adresse ci-dessus.",
+    "manque.nom": "Donnez un nom à cette étape."
   },
   "en": {
     "titre": "➕ Add a stop",
@@ -47,7 +50,7 @@
     "position.aucune": "Position: search for a place above, or take your position.",
     "position.recherche": "Searching…",
     "position.introuvable": "Nothing found — add the town.",
-    "position.refusee": "Position unavailable or refused.",
+    "position.refusee": "Location access has been denied. Please enable it in your browser, or search for an address above.",
     "note": "A word, what there is to see… (optional)",
     "quand": "📅 When",
     "arrivee": "Arrival",
@@ -56,7 +59,7 @@
     "aujourdhui": "Today",
     "valider": "Add this stop",
     "annuler": "Cancel",
-    "manque.position": "The position is missing: search for a place or take your position.",
+    "manque.position": "Your location is missing: search for an address or enter your location.",
     "auto": "✓ Saved as you go — nothing to confirm.",
     "hier": "Yesterday",
     "avant.hier": "The day before",
@@ -65,7 +68,10 @@
     "inserer.fin": "At the end",
     "inserer.apres": "After « {n} »",
     "source.guide": "listed site",
-    "source.adresse": "address"
+    "source.adresse": "address",
+    "position.indisponible": "Location cannot be found on this device. Please try searching for an address listed above instead.",
+    "position.lente": "The location is not responding. Please try again, or search for an address from the list above.",
+    "manque.nom": "Give this step a name."
   },
   "ar": {
     "titre": "➕ إضافة محطة",
@@ -78,7 +84,7 @@
     "position.aucune": "الموقع: ابحث عن مكان من القائمة أعلاه، أو حدد موقعك الحالي.",
     "position.recherche": "البحث…",
     "position.introuvable": "لم يتم العثور على أي نتائج — يرجى تحديد المدينة.",
-    "position.refusee": "الموقع غير متاح أو مرفوض.",
+    "position.refusee": "تم رفض تحديد الموقع. يرجى السماح بذلك في متصفحك، أو ابحث عن عنوان من العناوين المذكورة أعلاه.",
     "note": "كلمة واحدة تصف ما يمكن رؤيته… (اختياري)",
     "quand": "📅 متى",
     "arrivee": "الوصول",
@@ -87,7 +93,7 @@
     "aujourdhui": "اليوم",
     "valider": "إضافة هذه المحطة",
     "annuler": "إلغاء",
-    "manque.position": "الموقع غير موجود: ابحث عن مكان أو حدد موقعك.",
+    "manque.position": "الموقع غير محدد: ابحث عن عنوان أو حدد موقعك.",
     "auto": "✓ يتم التسجيل تلقائيًا — لا حاجة للتأكيد.",
     "hier": "أمس",
     "avant.hier": "قبل يومين",
@@ -96,7 +102,10 @@
     "inserer.fin": "في النهاية",
     "inserer.apres": "بعد «{n}»",
     "source.guide": "موقع مُدرج في السجل",
-    "source.adresse": "العنوان"
+    "source.adresse": "العنوان",
+    "position.indisponible": "لا يمكن تحديد الموقع من هذا الجهاز. يرجى البحث عن عنوان من العناوين المذكورة أعلاه بدلاً من ذلك.",
+    "position.lente": "الموقع لا يستجيب. يرجى إعادة المحاولة، أو البحث عن عنوان من العناوين المذكورة أعلاه.",
+    "manque.nom": "أعطِ هذه الخطوة اسمًا."
   },
   "de": {
     "titre": "➕ Zwischenstopp hinzufügen",
@@ -109,7 +118,7 @@
     "position.aucune": "Position: Suchen Sie oben nach einem Ort oder geben Sie Ihren Standort ein.",
     "position.recherche": "Suche…",
     "position.introuvable": "Nichts gefunden – geben Sie bitte den Ort an.",
-    "position.refusee": "Position nicht verfügbar oder abgelehnt.",
+    "position.refusee": "Standortbestimmung abgelehnt. Bitte aktivieren Sie diese Funktion in Ihrem Browser oder geben Sie oben eine Adresse ein.",
     "note": "Ein paar Worte dazu, was es dort zu sehen gibt… (optional)",
     "quand": "📅 Wann",
     "arrivee": "Ankunft",
@@ -118,7 +127,7 @@
     "aujourdhui": "Heute",
     "valider": "Diese Etappe hinzufügen",
     "annuler": "Abbrechen",
-    "manque.position": "Die Position fehlt: Suchen Sie einen Ort oder geben Sie Ihren Standort ein.",
+    "manque.position": "Der Standort fehlt: Suchen Sie eine Adresse oder geben Sie Ihren Standort ein.",
     "auto": "✓ Wird fortlaufend gespeichert – keine Bestätigung erforderlich.",
     "hier": "Gestern",
     "avant.hier": "Vorgestern",
@@ -127,7 +136,10 @@
     "inserer.fin": "Am Ende",
     "inserer.apres": "Nach „{n}“",
     "source.guide": "gelisteter Ort",
-    "source.adresse": "Adresse"
+    "source.adresse": "Adresse",
+    "position.indisponible": "Diese Position kann von diesem Gerät aus nicht ermittelt werden. Suchen Sie stattdessen nach einer der oben genannten Adressen.",
+    "position.lente": "Der Standort reagiert nicht. Versuchen Sie es erneut oder suchen Sie oben nach einer Adresse.",
+    "manque.nom": "Geben Sie diesem Schritt einen Namen."
   },
   "it": {
     "titre": "➕ Aggiungi una tappa",
@@ -140,7 +152,7 @@
     "position.aucune": "Posizione: cerca un luogo tra quelli sopra elencati oppure acquisisci la tua posizione.",
     "position.recherche": "Ricerca…",
     "position.introuvable": "Nessun risultato — specificare la città.",
-    "position.refusee": "Posizione non disponibile o rifiutata.",
+    "position.refusee": "Localizzazione rifiutata. Abilitala nel tuo browser oppure cerca un indirizzo tra quelli sopra indicati.",
     "note": "Una breve descrizione di ciò che c'è da vedere… (facoltativo)",
     "quand": "📅 Quando",
     "arrivee": "Arrivo",
@@ -149,7 +161,7 @@
     "aujourdhui": "Oggi",
     "valider": "Aggiungi questa tappa",
     "annuler": "Annulla",
-    "manque.position": "Manca la posizione: cerca un luogo o acquisisci la tua posizione.",
+    "manque.position": "Manca la posizione: cercate un indirizzo o inserite la vostra posizione.",
     "auto": "✓ Salvataggio in tempo reale — non è necessario confermare nulla.",
     "hier": "Ieri",
     "avant.hier": "L'altro ieri",
@@ -158,6 +170,9 @@
     "inserer.fin": "Alla fine",
     "inserer.apres": "Dopo «{n}»",
     "source.guide": "luogo catalogato",
-    "source.adresse": "indirizzo"
+    "source.adresse": "indirizzo",
+    "position.indisponible": "Posizione non individuabile da questo dispositivo. Cerca invece un indirizzo tra quelli sopra indicati.",
+    "position.lente": "La sede non risponde. Riprovare oppure cercare un indirizzo tra quelli sopra indicati.",
+    "manque.nom": "Assegnate un nome a questa fase."
   }
 }
