@@ -2285,5 +2285,9 @@
   "itin.choisir.aide": "Tick the places there, then select ‘Add to itinerary’: they’ll be added to it.",
   "menu.groupe.documentaires": "Thematic documentaries",
   "menu.documentaires": "Themed documentaries",
-  "menu.documentaires.sub": "Rome in Africa · The Medina of Tunis"
+  "menu.documentaires.sub": "Rome in Africa · The Medina of Tunis",
+  "itin.etape.ajouter": "Add a stop",
+  "itin.etape.modifier": "Edit",
+  "itin.etape.partager": "Share",
+  "itin.etape.partage.copie": "Stage copied — paste it wherever you like."
 }

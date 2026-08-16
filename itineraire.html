@@ -1664,9 +1664,15 @@
     /* enregistré tout de suite : il apparaît dans le menu, on peut y revenir */
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
     (function(){ var arr=readSaved();
-       arr.unshift({ id:'it'+Date.now(), title:_nomLibre, forme:'oneway', mode:'libre',
+       /* on retient l'identifiant : chaque étape ajoutée met À JOUR cette fiche,
+          au lieu d'en laisser une vide à côté du voyage réel. */
+       var _idLibre='it'+Date.now();
+       arr.unshift({ id:_idLibre, title:_nomLibre, forme:'oneway', mode:'libre',
          origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null, steps:[] });
-       writeSaved(arr.slice(0,40)); renderSaved(); })();
+       writeSaved(arr.slice(0,40)); renderSaved();
+       /* render() remplace LASTRES : l'identifiant ne peut pas y vivre. Chaque
+          étape ajoutée met à jour CETTE fiche, au lieu d'en laisser une vide. */
+       window.THElibreId=_idLibre; })();
     showGuide('🎒 <b>Voyage libre</b> lancé ! Déplacez-vous, puis marquez chaque moment avec <b>« 📍 J\'ai fait une halte ici »</b> (plus bas) — tout va dans votre carnet.', 9000);
     // on cale l'origine sur la position réelle si dispo (pour ordonner les haltes autour de soi)
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
@@ -2562,6 +2568,134 @@
       if(window.THEitineraires && THEitineraires.ouvrir){ clearInterval(t); THEitineraires.ouvrir(); }
       else if(n>40) clearInterval(t);
     }, 200);
+  })();
+  </script>
+  <script src="brique-etape.js" defer></script>
+
+  <script>
+  /* VOYAGE LIBRE — on commence par UNE ÉTAPE, pas par un écran vide.
+     Le voyage libre s'ouvrait sur zéro étape : le carnet de chaque étape
+     (médias, carte postale, Maps) n'avait alors rien à quoi s'accrocher, et
+     tout se retrouvait dans des blocs séparés en bas de page. On appelle donc
+     la brique de saisie dès le départ, puis à chaque « ajouter une étape » :
+     chaque étape naît avec son nom, sa position — adresse ou GPS — sa note et
+     ses dates, et porte ensuite ses propres fonctions.
+     Rien n'est à valider : l'itinéraire est enregistré au fur et à mesure. */
+  (function(){
+    function T(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; }
+
+    document.addEventListener('the:etape', function(e){
+      var x=e.detail; if(!x||!x.coord) return;
+      if(typeof LASTRES==='undefined' || !LASTRES) return;
+      var quand=[x.arrivee, x.heure].filter(Boolean).join(' ');
+      var stop={ c:x.coord, layer:'perso', genre:'perso', halte:true, htype:'', quand:quand,
+        p:{ nom:x.nom, type:'Étape', gouvernorat:'', description:x.note||'',
+            source:x.adresse ? ('Position : OpenStreetMap — '+x.adresse) : 'Position GPS relevée sur place',
+            a_voir:'', conseil:'' } };
+      var base0=(LASTRES.route||[]).map(function(s){ var o={}; for(var k in s) o[k]=s[k]; return o; });
+      var items;
+      if(x.index!=null && base0[x.index]){
+        /* correction d'une étape : on remplace SUR PLACE, sans toucher aux autres
+           ni à son carnet, qui est rangé sous son nom et sa position. */
+        var anc=base0[x.index];
+        stop.quand = stop.quand || anc.quand || '';
+        base0[x.index]=stop; items=base0;
+      } else if(x.apres!=null && x.apres>=-1 && x.apres<base0.length){
+        /* L'ordre choisi par le voyageur l'emporte : on insère À SA PLACE et on ne
+           réordonne pas. Un voyage libre suit le chemin réellement parcouru, pas le
+           plus court. */
+        base0.splice(x.apres+1, 0, stop); items=base0; x._ordreImpose=true;
+      } else { items=base0.concat([stop]); }
+      var origine = LASTORIGIN && LASTORIGIN.coord ? LASTORIGIN : {coord:x.coord, label:x.nom};
+      var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
+      base.route = (x._ordreImpose || x.index!=null || (typeof nearestOrder!=='function'))
+        ? items : nearestOrder(origine.coord, items, null);
+      render(origine, base);
+      try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(err){}
+      /* la fiche enregistrée suit, sans bouton : c'est un voyage qui se remplit */
+      try{
+        var arr=readSaved(), id=window.THElibreId || LASTRES._id;
+        var trouve=false;
+        for(var i=0;i<arr.length;i++){ if(arr[i].id===id){ var r=recordFromCurrent(); r.id=id; r.mode='libre'; arr[i]=r; trouve=true; break; } }
+        if(!trouve && id){ var r2=recordFromCurrent(); r2.id=id; r2.mode='libre'; arr.unshift(r2); }
+        writeSaved(arr); renderSaved();
+      }catch(err){}
+    });
+
+
+    /* Chaque étape porte les mêmes gestes : la corriger, la partager. Le reste —
+       médias, carte postale, Maps, déplacement, base, suppression — est déjà posé
+       par le carnet et par la brique RoadTrip. */
+    function garnir(){
+      var stops=document.querySelectorAll('#stops .stop');
+      if(!stops.length) return;
+      [].forEach.call(stops, function(el, i){
+        if(el.querySelector('.bet-edit')) return;
+        var carnet=el.querySelector('.the-carnet');
+        var rangee=document.createElement('div');
+        rangee.style.cssText='display:flex;gap:8px;margin-top:8px;flex-wrap:wrap';
+
+        var mod=document.createElement('button');
+        mod.type='button'; mod.className='bet-edit';
+        mod.textContent='✏️ '+T('itin.etape.modifier','Modifier');
+        mod.style.cssText='background:none;border:1px solid #e3d8c4;border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;color:#6b5a39';
+        mod.onclick=function(){
+          var s=(LASTRES.route||[])[i]; if(!s||!window.THEetape) return;
+          var q=String(s.quand||'').split(' ');
+          THEetape.ouvrir({ valeurs:{ index:i, nom:s.p.nom, note:s.p.description||'',
+            coord:s.c, adresse:'', arrivee:q[0]||'', heure:q[1]||'' } });
+        };
+        rangee.appendChild(mod);
+
+        var par=document.createElement('button');
+        par.type='button'; par.className='bet-share';
+        par.textContent='🔗 '+T('itin.etape.partager','Partager');
+        par.style.cssText=mod.style.cssText;
+        par.onclick=function(){
+          var s=(LASTRES.route||[])[i]; if(!s) return;
+          var lien='https://www.openstreetmap.org/?mlat='+s.c[1]+'&mlon='+s.c[0]+'#map=16/'+s.c[1]+'/'+s.c[0];
+          var txt=s.p.nom+(s.p.description?' — '+s.p.description:'');
+          if(navigator.share){ navigator.share({title:s.p.nom, text:txt, url:lien}).catch(function(){}); return; }
+          if(navigator.clipboard&&navigator.clipboard.writeText){
+            navigator.clipboard.writeText(txt+'\n'+lien).then(function(){ alert(T('itin.etape.partage.copie','Étape copiée — collez-la où vous voulez.')); });
+            return;
+          }
+          prompt(T('itin.etape.partager','Partager'), txt+' '+lien);
+        };
+        rangee.appendChild(par);
+
+        if(carnet && carnet.parentNode) carnet.parentNode.insertBefore(rangee, carnet);
+        else el.appendChild(rangee);
+      });
+    }
+    setInterval(garnir, 900);
+
+    /* Bouton « ajouter une étape », posé à côté de la halte : même geste, en mode libre */
+    function poser(){
+      var h=document.getElementById('haltebtn');
+      if(!h || document.getElementById('betAdd')) return;
+      if(!(typeof LASTRES!=='undefined' && LASTRES && LASTRES.mode==='libre')) return;
+      var b=document.createElement('button');
+      b.id='betAdd'; b.type='button';
+      b.textContent='➕ '+T('itin.etape.ajouter','Ajouter une étape');
+      b.style.cssText=h.style.cssText;
+      b.onclick=function(){ if(window.THEetape) THEetape.ouvrir({premiere:false,
+        etapes:(LASTRES&&LASTRES.route||[]).map(function(s){ return {nom:s.p.nom}; })}); };
+      h.parentNode.insertBefore(b, h);
+    }
+    setInterval(poser, 900);
+
+    /* Au lancement d'un voyage libre : la première étape tout de suite. */
+    if(typeof startLibre==='function'){
+      var origine=startLibre;
+      window.startLibre=function(){
+        var r=origine.apply(this, arguments);
+        setTimeout(function(){ if(window.THEetape) THEetape.ouvrir({premiere:true}); }, 900);
+        return r;
+      };
+      var mL=document.getElementById('mLibre');
+      if(mL) mL.onclick=function(){ requirePass(uiT('itin.feature.libre'), window.startLibre); };
+    }
   })();
   </script>
 </body>

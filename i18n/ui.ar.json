@@ -2285,5 +2285,9 @@
   "itin.choisir.aide": "حدد المواقع هناك، ثم انقر على «إضافة إلى مسار الرحلة»: وستُضاف إلى المسار.",
   "menu.groupe.documentaires": "أفلام وثائقية مواضيعية",
   "menu.documentaires": "أفلام وثائقية مواضيعية",
-  "menu.documentaires.sub": "روما في إفريقيا · المدينة القديمة في تونس"
+  "menu.documentaires.sub": "روما في إفريقيا · المدينة القديمة في تونس",
+  "itin.etape.ajouter": "إضافة محطة",
+  "itin.etape.modifier": "تعديل",
+  "itin.etape.partager": "مشاركة",
+  "itin.etape.partage.copie": "تم نسخ المحطة — قم بلصقها في المكان الذي تريده."
 }

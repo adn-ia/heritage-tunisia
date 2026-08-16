@@ -2285,5 +2285,9 @@
   "itin.choisir.aide": "Markieren Sie dort Orte und klicken Sie dann auf „Zur Reiseroute hinzufügen“: Sie werden dann in die Reiseroute aufgenommen.",
   "menu.groupe.documentaires": "Thematische Dokumentationen",
   "menu.documentaires": "Thematische Dokumentarfilme",
-  "menu.documentaires.sub": "Rom in Afrika · Die Medina von Tunis"
+  "menu.documentaires.sub": "Rom in Afrika · Die Medina von Tunis",
+  "itin.etape.ajouter": "Etappe hinzufügen",
+  "itin.etape.modifier": "Bearbeiten",
+  "itin.etape.partager": "Teilen",
+  "itin.etape.partage.copie": "Etappe kopiert – fügen Sie sie ein, wo Sie möchten."
 }

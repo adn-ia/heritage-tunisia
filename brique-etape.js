@@ -1,0 +1,232 @@
+/* ============================================================
+   BRIQUE SOCLE — « Saisir une étape »   (auto-portée)
+   ------------------------------------------------------------
+   Calquée sur l'écran d'ajout d'étape du RoadTrip générique : un nom,
+   une position prise PAR ADRESSE ou PAR GPS, un mot, des dates.
+
+   • Auto-portée : embarque son écran, ses styles et ses libellés.
+     Aucun texte en dur ici — tout vient de brique-etape.data.json.
+   • Générique : ne nomme aucun pays. Le géocodage se restreint au pays
+     de l'édition SI HConf.iso existe, sinon il cherche partout.
+   • Ne touche à RIEN chez l'hôte : quand l'étape est validée, elle émet
+     un évènement « the:etape » et se tait. L'hôte décide quoi en faire.
+     La brique fonctionne donc même seule, dans une page d'essai.
+   • Sans Firebase, comme tout Heritage. (Une synchronisation viendrait
+     un jour en plugin séparé, jamais ici.)
+   • i18n : langue décidée par l'hôte (localStorage 'the_lang'), repli anglais.
+
+   Appel :  THEetape.ouvrir({ premiere:true })   → écran de première étape
+            document.addEventListener('the:etape', e => …e.detail…)
+   detail : { nom, note, coord:[lon,lat], adresse, arrivee, depart, heure }
+   ============================================================ */
+(function () {
+  "use strict";
+
+  var I18N = null, LOADING = null, POS = null, ADRESSE = "";
+
+  function langue() {
+    try { return (localStorage.getItem("the_lang") || "").slice(0, 2) || "en"; }
+    catch (e) { return "en"; }
+  }
+  function load() {
+    if (LOADING) return LOADING;
+    LOADING = fetch("brique-etape.data.json", { cache: "no-cache" })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { I18N = j || {}; })
+      .catch(function () { I18N = {}; });
+    return LOADING;
+  }
+  function L(k) {
+    var d = (I18N && (I18N[langue()] || I18N.en)) || {};
+    return d[k] || "";
+  }
+  function ech(x) { return String(x == null ? "" : x).replace(/[<>&"]/g, function (c) {
+    return { "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[c]; }); }
+
+  function styles() {
+    if (document.getElementById("bet-css")) return;
+    var s = document.createElement("style");
+    s.id = "bet-css";
+    s.textContent =
+      "#betModal{position:fixed;inset:0;z-index:10001;background:rgba(20,15,10,.55);display:none;" +
+      "align-items:center;justify-content:center;padding:16px}" +
+      "#betModal .bet-box{background:#fffdf8;border-radius:12px;max-width:440px;width:100%;padding:20px;" +
+      "position:relative;max-height:88vh;overflow:auto}" +
+      "#betModal h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin:0 0 12px;color:#2b2318}" +
+      "#betModal input,#betModal textarea{width:100%;box-sizing:border-box;font:inherit;font-size:15px;" +
+      "border:1px solid #e3d8c4;border-radius:8px;padding:10px;background:#fff;color:#2b2318}" +
+      "#betModal textarea{min-height:54px}" +
+      "#betModal .bet-l{font-size:13.5px;color:#8a7c66;margin:12px 0 4px}" +
+      "#betModal .bet-row{display:flex;gap:8px}" +
+      "#betModal button.bet-s{background:none;border:1px solid #e3d8c4;border-radius:8px;padding:10px 12px;" +
+      "font:inherit;font-size:14.5px;cursor:pointer;color:#6b5a39;white-space:nowrap}" +
+      "#betModal .bet-go{display:block;width:100%;background:#a8884f;color:#2b2318;border:none;border-radius:8px;" +
+      "padding:13px;font:inherit;font-weight:600;font-size:16px;cursor:pointer;margin-top:16px}" +
+      "#betModal .bet-no{display:block;width:100%;background:none;border:1px solid #e3d8c4;color:#8a7c66;" +
+      "border-radius:8px;padding:11px;font:inherit;cursor:pointer;margin-top:8px}" +
+      "#betModal .bet-res button{display:block;width:100%;text-align:left;background:none;border:none;" +
+      "border-bottom:1px solid #efe7d8;padding:9px 2px;font:inherit;font-size:14.5px;cursor:pointer;color:#2b2318}" +
+      "#betModal .bet-pos{font-size:13.5px;color:#a8884f;margin:8px 0 0}";
+    document.head.appendChild(s);
+  }
+
+  function jour(d) {
+    var p = function (x) { return String(x).padStart(2, "0"); };
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+  }
+
+  function construire(premiere) {
+    styles();
+    var m = document.getElementById("betModal");
+    if (m) m.remove();
+    m = document.createElement("div");
+    m.id = "betModal";
+    var n = new Date();
+    m.innerHTML =
+      '<div class="bet-box">' +
+        '<h3>' + ech(L(premiere ? "titre.premiere" : "titre")) + '</h3>' +
+        '<input id="bet-nom" type="text" placeholder="' + ech(L("nom.exemple")) + '" aria-label="' + ech(L("nom")) + '">' +
+        '<div class="bet-l">' + ech(L("chercher")) + '</div>' +
+        '<div class="bet-row">' +
+          '<input id="bet-q" type="text" style="flex:1">' +
+          '<button type="button" class="bet-s" id="bet-go-q">' + ech(L("bouton.chercher")) + '</button>' +
+        '</div>' +
+        '<div class="bet-res" id="bet-res"></div>' +
+        '<div class="bet-row" style="margin-top:8px"><button type="button" class="bet-s" id="bet-gps" style="flex:1">' + ech(L("gps")) + '</button></div>' +
+        '<div class="bet-pos" id="bet-pos">' + ech(L("position.aucune")) + '</div>' +
+        '<div class="bet-l">' + ech(L("note")) + '</div>' +
+        '<textarea id="bet-note"></textarea>' +
+        '<div class="bet-l">' + ech(L("quand")) + '</div>' +
+        '<div class="bet-row">' +
+          '<input id="bet-arr" type="date" value="' + jour(n) + '" aria-label="' + ech(L("arrivee")) + '">' +
+          '<input id="bet-h" type="time" value="' + String(n.getHours()).padStart(2, "0") + ":" + String(n.getMinutes()).padStart(2, "0") + '" aria-label="' + ech(L("heure")) + '">' +
+        '</div>' +
+        '<div class="bet-row" style="margin-top:6px">' +
+          '<button type="button" class="bet-s" data-j="0">' + ech(L("aujourdhui")) + '</button>' +
+          '<button type="button" class="bet-s" data-j="1">' + ech(L("hier")) + '</button>' +
+          '<button type="button" class="bet-s" data-j="2">' + ech(L("avant.hier")) + '</button>' +
+        '</div>' +
+        '<div class="bet-l">' + ech(L("depart")) + '</div>' +
+        '<input id="bet-dep" type="date">' +
+        '<div class="bet-l">' + ech(L("inserer")) + '</div>' +
+        '<select id="bet-ou"></select>' +
+        '<button type="button" class="bet-go" id="bet-ok">' + ech(L("valider")) + '</button>' +
+        '<button type="button" class="bet-no" id="bet-non">' + ech(L("annuler")) + '</button>' +
+        '<div class="bet-pos" style="text-align:center;margin-top:10px">' + ech(L("auto")) + '</div>' +
+      '</div>';
+    document.body.appendChild(m);
+    return m;
+  }
+
+  function chercher() {
+    var q = (document.getElementById("bet-q").value || "").trim();
+    var pos = document.getElementById("bet-pos"), res = document.getElementById("bet-res");
+    if (!q) return;
+    pos.textContent = L("position.recherche"); res.innerHTML = "";
+    var iso = (window.HConf && HConf.iso) || "";
+    fetch("https://nominatim.openstreetmap.org/search?format=json&limit=5&accept-language=" + langue() +
+          (iso ? "&countrycodes=" + iso : "") + "&q=" + encodeURIComponent(q))
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        if (!j || !j.length) { pos.textContent = L("position.introuvable"); return; }
+        pos.textContent = "";
+        j.forEach(function (x) {
+          var b = document.createElement("button");
+          b.type = "button"; b.textContent = x.display_name;
+          b.onclick = function () {
+            POS = [parseFloat(x.lon), parseFloat(x.lat)];
+            ADRESSE = x.display_name;
+            pos.textContent = "📍 " + x.display_name;
+            res.innerHTML = "";
+            var nom = document.getElementById("bet-nom");
+            if (nom && !nom.value.trim()) nom.value = String(x.display_name).split(",")[0];
+          };
+          res.appendChild(b);
+        });
+      })
+      .catch(function () { pos.textContent = L("position.introuvable"); });
+  }
+
+  function gps() {
+    var pos = document.getElementById("bet-pos");
+    if (!navigator.geolocation) { pos.textContent = L("position.refusee"); return; }
+    pos.textContent = L("position.recherche");
+    navigator.geolocation.getCurrentPosition(
+      function (p) {
+        POS = [p.coords.longitude, p.coords.latitude]; ADRESSE = "";
+        pos.textContent = "📍 " + POS[1].toFixed(4) + ", " + POS[0].toFixed(4);
+      },
+      function () { pos.textContent = L("position.refusee"); },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  }
+
+  function ouvrir(opts) {
+    opts = opts || {};
+    /* opts.valeurs : on rouvre le MÊME écran pour corriger une étape déjà posée —
+       un nom mal tapé, une position approximative, une date oubliée. Sans cela il
+       fallait supprimer l'étape et tout ressaisir, en perdant son carnet. */
+    var v = opts.valeurs || null;
+    return load().then(function () {
+      POS = v && v.coord ? v.coord : null;
+      ADRESSE = (v && v.adresse) || "";
+      var m = construire(!!opts.premiere);
+      if (v) {
+        var q = function (id) { return document.getElementById(id); };
+        if (v.nom) q("bet-nom").value = v.nom;
+        if (v.note) q("bet-note").value = v.note;
+        if (v.arrivee) q("bet-arr").value = v.arrivee;
+        if (v.depart) q("bet-dep").value = v.depart;
+        if (v.heure) q("bet-h").value = v.heure;
+        if (POS) q("bet-pos").textContent = "📍 " + (ADRESSE || (POS[1].toFixed(4) + ", " + POS[0].toFixed(4)));
+      }
+      m.style.display = "flex";
+      function fermer() { m.style.display = "none"; m.remove(); }
+      m.addEventListener("click", function (e) { if (e.target === m) fermer(); });
+      document.getElementById("bet-non").onclick = fermer;
+      document.getElementById("bet-go-q").onclick = chercher;
+      document.getElementById("bet-q").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); chercher(); }
+      });
+      document.getElementById("bet-gps").onclick = gps;
+      /* Raccourcis de date : on note souvent une étape le soir, ou le lendemain. */
+      [].forEach.call(m.querySelectorAll("[data-j]"), function (b) {
+        b.onclick = function () {
+          var d = new Date(); d.setDate(d.getDate() - parseInt(b.getAttribute("data-j"), 10));
+          document.getElementById("bet-arr").value = jour(d);
+        };
+      });
+      /* Où placer l'étape. L'hôte nous passe la liste ; la brique n'en sait rien
+         d'autre et ne décide pas à sa place. Par défaut : à la fin. */
+      var sel = document.getElementById("bet-ou");
+      var etapes = opts.etapes || [];
+      function opt(v, t) { var o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); }
+      opt("-1", L("inserer.debut"));
+      etapes.forEach(function (e, i) {
+        opt(String(i), (L("inserer.apres") || "").split("{n}").join(e && e.nom ? e.nom : "?"));
+      });
+      if (!etapes.length) { sel.innerHTML = ""; opt("-1", L("inserer.fin")); }
+      sel.value = etapes.length ? String(etapes.length - 1) : "-1";
+      document.getElementById("bet-ok").onclick = function () {
+        if (!POS) { document.getElementById("bet-pos").textContent = L("manque.position"); return; }
+        var nom = (document.getElementById("bet-nom").value || "").trim() || ADRESSE.split(",")[0] || L("nom");
+        var detail = {
+          nom: nom.slice(0, 90),
+          note: (document.getElementById("bet-note").value || "").trim(),
+          coord: POS,
+          adresse: ADRESSE,
+          arrivee: document.getElementById("bet-arr").value || "",
+          depart: document.getElementById("bet-dep").value || "",
+          heure: document.getElementById("bet-h").value || ""
+        };
+        detail.apres = parseInt((document.getElementById("bet-ou") || {}).value, 10);
+        if (isNaN(detail.apres)) detail.apres = -1;
+        if (v && v.index != null) detail.index = v.index;   // correction d'une étape existante
+        fermer();
+        document.dispatchEvent(new CustomEvent("the:etape", { detail: detail }));
+      };
+    });
+  }
+
+  window.THEetape = { ouvrir: ouvrir };
+})();

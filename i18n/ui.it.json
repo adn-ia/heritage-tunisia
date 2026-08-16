@@ -2285,5 +2285,9 @@
   "itin.choisir.aide": "Seleziona le località desiderate, quindi clicca su «Aggiungi all'itinerario»: verranno inserite nell'itinerario.",
   "menu.groupe.documentaires": "Documentari tematici",
   "menu.documentaires": "Documentari tematici",
-  "menu.documentaires.sub": "Roma in Africa · La Medina di Tunisi"
+  "menu.documentaires.sub": "Roma in Africa · La Medina di Tunisi",
+  "itin.etape.ajouter": "Aggiungi una tappa",
+  "itin.etape.modifier": "Modifica",
+  "itin.etape.partager": "Condividi",
+  "itin.etape.partage.copie": "Tappa copiata — incollala dove preferisci."
 }

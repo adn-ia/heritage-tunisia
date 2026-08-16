@@ -357,5 +357,9 @@
   "itin.choisir.aide": "Cochez des lieux là-bas, puis « ajouter à l'itinéraire » : ils viendront dans celui-ci.",
   "menu.groupe.documentaires": "Documentaires thématiques",
   "menu.documentaires": "Documentaires thématiques",
-  "menu.documentaires.sub": "Rome en Afrique · La Médina de Tunis"
+  "menu.documentaires.sub": "Rome en Afrique · La Médina de Tunis",
+  "itin.etape.ajouter": "Ajouter une étape",
+  "itin.etape.modifier": "Modifier",
+  "itin.etape.partager": "Partager",
+  "itin.etape.partage.copie": "Étape copiée — collez-la où vous voulez."
 }
