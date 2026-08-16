@@ -2403,5 +2403,12 @@
   "itin.groupe.terrain": "🧭 على أرض الواقع",
   "plan.modifier": "تعديل",
   "plan.visites.titre": "زيارات من هذه المحطة",
-  "plan.visites.aucune": "لا شيء حتى الآن"
+  "plan.visites.aucune": "لا شيء حتى الآن",
+  "autour.choisir": "اضغط على الأماكن التي تريد إضافتها — وستصبح محطات، بهذا الترتيب.",
+  "autour.ajouter": "➕ إضافة {n} المواقع المختارة",
+  "autour.ajouter.un": "➕ إضافة هذا المكان",
+  "autour.ajouter.aucun": "لم يتم اختيار أي مكان",
+  "autour.ajoutes": "تمت إضافتها إلى خط سير رحلتك. يمكنك إعادة ترتيبها (↑ ↓ في «تعديل») وإكمال كل منها: التاريخ، الملاحظة، الصور.",
+  "autour.tout": "اختيار الكل",
+  "autour.rien.choisir": "إلغاء تحديد الكل"
 }

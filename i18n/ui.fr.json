@@ -475,5 +475,12 @@
   "itin.groupe.terrain": "🧭 Sur le terrain",
   "plan.modifier": "Modifier",
   "plan.visites.titre": "Visites depuis cette étape",
-  "plan.visites.aucune": "aucune pour l'instant"
+  "plan.visites.aucune": "aucune pour l'instant",
+  "autour.choisir": "Touchez les lieux à ajouter — ils deviendront des étapes, dans cet ordre.",
+  "autour.ajouter": "➕ Ajouter les {n} lieux choisis",
+  "autour.ajouter.un": "➕ Ajouter ce lieu",
+  "autour.ajouter.aucun": "Aucun lieu choisi",
+  "autour.ajoutes": "Ajouté à votre itinéraire. Vous pouvez les réordonner (↑ ↓ dans « Modifier ») et compléter chacune : date, note, photos.",
+  "autour.tout": "Tout choisir",
+  "autour.rien.choisir": "Tout désélectionner"
 }

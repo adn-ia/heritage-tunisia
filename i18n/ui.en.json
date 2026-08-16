@@ -2403,5 +2403,12 @@
   "itin.groupe.terrain": "🧭 Out in the field",
   "plan.modifier": "Edit",
   "plan.visites.titre": "Visits from this stop",
-  "plan.visites.aucune": "none yet"
+  "plan.visites.aucune": "none yet",
+  "autour.choisir": "Tap the places you want to add — they will become waypoints, in that order.",
+  "autour.ajouter": "➕ Add the {n} selected locations",
+  "autour.ajouter.un": "➕ Add this place",
+  "autour.ajouter.aucun": "No location selected",
+  "autour.ajoutes": "Added to your itinerary. You can reorder them (↑ ↓ under ‘Edit’) and add details to each one: date, notes, photos.",
+  "autour.tout": "Select all",
+  "autour.rien.choisir": "Deselect all"
 }

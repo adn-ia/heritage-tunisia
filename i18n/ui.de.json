@@ -2403,5 +2403,12 @@
   "itin.groupe.terrain": "🧭 Vor Ort",
   "plan.modifier": "Bearbeiten",
   "plan.visites.titre": "Ausflüge von diesem Halt",
-  "plan.visites.aucune": "noch keine"
+  "plan.visites.aucune": "noch keine",
+  "autour.choisir": "Tippen Sie auf die Orte, die Sie hinzufügen möchten – sie werden in dieser Reihenfolge zu Wegpunkten.",
+  "autour.ajouter": "➕ Die {n} ausgewählten Orte hinzufügen",
+  "autour.ajouter.un": "➕ Diesen Ort hinzufügen",
+  "autour.ajouter.aucun": "Kein Ort ausgewählt",
+  "autour.ajoutes": "Zu Ihrer Reiseroute hinzugefügt. Sie können die Reihenfolge ändern (↑ ↓ unter „Bearbeiten“) und die einzelnen Einträge vervollständigen: Datum, Notiz, Fotos.",
+  "autour.tout": "Alles auswählen",
+  "autour.rien.choisir": "Alle abwählen"
 }

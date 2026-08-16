@@ -2587,7 +2587,11 @@
       <div id="autourTitre" style="font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;margin-bottom:4px" data-i18n="autour.titre">Autour de moi</div>
       <div id="autourDe" style="font-size:13.5px;color:#a8884f;margin-bottom:12px"></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" id="autourRayons"></div>
+      <div id="autourAide" style="font-size:13.5px;color:#8a7c66;line-height:1.55;margin-bottom:10px" data-i18n="autour.choisir">Touchez les lieux à ajouter — ils deviendront des étapes, dans cet ordre.</div>
       <div id="autourListe"></div>
+      <div id="autourPied" style="position:sticky;bottom:0;background:#fffdf8;padding-top:12px;margin-top:4px">
+        <button id="autourGo" type="button" disabled style="width:100%;border:1px solid #e3d8c4;background:#a8884f;color:#fff;border-radius:8px;padding:12px;font:inherit;font-size:15px;cursor:pointer"></button>
+      </div>
     </div>
   </div>
 
@@ -2602,6 +2606,7 @@
     var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
     var RAYONS=[2,5,10,25,50];
     var mod=document.getElementById('autourModal'); if(!mod) return;
+    var CHOISIS=[];        // lieux cochés, ajoutés en une fois
     var liste=document.getElementById('autourListe'), rayons=document.getElementById('autourRayons'),
         deQui=document.getElementById('autourDe');
     var centre=null, label='', rayon=10;
@@ -2638,29 +2643,65 @@
         v.textContent=T('autour.rien.rayon','Rien de sourcé dans ce rayon — essayez plus large.');
         liste.appendChild(v); return;
       }
+      /* CHOISIR PLUSIEURS LIEUX D'UN COUP
+         La fenêtre se refermait à chaque ajout : pour poser cinq haltes il fallait
+         la rouvrir cinq fois. On coche ce qu'on veut, on ajoute en une fois, et les
+         lieux entrent comme des étapes SUCCESSIVES — dans l'ordre proposé, du plus
+         proche au plus loin. Cet ordre est celui du voyageur : on ne le recalcule
+         pas derrière son dos, il le remanie lui-même avec ↑ ↓ et complète chaque
+         étape à sa guise (date, note, photos, visites). */
       proches.forEach(function(x){
         var b=document.createElement('button'); b.type='button';
-        b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 4px;'
-          + 'border:none;border-bottom:1px solid #efe7d8;background:none;font:inherit;cursor:pointer';
+        var pris=false;
+        function peindre(){
+          b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 4px;'
+            + 'border:none;border-bottom:1px solid #efe7d8;font:inherit;cursor:pointer;'
+            + (pris?'background:#f6efe2':'background:none');
+          b.querySelector('.autour-coche').textContent = pris ? '☑' : '☐';
+        }
         b.innerHTML='<span style="font-size:18px">'+(x.s.genre==='nature'?'🌿':'🏛️')+'</span>'
           + '<span style="flex:1"><b>'+String(x.s.p.nom||'').replace(/[<>&]/g,'')+'</b>'
           + '<br><small style="color:#8a7c66">'+x.d.toFixed(1)+' km'
           + (x.s.p.type?' · '+String(x.s.p.type).replace(/[<>&]/g,''):'')+'</small></span>'
-          + '<span style="color:#a8884f;font-weight:700">＋</span>';
+          + '<span class="autour-coche" style="color:#a8884f;font-weight:700;font-size:19px">☐</span>';
+        peindre();
         b.onclick=function(){
-          var stop={}; for(var k in x.s) stop[k]=x.s[k];
-          var items=LASTRES.route.concat([stop]).map(function(y){ var o={}; for(var k in y) o[k]=y[k]; return o; });
-          var nr=nearestOrder(LASTORIGIN.coord, items, null);
-          fermer();
-          var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
-          base.route=nr;
-          render(LASTORIGIN, base);
+          pris=!pris;
+          if(pris) CHOISIS.push(x.s); else CHOISIS=CHOISIS.filter(function(y){ return y!==x.s; });
+          peindre(); majPied();
         };
         liste.appendChild(b);
       });
+      majPied();
     }
 
+    function majPied(){
+      var go=document.getElementById('autourGo'); if(!go) return;
+      go.disabled = !CHOISIS.length;
+      go.style.opacity = CHOISIS.length ? '1' : '.45';
+      go.textContent = CHOISIS.length
+        ? T('autour.ajouter','➕ Ajouter les {n} lieux choisis').split('{n}').join(CHOISIS.length)
+        : T('autour.ajouter.aucun','Aucun lieu choisi');
+    }
+
+    (function(){
+      var go=document.getElementById('autourGo'); if(!go) return;
+      go.onclick=function(){
+        if(!CHOISIS.length || typeof LASTRES==='undefined' || !LASTRES) return;
+        var suite=(LASTRES.route||[]).map(function(y){ var o={}; for(var k in y) o[k]=y[k]; return o; });
+        CHOISIS.forEach(function(s){ var o={}; for(var k in s) o[k]=s[k]; suite.push(o); });
+        CHOISIS=[];
+        fermer();
+        var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
+        base.route=suite; base.manualOrder=true;      // l'ordre choisi est respecté
+        render(LASTORIGIN, base);
+        try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
+        if(typeof showGuide==='function') showGuide(T('autour.ajoutes','Ajouté à votre itinéraire.'), 8000);
+      };
+    })();
+
     window.THEautour=function(coord, nom){
+      CHOISIS=[];        // une nouvelle recherche repart d'une sélection vide
       centre=coord||(LASTORIGIN&&LASTORIGIN.coord); label=nom||'';
       deQui.textContent=label ? ('📍 '+label) : '';
       if(!centre){ return; }

@@ -2403,5 +2403,12 @@
   "itin.groupe.terrain": "🧭 Sul campo",
   "plan.modifier": "Modifica",
   "plan.visites.titre": "Visite da questa tappa",
-  "plan.visites.aucune": "nessuna per ora"
+  "plan.visites.aucune": "nessuna per ora",
+  "autour.choisir": "Tocca i luoghi da aggiungere: diventeranno tappe, in quest’ordine.",
+  "autour.ajouter": "➕ Aggiungi i {n} luoghi selezionati",
+  "autour.ajouter.un": "➕ Aggiungi questo luogo",
+  "autour.ajouter.aucun": "Nessun luogo selezionato",
+  "autour.ajoutes": "Aggiunto al tuo itinerario. Puoi modificarne l'ordine (↑ ↓ in «Modifica») e completare ciascuna voce: data, nota, foto.",
+  "autour.tout": "Seleziona tutto",
+  "autour.rien.choisir": "Deseleziona tutto"
 }
