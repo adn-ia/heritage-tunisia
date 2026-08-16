@@ -11,8 +11,8 @@
 set -u
 
 # ===== CONFIG-PAYS (à adapter par pays — SEULE partie propre au clone) =======
-COUNTRY_TERMS="Tunisie|Tunisia|Tunis|Carthage|Kairouan|TUNISIA HERITAGE"   # Tunisie
-ISO="tn"
+COUNTRY_TERMS="Tunisie|Tunisia"        # matérialisé depuis heritage.config.js
+ISO="tn"                                              # matérialisé
 CHECKOUT_HINT="lemonsqueezy|checkout\.|buy\.stripe|gumroad"  # indices de mur payant
 # Pages HORS application, exemptées du contrôle « identité pays » — avec leur raison.
 # apps.html = catalogue de la COLLECTION (QR codes distribués) : il nomme
