@@ -505,9 +505,9 @@
         <div class="hint" id="addmsg">Cherché d'abord dans nos lieux sourcés ; sinon localisé par son nom (OpenStreetMap). Un ajout perso n'est pas vérifié.</div>
       </div>
       <div class="exp-group">
-        <div class="exp-lbl">📍 Sur place</div>
+        <div class="exp-lbl" data-i18n="itin.groupe.terrain">🧭 Sur le terrain</div>
         <div class="exp">
-          <button id="haltebtn" type="button">📍 <span data-i18n="halte_btn">J'ai fait une halte ici</span></button>
+          <button id="haltebtn" type="button" hidden style="display:none">📍 <span data-i18n="halte_btn">J'ai fait une halte ici</span></button>
           <button id="gmapsbtn" type="button">🧭 Naviguer (GPS)</button>
           <button id="scanbtn" type="button">📷 Scanner un QR</button>
           <button id="mapbtn" type="button">🗺️ Voir sur la grande carte</button>
@@ -2791,66 +2791,41 @@
     });
 
 
-    /* Chaque étape porte les mêmes gestes : la corriger, la partager. Le reste —
-       médias, carte postale, Maps, déplacement, base, suppression — est déjà posé
-       par le carnet et par la brique RoadTrip. */
-    function garnir(){
-      var stops=document.querySelectorAll('#stops .stop');
-      if(!stops.length) return;
-      [].forEach.call(stops, function(el, i){
-        if(el.querySelector('.bet-edit')) return;
-        var carnet=el.querySelector('.the-carnet');
-        var rangee=document.createElement('div');
-        rangee.style.cssText='display:flex;gap:8px;margin-top:8px;flex-wrap:wrap';
-
-        var mod=document.createElement('button');
-        mod.type='button'; mod.className='bet-edit';
-        mod.textContent='✏️ '+T('itin.etape.modifier','Modifier');
-        mod.style.cssText='background:none;border:1px solid #e3d8c4;border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;color:#6b5a39';
-        mod.onclick=function(){
-          var s=(LASTRES.route||[])[i]; if(!s||!window.THEetape) return;
-          var q=String(s.quand||'').split(' ');
-          THEetape.ouvrir({ valeurs:{ index:i, nom:s.p.nom, note:s.p.description||'',
-            coord:s.c, adresse:'', arrivee:q[0]||'', heure:q[1]||'' } });
-        };
-        rangee.appendChild(mod);
-
-        var par=document.createElement('button');
-        par.type='button'; par.className='bet-share';
-        par.textContent='🔗 '+T('itin.etape.partager','Partager');
-        par.style.cssText=mod.style.cssText;
-        par.onclick=function(){
+    /* LES GESTES D'UNE ÉTAPE — DÉCLARÉS, PAS DESSINÉS
+       La page posait sa propre rangée de boutons pendant que le planificateur
+       posait la sienne : deux décorateurs pour une seule carte, et des gestes
+       éparpillés. La page se contente désormais de DIRE ce qu'elle sait faire ;
+       le planificateur les place dans l'unique rangée de la carte, sur le
+       modèle du RoadTrip (le fréquent en clair, le rare dans « Modifier »). */
+    window.THEactionsEtape = [
+      { id:'partager', principal:true,
+        label:function(){ return '🔗 '+T('itin.etape.partager','Partager'); },
+        run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s) return;
           var lien='https://www.openstreetmap.org/?mlat='+s.c[1]+'&mlon='+s.c[0]+'#map=16/'+s.c[1]+'/'+s.c[0];
           var txt=s.p.nom+(s.p.description?' — '+s.p.description:'');
           if(navigator.share){ navigator.share({title:s.p.nom, text:txt, url:lien}).catch(function(){}); return; }
           if(navigator.clipboard&&navigator.clipboard.writeText){
-            navigator.clipboard.writeText(txt+'\n'+lien).then(function(){ alert(T('itin.etape.partage.copie','Étape copiée — collez-la où vous voulez.')); });
+            navigator.clipboard.writeText(txt+String.fromCharCode(10)+lien).then(function(){ alert(T('itin.etape.partage.copie','Étape copiée — collez-la où vous voulez.')); });
             return;
           }
           prompt(T('itin.etape.partager','Partager'), txt+' '+lien);
-        };
-        rangee.appendChild(par);
-
-        /* LE TEMPS QU'IL FERA LÀ-BAS — au même endroit que les autres gestes de
-           l'étape. C'est la seule chose de cette page qui exige le réseau : une
-           prévision ne s'embarque pas. Le bouton n'apparaît donc que si l'étape
-           a une position, et la brique dit franchement quand ça ne répond pas. */
-        var met=document.createElement('button');
-        met.type='button'; met.className='bet-meteo';
-        met.textContent=T('itin.meteo','🌤️ Météo');
-        met.style.cssText=mod.style.cssText;
-        met.onclick=function(){
+        } },
+      { id:'editer',
+        label:function(){ return '✏️ '+T('itin.etape.modifier','Modifier'); },
+        run:function(i){
+          var s=(LASTRES.route||[])[i]; if(!s||!window.THEetape) return;
+          var q=String(s.quand||'').split(' ');
+          THEetape.ouvrir({ valeurs:{ index:i, nom:s.p.nom, note:s.p.description||'',
+            coord:s.c, adresse:'', arrivee:q[0]||'', heure:q[1]||'' } });
+        } },
+      { id:'meteo',
+        label:function(){ return T('itin.meteo','🌤️ Météo'); },
+        run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
           if(window.HMeteo) HMeteo.ouvrir({lat:s.c[1], lon:s.c[0], nom:s.p.nom});
-        };
-        rangee.appendChild(met);
-
-        if(carnet && carnet.parentNode) carnet.parentNode.insertBefore(rangee, carnet);
-        else el.appendChild(rangee);
-      });
-    }
-    setInterval(garnir, 900);
+        } }
+    ];
 
     /* Bouton « ajouter une étape », posé à côté de la halte : même geste, en mode libre */
     function poser(){

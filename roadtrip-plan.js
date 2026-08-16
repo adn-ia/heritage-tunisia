@@ -17,7 +17,7 @@
    ============================================================ */
 (function () {
   /* i18n EMBARQUÉ (module autonome : indépendant du système i18n de l'app → marche sur THE & Estonia) */
-  var DICO = {"plan.monter": {"fr": "Monter", "en": "Move up", "et": "Üles", "it": "Su", "de": "Nach oben", "ar": "أعلى"}, "plan.descendre": {"fr": "Descendre", "en": "Move down", "et": "Alla", "it": "Giù", "de": "Nach unten", "ar": "أسفل"}, "plan.retirer": {"fr": "Retirer cette étape", "en": "Remove this stop", "et": "Eemalda see etapp", "it": "Rimuovi questa tappa", "de": "Diesen Halt entfernen", "ar": "إزالة هذه المحطة"}, "plan.inserer.ici": {"fr": "Ajouter une étape ici", "en": "Add a stop here", "et": "Lisa etapp siia", "it": "Aggiungi una tappa qui", "de": "Hier einen Halt hinzufügen", "ar": "أضف محطة هنا"}, "plan.chercher.placeholder": {"fr": "Chercher un lieu ou une adresse…", "en": "Search a place or address…", "et": "Otsi kohta või aadressi…", "it": "Cerca un luogo o un indirizzo…", "de": "Ort oder Adresse suchen…", "ar": "ابحث عن مكان أو عنوان…"}, "plan.chercher": {"fr": "Chercher", "en": "Search", "et": "Otsi", "it": "Cerca", "de": "Suchen", "ar": "بحث"}, "plan.insert.hint": {"fr": "Un lieu sourcé, ou une adresse via OpenStreetMap.", "en": "A sourced place, or an address via OpenStreetMap.", "et": "Allikaga koht või aadress OpenStreetMapi kaudu.", "it": "Un luogo documentato o un indirizzo tramite OpenStreetMap.", "de": "Ein belegter Ort oder eine Adresse über OpenStreetMap.", "ar": "مكان موثّق أو عنوان عبر OpenStreetMap."}, "plan.ou.adresse": {"fr": "Ou une adresse ci-dessous.", "en": "Or an address below.", "et": "Või aadress allpool.", "it": "Oppure un indirizzo qui sotto.", "de": "Oder eine Adresse unten.", "ar": "أو عنوان أدناه."}, "plan.recherche.adresse": {"fr": "Recherche d’adresse…", "en": "Searching address…", "et": "Aadressi otsimine…", "it": "Ricerca indirizzo…", "de": "Adresssuche…", "ar": "البحث عن عنوان…"}, "plan.adresse.osm": {"fr": "Adresse · OpenStreetMap", "en": "Address · OpenStreetMap", "et": "Aadress · OpenStreetMap", "it": "Indirizzo · OpenStreetMap", "de": "Adresse · OpenStreetMap", "ar": "عنوان · OpenStreetMap"}, "plan.aucun.resultat": {"fr": "Aucun lieu trouvé.", "en": "No place found.", "et": "Kohta ei leitud.", "it": "Nessun luogo trovato.", "de": "Kein Ort gefunden.", "ar": "لم يُعثر على مكان."}, "plan.etape.ajoutee": {"fr": "Étape ajoutée à votre itinéraire.", "en": "Stop added to your itinerary.", "et": "Etapp lisatud teie teekonda.", "it": "Tappa aggiunta al tuo itinerario.", "de": "Halt zu Ihrer Route hinzugefügt.", "ar": "تمت إضافة المحطة إلى مسارك."}, "plan.lieu.ajoute": {"fr": "Lieu ajouté", "en": "Added place", "et": "Lisatud koht", "it": "Luogo aggiunto", "de": "Ort hinzugefügt", "ar": "تمت إضافة المكان"}, "plan.gardez.une.etape": {"fr": "Gardez au moins une étape.", "en": "Keep at least one stop.", "et": "Jätke vähemalt üks etapp.", "it": "Mantieni almeno una tappa.", "de": "Behalten Sie mindestens einen Halt.", "ar": "احتفظ بمحطة واحدة على الأقل."}, "plan.quand": {"fr": "Quand ?", "en": "When?", "et": "Millal?", "it": "Quando?", "de": "Wann?", "ar": "متى؟"}, "plan.definir.base": {"fr": "Définir comme base (séjour)", "en": "Set as a base (stay)", "et": "Määra baasiks (peatus)", "it": "Imposta come base (soggiorno)", "de": "Als Basis festlegen (Aufenthalt)", "ar": "تعيين كقاعدة (إقامة)"}, "plan.retirer.base": {"fr": "Redevenir une étape", "en": "Back to a normal stop", "et": "Tagasi tavaliseks etapiks", "it": "Torna a essere una tappa", "de": "Wieder zum Halt machen", "ar": "العودة إلى محطة"}, "plan.base.badge": {"fr": "Base", "en": "Base", "et": "Baas", "it": "Base", "de": "Basis", "ar": "قاعدة"}, "plan.visite.badge": {"fr": "Visite", "en": "Visit", "et": "Külastus", "it": "Visita", "de": "Besuch", "ar": "زيارة"}, "plan.detacher.visite": {"fr": "Détacher de la base", "en": "Detach from base", "et": "Eralda baasist", "it": "Stacca dalla base", "de": "Von der Basis lösen", "ar": "فصل عن القاعدة"}, "plan.ajouter.visite": {"fr": "Une visite depuis cette base", "en": "A visit from this base", "et": "Külastus sellest baasist", "it": "Una visita da questa base", "de": "Ein Besuch von dieser Basis", "ar": "زيارة من هذه القاعدة"}, "plan.recaler.gps": {"fr": "Recaler ma position ici", "en": "Set my GPS position here", "et": "Määra siia minu GPS-asukoht", "it": "Aggiorna la mia posizione qui", "de": "Meine Position hier setzen", "ar": "ضبط موقعي هنا"}, "plan.gps.en.cours": {"fr": "Localisation…", "en": "Locating…", "et": "Asukoha määramine…", "it": "Localizzazione…", "de": "Ortung…", "ar": "تحديد الموقع…"}, "plan.gps.refuse": {"fr": "Position GPS indisponible.", "en": "GPS position unavailable.", "et": "GPS-asukoht pole saadaval.", "it": "Posizione GPS non disponibile.", "de": "GPS-Position nicht verfügbar.", "ar": "موقع GPS غير متاح."}, "plan.gps.recale": {"fr": "Position mise à jour.", "en": "Position updated.", "et": "Asukoht uuendatud.", "it": "Posizione aggiornata.", "de": "Position aktualisiert.", "ar": "تم تحديث الموقع."}, "rt.fermer": {"fr": "Fermer", "en": "Close", "et": "Sulge", "it": "Chiudi", "de": "Schließen", "ar": "إغلاق"}};
+  var DICO = {"plan.monter": {"fr": "Monter", "en": "Move up", "et": "Üles", "it": "Su", "de": "Nach oben", "ar": "أعلى"}, "plan.descendre": {"fr": "Descendre", "en": "Move down", "et": "Alla", "it": "Giù", "de": "Nach unten", "ar": "أسفل"}, "plan.retirer": {"fr": "Retirer cette étape", "en": "Remove this stop", "et": "Eemalda see etapp", "it": "Rimuovi questa tappa", "de": "Diesen Halt entfernen", "ar": "إزالة هذه المحطة"}, "plan.inserer.ici": {"fr": "Ajouter une étape ici", "en": "Add a stop here", "et": "Lisa etapp siia", "it": "Aggiungi una tappa qui", "de": "Hier einen Halt hinzufügen", "ar": "أضف محطة هنا"}, "plan.chercher.placeholder": {"fr": "Chercher un lieu ou une adresse…", "en": "Search a place or address…", "et": "Otsi kohta või aadressi…", "it": "Cerca un luogo o un indirizzo…", "de": "Ort oder Adresse suchen…", "ar": "ابحث عن مكان أو عنوان…"}, "plan.chercher": {"fr": "Chercher", "en": "Search", "et": "Otsi", "it": "Cerca", "de": "Suchen", "ar": "بحث"}, "plan.insert.hint": {"fr": "Un lieu sourcé, ou une adresse via OpenStreetMap.", "en": "A sourced place, or an address via OpenStreetMap.", "et": "Allikaga koht või aadress OpenStreetMapi kaudu.", "it": "Un luogo documentato o un indirizzo tramite OpenStreetMap.", "de": "Ein belegter Ort oder eine Adresse über OpenStreetMap.", "ar": "مكان موثّق أو عنوان عبر OpenStreetMap."}, "plan.ou.adresse": {"fr": "Ou une adresse ci-dessous.", "en": "Or an address below.", "et": "Või aadress allpool.", "it": "Oppure un indirizzo qui sotto.", "de": "Oder eine Adresse unten.", "ar": "أو عنوان أدناه."}, "plan.recherche.adresse": {"fr": "Recherche d’adresse…", "en": "Searching address…", "et": "Aadressi otsimine…", "it": "Ricerca indirizzo…", "de": "Adresssuche…", "ar": "البحث عن عنوان…"}, "plan.adresse.osm": {"fr": "Adresse · OpenStreetMap", "en": "Address · OpenStreetMap", "et": "Aadress · OpenStreetMap", "it": "Indirizzo · OpenStreetMap", "de": "Adresse · OpenStreetMap", "ar": "عنوان · OpenStreetMap"}, "plan.aucun.resultat": {"fr": "Aucun lieu trouvé.", "en": "No place found.", "et": "Kohta ei leitud.", "it": "Nessun luogo trovato.", "de": "Kein Ort gefunden.", "ar": "لم يُعثر على مكان."}, "plan.etape.ajoutee": {"fr": "Étape ajoutée à votre itinéraire.", "en": "Stop added to your itinerary.", "et": "Etapp lisatud teie teekonda.", "it": "Tappa aggiunta al tuo itinerario.", "de": "Halt zu Ihrer Route hinzugefügt.", "ar": "تمت إضافة المحطة إلى مسارك."}, "plan.lieu.ajoute": {"fr": "Lieu ajouté", "en": "Added place", "et": "Lisatud koht", "it": "Luogo aggiunto", "de": "Ort hinzugefügt", "ar": "تمت إضافة المكان"}, "plan.gardez.une.etape": {"fr": "Gardez au moins une étape.", "en": "Keep at least one stop.", "et": "Jätke vähemalt üks etapp.", "it": "Mantieni almeno una tappa.", "de": "Behalten Sie mindestens einen Halt.", "ar": "احتفظ بمحطة واحدة على الأقل."}, "plan.quand": {"fr": "Quand ?", "en": "When?", "et": "Millal?", "it": "Quando?", "de": "Wann?", "ar": "متى؟"}, "plan.definir.base": {"fr": "Définir comme base (séjour)", "en": "Set as a base (stay)", "et": "Määra baasiks (peatus)", "it": "Imposta come base (soggiorno)", "de": "Als Basis festlegen (Aufenthalt)", "ar": "تعيين كقاعدة (إقامة)"}, "plan.retirer.base": {"fr": "Redevenir une étape", "en": "Back to a normal stop", "et": "Tagasi tavaliseks etapiks", "it": "Torna a essere una tappa", "de": "Wieder zum Halt machen", "ar": "العودة إلى محطة"}, "plan.base.badge": {"fr": "Base", "en": "Base", "et": "Baas", "it": "Base", "de": "Basis", "ar": "قاعدة"}, "plan.visite.badge": {"fr": "Visite", "en": "Visit", "et": "Külastus", "it": "Visita", "de": "Besuch", "ar": "زيارة"}, "plan.detacher.visite": {"fr": "Détacher de la base", "en": "Detach from base", "et": "Eralda baasist", "it": "Stacca dalla base", "de": "Von der Basis lösen", "ar": "فصل عن القاعدة"}, "plan.ajouter.visite": {"fr": "Une visite depuis cette base", "en": "A visit from this base", "et": "Külastus sellest baasist", "it": "Una visita da questa base", "de": "Ein Besuch von dieser Basis", "ar": "زيارة من هذه القاعدة"}, "plan.recaler.gps": {"fr": "Recaler ma position ici", "en": "Set my GPS position here", "et": "Määra siia minu GPS-asukoht", "it": "Aggiorna la mia posizione qui", "de": "Meine Position hier setzen", "ar": "ضبط موقعي هنا"}, "plan.gps.en.cours": {"fr": "Localisation…", "en": "Locating…", "et": "Asukoha määramine…", "it": "Localizzazione…", "de": "Ortung…", "ar": "تحديد الموقع…"}, "plan.gps.refuse": {"fr": "Position GPS indisponible.", "en": "GPS position unavailable.", "et": "GPS-asukoht pole saadaval.", "it": "Posizione GPS non disponibile.", "de": "GPS-Position nicht verfügbar.", "ar": "موقع GPS غير متاح."}, "plan.gps.recale": {"fr": "Position mise à jour.", "en": "Position updated.", "et": "Asukoht uuendatud.", "it": "Posizione aggiornata.", "de": "Position aktualisiert.", "ar": "تم تحديث الموقع."}, "rt.fermer": {"fr": "Fermer", "en": "Close", "et": "Sulge", "it": "Chiudi", "de": "Schließen", "ar": "إغلاق"}, "plan.modifier": {"fr": "Modifier", "en": "Edit", "et": "Muuda", "it": "Modifica", "de": "Bearbeiten", "ar": "تعديل"}, "plan.visites.titre": {"fr": "Visites depuis cette étape", "en": "Visits from this stop", "et": "Külastused sellest peatusest", "it": "Visite da questa tappa", "de": "Ausflüge von diesem Halt", "ar": "زيارات من هذه المحطة"}, "plan.visites.aucune": {"fr": "aucune pour l'instant", "en": "none yet", "et": "veel ühtegi", "it": "nessuna per ora", "de": "noch keine", "ar": "لا شيء حتى الآن"}};
   function T(k, v) {
     var lang = (window.THEi18n && THEi18n.lang && THEi18n.lang()) || 'fr';
     var row = DICO[k];
@@ -40,17 +40,18 @@
   function metaMove(oldKey, newKey){ var m=metaAll(); if(m[oldKey]){ m[newKey]=Object.assign(m[newKey]||{}, m[oldKey]); delete m[oldKey]; metaSave(m); } }
 
   /* --- styles (injectés une fois) --- */
+  /* un menu ouvert se referme dès qu'on touche ailleurs */
+  document.addEventListener("click", function(){
+    [].forEach.call(document.querySelectorAll(".rtp-menu.on"), function(x){ x.classList.remove("on"); });
+  });
+  function rtpFermerMenus(){}
+
   function css(){
     if(document.getElementById("rtp-css")) return;
     var s=document.createElement("style"); s.id="rtp-css";
     s.textContent=
-      ".rtp-bar{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;margin:-4px 0 8px;}"+
-      ".rtp-bar button{border:1px solid var(--line,#e3d8c4);background:#fff;color:#8a7c66;border-radius:7px;"+
+      ".rtp-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}"+".rtp-actions .rtp-pb,.rtp-actions .rtp-mb{border:1px solid var(--line,#e3d8c4);background:#fff;color:#6b5a39;  border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;}"+".rtp-menu{position:relative;display:inline-block;}"+".rtp-pop{display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:60;background:#fffdf8;  border:1px solid var(--line,#e3d8c4);border-radius:9px;box-shadow:0 8px 26px rgba(0,0,0,.16);  min-width:214px;padding:5px;}"+".rtp-menu.on .rtp-pop{display:block;}"+".rtp-pop button{display:block;width:100%;text-align:left;border:none;background:none;font:inherit;  font-size:14px;color:#6b5a39;padding:9px 11px;border-radius:6px;cursor:pointer;}"+".rtp-pop button:hover{background:#f6efe2;}"+".rtp-pop button.danger{color:#a4442f;}"+".rtp-visits{margin-top:10px;border-top:1px solid #efe7d8;padding-top:8px;}"+".rtp-visits>summary{cursor:pointer;font-size:14px;color:#8a7c66;list-style:none;}"+".rtp-visits>summary::-webkit-details-marker{display:none}"+".rtp-visits-in{padding:8px 0 2px;}"+".rtp-visit-item{font-size:14px;color:#6b5a39;padding:3px 0;}"+".rtp-addvisit{margin-top:6px;border:1px solid var(--line,#e3d8c4);background:#fff;color:#6b5a39;  border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;}"+
       "  width:32px;height:30px;line-height:1;cursor:pointer;font-size:14px;font-family:inherit;padding:0;transition:.12s;}"+
-      ".rtp-bar button:hover{border-color:var(--gold-soft,#c9ad79);color:var(--ink,#2b2318);background:#faf5ea;}"+
-      ".rtp-bar button:disabled{opacity:.32;cursor:default;}"+
-      ".rtp-bar button.on{background:var(--gold,#a8884f);color:#fff;border-color:var(--gold,#a8884f);}"+
-      ".rtp-bar button.rtp-del:hover{background:#fbecec;color:#b3402f;border-color:#e3b6ad;}"+
       ".rtp-daterow{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;color:var(--stone,#8a7c66);}"+
       ".rtp-daterow input{font-family:inherit;font-size:14px;border:1px solid var(--line,#e3d8c4);border-radius:6px;padding:5px 8px;background:#fff;color:var(--ink,#2b2318);}"+
       ".rtp-ins{display:flex;justify-content:center;margin:-4px 0 12px;}"+
@@ -250,23 +251,60 @@
           badge.textContent = r==="base" ? T("plan.base.badge") : T("plan.visite.badge"); nm.appendChild(badge); }
       }
 
-      // 1) barre d'actions (une seule fois par carte)
-      if(!card.querySelector(".rtp-bar")){
-        var bar=document.createElement("div"); bar.className="rtp-bar";
-        bar.innerHTML=
-          '<button data-mv="-1" title="'+xe(T("plan.monter"))+'" aria-label="'+xe(T("plan.monter"))+'"'+(i===0?" disabled":"")+'>▲</button>'+
-          '<button data-mv="1" title="'+xe(T("plan.descendre"))+'" aria-label="'+xe(T("plan.descendre"))+'"'+(i===cards.length-1?" disabled":"")+'>▼</button>'+
-          '<button data-base title="'+xe(T(r==="base"?"plan.retirer.base":"plan.definir.base"))+'" aria-label="'+xe(T("plan.definir.base"))+'" class="'+(r==="base"?"on":"")+'">⚓</button>'+
-          (r==="visite" ? '<button data-detach title="'+xe(T("plan.detacher.visite"))+'" aria-label="'+xe(T("plan.detacher.visite"))+'">⤴</button>' : '')+
-          '<button data-gps title="'+xe(T("plan.recaler.gps"))+'" aria-label="'+xe(T("plan.recaler.gps"))+'">📍</button>'+
-          '<button class="rtp-del" data-del title="'+xe(T("plan.retirer"))+'" aria-label="'+xe(T("plan.retirer"))+'">🗑</button>';
-        card.insertBefore(bar, card.firstChild);
-        bar.querySelector('[data-mv="-1"]').onclick=function(){ moveStep(i,-1); };
-        bar.querySelector('[data-mv="1"]').onclick=function(){ moveStep(i,1); };
-        bar.querySelector("[data-base]").onclick=function(){ toggleBase(i); };
-        var dt=bar.querySelector("[data-detach]"); if(dt) dt.onclick=function(){ detachVisit(i); };
-        bar.querySelector("[data-gps]").onclick=function(){ recalGPS(i); };
-        bar.querySelector("[data-del]").onclick=function(){ dropStep(i); };
+      /* 1) UNE SEULE RANGÉE D'ACTIONS, comme dans le RoadTrip
+         La carte recevait une barre d'icônes muettes (▲▼⚓📍🗑) posée par ce
+         module, PLUS des boutons posés par la page : deux décorateurs pour une
+         même carte, d'où l'éparpillement. Ici on reproduit la carte du
+         RoadTrip : les gestes rares vivent dans un menu « Modifier », les
+         gestes fréquents restent en clair. La page dépose les siens dans la
+         même rangée via THEactionsEtape, au lieu d'en créer une autre. */
+      if(!card.querySelector(".rtp-actions")){
+        var row=document.createElement("div"); row.className="rtp-actions";
+
+        var wrap=document.createElement("span"); wrap.className="rtp-menu";
+        var mb=document.createElement("button"); mb.type="button"; mb.className="rtp-mb";
+        mb.textContent="✏️ "+T("plan.modifier")+" ▾";
+        var pop=document.createElement("span"); pop.className="rtp-pop";
+        wrap.appendChild(mb); wrap.appendChild(pop);
+
+        function item(txt, fn, danger){
+          var b=document.createElement("button"); b.type="button";
+          b.textContent=txt; if(danger) b.className="danger";
+          b.onclick=function(ev){ ev.stopPropagation(); wrap.classList.remove("on"); fn(); };
+          pop.appendChild(b); return b;
+        }
+        mb.onclick=function(ev){
+          ev.stopPropagation();
+          var ouvert=wrap.classList.contains("on");
+          [].forEach.call(document.querySelectorAll(".rtp-menu.on"), function(x){ x.classList.remove("on"); });
+          if(!ouvert) wrap.classList.add("on");
+        };
+
+        /* Les actions de la PAGE (éditer, météo, partager…) : elle les décrit,
+           elle les exécute ; le module ne fait que leur donner leur place. */
+        var hote = (window.THEactionsEtape || []);
+        hote.forEach(function(a){
+          if(!a || typeof a.run!=="function") return;
+          var lib = (typeof a.label==="function") ? a.label() : (a.label||"");
+          if(a.principal){
+            var pb=document.createElement("button"); pb.type="button"; pb.className="rtp-pb";
+            pb.textContent=lib;
+            (function(idx){ pb.onclick=function(){ a.run(idx); }; })(i);
+            row.appendChild(pb);
+          } else {
+            (function(idx){ item(lib, function(){ a.run(idx); }); })(i);
+          }
+        });
+
+        if(i>0)              item("↑ "+T("plan.monter"),    function(){ moveStep(i,-1); });
+        if(i<cards.length-1) item("↓ "+T("plan.descendre"), function(){ moveStep(i,1); });
+        item("⚓ "+T(r==="base"?"plan.retirer.base":"plan.definir.base"), function(){ toggleBase(i); });
+        if(r==="visite") item("⤴ "+T("plan.detacher.visite"), function(){ detachVisit(i); });
+        item("📍 "+T("plan.recaler.gps"), function(){ recalGPS(i); });
+        item("🗑 "+T("plan.retirer"), function(){ dropStep(i); }, true);
+
+        row.appendChild(wrap);
+        card.appendChild(row);
       }
 
       // 2) date par étape (une seule fois)
@@ -278,25 +316,40 @@
         drow.innerHTML='<span>📅 '+xe(T("plan.quand"))+'</span>'
           + '<input type="date" data-rtp-date value="'+xe(md.date||"")+'">'
           + '<input type="time" data-rtp-heure value="'+xe(md.heure||"")+'">';
-        var bar2=card.querySelector(".rtp-bar");
-        if(bar2 && bar2.nextSibling) card.insertBefore(drow, bar2.nextSibling); else card.insertBefore(drow, card.firstChild);
+        /* La date se lit avec le nom de l'étape, comme le sous-titre d'une carte
+           de RoadTrip : elle se place juste après lui, pas au milieu des gestes. */
+        var nomEl=card.querySelector(".nm");
+        if(nomEl && nomEl.nextSibling) card.insertBefore(drow, nomEl.nextSibling);
+        else if(nomEl) card.appendChild(drow);
+        else card.insertBefore(drow, card.firstChild);
         drow.querySelector("[data-rtp-date]").onchange=function(e){ setDate(i, e.target.value); };
         drow.querySelector("[data-rtp-heure]").onchange=function(e){ setHeure(i, e.target.value); };
       }
 
-      /* 3) AJOUTER UNE VISITE — DANS LA CARTE DE L'ÉTAPE
-         Le bouton flottait sous la carte, comme un bloc à part : on ne voyait
-         pas de quelle étape il parlait. Il vit maintenant DANS la carte, avec
-         les autres gestes de cette étape. Il ouvre le même écran de saisie que
-         partout ailleurs — un seul écran d'étape dans toute l'application. */
-      if(r!=="visite" && !card.querySelector(".rtp-addvisit")){
-        var av=document.createElement("div"); av.className="rtp-addvisit";
-        var avb=document.createElement("button"); avb.type="button"; avb.textContent="➕ "+T("plan.ajouter.visite");
+      /* 3) LES VISITES DE CETTE ÉTAPE, dans une section repliable de SA carte
+         — exactement la section « Visites depuis cette base » du RoadTrip. Le
+         bouton d'ajout vit DEDANS : on ne peut plus se demander à quelle étape
+         il se rapporte. */
+      if(r!=="visite" && !card.querySelector(".rtp-visits")){
+        var mesVis=(route||[]).filter(function(x){ return metaFor(x).baseKey===pkey(s); });
+        var det=document.createElement("details"); det.className="rtp-visits";
+        var som=document.createElement("summary");
+        som.textContent="📍 "+T("plan.visites.titre")
+          + (mesVis.length ? " ("+mesVis.length+")" : " — "+T("plan.visites.aucune"));
+        det.appendChild(som);
+        var dedans=document.createElement("div"); dedans.className="rtp-visits-in";
+        mesVis.forEach(function(v){
+          var li=document.createElement("div"); li.className="rtp-visit-item";
+          li.textContent="• "+v.p.nom; dedans.appendChild(li);
+        });
+        var avb=document.createElement("button"); avb.type="button"; avb.className="rtp-addvisit";
+        avb.textContent="➕ "+T("plan.ajouter.visite");
         (function(baseStop, pos){ avb.onclick=function(){
           if(role(baseStop)!=="base") metaPatch(baseStop, {kind:"base", baseKey:""});
-          ouvrirSaisie(pos, {kind:"visite", baseKey:pkey(baseStop)}, av); }; })(s, i);
-        av.appendChild(avb);
-        card.appendChild(av);
+          ouvrirSaisie(pos, {kind:"visite", baseKey:pkey(baseStop)}, avb); }; })(s, i);
+        dedans.appendChild(avb);
+        det.appendChild(dedans);
+        card.appendChild(det);
       }
     });
 
