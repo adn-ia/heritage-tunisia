@@ -2455,5 +2455,15 @@
   "itin.surprise.bouton": "🎲 Überrasche mich",
   "itin.fermer": "✓ Route schließen",
   "itin.fermer.fait": "Route gespeichert. Sie finden sie unter „Gespeicherte Routen“.",
-  "itin.enregistre.maj": "Route aktualisiert ✓"
+  "itin.enregistre.maj": "Route aktualisiert ✓",
+  "circ.titre": "Rundreisen",
+  "circ.intro": "Vorgefertigte Routen. Wählen Sie eine aus: Sie wird zu IHRER Route – Sie geben ihr einen Namen, legen Startpunkt und Dauer fest und können sie dann wie jede andere Route anpassen.",
+  "circ.etapes": "Schritte",
+  "circ.choisir": "Diese Tour auswählen",
+  "circ.retour": "‹ Die verschiedenen Arten der Abreise",
+  "circ.aucun": "In dieser Ausgabe gibt es derzeit keine Touren.",
+  "circ.verrou": "Nur für Passinhaber",
+  "itin.circuit.choix.titre": "Rundreisen",
+  "itin.circuit.nouveau": "Eine Tour auswählen",
+  "itin.circuit.nouveau.sous": "Ein bereits vorgezeichneter Weg, den Sie sich zu eigen machen werden."
 }

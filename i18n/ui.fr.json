@@ -527,5 +527,15 @@
   "itin.surprise.bouton": "🎲 Surprenez-moi",
   "itin.fermer": "✓ Fermer l'itinéraire",
   "itin.fermer.fait": "Itinéraire enregistré. Vous le retrouverez dans « Itinéraires sauvegardés ».",
-  "itin.enregistre.maj": "Itinéraire mis à jour ✓"
+  "itin.enregistre.maj": "Itinéraire mis à jour ✓",
+  "circ.titre": "Circuits",
+  "circ.intro": "Des parcours déjà tracés. Choisissez-en un : il devient VOTRE itinéraire — vous le nommez, vous réglez départ et durée, puis vous le remaniez comme n'importe quel autre.",
+  "circ.etapes": "étapes",
+  "circ.choisir": "Choisir ce circuit",
+  "circ.retour": "‹ Les façons de partir",
+  "circ.aucun": "Aucun circuit dans cette édition pour le moment.",
+  "circ.verrou": "Réservé au passe",
+  "itin.circuit.choix.titre": "Circuits",
+  "itin.circuit.nouveau": "Choisir un circuit",
+  "itin.circuit.nouveau.sous": "Un parcours déjà tracé, que vous ferez vôtre."
 }

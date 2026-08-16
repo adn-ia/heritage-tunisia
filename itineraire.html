@@ -1192,7 +1192,8 @@
         else if(i>=FREE_TOURS && !isPremium()){ c.classList.add('locked'); c.onclick=()=>requirePass('Tous les circuits prêts', ()=>loadTour(id)); }
         else c.onclick=()=>loadTour(id);
         box.appendChild(c); });
-      document.getElementById('presetsBox').style.display='';
+      /* plus d'étalage de circuits ici : ils ont leur page */
+      var _pb=document.getElementById('presetsBox'); if(_pb) _pb.style.display='none';
     }).catch(()=>{});
   }
   function loadTour(id){
@@ -1216,9 +1217,26 @@
     if(!route.length){ return; }
     const pepites=(t.pepites||[]).map(p=>{ const s=byName.get(norm(p.nom)); return s?{s:{...s}, note:p.note, via:norm(p.via||'')}:null; }).filter(Boolean);
     const origin={coord:t.depart.coord, label:t.depart.label};
-    const dur={max:route.length, lib:t.duree||'circuit'};
-    const per={radius:(PERIM[t.echelle]||PERIM[CPKEY]).radius, lib:'circuit signature'};
-    render(origin, {route, theme:null, dur, per, forme:t.forme||'oneway', pepites, tour:t});
+    /* UN CIRCUIT DEVIENT UN ITINÉRAIRE COMME LES AUTRES
+       Il se dessinait tel quel, sans nom à soi, sans qu'on puisse dire d'où l'on
+       part ni combien de temps on a — et il ne s'enregistrait nulle part : on le
+       remaniait, on quittait la page, tout était perdu. Il passe désormais par le
+       même chemin que Composer : on le nomme, on règle départ et durée, il
+       s'enregistre, et il porte toutes les fonctions d'une étape. */
+    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var defaut = t.titre || T2('itin.nom.compose','Mon itinéraire');
+    function tracer(nom){
+      reglagesApresChoix(route, origin, false, {
+        nom: nom,
+        forme: t.forme||'oneway',
+        pepites: pepites,
+        tour: {titre:nom, soustitre:t.soustitre||'', duree:t.duree||''},
+        mode: 'circuit',
+        libDuree: t.duree||''
+      });
+    }
+    if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut, tracer);
+    else tracer(defaut);
   }
 
   // ---------- arrivée depuis la carte : lieux choisis un à un (index.html?picks=…) ----------
@@ -1250,13 +1268,13 @@
      parcours composé à partir d'une sélection ne passait pas par là : on le
      traçait, on le nommait, et il n'existait nulle part — introuvable dans
      « Itinéraires sauvegardés » comme au moment de reprendre. */
-  function enregistrerCompose(titre){
+  function enregistrerCompose(titre, origine){
     try{
       if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return;
       var arr=readSaved();
       var nom = titre || (LASTRES.tour && LASTRES.tour.titre) || '';
       var id  = 'it'+Date.now();
-      arr.unshift({ id:id, cree:Date.now(), title:nom, forme:LASTRES.forme||'oneway', mode:'compose',
+      arr.unshift({ id:id, cree:Date.now(), title:nom, forme:LASTRES.forme||'oneway', mode:origine||'compose',
         origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
         steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
           halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||''}; }) });
@@ -1267,7 +1285,11 @@
     }catch(e){}
   }
 
-  function reglagesApresChoix(chosen, originAuto, addMode){
+  /* opts (facultatif) sert aux CIRCUITS : ils arrivent déjà nommés, avec leur
+     forme, leurs pépites et leur durée annoncée. Le reste du chemin est le
+     même que pour une sélection — un seul écran de réglages dans l'app. */
+  function reglagesApresChoix(chosen, originAuto, addMode, opts){
+    opts = opts || {};
     var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
     var boite=document.getElementById('picksReglages');
     if(!boite){
@@ -1317,6 +1339,7 @@
       document.getElementById('forme').value=selF.value;
       document.getElementById('origin').value=selO.value;
       var libDuree=(selD.options[selD.selectedIndex]||{}).textContent||'';
+      if(opts.libDuree) libDuree=opts.libDuree;
       boite.style.display='none';
       resolveOrigin(false).then(function(orig){
         var dep = orig || originAuto;                        // sans position : on garde le départ calculé
@@ -1324,14 +1347,15 @@
         try{ sessionStorage.removeItem('the_nom_attente'); }catch(e){}
         window.THEnomEnAttente=null;
         if(bld) bld.classList.remove('reglages-picks');     // l'itinéraire reprend toute la page
-        var _titre = nomVoulu || '';
+        var _titre = opts.nom || nomVoulu || '';
         render(dep, {route:r, theme:null,
           dur:{max:r.length, lib:libDuree},
           per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'},
-          forme:selF.value||'oneway', pepites:[], manualOrder:true, mode:'compose',
-          tour:{titre: nomVoulu || (addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection')),
+          forme:selF.value||opts.forme||'oneway', pepites:opts.pepites||[], manualOrder:true,
+          mode:opts.mode||'compose',
+          tour: opts.tour || {titre: nomVoulu || (addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection')),
                 soustitre:T2('itin.picks.sous','Les lieux que vous avez choisis')}});
-        enregistrerCompose(_titre);
+        enregistrerCompose(_titre, opts.mode||'compose');
       });
     };
   }
@@ -2822,7 +2846,7 @@
         var a=document.createElement('a');
         a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
         a.style.cssText='display:flex;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid #efe7d8;text-decoration:none;color:inherit';
-        a.innerHTML='<span style="font-size:19px">'+(r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':'🧭'))+'</span>'
+        a.innerHTML='<span style="font-size:19px">'+(r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(r.mode==='circuit'?'✨':'🧭')))+'</span>'
           + '<span style="flex:1"><b>'+String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,'')+'</b>'
           + '<br><small style="color:#8a7c66">'
           + (window.THEdatePuce?THEdatePuce(r):'')
@@ -2880,25 +2904,17 @@
      voyait qu'après avoir choisi de composer, alors qu'ils sont une façon de partir
      à part entière — la plus simple. Ils ont donc leur carte. */
   (function(){
+    /* LES CIRCUITS ONT LEUR PAGE
+       Ils s'empilaient en pastilles au milieu de l'écran des façons de partir :
+       dix-huit parcours en vrac, sans durée ni propos. Chacun a sa fiche
+       ailleurs ; ici on ne fait qu'ouvrir la porte. */
     var btn=document.getElementById('mPropos'); if(!btn) return;
     btn.addEventListener('click', function(){
-      if(window.THEmodes) THEmodes.ouvrir();
-      ['savedBox','critStart'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
-      var b=document.getElementById('builder');
-      if(b) [].slice.call(b.children).forEach(function(e){
-        if(e.id && e.id!=='presetsBox' && e.id!=='retourModes') return;
+        if(!window.THEcircuitChoisir){ location.href='circuits.html'; return; }
+        THEcircuitChoisir(
+          function(){ location.href='circuits.html'; },                    // en choisir un
+          function(rec){ location.href='itineraire.html?ouvrir='+encodeURIComponent((rec&&rec.id)||''); });
       });
-      var box=document.getElementById('presetsBox'), liste=document.getElementById('presets');
-      if(box) box.style.display=(liste && liste.children.length) ? '' : 'none';
-      /* on ne garde que les propositions : le formulaire reste accessible par Composer */
-      var b2=document.getElementById('builder');
-      if(b2) [].slice.call(b2.children).forEach(function(e){
-        if(e.classList && e.classList.contains('modes')) return;
-        if(e.id==='presetsBox' || e.id==='retourModes') return;
-        e.style.display='none';
-      });
-      try{ (box||btn).scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
-    });
   })();
   </script>
 
@@ -2930,7 +2946,7 @@
       var nb=(r.steps&&r.steps.length)||0;
       ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
             (window.THEdatePuce?THEdatePuce(r):'')+(r.mode==='libre' ? T('menu.voyage.libre','voyage libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes','étapes')),
-            (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':'🧭')), function(){ apres(r); });
+            (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(r.mode==='circuit'?'✨':'🧭'))), function(){ apres(r); });
     });
     ligne(T('menu.nouvel.itineraire','Nouvel itinéraire'), '', '＋', function(){ apres(null); });
     mod.style.display='flex';
@@ -2970,7 +2986,7 @@
         var sous=(window.THEdatePuce?THEdatePuce(r):'')
                + (nb ? nb+' '+T('itin.libre.etapes','étapes') : T('itin.libre.reprendre.sous','Reprendre là où vous en étiez.'));
         ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
-              sous, (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(opts.icone||'🧭'))),
+              sous, (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(r.mode==='circuit'?'✨':(opts.icone||'🧭')))),
               function(){ reprendre(r); });
       });
       mod.style.display='flex';
@@ -2983,6 +2999,15 @@
         garder:function(r){ return r && r.mode==='libre'; },
         libelleNeuf:T('itin.libre.nouveau','Commencer un nouveau voyage libre'),
         sousNeuf:T('itin.libre.nouveau.sous','On le nomme, puis on pose sa première étape.')
+      }, neuf, reprendre);
+    };
+    window.THEcircuitChoisir = function(neuf, reprendre){
+      var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      THEchoisirDepart({
+        titre:'✨ '+T('itin.circuit.choix.titre','Circuits'), icone:'✨',
+        garder:function(r){ return r && r.mode==='circuit'; },
+        libelleNeuf:T('itin.circuit.nouveau','Choisir un circuit'),
+        sousNeuf:T('itin.circuit.nouveau.sous','Un parcours déjà tracé, que vous ferez vôtre.')
       }, neuf, reprendre);
     };
     window.THEsurpriseChoisir = function(neuf, reprendre){
@@ -3005,7 +3030,7 @@
            Les fiches d'avant ce jour n'ont pas de mode : elles restent ici. */
         /* ni les voyages libres, ni les surprises : chacun a sa porte.
            Les fiches d'avant ce jour n'ont pas de mode et restent ici. */
-        garder:function(r){ return r && r.mode!=='libre' && r.mode!=='surprise'; },
+        garder:function(r){ return r && r.mode!=='libre' && r.mode!=='surprise' && r.mode!=='circuit'; },
         libelleNeuf:T('itin.compose.nouveau','Composer un nouvel itinéraire'),
         sousNeuf:T('itin.compose.nouveau.sous','On le nomme, puis on règle départ, durée et thèmes.')
       }, neuf, reprendre);

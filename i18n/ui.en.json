@@ -2455,5 +2455,15 @@
   "itin.surprise.bouton": "🎲 Surprise me",
   "itin.fermer": "✓ Close the route",
   "itin.fermer.fait": "Route saved. You’ll find it under ‘Saved Routes’.",
-  "itin.enregistre.maj": "Route updated ✓"
+  "itin.enregistre.maj": "Route updated ✓",
+  "circ.titre": "Tours",
+  "circ.intro": "Pre-planned routes. Choose one: it becomes YOUR route — you name it, set the start time and duration, then tweak it just like any other.",
+  "circ.etapes": "steps",
+  "circ.choisir": "Choose this tour",
+  "circ.retour": "‹ Ways to set off",
+  "circ.aucun": "There are no tours in this edition at the moment.",
+  "circ.verrou": "For pass holders only",
+  "itin.circuit.choix.titre": "Tours",
+  "itin.circuit.nouveau": "Choose a tour",
+  "itin.circuit.nouveau.sous": "A path that has already been mapped out, which you will make your own."
 }

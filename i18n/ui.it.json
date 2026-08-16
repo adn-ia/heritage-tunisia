@@ -2455,5 +2455,15 @@
   "itin.surprise.bouton": "🎲 Sorprendimi",
   "itin.fermer": "✓ Chiudi il percorso",
   "itin.fermer.fait": "Itinerario salvato. Lo troverete nella sezione «Itinerari salvati».",
-  "itin.enregistre.maj": "Itinerario aggiornato ✓"
+  "itin.enregistre.maj": "Itinerario aggiornato ✓",
+  "circ.titre": "Itinerari",
+  "circ.intro": "Percorsi già tracciati. Scegline uno: diventerà il TUO itinerario — gli dai un nome, imposti la partenza e la durata, poi lo modifichi come qualsiasi altro.",
+  "circ.etapes": "fasi",
+  "circ.choisir": "Scegli questo tour",
+  "circ.retour": "‹ I modi per partire",
+  "circ.aucun": "Per il momento non ci sono itinerari in questa edizione.",
+  "circ.verrou": "Riservato ai possessori di pass",
+  "itin.circuit.choix.titre": "Itinerari",
+  "itin.circuit.nouveau": "Scegliere un itinerario",
+  "itin.circuit.nouveau.sous": "Un percorso già tracciato, che potrete fare vostro."
 }
