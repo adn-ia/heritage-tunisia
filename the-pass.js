@@ -104,9 +104,18 @@
       if(!tags.length) return;                  // édition sans campagne : rien à compter
       var m = String(code||'').toUpperCase().match(/^[A-Z]+-([A-Z0-9]{2,8})-/);
       if(!m || tags.indexOf(m[1]) < 0) return;  // segment central quelconque : ce n'est pas un ambassadeur
-      var i = new Image();
-      i.referrerPolicy = 'no-referrer';
-      i.src = 'act/' + m[1] + '.html?t=' + Date.now();
+      /* Un iframe, PAS une Image. La page act/<TAG>.html ne compte pas parce
+         qu'on la télécharge : elle compte parce que son script s'exécute et
+         émet la visite. Une Image récupère les octets et s'arrête là — le
+         compteur serait resté à zéro, le défaut même qu'on répare ici.
+         Vérifié auprès d'un second avis avant d'être écrit. */
+      var f = document.createElement('iframe');
+      f.setAttribute('aria-hidden', 'true');
+      f.setAttribute('title', '');
+      f.style.cssText = 'position:absolute;width:0;height:0;border:0;left:-9999px';
+      f.src = 'act/' + m[1] + '.html?t=' + Date.now();
+      f.onload = function(){ setTimeout(function(){ try{ f.remove(); }catch(e){} }, 4000); };
+      document.body.appendChild(f);
     }catch(e){}
   }
   function sha256hex(str){
