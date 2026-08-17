@@ -69,7 +69,46 @@
 
   /* ─── Accès offert « code » (SHA-256, aucune donnée perso stockée) ───── */
   function inviteRead(){ try{ return JSON.parse(localStorage.getItem(INVITE_KEY)||'null'); }catch(e){ return null; } }
-  function inviteActive(){ var i=inviteRead(); return !!(i && i.exp && i.exp>Date.now()); }
+
+  /* Un code offert doit pouvoir être RETIRÉ. Jusqu'au 17/08/2026 il ne le
+     pouvait pas : l'enregistrement ne gardait que { exp, ts }, et inviteActive()
+     ne regardait que la date. Un appareil ayant saisi un code restait donc
+     premium 3 650 jours même après suppression du code de heritage.config.js —
+     et comme l'empreinte n'était pas gardée, on ne savait pas même LEQUEL
+     retirer. Un code diffusé était un code définitif.
+
+     Désormais l'empreinte voyage avec l'enregistrement, et l'accès est
+     reconfronté à la liste à chaque lecture : retirer une ligne de
+     heritage.config.js coupe l'accès au prochain chargement, sans serveur.
+
+     Les enregistrements ANTÉRIEURS n'ont pas d'empreinte. On les garde valides :
+     ils sont déjà chez des gens de bonne foi, et rien ne permet de les
+     identifier. Ils s'éteindront d'eux-mêmes ; seuls les nouveaux sont
+     révocables. C'est le prix d'un défaut qu'on répare après coup. */
+  function inviteActive(){
+    var i=inviteRead();
+    if(!(i && i.exp && i.exp>Date.now())) return false;
+    if(!i.h) return true;                       // enregistrement d'avant le 17/08 : non identifiable
+    return INVITE_HASHES.indexOf(i.h) >= 0;     // le code existe-t-il ENCORE ?
+  }
+
+  /* Compter l'activation, sans rien savoir de la personne.
+     Les codes portent le préfixe de qui les a distribués (…-IKBL-…) ; on
+     charge la page act/<TAG>.html, qui n'existe que pour émettre une visite
+     comptée. Aucune donnée personnelle ne circule : un compteur, pas un
+     mouchard. Les pages étaient en ligne depuis le 10/08 — rien ne les avait
+     jamais appelées, et aucune activation n'a donc été mesurée depuis. */
+  function pingActivation(code){
+    try{
+      var tags = (window.HConf && HConf.activationTags) || [];
+      if(!tags.length) return;                  // édition sans campagne : rien à compter
+      var m = String(code||'').toUpperCase().match(/^[A-Z]+-([A-Z0-9]{2,8})-/);
+      if(!m || tags.indexOf(m[1]) < 0) return;  // segment central quelconque : ce n'est pas un ambassadeur
+      var i = new Image();
+      i.referrerPolicy = 'no-referrer';
+      i.src = 'act/' + m[1] + '.html?t=' + Date.now();
+    }catch(e){}
+  }
   function sha256hex(str){
     try{ var buf=new TextEncoder().encode(str);
       return crypto.subtle.digest('SHA-256', buf).then(function(h){
@@ -80,7 +119,11 @@
     var c=String(code||'').trim().toUpperCase();
     return sha256hex(c).then(function(h){
       if(h && INVITE_HASHES.indexOf(h)>=0){ var now=Date.now();
-        try{ localStorage.setItem(INVITE_KEY, JSON.stringify({ exp: now + 3650*DAY, ts:now })); }catch(e2){}
+        /* l'empreinte est gardée : c'est elle qui rend la révocation possible */
+
+        try{ localStorage.setItem(INVITE_KEY, JSON.stringify({ exp: now + 3650*DAY, ts:now, h:h })); }catch(e2){}
+
+        pingActivation(c);
         return true; }
       return false;
     });

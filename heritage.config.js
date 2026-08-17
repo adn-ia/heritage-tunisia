@@ -83,6 +83,8 @@
       ["La Marsa", 36.878, 10.324]
     ],
     patrimoineEmail: "patrimoine_tunisie@threshold-analytics.com",  // veille citoyenne (contribuer.html) ; vide = formulaire inactif
+    activationTags: ["IKBL","HSNA","ELHM","KHLL","IMEN","EMNA","SONI","ALI","HTEM","HIBA","INTI","TEST"],   // initiales des ambassadeurs ; une page act/<TAG>.html par nom.
+                         // Vide = aucune campagne : rien n'est compté, rien n'est appelé.
     invites:      [   // codes offerts (SHA-256), propres à l'édition
       "05784113a6edb6b845007d07f3f3b5547ee521bdb69d3910957a9686ec210801",
       "ddcfce828248f7108fab7bb31035c9e81f1fc526dfbd25a156989dd475db2fba",
