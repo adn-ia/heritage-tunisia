@@ -42,11 +42,20 @@ section p{font-size:15.5px;margin:8px 0;color:#332a1d;}
 <main>
   <h1 data-i18n="soutien.soutenir.le.projet"></h1>
 
+  <!-- Aide & contact — TOUJOURS visible (jamais .ios-hide, aucune dépendance à HConf) :
+       garantit que la page soutien n'est jamais vide sur iOS (Apple 2.1(a)).
+       La brique contact ci-dessous ajoute le bouton e-mail quand HConf.support est renseigné. -->
+  <section>
+    <h2 data-i18n="soutien.aide.titre"></h2>
+    <p data-i18n="soutien.aide.texte"></p>
+    <section data-brique="contact"></section>
+  </section>
+
   <!-- Café : juste un lien Lemon Squeezy, rien de plus (masqué sur apps de store — App Store 3.1.1) -->
   <section class="ios-hide">
     <p data-i18n-html="soutien.rich.pays.heritage.est.un"></p>
     <a class="btn" id="tipBtn" href="#" target="_blank" rel="noopener"><span data-i18n="soutien.laisser.un.pourboire"></span> <span style="font-weight:400;font-size:13px" data-i18n="soutien.a.partir.de.0"></span></a>
-    <div class="fineprint"><span data-i18n="soutien.paiement.securise.via.lemonsqueezy"></span> <span class="todo" data-i18n="soutien.a.brancher.url.de"></span></div>
+    <div class="fineprint"><span data-i18n="soutien.paiement.securise.via.lemonsqueezy"></span></div>
   </section>
 
   <!-- Brique auto-portée « Notez l'application » (⭐ vous aimez l'appli — masquée si pas de store) -->
@@ -60,6 +69,7 @@ section p{font-size:15.5px;margin:8px 0;color:#332a1d;}
 </script>
 <script src="the-pass.js"></script>
 <script src="brique-note.js" defer></script>
+<script src="brique-contact.js" defer></script>
 <script src="the-footer.js" defer></script>
   <script src="analytics.js"></script>
   <script>/* App Store 3.1.1 : masquer tout paiement externe (pourboire/don) quand on tourne sur iOS/Android store */
