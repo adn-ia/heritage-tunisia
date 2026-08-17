@@ -2931,6 +2931,14 @@
     function ouvrir(){ remplir(); mod.style.display='flex'; }
     function fermer(){ mod.style.display='none'; }
     btn.addEventListener('click', ouvrir);
+
+    /* Le menu propose « Itinéraires sauvegardés » et pointe sur ?mes=1. Ce
+       paramètre n'était lu nulle part : on atterrissait sur l'écran des façons
+       de partir, et il fallait deviner qu'une carte menait à la liste.
+       Une entrée de menu doit mener où son nom l'annonce, directement. */
+    try{
+      if(new URLSearchParams(location.search).get('mes')) setTimeout(ouvrir, 60);
+    }catch(e){}
     document.getElementById('itiX').onclick=fermer;
     mod.addEventListener('click', function(e){ if(e.target===mod) fermer(); });
     window.THEitineraires={ouvrir:ouvrir};
