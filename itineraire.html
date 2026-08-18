@@ -1440,7 +1440,13 @@
     boite.style.display='';
     try{ boite.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
 
+    /* MÊME RÈGLE, MÊME GARDE — le chemin le plus court vers un itinéraire.
+       Helmy, 18/08/2026 : « composer non, surtout si je compose à partir de la
+       liste ». On cochait des lieux, on revenait ici, on appuyait sur « tracer » :
+       un itinéraire complet sortait, essai expiré, sans aucun passe demandé.
+       Mesuré en ligne sur cette édition-ci comme sur les six autres. */
     document.getElementById('pkGo').onclick=function(){
+      var _suite=function(){
       var selD=document.getElementById('pkDuree'), selF=document.getElementById('pkForme'), selO=document.getElementById('pkOrigin');
       document.getElementById('duree').value=selD.value;     // le rendu lit ces réglages
       document.getElementById('forme').value=selF.value;
@@ -1465,6 +1471,8 @@
         enregistrerCompose(_titre, opts.mode||'compose', opts.idCible);
         window.__cibleAjout=null;
       });
+      };
+      requirePass(uiT('itin.feature.composer'), _suite);
     };
   }
 
@@ -1729,7 +1737,10 @@
     list.innerHTML=html;
     if(hasCur) document.getElementById('resumeCurrent').onclick=()=>renderRecord(cur);
     if(pk.length){
-      document.getElementById('picksCompose').onclick=()=>loadPicks(pk.map(encodeURIComponent).join('|'));
+      /* Cette porte AUSSI compose : elle charge les lieux choisis et trace.
+         Sans garde, cocher quatre lieux dans la liste puis appuyer ici donnait
+         un itinéraire complet, essai expiré. Helmy, 18/08/2026. */
+      document.getElementById('picksCompose').onclick=()=>requirePass(uiT('itin.feature.composer'), ()=>loadPicks(pk.map(encodeURIComponent).join('|')));
       document.getElementById('picksClear').onclick=()=>{ if(confirm(uiT('Vider les lieux choisis sur la carte ?'))){ localStorage.removeItem('the_picks'); renderSaved(); } };
     }
     list.querySelectorAll('.saved-open[data-id]').forEach(b=>b.onclick=()=>resumeSaved(b.dataset.id));
