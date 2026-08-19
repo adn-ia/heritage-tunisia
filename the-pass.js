@@ -85,11 +85,48 @@
      ils sont déjà chez des gens de bonne foi, et rien ne permet de les
      identifier. Ils s'éteindront d'eux-mêmes ; seuls les nouveaux sont
      révocables. C'est le prix d'un défaut qu'on répare après coup. */
+  /* ─── LE VERROU D'APPAREIL ────────────────────────────────────────────────
+     Un code offert n'a jamais été lié à l'appareil qui l'a activé : `installID`
+     n'existait nulle part, alors que la règle « même code sur deux machines =
+     invalidé » était le verrou 3 du design des licences nominatives, marqué
+     « à construire » le 23/07 et jamais écrit. Relevé le 17/08, encore vrai en
+     ligne le 19/08 sur les huit éditions.
+     Ce qu'on pose ici est le verrou LOCAL : l'appareil se donne un identifiant
+     au premier lancement, et l'enregistrement d'un code est lié à cet
+     identifiant. Copier le stockage d'un téléphone à un autre ne suffit donc
+     plus — l'identifiant recopié ne sera pas celui de la machine.
+     CE QUE ÇA NE FAIT PAS, et il faut le dire : deux personnes qui saisissent
+     le MÊME code sur deux appareils obtiennent chacune leur enregistrement.
+     Les en empêcher demande que l'activation passe par un serveur qui garde la
+     trace du code consommé — le Worker Cloudflare du design. C'est une décision
+     d'infrastructure, elle appartient à Helmy.
+     LES ENREGISTREMENTS EXISTANTS SONT ÉPARGNÉS : ils n'ont pas d'identifiant,
+     on le leur pose au premier passage au lieu de les rejeter. Couper l'accès
+     de gens de bonne foi pour réparer un défaut qui n'est pas le leur serait
+     pire que le défaut. */
+  var INSTALL_KEY='the_install';
+  function installID(){
+    try{
+      var v=localStorage.getItem(INSTALL_KEY);
+      if(v) return v;
+      v=(window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+        : (String(Date.now())+Math.random().toString(36).slice(2));
+      localStorage.setItem(INSTALL_KEY, v);
+      return v;
+    }catch(e){ return ''; }
+  }
   function inviteActive(){
     var i=inviteRead();
     if(!(i && i.exp && i.exp>Date.now())) return false;
     if(!i.h) return true;                       // enregistrement d'avant le 17/08 : non identifiable
-    return INVITE_HASHES.indexOf(i.h) >= 0;     // le code existe-t-il ENCORE ?
+    if(INVITE_HASHES.indexOf(i.h) < 0) return false;   // le code existe-t-il ENCORE ?
+    var id=installID();
+    if(!id) return true;                        // stockage indisponible : on n'invente pas de refus
+    if(!i.dev){                                  // enregistrement d'avant le verrou : on l'adopte
+      try{ i.dev=id; localStorage.setItem(INVITE_KEY, JSON.stringify(i)); }catch(e){}
+      return true;
+    }
+    return i.dev === id;                        // sinon : cet appareil, et lui seul
   }
 
   /* Compter l'activation, sans rien savoir de la personne.
@@ -130,7 +167,7 @@
       if(h && INVITE_HASHES.indexOf(h)>=0){ var now=Date.now();
         /* l'empreinte est gardée : c'est elle qui rend la révocation possible */
 
-        try{ localStorage.setItem(INVITE_KEY, JSON.stringify({ exp: now + 3650*DAY, ts:now, h:h })); }catch(e2){}
+        try{ localStorage.setItem(INVITE_KEY, JSON.stringify({ exp: now + 3650*DAY, ts:now, h:h, dev:installID() })); }catch(e2){}
 
         pingActivation(c);
         return true; }
