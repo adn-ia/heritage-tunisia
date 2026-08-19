@@ -1513,7 +1513,13 @@
     if(!LASTRES) return;
     var _libre = (LASTRES.mode==='libre');
     if(!_libre && !LASTRES.route.length) return;
-    if(!isPremium() && readSaved().length >= 2){ premAsk(uiT('itin.feature.enregistrer')); return; }   // 2 itinéraires max sans abonnement
+    /* DEUX SEMAINES, PUIS PLUS D'ITINÉRAIRE SANS PAIEMENT.
+       Helmy, 19/08/2026 : « les 2 itinéraires offerts sont une relique de
+       l'ancien système ; les itinéraires sont accessibles pendant deux
+       semaines, puis plus d'itinéraire si pas de paiement, c'est tout. »
+       On garde ce qui est DÉJÀ enregistré — c'est la donnée du voyageur — mais
+       on n'en crée plus. */
+    if(!isPremium()){ premAsk(uiT('itin.feature.enregistrer')); return; }
     const def=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:(uiT('Itinéraire —')+' '+LASTRES.route.length+' '+uiT('étapes'));
     THEdemanderNom(uiT('Nom de cet itinéraire :'), def, function(name){ saveAvecNom(name, def); });
   }
@@ -1805,7 +1811,10 @@
       THEBackup.download().then(function(){ st.textContent=uiT('itin.carnet.faite'); },
                                 function(e){ st.textContent='\u26a0\ufe0f '+((e&&e.message)||uiT('itin.carnet.echec')); });
     };
-    im.onclick=function(){ fi.click(); };
+    /* Restaurer un carnet CRÉE des itinéraires : même règle que les créer à la
+       main. Sans cette garde, un essai fini pouvait remplir son carnet par
+       fichier — DeepSeek l'avait signalé, mesuré en ligne le 19/08/2026. */
+    im.onclick=function(){ if(!isPremium()){ premAsk(''); return; } fi.click(); };
     fi.onchange=function(e){
       var f=e.target.files[0]; if(!f) return;
       if(!confirm(uiT('itin.carnet.confirmer'))){ e.target.value=''; return; }
