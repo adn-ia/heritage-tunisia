@@ -325,6 +325,7 @@
   "patrimoine.legal.titre": "الإشارات والمسؤوليات",
   "patrimoine.mail.corps": "مرحبًا،\n\nيرجى الاطلاع على الملف المرفق الذي يحتوي على {n} موقعًا من مواقع التراث (الاختيار: {f})، المستمد من المراقبة المدنية.\n\n(يرجى إرفاق الملف الذي تم تنزيله بهذه الرسالة الإلكترونية قبل إرسالها.)\n\nمع أطيب التحيات،",
   "patrimoine.mail.sujet": "ملف التراث — المراقبة المدنية",
+  "patrimoine.marque": "__MARQUE__",
   "patrimoine.mod.annuler": "إلغاء",
   "patrimoine.mod.confirm.suppr": "هل تريد حذف هذه المساهمة نهائيًا؟",
   "patrimoine.mod.editer": "تعديل",
