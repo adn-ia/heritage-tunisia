@@ -911,7 +911,17 @@
       renderThemeChips();   // SITES charge -> les themes historiques/typologiques deviennent viables (fix rendu 0 chip)
       // centroïdes par gouvernorat (toutes couches)
       const acc={};
-      SITES.forEach(s=>{ const g=s.p.gouvernorat||'—'; (acc[g]=acc[g]||[]).push(s.c); });
+      /* UN DÉPART SANS NOM N'EST PAS UN DÉPART.
+         Les lieux sans région étaient rangés sous « — », et cette région
+         fantôme devenait une entrée de menu : « Depuis — », EN TÊTE de liste,
+         donc le premier choix offert. Relevé en ligne le 19/08/2026 : un
+         départ fantôme parmi les 112 du Maroc. Les lieux restent sur la carte
+         et dans la liste ; seul le CHOIX DE DÉPART disparaît, parce qu'il ne
+         veut rien dire. (Ici le champ s'appelle `gouvernorat`, nom hérité de
+         la Tunisie, là où le socle lit `region`.) */
+      SITES.forEach(s=>{ const g=(s.p.gouvernorat||'').trim();
+        if(!g || g==='—' || g==='-') return;
+        (acc[g]=acc[g]||[]).push(s.c); });
       const sel=document.getElementById('origin');
       Object.keys(acc).sort((a,b)=>a.localeCompare(b,'fr')).forEach(g=>{
         const cs=acc[g];
