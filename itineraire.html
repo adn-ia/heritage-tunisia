@@ -844,16 +844,24 @@
 
   // ---------- variables indépendantes : durée (nb d'étapes) × périmètre (rayon) ----------
   const DUREE = {
-    demi:    {max:4,  lib:'une demi-journée'},
-    jour:    {max:6,  lib:'une journée'},
-    weekend: {max:10, lib:'quelques jours'},
-    semaine: {max:16, lib:'environ une semaine'},
-    deuxsem: {max:24, lib:'environ deux semaines'},
+    demi:    {max:4,  lib:'choix.demi'},
+    jour:    {max:6,  lib:'choix.jour'},
+    weekend: {max:10, lib:'choix.weekend'},
+    semaine: {max:16, lib:'choix.semaine'},
+    deuxsem: {max:24, lib:'choix.deuxsem'},
   };
   const PERIM = {
-    ville:   {radius:9,     lib:'sur place, autour du départ'},
-    region:  {radius:120,   lib:'dans la région'},
-    pays:    {radius:99999, lib:uiT('itin.a.travers.le.pays')},   // clé NEUTRE : jamais un nom de pays
+    /* LE BANDEAU DOIT PARLER LA LANGUE DU VOYAGEUR.
+       Ces libellés étaient écrits en dur, en français, et `pays` était résolu
+       ICI — avant que le dictionnaire soit chargé, ce qui affichait la clé
+       brute. Relevé en ligne le 19/08/2026 : un lecteur arabe lisait
+       « 5 المحطات · ≈ 2 jours · dans la région · aller simple », un anglophone
+       « 11 stops · ≈ 5 jours · dans la région · aller simple ».
+       Les onze libellés existaient déjà, traduits dans les cinq langues : le
+       code ne s'en servait pas. On garde la CLÉ, on traduit à l'affichage. */
+    ville:   {radius:9,     lib:'choix.ville'},
+    region:  {radius:120,   lib:'choix.region'},
+    pays:    {radius:99999, lib:'itin.a.travers.le.pays'},   // clé NEUTRE : jamais un nom de pays
   };
   const CPKEY = Object.keys(PERIM).find(k=>k!=='ville'&&k!=='region')||'region';   // clé périmètre « pays » (dynamique par édition)
 
@@ -1873,13 +1881,13 @@
     const oneway=route.reduce((t,s)=>t+s.fromPrev,0);
     const backLeg=route.length?haversine(route[route.length-1].c, origin.coord):0;
     let km, formeLbl;
-    if(forme==='boucle'){ km=Math.round(oneway+backLeg); formeLbl='boucle (retour au départ)'; }
-    else if(forme==='allerretour'){ km=Math.round(oneway*2); formeLbl='aller-retour (même chemin)'; }
-    else { km=Math.round(oneway); formeLbl='aller simple'; }
+    if(forme==='boucle'){ km=Math.round(oneway+backLeg); formeLbl='itin.boucle.retour.au.depart'; }
+    else if(forme==='allerretour'){ km=Math.round(oneway*2); formeLbl='itin.aller.retour.meme.chemin'; }
+    else { km=Math.round(oneway); formeLbl='itin.aller.simple'; }
     // plan réaliste en journées (sert au libellé durée ET au découpage des étapes)
     const walking=per.radius<=9;
     const plan=planDays(route, walking);
-    const durLabel = tour ? dur.lib : ('≈ '+plan.dayCount+' jour'+(plan.dayCount>1?'s':''));
+    const durLabel = tour ? uiT(dur.lib) : ('≈ '+plan.dayCount+' '+uiT(plan.dayCount>1 ? 'pass.days' : 'itineraire.jour.2'));
     // en-tête visible seulement à l'impression / export PDF
     document.getElementById('printhead').innerHTML=
       '<div class="b">'+((window.HConf&&HConf.marqueCourte)||'Heritage')+'</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
@@ -1887,8 +1895,8 @@
     const hasNature=route.some(s=>s.genre==='nature');
     rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
       (tour&&tour.soustitre?'<div style="font-style:italic;color:var(--stone);margin:-2px 0 6px;font-size:14px">'+tour.soustitre+'</div>':'')+
-      '<div class="meta"><b>'+route.length+' '+uiT('étapes')+'</b> · '+durLabel+' · '+per.lib+
-      ' · '+formeLbl+' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label+'.<span class="tag-ind">durées indicatives</span><span id="carnet-total"></span></div>'+
+      '<div class="meta"><b>'+route.length+' '+uiT('étapes')+'</b> · '+durLabel+' · '+uiT(per.lib)+
+      ' · '+uiT(formeLbl)+' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label+'.<span class="tag-ind">durées indicatives</span><span id="carnet-total"></span></div>'+
       (res.island?'<div class="advis">🏝️ <b>'+uiT('Exploration limitée à')+' '+res.island+'</b> — '+uiT('île : pas de route vers le continent. Ajoutez une étape à la main pour un trajet en ferry ou en avion.')+'</div>':'')+
       (tour&&tour.note?'<div class="advis">🗓️ <b>Rythme conseillé :</b> '+tour.note+'</div>':'')+
       (hasNature?'<div class="advis">⚠️ <b>Balades nature :</b> renseignez-vous (météo, état du terrain, balisage) et partez de préférence avec un <b>groupe ou un guide local</b> plutôt que seul à l\'aventure. Selon les sites (parcs, réserves, zones du Sud), l\'accès peut exiger une <b>autorisation</b> (Eaux &amp; Forêts, patrimoine, parfois l\'armée).</div>':'')+
