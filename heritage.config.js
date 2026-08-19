@@ -87,6 +87,10 @@
       ["La Marsa", 36.878, 10.324]
     ],
     patrimoineEmail: "patrimoine_tunisie@threshold-analytics.com",  // veille citoyenne (contribuer.html) ; vide = formulaire inactif
+    licences:     "https://heritage-licences.threshold-heritage.workers.dev",
+                          // service « un code, un appareil » : il garde la trace du
+                          // premier appareil ayant présenté chaque code et refuse les
+                          // suivants. Vide = comportement local d'avant.
     activationTags: ["IKBL","HSNA","ELHM","KHLL","IMEN","EMNA","SONI","ALI","HTEM","HIBA","INTI","TEST"],   // initiales des ambassadeurs ; une page act/<TAG>.html par nom.
                          // Vide = aucune campagne : rien n'est compté, rien n'est appelé.
     invites:      [   // codes offerts (SHA-256), propres à l'édition

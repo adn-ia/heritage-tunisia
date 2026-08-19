@@ -3204,5 +3204,6 @@
  "🧭 Ouvrir l'itinéraire dans…": "🧭 Open route in…",
  "🧭 Résultat = l'itinéraire": "🧭 Result = the route",
  "🧭 Votre itinéraire — ": "🧭 Your route —",
- "🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 ‘Navigate’ opens your route in the app of your choice (Google Maps, OpenStreetMap, Apple Maps, Waze) or in"
+ "🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 ‘Navigate’ opens your route in the app of your choice (Google Maps, OpenStreetMap, Apple Maps, Waze) or in",
+ "premium.code.autre.appareil": "This code has already been activated on another device. Each code grants access to just one device."
 }

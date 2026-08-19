@@ -126,7 +126,9 @@
       try{ i.dev=id; localStorage.setItem(INVITE_KEY, JSON.stringify(i)); }catch(e){}
       return true;
     }
-    return i.dev === id;                        // sinon : cet appareil, et lui seul
+    if(i.dev !== id) return false;              // sinon : cet appareil, et lui seul
+    revoirSiPromis(i);                          // accepté hors ligne ? on revérifie en fond
+    return true;
   }
 
   /* Compter l'activation, sans rien savoir de la personne.
@@ -161,17 +163,87 @@
         return Array.prototype.map.call(new Uint8Array(h), function(b){ return ('0'+b.toString(16)).slice(-2); }).join(''); });
     }catch(e){ return Promise.resolve(''); }
   }
+  /* ─── Le service « un code, un appareil » ────────────────────────────────
+     Adresse déclarée par l'édition dans heritage.config.js (HConf.licences).
+     Édition sans adresse = comportement d'avant, strictement local.
+
+     TROIS RÉPONSES POSSIBLES, et la troisième compte autant que les deux autres :
+       { ok:true }                   -> l'appareil a le droit
+       { ok:false, autre-appareil }  -> le code est déjà pris ailleurs : refus
+       null                          -> service injoignable
+
+     Injoignable ne vaut PAS refus. Quelqu'un qui active son code dans un village
+     sans réseau doit pouvoir entrer : on le laisse passer et on marque son
+     enregistrement « à vérifier ». La vérification se fera au premier passage
+     avec du réseau. Refuser hors ligne punirait les gens de bonne foi pour un
+     défaut qui n'est pas le leur. */
+  var DELAI_SERVICE = 6000;
+  function adresseService(){
+    try{ return (window.HConf && HConf.licences) || ''; }catch(e){ return ''; }
+  }
+  function demanderService(chemin, corps){
+    var url = adresseService();
+    if(!url || !window.fetch) return Promise.resolve(null);
+    var ctl = (window.AbortController) ? new AbortController() : null;
+    var minuteur = ctl ? setTimeout(function(){ try{ ctl.abort(); }catch(e){} }, DELAI_SERVICE) : null;
+    return fetch(url.replace(/\/+$/,'') + chemin, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(corps), signal: ctl ? ctl.signal : undefined
+    })
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .catch(function(){ return null; })
+    .then(function(j){ if(minuteur) clearTimeout(minuteur); return j; });
+  }
+
+  /* Revérifier après coup un enregistrement accepté hors ligne. Silencieux :
+     si le service dit « autre appareil », l'accès tombe au prochain contrôle ;
+     s'il ne répond toujours pas, la marque reste et on retentera plus tard. */
+  var _revuLancee = false;
+  function revoirSiPromis(fiche){
+    if(_revuLancee || !fiche || !fiche.aVerifier || !fiche.h) return;
+    if(!adresseService()) return;
+    _revuLancee = true;
+    demanderService('/activer', { empreinte: fiche.h, appareil: installID(), app: appIso() })
+      .then(function(rep){
+        if(!rep) return;                                  // toujours injoignable : on retentera
+        if(rep.ok){ delete fiche.aVerifier;
+          try{ localStorage.setItem(INVITE_KEY, JSON.stringify(fiche)); }catch(e){} return; }
+        if(rep.raison === 'autre-appareil'){               // le code appartient à un autre
+          try{ localStorage.removeItem(INVITE_KEY); }catch(e){}
+        }
+      });
+  }
+  function appIso(){
+    try{ return String((window.HConf && (HConf.iso || HConf.pays)) || '').slice(0,32); }catch(e){ return ''; }
+  }
+
+  /* La raison du dernier refus, pour que la page premium dise autre chose que
+     « code non reconnu » quand le code est bon mais déjà pris ailleurs. */
+  var _refus = null;
+  function dernierRefus(){ return _refus; }
+
   function redeem(code){
     var c=String(code||'').trim().toUpperCase();
     return sha256hex(c).then(function(h){
-      if(h && INVITE_HASHES.indexOf(h)>=0){ var now=Date.now();
-        /* l'empreinte est gardée : c'est elle qui rend la révocation possible */
-
-        try{ localStorage.setItem(INVITE_KEY, JSON.stringify({ exp: now + 3650*DAY, ts:now, h:h, dev:installID() })); }catch(e2){}
-
-        pingActivation(c);
-        return true; }
-      return false;
+            _refus = null;
+      if(!(h && INVITE_HASHES.indexOf(h)>=0)) return false;   // ce code n'existe pas
+      /* Le code est bon. Reste à savoir s'il est libre. */
+      return demanderService('/activer', { empreinte: h, appareil: installID(), app: appIso() })
+        .then(function(rep){
+          if(rep && rep.ok === false && rep.raison === 'autre-appareil'){
+            _refus = 'autre-appareil';                    // bon code, déjà pris
+            return false;
+          }
+          var now=Date.now();
+          /* l'empreinte est gardée : c'est elle qui rend la révocation possible */
+          /* on marque l'appareil DÈS l'activation : l'adoption d'après-coup ne sert
+             qu'aux enregistrements antérieurs au verrou */
+          var fiche = { exp: now + 3650*DAY, ts:now, h:h, dev:installID() };
+          if(!rep) fiche.aVerifier = true;                // accepté hors ligne, à revoir
+          try{ localStorage.setItem(INVITE_KEY, JSON.stringify(fiche)); }catch(e2){}
+          pingActivation(c);
+          return true;
+        });
     });
   }
 
@@ -514,6 +586,7 @@
                    iapUnlock:iapUnlock, iapExpire:iapExpire, IAP_PRODUCT:IAP_PRODUCT,
                    grantFeature:grantFeature, hasFeature:hasFeature, giftRandom:giftRandom, GIFT_POOL:GIFT_POOL,
                    premiumLive:premiumLive, redeem:redeem, redeemLicense:redeemLicense, inviteActive:inviteActive,
+                   dernierRefus:dernierRefus,
                    trialActive:trialActive, trialUsed:function(){ return !!trialStartedTs(); },
                    PLAN:PLAN, PERIOD:PERIOD, TRIAL_DAYS:TRIAL_DAYS, GIFT_DAYS:GIFT_DAYS,
                    DAYS:DAYS, PRICE:PRICE, CHECKOUT:CHECKOUT, APPSTORE_URL:APPSTORE_URL };

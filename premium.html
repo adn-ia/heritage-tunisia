@@ -221,7 +221,15 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
       // 1) code offert (hors-ligne) ; 2) sinon clé de licence Lemon Squeezy (en ligne)
       P.redeem(v).then(function(ok){ return ok ? true : (P.redeemLicense ? P.redeemLicense(v) : false); }).then(function(ok){
         if(ok){ msg.textContent='🎉 '+uiT('Accès Premium activé !'); try{localStorage.setItem('the_invite_ok','1');}catch(e){} setTimeout(function(){ location.href='bienvenue.html'; },900); }
-        else { msg.textContent='❌ '+uiT('Code ou clé invalide.'); cbtn.disabled=false; }
+        else {
+          /* Un code bon mais DÉJÀ PRIS sur un autre appareil ne doit pas
+             s'annoncer « invalide » : on chercherait une faute de frappe
+             qui n'existe pas. */
+          var _r = P.dernierRefus ? P.dernierRefus() : null;
+          msg.textContent = '❌ '+(_r === 'autre-appareil'
+            ? uiT('premium.code.autre.appareil') : uiT('Code ou clé invalide.'));
+          cbtn.disabled=false;
+        }
       });
     };
     cbtn.onclick=go;
