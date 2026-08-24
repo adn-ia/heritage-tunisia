@@ -5,16 +5,7 @@
    Usage : placer <div class="the-carnet" data-place="<clé>" data-nom="<nom>" data-lat=".." data-lng=".."></div> ;
    le module rend tout seul. À inclure : <script src="the-carnet.js" defer></script> (après the-postcard.js). */
 (function(){
-  /* UNE CLÉ NON TRADUITE NE S'AFFICHE PAS EN CLAIR.
-     T() reçoit ici des clés (« carnet.photo.en.tete »), pas du français. Quand la
-     traduction manque, le moteur rend la clé telle quelle et l'utilisateur lit
-     « carnet.ajouter.photo.entete » dans un bouton. On rend alors une chaîne vide :
-     l'icône du bouton suffit, et rien d'illisible ne passe à l'écran. */
-  function T(fr){ try{
-      var v=(window.THEi18n && THEi18n.ui && THEi18n.ui(fr)) || fr;
-      if(v===fr && /^[a-z][a-z0-9]*(\.[a-z0-9]+){2,}$/.test(fr)) return '';
-      return v;
-    }catch(e){ return fr; } }
+  function T(fr){ try{ return (window.THEi18n && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
   function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
   /* ---- IndexedDB (même base que THE/le module carte postale) ---- */
   function db(){ return new Promise(function(res,rej){ var r=indexedDB.open('the-carnet',1);
@@ -23,46 +14,9 @@
   function getMedia(place){ return db().then(function(d){ return new Promise(function(res){
     var out=[], c=d.transaction('photos','readonly').objectStore('photos').index('place').openCursor(IDBKeyRange.only(place));
     c.onsuccess=function(e){var x=e.target.result; if(x){out.push(x.value);x.continue();} else { out.sort(function(a,b){return (a.ord||a.ts||0)-(b.ord||b.ts||0);}); res(out); }}; c.onerror=function(){res([]);}; }); }); }
-
-  /* COMPRESSER À L'ENTRÉE — vos originaux ne bougent pas.
-     Un navigateur n'a pas accès au chemin d'une photo : il reçoit son contenu, et
-     cette référence meurt avec la page. Garder « la photo n° 4237 » et la rechercher
-     au lancement suivant est impossible sur iOS. Pour qu'une photo survive au
-     redémarrage, l'application doit donc en garder une copie.
-     On la garde LÉGÈRE : 1920 px au plus grand côté, qualité 0,82. L'original reste
-     intact dans la photothèque, et l'appareil ne se remplit pas.
-     ⏳ À VENIR (idée de Helmy, 23/08) : un dossier de classification propre à
-     l'itinéraire, où les photos seraient gardées en résolution d'origine. */
-  function compresser(file){
-    var MAX = 1920, Q = 0.82;
-    return new Promise(function(res){
-      if(!file || !/^image\//.test(file.type||'') || /gif|svg/i.test(file.type||'')) { res(file); return; }
-      var u = URL.createObjectURL(file), img = new Image(), fini = false;
-      var abandon = setTimeout(function(){ if(!fini){ fini=true; try{URL.revokeObjectURL(u);}catch(e){} res(file); } }, 12000);
-      img.onload = function(){
-        if(fini) return; fini = true; clearTimeout(abandon);
-        try{
-          var w = img.naturalWidth, h = img.naturalHeight;
-          if(Math.max(w,h) <= MAX){ URL.revokeObjectURL(u); res(file); return; }
-          var k = MAX / Math.max(w,h);
-          var c = document.createElement('canvas');
-          c.width = Math.round(w*k); c.height = Math.round(h*k);
-          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-          c.toBlob(function(b){
-            URL.revokeObjectURL(u);
-            res(b && b.size < file.size ? new File([b], file.name, {type:'image/jpeg'}) : file);
-          }, 'image/jpeg', Q);
-        }catch(e){ try{URL.revokeObjectURL(u);}catch(_){} res(file); }
-      };
-      img.onerror = function(){ if(fini) return; fini=true; clearTimeout(abandon); try{URL.revokeObjectURL(u);}catch(e){} res(file); };
-      img.src = u;
-    });
-  }
   function addMedia(place,name,blob,type){ return db().then(function(d){ return new Promise(function(res,rej){
     var rq=d.transaction('photos','readwrite').objectStore('photos').add({place:place,name:name,blob:blob,type:type||(blob.type||'image'),ts:Date.now(),ord:Date.now()});
-    /* on rend l'IDENTIFIANT créé : sans lui, impossible de désigner ensuite
-       cette photo comme en-tête de l'étape. Il manquait. */
-    rq.onsuccess=function(){res(rq.result);}; rq.onerror=function(){rej(rq.error);}; }); }); }
+    rq.onsuccess=function(){res();}; rq.onerror=function(){rej(rq.error);}; }); }); }
   function delMedia(id){ return db().then(function(d){ return new Promise(function(res){ var rq=d.transaction('photos','readwrite').objectStore('photos').delete(id); rq.onsuccess=function(){res();}; rq.onerror=function(){res();}; }); }); }
     /* modifier un média sans le recréer (légende, ordre…) */
     function majMedia(id,patch){ return db().then(function(d){ return new Promise(function(res){
@@ -75,7 +29,7 @@
   // met à jour un média (légende, drapeau héro…)
   function updateMedia(id,patch){ return db().then(function(d){ return new Promise(function(res){ var os=d.transaction('photos','readwrite').objectStore('photos'); var g=os.get(id); g.onsuccess=function(){ var v=g.result; if(v){ Object.assign(v,patch); os.put(v);} res(); }; g.onerror=function(){res();}; }); }); }
   // héro = LA photo d'en-tête de l'étape : on la marque, on démarque les autres
-  function setHero(place,id){ return getMediaLarge(place).then(function(arr){ return Promise.all(arr.map(function(m){ return updateMedia(m.id,{hero:(m.id===id)}); })); }); }
+  function setHero(place,id){ return getMedia(place).then(function(arr){ return Promise.all(arr.map(function(m){ return updateMedia(m.id,{hero:(m.id===id)}); })); }); }
   /* LA NOTE NE DOIT PAS SE PERDRE QUAND L'ÉTAPE CHANGE DE CLÉ
      La clé d'une étape porte l'identifiant de son itinéraire (« it123#lieu@… »).
      Une note écrite AVANT que l'itinéraire ait son identifiant est rangée sous la
@@ -129,31 +83,13 @@
     heroFill(el, place);
   }
   // bandeau photo d'en-tête (héro) de l'étape
-  /* Les photos prises avant que l'itinéraire ait un identifiant sont rangées sous
-     le seul nom du lieu. On les récupère au lieu de les laisser perdues. */
-  function getMediaLarge(place){
-    return getMedia(place).then(function(a){
-      if(a && a.length) return a;
-      var court = String(place||'').split('#').pop();
-      return (court && court !== place) ? getMedia(court) : a;
-    });
-  }
-  function heroFill(el, place){ getMediaLarge(place).then(function(arr){
+  function heroFill(el, place){ getMedia(place).then(function(arr){
     var h=arr.filter(function(m){return m.hero && kind(m)==='image';})[0];
     var box=el.querySelector('.cn-hero'); if(!box) return;
-    if(h){ box.style.display='block'; box.style.backgroundImage="url('"+URL.createObjectURL(h.blob)+"')"; box.innerHTML=(h.caption?'<span class="cn-hero-cap">'+esc(h.caption)+'</span>':'');
-           box.style.cursor='pointer';
-           box.onclick=function(ev){ ev.stopPropagation(); panneauEnTete(place, (el.dataset&&el.dataset.nom)||''); }; }
-    else { /* Pas encore de photo d'en-tête : on le PROPOSE au lieu de ne rien montrer.
-              Le bandeau existait mais restait caché — on ne pouvait pas deviner qu'il
-              suffisait de marquer une photo d'une étoile pour l'obtenir. */
-      box.style.display='block'; box.style.backgroundImage=''; box.classList.add('vide');
-      box.innerHTML='<button type="button" class="cn-hero-add">📷 '+T('carnet.photo.en.tete')+'</button>';
-      var b=box.querySelector('.cn-hero-add');
-      if(b) b.onclick=function(ev){ ev.stopPropagation(); panneauEnTete(place, (el.dataset&&el.dataset.nom)||''); };
-    }
+    if(h){ box.style.display='block'; box.style.backgroundImage="url('"+URL.createObjectURL(h.blob)+"')"; box.innerHTML=(h.caption?'<span class="cn-hero-cap">'+esc(h.caption)+'</span>':''); }
+    else { box.style.display='none'; box.style.backgroundImage=''; box.innerHTML=''; }
   }); }
-  function grid(g,place){ getMediaLarge(place).then(function(arr){
+  function grid(g,place){ getMedia(place).then(function(arr){
     g.innerHTML=arr.map(function(m){ var k=kind(m);
       if(k==='video') return '<div class="cn-th cn-vid">▶</div>';
       if(k==='audio') return '<div class="cn-th cn-aud">🎙️</div>';
@@ -209,8 +145,7 @@
         // écarter les images non décodables (ex. HEIC/HEIF via « Fichiers ») AVANT stockage -> pas de carré gris
         Promise.all(fs.map(function(f){ return decodable(f); })).then(function(oks){
           var keep=fs.filter(function(f,i){ return oks[i]; }), skipped=fs.length-keep.length;
-          Promise.all(keep.map(function(f){ var t=typeDu(f, e.target.getAttribute('data-add'));
-            return (t==='image'?compresser(f):Promise.resolve(f)).then(function(ff){ return addMedia(place, f.name, ff, t); }); })).then(function(){ openManager(place,nom); refreshSections(place); if(window.THEBackup&&THEBackup.offer) THEBackup.offer(); if(skipped) alert(T('carnet.non.lisible')); });
+          Promise.all(keep.map(function(f){ return addMedia(place, f.name, f, typeDu(f, e.target.getAttribute('data-add'))); })).then(function(){ openManager(place,nom); refreshSections(place); if(window.THEBackup&&THEBackup.offer) THEBackup.offer(); if(skipped) alert(T('carnet.non.lisible')); });
         }); }; });
         /* ⬇️ ENREGISTRER — un média pris dans le carnet ne va PAS dans la
            pellicule du téléphone. Sans ce bouton il reste prisonnier de
@@ -260,9 +195,6 @@
   function init(){
     var css='.the-carnet{margin-top:12px;background:#fffdf8;border:1px solid #e3d8c4;border-radius:10px;padding:12px}'
       +'.the-carnet .cn-hero{position:relative;height:150px;border-radius:9px;background:#eee center/cover no-repeat;margin-bottom:10px;box-shadow:0 3px 12px rgba(0,0,0,.16)}'
-      +'.the-carnet .cn-hero.vide{background:#f6efe2;border:1px dashed #d9c9ab;display:flex;align-items:center;justify-content:center;height:96px}'
-      +'.the-carnet .cn-hero-add{background:#fff;border:1px solid #e3d8c4;color:#6b5c45;border-radius:20px;padding:9px 16px;font:inherit;font-size:14px;cursor:pointer}'
-      +'.the-carnet .cn-hero-add:hover{background:#f3eee3;color:#3a2c20}'
       +'.the-carnet .cn-hero .cn-hero-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 12px 8px;color:#fff;font-family:Georgia,serif;font-style:italic;font-size:14px;background:linear-gradient(transparent,rgba(0,0,0,.7))}'
       +'.cn-cap{width:100%;margin-top:6px;border:1px solid #ddd;border-radius:6px;padding:6px 8px;font:inherit;font-size:13px}'
       +'.cn-hero-b{border:1px solid #ccc;border-radius:6px;background:#fff;padding:6px 9px;cursor:pointer;font:inherit;filter:grayscale(1);opacity:.6}.cn-hero-b.on{filter:none;opacity:1;border-color:#c9a24a;background:#fdf6e6}'
@@ -271,12 +203,8 @@
       +'.the-carnet .cn-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}'
       +'.cn-th{width:54px;height:54px;border-radius:7px;background:#eee center/cover no-repeat;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:#a8884f}'
       +'.cn-th.cn-vid,.cn-th.cn-aud{background:#26201a;color:#f5ecd8}.cn-th.cn-addt{background:#f1e7d5;border:1px dashed #c9b896}'
-      +'.the-carnet .cn-row{display:flex;gap:8px;flex-wrap:wrap}.cn-btn{flex:1;min-width:130px;min-height:44px;padding:12px 10px;border:1px solid #c9b896;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-align:center}'
+      +'.the-carnet .cn-row{display:flex;gap:8px;flex-wrap:wrap}.cn-btn{flex:1;min-width:130px;padding:10px;border:1px solid #c9b896;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-align:center}'
       +'.the-carnet .cn-pc{background:#14305c}.the-carnet .cn-maps{display:inline-block;margin-top:8px;color:#9a6a2e;text-decoration:underline;font-size:13px}'
-+'.cn-hprev{height:150px;border-radius:10px;background:#eef2f6 center/cover no-repeat;border:1px solid #ddd}'
-      +'.cn-hpgrid{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}'
-      +'.cn-hp{width:66px;height:66px;border-radius:8px;background:#eee center/cover no-repeat;border:2px solid transparent;cursor:pointer}'
-      +'.cn-hp.on{border-color:#b8860b}'
       +'.the-carnet .cn-note-priv{font-size:12px;color:#8a7c66;font-style:italic;margin-top:8px}'
       +'#cn-modal{position:fixed;inset:0;z-index:1450;background:rgba(20,15,10,.78);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:18px}'
       +'#cn-modal.on{display:flex}#cn-modal .cn-box{background:#fffdf8;border-radius:14px;padding:16px;max-width:440px;width:100%;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.5)}'
@@ -294,65 +222,5 @@
   var mo=new MutationObserver(function(muts){ muts.forEach(function(m){ [].forEach.call(m.addedNodes,function(n){ if(n.nodeType===1){ if(n.classList&&n.classList.contains('the-carnet')) renderSection(n); else if(n.querySelectorAll) n.querySelectorAll('.the-carnet').forEach(renderSection); } }); }); });
   function start(){ init(); try{ mo.observe(document.body,{childList:true,subtree:true}); }catch(e){} }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
-
-  /* Poser directement une photo d'en-tête : on ouvre la GALERIE du téléphone,
-     pas la liste de ce qui est déjà importé. La première image choisie devient
-     le bandeau de l'étape. Demandé par Helmy le 23/08 — « ça peut être une
-     option, mais vers la galerie c'est mieux ». */
-  /* SÉLECTEUR DE PHOTO D'EN-TÊTE — repris de RoadTrip (openHeaderChooser,
-     index.html:1483 + edHeaderGallery:1419 + onHdrPick:1420).
-     Chez RoadTrip « Depuis la galerie » ouvre le sélecteur natif du téléphone :
-     l'en-tête ne se choisit PAS dans les photos déjà rangées sous l'étape.
-     C'est ce qui manquait ici — le bandeau vide rouvrait le gestionnaire, donc
-     sur une étape sans photo il n'y avait rien à choisir. */
-  function panneauEnTete(place, nom){
-    getMediaLarge(place).then(function(arr){
-      var imgs = arr.filter(function(m){ return kind(m)==='image'; });
-      var h = imgs.filter(function(m){ return m.hero; })[0];
-      var vign = imgs.map(function(m){
-        return '<div class="cn-hp'+(m.hero?' on':'')+'" data-hp="'+m.id+'" style="background-image:url(\''+URL.createObjectURL(m.blob)+'\')"></div>'; }).join('');
-      modal('<button class="cn-x" onclick="THECarnet.close()">×</button>'+
-        '<h3>📷 '+T('carnet.photo.en.tete')+' — '+esc(nom)+'</h3>'+
-        '<div class="cn-hprev"'+(h?' style="background-image:url(\''+URL.createObjectURL(h.blob)+'\')"':'')+'></div>'+
-        '<div class="cn-row" style="margin-top:10px">'+
-          '<label class="cn-btn">🖼️ '+T('carnet.galerie')+'<input type="file" accept="image/*" hidden class="cn-hpick"></label>'+
-          '<label class="cn-btn">📷 '+T('carnet.photo')+'<input type="file" accept="image/*" capture="environment" hidden class="cn-hpick"></label>'+
-          (h?'<button class="cn-btn cn-hclr">✕ '+T('carnet.supprimer')+'</button>':'')+'</div>'+
-        (vign?'<div class="cn-hpgrid">'+vign+'</div>':'')+
-        '<button class="cn-close-b" onclick="THECarnet.close()">'+T('index.fermer')+'</button>');
-      var w=document.getElementById('cn-modal');
-      w.querySelectorAll('.cn-hpick').forEach(function(inp){ inp.onchange=function(){
-        var f=inp.files&&inp.files[0]; if(!f) return;
-        compresser(f).then(function(ff){ return addMedia(place, f.name, ff, 'image'); })
-          .then(function(id){ return setHero(place, id); })
-          .then(function(){ refreshSections(place); panneauEnTete(place, nom); });
-      }; });
-      w.querySelectorAll('[data-hp]').forEach(function(b){ b.onclick=function(){
-        setHero(place, +b.getAttribute('data-hp')).then(function(){ refreshSections(place); panneauEnTete(place, nom); });
-      }; });
-      var c=w.querySelector('.cn-hclr'); if(c) c.onclick=function(){
-        setHero(place, null).then(function(){ refreshSections(place); panneauEnTete(place, nom); });
-      };
-    });
-  }
-
-  function choisirEnTete(place, nom, apres){
-    var inp = document.createElement('input');
-    inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = false;
-    inp.style.display = 'none';
-    document.body.appendChild(inp);
-    inp.onchange = function(){
-      var f = inp.files && inp.files[0];
-      if(!f){ inp.remove(); return; }
-      compresser(f).then(function(ff){ return addMedia(place, f.name, ff, 'image'); }).then(function(id){
-        return setHero(place, id);
-      }).then(function(){
-        refreshSections(place);
-        if(typeof apres === 'function') apres();
-      }).catch(function(){}).then(function(){ inp.remove(); });
-    };
-    inp.click();
-  }
-
-  window.THECarnet={ open:openManager, close:closeModal, render:renderSection, enTete:choisirEnTete, panneauEnTete:panneauEnTete };
+  window.THECarnet={ open:openManager, close:closeModal, render:renderSection };
 })();
