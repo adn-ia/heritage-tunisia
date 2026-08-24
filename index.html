@@ -298,7 +298,6 @@
       }
       if(hor) h+=`<p class="info">🕒 ${hor}</p>`;
       if(p.acces) h+=`<p class="info warn">⚠️ ${p.acces}</p>`;
-      if(isPremium()) h+=`<div data-brique="legende" data-site="${(p.nom||'').replace(/"/g,'&quot;')}"></div>`;   // légende : premium
       if((tr&&tr.an)||p.anecdote){ var _an=(tr&&tr.an)||p.anecdote; h+= isPremium()
         ? `<p class="info" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px">👁️ <b>Le détail</b> — ${_an}</p>`
         : `<p class="info" onclick="premAsk('')" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:8px 11px;border-radius:6px;margin-top:9px;cursor:pointer">👁️ <b>Le détail</b> — ${String(_an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></p>`; }
@@ -871,7 +870,6 @@
 <script src="the-postcard.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
-<script src="brique-legende.js" defer></script>
 
 <script>
 /* ON COMPOSE UN ITINÉRAIRE QUI A DÉJÀ UN NOM

@@ -270,7 +270,6 @@ function openSheet(s){
   if(isPremium() && s.acces) h+=`<div class="warn">⚠️ ${esc(s.acces)}</div>`;
   if(isPremium() && s.ambiance) h+=`<div class="amb">✨ <b style="font-style:normal">L'instant</b> — ${esc(s.ambiance)}</div>`;
   const an=(tr&&tr.an)||s.anecdote;
-  if(isPremium()) h+=`<div data-brique="legende" data-site="${esc(s.nom)}"></div>`;   // légende : premium
   if(an) h+= isPremium() ? `<div class="det">👁️ <b>Le détail</b> — ${an}</div>` : `<div class="det" onclick="premAsk('')" style="cursor:pointer">👁️ <b>Le détail</b> — ${String(an).replace(/<[^>]*>/g,'').slice(0,45).trim()}… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></div>`;
   if(isPremium() && s.source) h+=`<div class="src">Source : ${esc(s.source)}</div>`;
   if(s.photo_credit) h+=`<div class="src">📷 ${esc(s.photo_credit)}</div>`;
@@ -315,7 +314,6 @@ if(new URLSearchParams(location.search).get('around')==='1') activateAround();
 <script src="the-postcard.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
-<script src="brique-legende.js" defer></script>
 
 <script>
 /* ON COMPOSE UN ITINÉRAIRE QUI A DÉJÀ UN NOM
