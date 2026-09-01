@@ -500,7 +500,7 @@
           </div>
       <div class="q" id="critStart">
         <div class="lbl"><span class="n">1</span> Vous partez d'où ?</div>
-        <select id="origin"><option value="gps">📍 Ma position (GPS)</option></select>
+        <select id="origin"><option value="gps" data-i18n="iti.ma.position.gps">📍 Ma position (GPS)</option></select>
         <input id="originAdr" type="text" placeholder="" style="display:none;width:100%;margin-top:8px;padding:11px;border:1px solid #e3d8c4;border-radius:7px;font:inherit">
         <div class="hint" id="originAdrMsg" style="display:none"></div>
         <div class="hint">Choisissez « Ma position » sur place, ou un gouvernorat pour préparer à l'avance.</div>
@@ -509,19 +509,19 @@
       <div class="q">
         <div class="lbl"><span class="n">2</span> Vous avez combien de temps ?</div>
         <select id="duree">
-          <option value="demi">Une demi-journée</option>
-          <option value="jour">Une journée</option>
-          <option value="weekend">Quelques jours (week-end)</option>
-          <option value="semaine">Environ une semaine</option>
-          <option value="deuxsem">Environ deux semaines</option>
+          <option value="demi" data-i18n="iti.une.demi.journee">Une demi-journée</option>
+          <option value="jour" data-i18n="iti.une.journee">Une journée</option>
+          <option value="weekend" data-i18n="iti.quelques.jours.week.end">Quelques jours (week-end)</option>
+          <option value="semaine" data-i18n="iti.environ.une.semaine">Environ une semaine</option>
+          <option value="deuxsem" data-i18n="iti.environ.deux.semaines">Environ deux semaines</option>
         </select>
       </div>
 
       <div class="q">
         <div class="lbl"><span class="n">3</span> Vous voulez aller jusqu'où ?</div>
         <select id="perimetre">
-          <option value="ville">Rester sur place — la ville et ses abords (à pied / court trajet)</option>
-          <option value="region">Explorer la région autour du départ</option>
+          <option value="ville" data-i18n="iti.rester.sur.place.la.ville.et">Rester sur place — la ville et ses abords (à pied / court trajet)</option>
+          <option value="region" data-i18n="iti.explorer.la.region.autour.du.depart">Explorer la région autour du départ</option>
           <option value="pays" data-i18n="itin.perimetre.pays">Parcourir tout le pays</option>
         </select>
         <div class="hint">Les deux se combinent librement : on peut passer <i>plusieurs jours dans une même ville</i>, ou traverser le pays en une semaine.</div>
@@ -536,11 +536,11 @@
       <div class="q">
         <div class="lbl"><span class="n">5</span> Quel genre de lieux ?</div>
         <select id="genre">
-          <option value="all">Un peu de tout — histoire &amp; nature</option>
-          <option value="ville">Villes &amp; médinas</option>
-          <option value="monument">Monuments &amp; sites historiques</option>
-          <option value="musee">Musées</option>
-          <option value="nature">Nature &amp; balades</option>
+          <option value="all" data-i18n="iti.un.peu.de.tout.histoire.nature">Un peu de tout — histoire &amp; nature</option>
+          <option value="ville" data-i18n="iti.villes.medinas">Villes &amp; médinas</option>
+          <option value="monument" data-i18n="iti.monuments.sites.historiques">Monuments &amp; sites historiques</option>
+          <option value="musee" data-i18n="iti.musees">Musées</option>
+          <option value="nature" data-i18n="iti.nature.balades">Nature &amp; balades</option>
         </select>
         <div class="hint">« Nature &amp; balades » ouvre les 142 lieux naturels (lacs, montagnes, parcs, oasis…). Le thème historique ne s'y applique pas.</div>
       </div>
@@ -548,9 +548,9 @@
       <div class="q">
         <div class="lbl"><span class="n">6</span> Quelle forme de trajet ?</div>
         <select id="forme">
-          <option value="oneway">Aller simple — se termine à la dernière étape</option>
-          <option value="boucle">Grande boucle — retour au point de départ</option>
-          <option value="allerretour">Aller-retour — même chemin au retour</option>
+          <option value="oneway" data-i18n="iti.aller.simple.se.termine.a.la">Aller simple — se termine à la dernière étape</option>
+          <option value="boucle" data-i18n="iti.grande.boucle.retour.au.point.de">Grande boucle — retour au point de départ</option>
+          <option value="allerretour" data-i18n="iti.aller.retour.meme.chemin.au.retour">Aller-retour — même chemin au retour</option>
         </select>
         <div class="hint">Le détail du retour (autre route, étapes au retour…) sera affiné plus tard.</div>
       </div>
@@ -710,7 +710,7 @@
         <div class="addrow">
           <input id="addinput" type="text" placeholder="Commencez à taper un nom de lieu…" autocomplete="off" list="placeList">
           <datalist id="placeList"></datalist>
-          <button id="addbtn" type="button">Ajouter</button>
+          <button id="addbtn" type="button" data-i18n="iti.ajouter">Ajouter</button>
         </div>
         <div class="hint" id="addmsg">Cherché d'abord dans nos lieux sourcés ; sinon localisé par son nom (OpenStreetMap). Un ajout perso n'est pas vérifié.</div>
       </div>
@@ -718,17 +718,17 @@
         <div class="exp-lbl" data-i18n="itin.groupe.terrain">🧭 Sur le terrain</div>
         <div class="exp">
           <button id="haltebtn" type="button" hidden>📍 <span data-i18n="halte_btn">J'ai fait une halte ici</span></button>
-            <button id="scanbtn" type="button">📷 Scanner un QR</button>
-          <button id="mapbtn" type="button">🗺️ Voir sur la grande carte</button>
+            <button id="scanbtn" type="button" data-i18n="iti.scanner.un.qr">📷 Scanner un QR</button>
+          <button id="mapbtn" type="button" data-i18n="iti.voir.sur.la.grande.carte">🗺️ Voir sur la grande carte</button>
         </div>
       </div>
       <div class="exp-group">
         <div class="exp-lbl">💾 Garder &amp; partager</div>
         <div class="exp">
-          <button id="savebtn" type="button">💾 Enregistrer</button>
+          <button id="savebtn" type="button" data-i18n="iti.enregistrer">💾 Enregistrer</button>
           <button id="sharebtn" type="button" data-i18n="itin.donner.qr">📱 Dupliquer l'itinéraire</button>
-          <button id="albumbtn" type="button">📔 Album souvenir</button>
-          <button id="printbtn" type="button">🖨️ PDF / Imprimer</button>
+          <button id="albumbtn" type="button" data-i18n="iti.album.souvenir">📔 Album souvenir</button>
+          <button id="printbtn" type="button" data-i18n="iti.pdf.imprimer">🖨️ PDF / Imprimer</button>
           <button id="fermerIti" type="button" data-i18n="itin.fermer">✓ Fermer l'itinéraire</button>
         </div>
       </div>
@@ -742,7 +742,7 @@
           <div class="hint" id="bkStatusIti" data-i18n="itin.carnet.pourquoi">Vos itinéraires, vos notes et vos photos ne vivent que dans cet appareil : rien n'est conservé chez nous. La sauvegarde les met dans un fichier qui reste chez vous — à garder pour changer de téléphone, ou pour tout retrouver si l'application est réinstallée.</div>
         </div>
       <div class="hint" id="gmapshint" hidden><!-- ancre d'injection (roadtrip-plus.js) : le conseil de navigation est passé dans le bouton de la carte, option par option --></div>
-      <button class="restart" id="restart">↻ Recommencer avec d'autres choix</button>
+      <button class="restart" id="restart" data-i18n="iti.recommencer.avec.d.autres.choix">↻ Recommencer avec d'autres choix</button>
     </div>
 
     <!-- MODAL DÉTAIL D'UN DÉTOUR -->
@@ -751,8 +751,8 @@
         <button class="modal-x" id="detourX" type="button" aria-label="Fermer">✕</button>
         <div id="detourBody"></div>
         <div class="modal-acts">
-          <button class="md-reject" id="detourReject" type="button">✕ Pas pour moi</button>
-          <button class="md-add" id="detourAdd" type="button">✓ Ajouter à mon itinéraire</button>
+          <button class="md-reject" id="detourReject" type="button" data-i18n="iti.pas.pour.moi">✕ Pas pour moi</button>
+          <button class="md-add" id="detourAdd" type="button" data-i18n="iti.ajouter.a.mon.itineraire">✓ Ajouter à mon itinéraire</button>
         </div>
       </div>
     </div>
@@ -762,7 +762,7 @@
       <div class="modal-card">
         <button class="modal-x" id="navX" type="button" aria-label="Fermer">✕</button>
         <div class="md-kick">🧭 Ouvrir l'itinéraire dans…</div>
-        <h3 class="md-title">Navigation GPS</h3>
+        <h3 class="md-title" data-i18n="iti.navigation.gps">Navigation GPS</h3>
         <div class="nav-list">
           <button class="nav-opt" type="button" data-nav="google"><b>🗺️ Google Maps</b><span>Multi-arrêts · vise l'entrée des sites</span></button>
           <button class="nav-opt" type="button" data-nav="osm"><b>🌍 OpenStreetMap</b><span>Libre / open-source · multi-arrêts</span></button>
@@ -779,7 +779,7 @@
       <div class="modal-card">
         <button class="modal-x" id="scanX" type="button" aria-label="Fermer">✕</button>
         <div class="md-kick">📷 Scanner un QR sur place</div>
-        <h3 class="md-title">Musée / monument</h3>
+        <h3 class="md-title" data-i18n="iti.musee.monument">Musée / monument</h3>
         <div id="scanStage">
           <video id="scanVideo" playsinline muted></video>
           <div class="scan-frame"></div>
@@ -795,12 +795,12 @@
       <div class="modal-card">
         <button class="modal-x" id="halteX" type="button" aria-label="Fermer">✕</button>
         <div class="md-kick">📍 Halte du voyage</div>
-        <h3 class="md-title">Un moment non prévu</h3>
+        <h3 class="md-title" data-i18n="iti.un.moment.non.prevu">Un moment non prévu</h3>
         <p style="color:var(--stone);font-size:13.5px;margin:0 0 12px">Marquez un arrêt non planifié — un déjeuner, une vue, une rencontre, une balade — et gardez-le dans votre carnet. On utilise votre <b>position GPS</b>.</p>
         <div class="halte-types" id="halteTypes"></div>
         <input id="halteName" type="text" placeholder="Un mot (facultatif) : « vue sur la vallée », « thé chez Ahmed »…" autocomplete="off">
-        <button class="md-add" id="halteGo" type="button" style="width:100%;margin-top:10px">📍 Enregistrer cette halte (ma position)</button>
-        <button class="md-reject" id="halteLater" type="button" style="width:100%;margin-top:8px">Annuler</button>
+        <button class="md-add" id="halteGo" type="button" style="width:100%;margin-top:10px" data-i18n="iti.enregistrer.cette.halte.ma.position">📍 Enregistrer cette halte (ma position)</button>
+        <button class="md-reject" id="halteLater" type="button" style="width:100%;margin-top:8px" data-i18n="iti.annuler">Annuler</button>
         <div class="hint" id="halteMsg" style="margin-top:8px"></div>
       </div>
     </div>
@@ -810,14 +810,14 @@
       <div class="modal-card">
         <button class="modal-x" id="passX" type="button" aria-label="Fermer">✕</button>
         <div class="md-kick">✦ Le passe THE</div>
-        <h3 class="md-title" id="passTitle">Fonction du passe</h3>
+        <h3 class="md-title" id="passTitle" data-i18n="iti.fonction.du.passe">Fonction du passe</h3>
         <p id="passWhy" style="color:var(--stone);font-size:14px;margin:0 0 12px"></p>
         <div style="font-size:14.5px;line-height:1.95">🗺️ Tous les circuits prêts<br>📔 Album souvenir (Baroudeur · Passeport · Dépliant) + PDF<br>🖥️ Diaporama / Projection du carnet<br>🔗 Lien d'itinéraire partageable<br>🔊 Guide audio · 🗺️ hors-ligne<br>🚫 Sans publicité</div>
         <div style="background:#f6f0e4;border:1px solid var(--line);border-radius:8px;padding:11px;margin:13px 0;font-size:14px">
           <span style="color:var(--stone);font-size:12.5px" data-i18n="pass.modal.rassurance"></span>
         </div>
         <a class="md-add" href="premium.html" style="width:100%;display:block;text-align:center;text-decoration:none;box-sizing:border-box" data-i18n="pass.modal.voir"></a>
-        <button class="md-reject" id="passLater" type="button" style="width:100%;margin-top:8px">Plus tard</button>
+        <button class="md-reject" id="passLater" type="button" style="width:100%;margin-top:8px" data-i18n="iti.plus.tard">Plus tard</button>
       </div>
     </div>
 
@@ -842,18 +842,18 @@
         <div class="tpl" data-tpl="baroudeur">🧭 Baroudeur</div>
         <div class="tpl" data-tpl="passeport">🛂 Passeport</div>
         <div class="tpl" data-tpl="depliant">📜 Dépliant</div>
-        <button class="ab go" id="albumproject" type="button">🖥️ Projeter (diaporama)</button>
-        <button class="ab" id="albumprint" type="button">🖨️ PDF / Imprimer</button>
-        <button class="ab" id="albumshare" type="button">↗ Partager</button>
-        <button class="ab" id="albumback" type="button">← Itinéraire</button>
+        <button class="ab go" id="albumproject" type="button" data-i18n="iti.projeter.diaporama">🖥️ Projeter (diaporama)</button>
+        <button class="ab" id="albumprint" type="button" data-i18n="iti.pdf.imprimer">🖨️ PDF / Imprimer</button>
+        <button class="ab" id="albumshare" type="button" data-i18n="iti.partager">↗ Partager</button>
+        <button class="ab" id="albumback" type="button" data-i18n="iti.itineraire">← Itinéraire</button>
       </div>
       <div class="album-doc" id="albumdoc"></div>
       <div class="share-panel" id="sharepanel" style="display:none">
         <div class="sp-row">
-          <button id="shwhatsapp" type="button">🟢 WhatsApp</button>
-          <button id="shemail" type="button">✉️ E-mail</button>
-          <button id="shnative" type="button">📱 Partager (photos)</button>
-          <button id="shpublish" type="button">🌍 Publier sur le site</button>
+          <button id="shwhatsapp" type="button" data-i18n="iti.whatsapp">🟢 WhatsApp</button>
+          <button id="shemail" type="button" data-i18n="iti.e.mail">✉️ E-mail</button>
+          <button id="shnative" type="button" data-i18n="iti.partager.photos">📱 Partager (photos)</button>
+          <button id="shpublish" type="button" data-i18n="iti.publier.sur.le.site">🌍 Publier sur le site</button>
         </div>
         <div class="share-note">🔒 WhatsApp et e-mail partagent le <b>texte</b> de l'itinéraire. « Partager (photos) » utilise le partage de votre téléphone. « Publier sur le site » n'enverra vos photos <b>que sur votre accord explicite</b> — par défaut, tout reste sur votre appareil.</div>
       </div>
@@ -1445,7 +1445,7 @@
        « — combien de temps ? » — au lieu de commencer par une valeur : on voit
        qu'on a le droit de choisir, au lieu de croire que c'est décidé. */
     let opts='<option value="" disabled'+(curB?'':' selected')+'>—</option>';
-    VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+'>'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
+    VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+' data-i18n="iti.fmtdur.b.b.recob">'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
     return '<select class="vis-select" data-nom="'+norm(s.p.nom).replace(/"/g,'&quot;')+'" title="Combien de temps voulez-vous passer sur place ? (✓ = recommandé)">'+opts+'</select>';
   }
   function planDays(route, walking){
@@ -2006,7 +2006,7 @@
       + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
       + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
       + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
-      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
+      + '<button class="pa-no" data-i18n="iti.uit.prem.ask.non">'+uiT('prem.ask.non')+'</button>'
       + '</div>';
     function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) ferme(); });
@@ -2236,8 +2236,8 @@
 
     if(!route.length){
       rsum.innerHTML = res.mode==='libre'
-        ? '<h2>🎒 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
-        : '<h2>Rien trouvé pour ces critères</h2><div class="meta">'+uiT('itin.rien.trouve.conseil')+'.</div>';
+        ? '<h2 data-i18n="iti.voyage.libre">🎒 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
+        : '<h2 data-i18n="iti.rien.trouve.pour.ces.criteres">Rien trouvé pour ces critères</h2><div class="meta">'+uiT('itin.rien.trouve.conseil')+'.</div>';
       /* ── LE VOYAGE LIBRE A DROIT À SA CARTE ────────────────────────────────
          Helmy, 30/08/2026 : « dans la Tunisie la carte n'apparaît pas quand
          j'essaie de composer un voyage libre, ni quand je reprends un itinéraire
@@ -2298,14 +2298,14 @@
       '<div class="b">'+((window.HConf&&HConf.marqueCourte)||'Heritage')+'</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
       new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'})+'</div>';
     const hasNature=route.some(s=>s.genre==='nature');
-    rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
+    rsum.innerHTML=(res.notice||'')+'<h2 data-i18n="iti.tour.tour.titre.theme.theme.ic">'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
       (tour&&tour.soustitre?'<div style="font-style:italic;color:var(--stone);margin:-2px 0 6px;font-size:14px">'+tour.soustitre+'</div>':'')+
       '<div class="meta"><b>'+route.length+' '+uiT('étapes')+'</b> · '+durLabel+' · '+uiT(per.lib)+
       ' · '+uiT(formeLbl)+' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label+'.<span class="tag-ind">durées indicatives</span><span id="carnet-total"></span></div>'+
       (res.island?'<div class="advis">🏝️ <b>'+uiT('Exploration limitée à')+' '+res.island+'</b> — '+uiT('île : pas de route vers le continent. Ajoutez une étape à la main pour un trajet en ferry ou en avion.')+'</div>':'')+
       (tour&&tour.note?'<div class="advis">🗓️ <b>Rythme conseillé :</b> '+tour.note+'</div>':'')+
       (hasNature?'<div class="advis">⚠️ <b>Balades nature :</b> renseignez-vous (météo, état du terrain, balisage) et partez de préférence avec un <b>groupe ou un guide local</b> plutôt que seul à l\'aventure. Selon les sites (parcs, réserves, zones du Sud), l\'accès peut exiger une <b>autorisation</b> (Eaux &amp; Forêts, patrimoine, parfois l\'armée).</div>':'')+
-      '<details class="tnote"><summary>'+uiT('itin.se.deplacer.titre')+'</summary><div>'+uiT('itin.se.deplacer.corps')+'</div></details>';
+      '<details class="tnote"><summary data-i18n="iti.uit.itin.se.deplacer.titre">'+uiT('itin.se.deplacer.titre')+'</summary><div>'+uiT('itin.se.deplacer.corps')+'</div></details>';
 
     // carte
     if(mapObj){ mapObj.remove(); mapObj=null; }
@@ -2411,7 +2411,14 @@
           '<div class="sub">'+(p.gouvernorat||'')+' · '+trCat(p.type||'')+(i>0?' · '+uiT('à')+' ~'+Math.round(s.fromPrev)+' '+uiT('km')+' '+uiT('de l\'étape précédente'):'')+'</div>'+
           (tag?'<span class="badge'+(s.halte?' halte-badge':'')+'">'+tag+'</span>':'')+
         '</div><button class="rm-step" type="button" title="Retirer cette étape">✕</button></div>'+
-        '<div class="times">'+(walking?'🚶':'🚗')+' '+uiT('trajet')+' ~'+fmtDur(s._tv)+' · 🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
+        /* L'ESTIMATION EST UN REPLI, PAS LA VÉRITÉ — 01/09/2026. Elle est calculée
+           à vol d'oiseau ; dès que le routeur répond, roadtrip-plus.js la masque et
+           met la durée réelle à sa place. Elle reste dans la page pour le cas où le
+           réseau manque : sans elle, il n'y aurait plus rien du tout. */
+        /* `data-km` porte la distance à vol d'oiseau de cette étape. Sans elle, le
+           bouton de mode ne pourrait rien recalculer quand le routeur est muet —
+           c'est-à-dire hors réseau, là où l'on marche justement le plus. */
+        '<div class="times" data-km="'+(s.fromPrev||0).toFixed(2)+'"><span class="rt-vieux">'+(walking?'🚶':'🚗')+' '+uiT('trajet')+' ~'+fmtDur(s._tv)+'</span> · 🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
         nightHtml+
         /* 📖 DÉCOUVRIR CE LIEU — 01/09/2026, Helmy : « Découvrir ce lieu, oui, je
            ne l'ai pas retiré, je vous ai demandé d'y mettre le texte, que vous
@@ -2428,7 +2435,7 @@
         (Lan?(isPremium()?'<div class="kv" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px">👁️ <b>Le détail</b> — '+Lan+'</div>':'<a href="premium.html" class="kv" style="display:block;background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px;text-decoration:none;color:inherit">👁️ <b>Le détail</b> — '+String(Lan).replace(/<[^>]*>/g,'').slice(0,45).trim()+'… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></a>'):'')+
         (p.acces_note?'<div class="kv acc"><b>🅿️ Accès / GPS :</b> '+p.acces_note+'</div>':'')+
         '</div>'+
-        ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)?'<button class="st-livre" type="button">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>':'')+
+        ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)?'<button class="st-livre" type="button" data-i18n="iti.uit.itin.decouvrir.ce.lieu">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>':'')+
         /* Une étape que le voyageur a posée lui-même n'a pas besoin qu'on lui
            rappelle de vérifier l'accès : il sait où il va, il y est. L'encart ne
            vaut que pour les lieux venus de la base. */
@@ -2724,7 +2731,7 @@
   async function renderAlbum(){
     ALBUM_URLS.forEach(u=>URL.revokeObjectURL(u)); ALBUM_URLS=[];
     const doc=document.getElementById('albumdoc');
-    if(!LASTRES || !LASTRES.route.length){ doc.innerHTML='<div class="album-cover"><h2>'+uiT('Aucun itinéraire')+'</h2></div>'; return; }
+    if(!LASTRES || !LASTRES.route.length){ doc.innerHTML='<div class="album-cover"><h2 data-i18n="iti.uit.aucun.itineraire">'+uiT('Aucun itinéraire')+'</h2></div>'; return; }
     document.body.classList.remove('tpl-baroudeur','tpl-passeport','tpl-depliant');
     document.body.classList.add('tpl-'+albumTemplate);
     [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>c.classList.toggle('on',c.dataset.tpl===albumTemplate));
@@ -2733,7 +2740,7 @@
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
     const dateStr=new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'});
     const coverHtml='<div class="album-cover"><div class="ac-brand">'+(((window.HConf&&HConf.marque)||'Heritage Experience').toUpperCase())+'</div>'+
-      '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
+      '<h2 data-i18n="iti.theme.theme.ic.uit.theme.label">'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
       (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+
       '<div class="ac-carte" id="acCarte"></div>'+'</div>';
@@ -3248,7 +3255,7 @@
     box.innerHTML=
       (data?('<div class="sr-link">QR&nbsp;: '+(data.replace(/</g,'&lt;')).slice(0,160)+'</div>'+(isURL?'<a class="sr-open" href="'+data+'" target="_blank" rel="noopener">Ouvrir le contenu officiel ↗</a>':'')):'<div class="sr-link">Pas de QR lu — marquez le lieu manuellement&nbsp;:</div>')+
       '<select id="scanStep">'+opts+'</select>'+
-      '<button class="sr-go" id="scanGo">✓ Marquer ce lieu comme visité</button>';
+      '<button class="sr-go" id="scanGo" data-i18n="iti.marquer.ce.lieu.comme.visite">✓ Marquer ce lieu comme visité</button>';
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(pos=>{
       const here=[pos.coords.longitude,pos.coords.latitude]; let bi=0,bd=Infinity;
       LASTRES.route.forEach((s,i)=>{ const d=haversine(here,s.c); if(d<bd){bd=d;bi=i;} });
@@ -3275,7 +3282,7 @@
     const desc=(ip.description||'').trim();
     document.getElementById('detourBody').innerHTML=
       '<div class="md-kick">🛣️ '+uiT('À voir en chemin vers')+' '+p.ctx+'</div>'+
-      '<h3 class="md-title">'+ip.nom+' '+tags+'</h3>'+
+      '<h3 class="md-title" data-i18n="iti.ip.nom.tags">'+ip.nom+' '+tags+'</h3>'+
       '<div class="md-meta">'+meta+' · détour ≈ '+p.detourMin+' min</div>'+
       (p.note?'<p class="md-note">'+p.note+'</p>':'')+
       (desc?'<p>'+desc+'</p>':'')+
@@ -3446,8 +3453,8 @@
   var bn=document.createElement('div'); bn.id='buildBanner';
   bn.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:60;background:#a8884f;color:#fff;padding:10px 14px;display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:14px;box-shadow:0 -3px 14px rgba(0,0,0,.32)';
   bn.innerHTML='<span>'+uiT('🧭 Itinéraire en construction')+'</span>'+
-    '<button id="bbBack" style="background:#fff;color:#a8884f;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer">‹ Retour aux choix ('+origine+')</button>'+
-    '<button id="bbDone" style="background:#5a4420;color:#fff;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer">✓ Terminé — éditer</button>';
+    '<button id="bbBack" style="background:#fff;color:#a8884f;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer" data-i18n="iti.retour.aux.choix.origine">‹ Retour aux choix ('+origine+')</button>'+
+    '<button id="bbDone" style="background:#5a4420;color:#fff;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer" data-i18n="iti.termine.editer">✓ Terminé — éditer</button>';
   document.body.appendChild(bn);
   document.getElementById('bbBack').onclick=function(){ history.back(); };
   document.getElementById('bbDone').onclick=function(){ try{ localStorage.removeItem('the_picks'); }catch(e){} bn.style.display='none'; };

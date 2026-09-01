@@ -178,37 +178,37 @@
     </div>
     <div class="rule"></div>
     <div class="filters">
-      <button class="chip active" id="fTout">Tout</button>
-      <button class="chip" id="fHist">Histoire</button>
-      <button class="chip nat" id="fNat">Nature</button>
+      <button class="chip active" id="fTout" data-i18n="acc.tout">Tout</button>
+      <button class="chip" id="fHist" data-i18n="acc.histoire">Histoire</button>
+      <button class="chip nat" id="fNat" data-i18n="acc.nature">Nature</button>
       <span class="spacer"></span>
       <button class="icon-btn" id="tourBtn" title="Itinéraire / tour guidé">🧭</button>
       <button class="icon-btn" id="audioBtn" title="Guide audio (raconte où vous êtes)">🔊</button>
       <button class="icon-btn" id="toggleSea" title="Mer antique (Utique)">≈</button>
     </div>
     <div class="filters2">
-      <button class="chip" id="fAround">📍 Autour de moi</button>
+      <button class="chip" id="fAround" data-i18n="acc.autour.de.moi">📍 Autour de moi</button>
       <select class="sel" id="selRad" style="display:none">
         <option value="3000">3 km</option><option value="10000" selected>10 km</option><option value="30000">30 km</option><option value="80000">80 km</option>
       </select>
     </div>
     <div class="filters2">
-      <select class="sel" id="selGov"><option value="all">Tous les gouvernorats</option></select>
+      <select class="sel" id="selGov"><option value="all" data-i18n="acc.tous.les.gouvernorats">Tous les gouvernorats</option></select>
       <!-- Ce menu n'a jamais listé des périodes : il est peuplé depuis HConf.themes,
            donc il porte les FILS ROUGES, exactement comme celui de la liste. Le nom
            induisait en erreur, la fonction était juste. -->
       <select class="sel" id="selPer"><option value="all" data-i18n="filtre.fil.rouge.tous">Tous les fils rouges</option></select>
-      <button class="chip" id="filterReset" title="Réinitialiser la carte">↺ Réinitialiser</button>
+      <button class="chip" id="filterReset" title="Réinitialiser la carte" data-i18n="acc.reinitialiser">↺ Réinitialiser</button>
     </div>
   </div>
 
   <div id="map"></div>
   <button class="btn-locate" id="locate" title="Me localiser">◎</button>
-  <button class="map-reset" id="mapReset">↺ Tout effacer</button>
+  <button class="map-reset" id="mapReset" data-i18n="acc.tout.effacer">↺ Tout effacer</button>
   <div class="chooser-ov" id="chooserOv" style="display:none">
     <div class="chooser">
       <div class="ch-bar">
-        <button id="chBack" title="Dossier parent">‹ Retour</button>
+        <button id="chBack" title="Dossier parent" data-i18n="acc.retour">‹ Retour</button>
         <div class="ch-title" id="chTitle">Que voir&nbsp;?</div>
         <button id="chHome" title="Retour à l'introduction">🏠</button>
       </div>
@@ -225,9 +225,9 @@
   </div>
   <div class="picks-bar" id="picksBar">
     <span class="pb-txt" id="pbTxt">🧭 0 lieu</span>
-    <button class="pb-clear" id="pbClear" title="Vider la sélection">Vider</button>
-    <button class="pb-go" id="pbAdd" style="background:#f0e4d0;color:#2b2318">➕ Au parcours</button>
-    <button class="pb-go" id="pbGo">➕ Nouvel itinéraire ›</button>
+    <button class="pb-clear" id="pbClear" title="Vider la sélection" data-i18n="acc.vider">Vider</button>
+    <button class="pb-go" id="pbAdd" style="background:#f0e4d0;color:#2b2318" data-i18n="acc.au.parcours">➕ Au parcours</button>
+    <button class="pb-go" id="pbGo" data-i18n="acc.nouvel.itineraire">➕ Nouvel itinéraire ›</button>
   </div>
   <div class="toast" id="toast"></div>
   <div class="sheet-ov" id="tourOv"><div class="sheet" id="tourSheet"></div></div>
@@ -444,7 +444,7 @@
       if(seq.length===1){ map.setView(seq[0], 12); }
       else if(seq.length) map.fitBounds(L.latLngBounds(seq).pad(0.25), {maxZoom:13});
       const bar=document.createElement('div'); bar.className='route-banner'; bar.id='routeBanner';
-      bar.innerHTML='<span class="rb-txt">'+uiT('🧭 Votre itinéraire — ')+seq.length+uiT(' étape')+(seq.length>1?'s':'')+uiT(' tracée')+(seq.length>1?'s':'')+'</span><button class="rb-clear" id="rbClear">'+uiT('Voir toute la carte')+'</button>';
+      bar.innerHTML='<span class="rb-txt">'+uiT('🧭 Votre itinéraire — ')+seq.length+uiT(' étape')+(seq.length>1?'s':'')+uiT(' tracée')+(seq.length>1?'s':'')+'</span><button class="rb-clear" id="rbClear" data-i18n="acc.uit.voir.toute.la.carte">'+uiT('Voir toute la carte')+'</button>';
       document.querySelector('.topbar').appendChild(bar);
       document.getElementById('rbClear').onclick=clearRoute;
     }
@@ -568,7 +568,7 @@
       CUR_SITE=f; const p=f.properties; const [lon,lat]=f.geometry.coordinates;
       const body=document.getElementById('siteBody'), add=document.getElementById('siteAdd');
       if(!isRevealed(f)){
-        body.innerHTML='<div class="site-kick">'+uiT('À découvrir')+'</div><h2>'+uiT('Quelque chose, ici…')+'</h2><p>'+uiT('Approchez-vous à moins de')+' '+REVEAL_DISTANCE+' '+uiT('m pour révéler ce lieu.')+'</p>';
+        body.innerHTML='<div class="site-kick">'+uiT('À découvrir')+'</div><h2 data-i18n="acc.uit.quelque.chose.ici">'+uiT('Quelque chose, ici…')+'</h2><p>'+uiT('Approchez-vous à moins de')+' '+REVEAL_DISTANCE+' '+uiT('m pour révéler ce lieu.')+'</p>';
         add.style.display='none'; document.getElementById('siteOv').style.display='flex'; return;
       }
       const isNat=p.categorie==='nature';
@@ -577,10 +577,10 @@
       const dist=userPos?'<div class="site-dist">◎ '+uiT('à')+' '+fmtDist(distanceM(userPos,[lat,lon]))+'</div>':'';
       const photo=p.photo?'<img class="site-img" src="'+p.photo+'" alt="" loading="lazy">'+(p.photo_credit?'<div class="site-credit">'+p.photo_credit+'</div>':''):'';
       body.innerHTML='<div class="site-kick">'+({nature:'🌿 '+uiT('Nature & paysage'),musee:'🏛️ '+uiT('Musées'),marche:'🛒 '+uiT('Marchés & souks'),festival:'🎭 '+uiT('Festivals & événements')}[p.categorie]||'🏛️ '+uiT('Patrimoine'))+'</div>'+
-        '<h2>'+(p.nom||'Sans nom')+'</h2>'+(isPremium()?'<div class="site-meta">'+meta+'</div>'+dist:'')+photo+
+        '<h2 data-i18n="acc.p.nom.sans.nom">'+(p.nom||'Sans nom')+'</h2>'+(isPremium()?'<div class="site-meta">'+meta+'</div>'+dist:'')+photo+
         (isPremium() ? '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'') : '')+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
-        (isPremium()?'<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>':'')+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ '+uiT('Carte postale')+'</button>';
+        (isPremium()?'<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>':'')+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer" data-i18n="acc.uit.carte.postale">🖼️ '+uiT('Carte postale')+'</button>';
       var _pcb=document.getElementById('site-pc-btn');if(_pcb)_pcb.onclick=function(){if(window.THEPostcard)THEPostcard.open(p.nom,p.gouvernorat||'');}; add.style.display='block'; setAddBtn(hasPick(p.nom));
       document.getElementById('siteOv').style.display='flex';
     }
@@ -616,7 +616,7 @@
     let seaLayer=null, seaVisible=false; const seaBtn=document.getElementById('toggleSea');
     fetch('mer-antique.geojson').then(r=>r.json()).then(data=>{
       seaLayer=L.geoJSON(data,{ style:{color:'#6a93a8',weight:1,fillColor:'#86b3c4',fillOpacity:0.32},
-        onEachFeature:(f,lyr)=>lyr.bindPopup(`<div class="popup-card"><h3>La mer antique</h3><div class="meta">Extension présumée — schématique</div><p>${f.properties.note||''}</p><div class="source">Tracé schématique — à remplacer par une source géomorphologique.</div></div>`,{maxWidth:280}) });
+        onEachFeature:(f,lyr)=>lyr.bindPopup(`<div class="popup-card"><h3 data-i18n="acc.la.mer.antique">La mer antique</h3><div class="meta">Extension présumée — schématique</div><p>${f.properties.note||''}</p><div class="source">Tracé schématique — à remplacer par une source géomorphologique.</div></div>`,{maxWidth:280}) });
     }).catch(()=>{});
     seaBtn.addEventListener('click',()=>{ if(!seaLayer){toast('Calque indisponible');return;} seaVisible=!seaVisible; if(seaVisible){seaLayer.addTo(map);} else map.removeLayer(seaLayer); seaBtn.classList.toggle('active',seaVisible); });
 
@@ -655,7 +655,7 @@
       + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
       + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
       + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
-      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
+      + '<button class="pa-no" data-i18n="acc.uit.prem.ask.non">'+uiT('prem.ask.non')+'</button>'
       + '</div>';
     function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) ferme(); });
@@ -781,15 +781,15 @@
       tourSheet.innerHTML=`
         <button class="close" onclick="closeTour()">✕</button>
         <h3>Au départ de ${tLieu?escapeH(tLieu):'votre position'}</h3>
-        <div class="sub">Composons votre parcours. <button type="button" class="lnk" id="chgStart">‹ changer le point de départ</button></div>
+        <div class="sub">Composons votre parcours. <button type="button" class="lnk" id="chgStart" data-i18n="acc.changer.le.point.de.depart">‹ changer le point de départ</button></div>
         <div class="q">Qu'est-ce qui vous intéresse ?</div>
         <div class="opts" id="optInt">${INTERESTS.map(([k,l])=>`<button class="opt${k===tInterest?' sel':''}" data-k="${k}">${l}</button>`).join('')}</div>
         <div class="q">Comment vous déplacez-vous ?</div>
         <div class="opts" id="optMode">
-          <button class="opt${tMode==='pied'?' sel':''}" data-m="pied">🚶 À pied</button>
-          <button class="opt${tMode==='voiture'?' sel':''}" data-m="voiture">🚗 Véhicule / taxi</button>
+          <button class="opt${tMode==='pied'?' sel':''}" data-m="pied" data-i18n="acc.a.pied">🚶 À pied</button>
+          <button class="opt${tMode==='voiture'?' sel':''}" data-m="voiture" data-i18n="acc.vehicule.taxi">🚗 Véhicule / taxi</button>
         </div>
-        <button class="go" id="goRoute">Proposer un parcours</button>`;
+        <button class="go" id="goRoute" data-i18n="acc.proposer.un.parcours">Proposer un parcours</button>`;
       tourSheet.querySelectorAll('#optInt .opt').forEach(b=>b.onclick=()=>{tInterest=b.dataset.k; renderWizard();});
       tourSheet.querySelectorAll('#optMode .opt').forEach(b=>b.onclick=()=>{tMode=b.dataset.m; renderWizard();});
       document.getElementById('goRoute').onclick=showRoute;
@@ -829,8 +829,8 @@
         <h3>Votre parcours ${label}</h3>
         <div class="sub">${curRoute.length} étape(s)${tLieu?(' autour de '+escapeH(tLieu)):''} — durée totale estimée <b>≈ ${fmtDur(total)}</b> (visites + trajets).</div>
         <div class="route">${curRoute.map((x,i)=>{const p=x.f.properties;return `<div class="step"><div class="num">${i+1}</div><div class="sinfo" data-lat="${x.lat}" data-lon="${x.lon}"><div class="nm">${escapeH(p.nom)}</div><div class="meta">${escapeH([trCat(p.type),trCat(p.epoque)].filter(Boolean).join(' • '))}</div><div class="meta">🚶 trajet ${fmtDur(x.travel)} · 🕒 visite ≈ ${fmtDur(x.visit)}</div></div><div class="sctl"><button class="sbtn play" data-i="${i}" title="${uiT('Écouter ce lieu')}">🔊</button><button class="sbtn del" data-i="${i}" title="${uiT('Retirer cette étape')}">✕</button></div></div>`;}).join('')}</div>
-        <button class="go" id="speakRoute">🔊 Écouter tout le parcours</button>
-        <button class="go alt" onclick="renderWizard()">‹ Modifier les critères</button>`;
+        <button class="go" id="speakRoute" data-i18n="acc.ecouter.tout.le.parcours">🔊 Écouter tout le parcours</button>
+        <button class="go alt" onclick="renderWizard()" data-i18n="acc.modifier.les.criteres">‹ Modifier les critères</button>`;
       tourSheet.querySelectorAll('.sinfo').forEach(s=>s.onclick=()=>{ const lat=+s.dataset.lat,lon=+s.dataset.lon; closeTour(); map.setView([lat,lon],16); });
       tourSheet.querySelectorAll('.sbtn.play').forEach(b=>b.onclick=e=>{ e.stopPropagation(); speakSite(curRoute[+b.dataset.i].f); });
       tourSheet.querySelectorAll('.sbtn.del').forEach(b=>b.onclick=e=>{ e.stopPropagation(); curRoute.splice(+b.dataset.i,1); renderRouteView(); });
@@ -845,9 +845,9 @@
       tStart=null;
       tourSheet.innerHTML=`
         <button class="close" onclick="closeTour()">✕</button>
-        <h3>Créer un itinéraire</h3>
+        <h3 data-i18n="acc.creer.un.itineraire">Créer un itinéraire</h3>
         <div class="sub">D'où partez-vous&nbsp;?</div>
-        <button class="go" id="useGps">📍 Utiliser ma position actuelle</button>
+        <button class="go" id="useGps" data-i18n="acc.utiliser.ma.position.actuelle">📍 Utiliser ma position actuelle</button>
         <div class="q">Ou tapez une ville, un site…</div>
         <input id="startInput" class="tin" data-i18n-placeholder="index.depart.exemples" placeholder="Ville ou site…" autocomplete="off">
         <div class="opts" id="startSugg" style="margin-top:10px"></div>

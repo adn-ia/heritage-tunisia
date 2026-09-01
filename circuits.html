@@ -83,11 +83,11 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
       var meta = [c.duree, (c.etapes||[]).length + ' ' + T('circ.etapes')]
                  .filter(Boolean).join(' · ');
       carte.innerHTML =
-        '<h2>' + (verrou ? '🔒 ' : '✨ ') + esc(c.titre||id) + '</h2>' +
+        '<h2 data-i18n="cir.verrou.esc.c.titre.id">' + (verrou ? '🔒 ' : '✨ ') + esc(c.titre||id) + '</h2>' +
         (c.soustitre ? '<p class="sub">' + esc(c.soustitre) + '</p>' : '') +
         '<div class="meta">' + esc(meta) + '</div>' +
         (c.note ? '<p class="note">' + esc(c.note) + '</p>' : '') +
-        '<button class="go" type="button">' +
+        '<button class="go" type="button" data-i18n="cir.verrou.t.circ.verrou.t.circ">' +
           (verrou ? T('circ.verrou') : T('circ.choisir')) +
         '</button>';
       carte.querySelector('.go').onclick = function(){

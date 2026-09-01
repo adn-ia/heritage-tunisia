@@ -90,17 +90,17 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
 <div class="filters">
   <div class="row">
     <input id="q" type="search" placeholder="Rechercher un lieu…" autocomplete="off">
-    <div class="seg" id="genreSeg"><button data-g="all" class="on">Tout</button><button data-g="histoire">Histoire</button><button data-g="nature">Nature</button></div>
-    <select id="region"><option value="">Toutes les régions</option></select>
-    <select id="type"><option value="">Tous les types</option></select>
+    <div class="seg" id="genreSeg"><button data-g="all" class="on" data-i18n="lst.tout">Tout</button><button data-g="histoire" data-i18n="lst.histoire">Histoire</button><button data-g="nature" data-i18n="lst.nature">Nature</button></div>
+    <select id="region"><option value="" data-i18n="lst.toutes.les.regions">Toutes les régions</option></select>
+    <select id="type"><option value="" data-i18n="lst.tous.les.types">Tous les types</option></select>
     <select id="theme"><option value="" data-i18n="filtre.fil.rouge.tous">Tous les fils rouges</option></select>
     <label class="chk"><input type="checkbox" id="withPhoto"> avec photo</label>
-    <button id="aroundBtn" class="seg" style="padding:9px 12px;cursor:pointer;color:var(--ink)">📍 Autour de moi</button>
+    <button id="aroundBtn" class="seg" style="padding:9px 12px;cursor:pointer;color:var(--ink)" data-i18n="lst.autour.de.moi">📍 Autour de moi</button>
   </div>
   <div class="row" id="radiusRow" style="display:none;margin-top:8px;">
     <span class="chk">Rayon : <b id="radiusVal">30</b> km</span>
     <input type="range" id="radius" min="2" max="150" value="30" style="flex:1;min-width:140px;accent-color:var(--gold)">
-    <button id="aroundOff" class="seg" style="padding:9px 11px;cursor:pointer;color:var(--stone)">✕ position</button>
+    <button id="aroundOff" class="seg" style="padding:9px 11px;cursor:pointer;color:var(--stone)" data-i18n="lst.position">✕ position</button>
   </div>
   <div class="count" id="count"></div>
 </div>
@@ -110,8 +110,8 @@ body{margin:0;font-family:'EB Garamond',Georgia,serif;color:var(--ink);backgroun
 
 <div class="selbar" id="selbar">
   <b id="selcount"></b>
-  <button id="selNew">➕ Nouvel itinéraire</button>
-  <button id="selAdd" class="sec">➕ Ajouter au parcours en cours</button>
+  <button id="selNew" data-i18n="lst.nouvel.itineraire">➕ Nouvel itinéraire</button>
+  <button id="selAdd" class="sec" data-i18n="lst.ajouter.au.parcours.en.cours">➕ Ajouter au parcours en cours</button>
   <button id="selClear" class="x">✕</button>
 </div>
 
@@ -136,7 +136,7 @@ function isPremium(){ try{return window.THEPass ? THEPass.isActive() : false;}ca
       + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
       + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
       + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
-      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
+      + '<button class="pa-no" data-i18n="lst.uit.prem.ask.non">'+uiT('prem.ask.non')+'</button>'
       + '</div>';
     function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) ferme(); });

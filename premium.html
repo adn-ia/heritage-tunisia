@@ -153,8 +153,8 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
       if(rb) rb.onclick=function(){ P.restoreIOS(); };
     } else if(P.isAndroidApp && P.isAndroidApp() && P.hasPlayBridge && P.hasPlayBridge()){
       /* app Android avec Google Play Billing (Digital Goods) : achat Play. JAMAIS Lemon Squeezy ni Apple. */
-      document.getElementById('buyIos').innerHTML='<button class="btn big" id="buyPlay" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' '+uiT('par an')+'</button>'
-        +'<button class="btn ghost" id="restorePlay" type="button" style="margin-top:8px">'+uiT('Restaurer un achat')+'</button>';
+      document.getElementById('buyIos').innerHTML='<button class="btn big" id="buyPlay" type="button" data-i18n="prm.uit.s.abonner.p.price.an">'+uiT('S’abonner')+' — '+P.PRICE.an+' '+uiT('par an')+'</button>'
+        +'<button class="btn ghost" id="restorePlay" type="button" style="margin-top:8px" data-i18n="prm.uit.restaurer.un.achat">'+uiT('Restaurer un achat')+'</button>';
       document.getElementById('buyPlay').onclick=function(){ if(P.buyAndroid) P.buyAndroid('an'); };
       document.getElementById('restorePlay').onclick=function(){ if(P.restoreAndroid) P.restoreAndroid(); };
     } else {
@@ -166,7 +166,7 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     document.getElementById('buyWeb').style.display='block';
     var web=document.getElementById('buyWeb'), parts=[];
     var lemon = !!(P.CHECKOUT && P.CHECKOUT.an);
-    if(lemon) parts.push('<button class="btn big" id="buyLS" type="button">'+uiT('S’abonner')+' — '+P.PRICE.an+' '+uiT('par an')+'</button>'
+    if(lemon) parts.push('<button class="btn big" id="buyLS" type="button" data-i18n="prm.uit.s.abonner.p.price.an">'+uiT('S’abonner')+' — '+P.PRICE.an+' '+uiT('par an')+'</button>'
       +'<p class="fineprint">'+uiT('Paiement sécurisé via Lemon Squeezy · activation immédiate au retour.')+'</p>');
     if(P.APPSTORE_URL) parts.push('<a class="btn ghost" href="'+P.APPSTORE_URL+'" target="_blank" rel="noopener">📱 '+uiT('Aussi sur l’App Store')+'</a>');
     // café / pourboire (web only) — petit cadeau surprise
@@ -204,7 +204,7 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
     /* MUR : essai terminé, rien d'actif */
     if(inf.trialUsed){
       sb.className='wall'; sb.style.display='block';
-      sb.innerHTML='<h2>⏳ '+uiT('Votre essai est terminé')+'</h2><p style="margin:0;color:#e9e0cf">'+uiT('Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.')+'</p>';
+      sb.innerHTML='<h2 data-i18n="prm.uit.votre.essai.est.termine">⏳ '+uiT('Votre essai est terminé')+'</h2><p style="margin:0;color:#e9e0cf">'+uiT('Abonnez-vous pour retrouver l’accès complet. Vos itinéraires et votre carnet sont conservés.')+'</p>';
       if(lead) lead.style.display='none';
     }
   }
