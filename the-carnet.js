@@ -257,7 +257,14 @@
     var h=arr.filter(function(m){return m.hero && kind(m)==='image';})[0];
     var box=el.querySelector('.cn-hero'); if(!box) return;
     if(h){ box.style.display='block'; box.classList.remove('vide');
-           var purgeH=libererZone('hero'); box.style.backgroundImage="url('"+lien(h.blob,'hero')+"')"; purgeH(); box.innerHTML=(h.caption?'<span class="cn-hero-cap">'+esc(h.caption)+'</span>':'');
+           /* ⚠️ LA ZONE EST PROPRE À L'ÉTAPE — 02/09/2026. Elle s'appelait 'hero'
+                pour TOUTES : la deuxième étape dessinée libérait alors les liens de
+                la première, encore affichés, et sa photo virait au gris. C'est le
+                défaut que Helmy décrit — « elles sont grises, je dois recharger la
+                page, et si je recharge ça se regrise ». Le commentaire ci-dessus
+                l'avait pourtant nommé : libérer un lien encore porté casse l'image. */
+             var zoneH='hero:'+place;
+             var purgeH=libererZone(zoneH); box.style.backgroundImage="url('"+lien(h.blob,zoneH)+"')"; purgeH(); box.innerHTML=(h.caption?'<span class="cn-hero-cap">'+esc(h.caption)+'</span>':'');
            box.style.backgroundPosition=h.heroPos||'50% 50%';
            /* La mesure est asynchrone et le bandeau peut être re-rempli entre-temps :
               ce jeton dit si le résultat concerne encore la photo affichée. */
@@ -279,11 +286,14 @@
     }
   }); }
   function grid(g,place){ getMediaLarge(place).then(function(arr){
-    var purge=libererZone('grid');
+    /* même règle qu'au bandeau : une zone par étape, sinon la dernière dessinée
+       emporte les vignettes de toutes les précédentes. */
+    var zoneG='grid:'+place;
+    var purge=libererZone(zoneG);
     g.innerHTML=arr.map(function(m){ var k=kind(m);
       if(k==='video') return '<div class="cn-th cn-vid">▶</div>';
       if(k==='audio') return '<div class="cn-th cn-aud">🎙️</div>';
-      return '<div class="cn-th" style="background-image:url(\''+lien(m.blob,'grid')+'\')"></div>'; }).join('')
+      return '<div class="cn-th" style="background-image:url(\''+lien(m.blob,zoneG)+'\')"></div>'; }).join('')
       +'<div class="cn-th cn-addt">＋</div>';
     purge();
   }); }

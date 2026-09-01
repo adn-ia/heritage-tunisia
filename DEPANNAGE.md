@@ -79,3 +79,39 @@ top 52, dans l'écran.
 **La leçon.** Un repositionnement qui choisit un côté sans borner la hauteur ne
 résout rien : il déplace le débordement. La seule règle sûre est *choisir la plus
 grande place, puis s'y contraindre*.
+
+## 02/09/2026 — Les photos d'une étape viraient au gris (le point 7)
+
+**Symptôme.** « Les photos que je mets sur une étape apparaissent, dès que je
+sors de l'itinéraire elles sont grises, je dois recharger la page pour que ça
+réapparaisse, et si je recharge ça se regrise à la place des photos. »
+
+**Ce que ce n'était pas.** Ni la base — l'entrée était bien rangée sous la bonne
+clé, et l'index `place` la rendait sans faute. Ni un chargement trop lent.
+
+**La cause.** Les liens d'objet (`URL.createObjectURL`) sont regroupés par
+« zone » pour être libérés proprement — mécanisme posé le 30/08 contre une vraie
+fuite mémoire. Mais la zone s'appelait **`'hero'` et `'grid'` pour TOUTES les
+étapes**. Chaque étape dessinée prenait les liens de la zone, puis les révoquait
+après avoir posé les siens — c'est-à-dire qu'elle **révoquait ceux de l'étape
+précédente, encore affichés à l'écran**. Sur quatre étapes, trois perdaient leurs
+images. D'où le gris, et d'où l'alternance : au rechargement l'ordre de dessin
+change, ce ne sont pas les mêmes étapes qui survivent.
+
+Le commentaire du 30/08 nommait pourtant le piège mot pour mot : *« on libère
+après avoir posé le nouveau contenu, jamais avant : libérer un lien encore porté
+par une image affichée la casse à l'écran »*. La règle était juste ; la zone,
+elle, n'était pas assez fine.
+
+**Correctif.** `the-carnet.js` — la zone porte désormais la clé de l'étape :
+`'hero:'+place` et `'grid:'+place`. Une étape ne peut plus libérer les liens
+d'une autre. Les zones `manager` et `entete` restent globales : ce sont des
+modales, il n'y en a qu'une ouverte à la fois.
+
+**Vérifié à l'écran**, une photo dans chacune des quatre étapes, chaque lien
+chargé pour de bon : **5 vignettes, 5 vivantes, 0 morte** — au premier rendu,
+après rechargement, et après être sorti de l'itinéraire puis revenu.
+
+**La leçon.** Une libération groupée n'est sûre que si le groupe correspond
+exactement à ce qui est redessiné. Ici le groupe était la page, alors que l'unité
+redessinée était l'étape.
