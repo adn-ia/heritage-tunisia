@@ -676,7 +676,8 @@
       #ndcActs #ndcOk{background:#2e6a4d;border-color:#2e6a4d;color:#fff}
       .ac-carte{height:230px;margin:14px 0 0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
       @media print{.ac-carte{height:170px;break-inside:avoid}}
-      .st-livre{display:inline-flex;align-items:center;gap:7px;margin:2px 0 4px;padding:10px 15px;
+      /* `margin-left:auto` le pousse au bout de la ligne du temps — 02/09/2026. */
+    .st-livre{display:inline-flex;align-items:center;gap:7px;margin:0 0 0 auto;padding:10px 15px;
                 font:inherit;font-size:14px;color:#5a4a2a;background:#fffdf7;cursor:pointer;
                 border:1.5px dashed #cbbb95;border-radius:11px;min-height:44px}
       .st-livre:hover{background:#f4ecd9;border-style:solid}
@@ -2465,7 +2466,16 @@
            transport et le temps estimé, pas besoin », redit le lendemain devant
            « 🚗 trajet ~8 min · » toujours à l'écran. Il ne reste que le temps SUR
            PLACE, qui n'est pas une estimation : c'est lui qui le choisit. */
-        '<div class="times">🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
+        /* 📖 SUR LA MÊME LIGNE QUE LE TEMPS, TOUT À DROITE — 02/09/2026, Helmy :
+           « Découvrir ce lieu, qui est en dessous du temps sur place, on le met à
+           droite sur la même ligne que le temps, mais tout à fait à droite ».
+           Il occupait une ligne entière pour un bouton, juste sous une ligne à
+           moitié vide. `.times` est déjà en flex : `margin-left:auto` le pousse au
+           bout sans rien déranger de ce qui le précède. */
+        '<div class="times">🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+
+          ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)
+            ? '<button class="st-livre" type="button">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>' : '')+
+        '</div>'+
         nightHtml+
         /* 📖 DÉCOUVRIR CE LIEU — 01/09/2026, Helmy : « Découvrir ce lieu, oui, je
            ne l'ai pas retiré, je vous ai demandé d'y mettre le texte, que vous
@@ -2482,7 +2492,6 @@
         (Lan?(isPremium()?'<div class="kv" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px">👁️ <b>Le détail</b> — '+Lan+'</div>':'<a href="premium.html" class="kv" style="display:block;background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px;text-decoration:none;color:inherit">👁️ <b>Le détail</b> — '+String(Lan).replace(/<[^>]*>/g,'').slice(0,45).trim()+'… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></a>'):'')+
         (p.acces_note?'<div class="kv acc"><b>🅿️ Accès / GPS :</b> '+p.acces_note+'</div>':'')+
         '</div>'+
-        ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)?'<button class="st-livre" type="button">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>':'')+
         /* Une étape que le voyageur a posée lui-même n'a pas besoin qu'on lui
            rappelle de vérifier l'accès : il sait où il va, il y est. L'encart ne
            vaut que pour les lieux venus de la base. */
@@ -4181,22 +4190,9 @@
        le planificateur les place dans l'unique rangée de la carte, sur le
        modèle du RoadTrip (le fréquent en clair, le rare dans « Modifier »). */
     window.THEactionsEtape = [
-      /* 01/09/2026, Helmy : « tout le texte en bas doit être réduit aux icônes ».
-         « Partager » quitte le libellé en clair pour rejoindre les icônes de la
-         rangée. Le geste ne change pas ; son nom vit en `title` et `aria-label`. */
-      { id:'partager', icone:'🔗',
-        label:function(){ return '🔗 '+T('itin.etape.partager'); },
-        run:function(i){
-          var s=(LASTRES.route||[])[i]; if(!s) return;
-          var lien='https://www.openstreetmap.org/?mlat='+s.c[1]+'&mlon='+s.c[0]+'#map=16/'+s.c[1]+'/'+s.c[0];
-          var txt=s.p.nom+(s.p.description?' — '+s.p.description:'');
-          if(navigator.share){ navigator.share({title:s.p.nom, text:txt, url:lien}).catch(function(){}); return; }
-          if(navigator.clipboard&&navigator.clipboard.writeText){
-            navigator.clipboard.writeText(txt+String.fromCharCode(10)+lien).then(function(){ THEtoast(T('itin.etape.partage.copie')); });
-            return;
-          }
-          prompt(T('itin.etape.partager'), txt+' '+lien);
-        } },
+      /* 🚫 « PARTAGER » RETIRÉ — 02/09/2026, Helmy : « la chaîne partager, on la
+         supprime dans la modale » — et sa place en bas de l'étape revient à la
+         météo. Le geste part donc entièrement : ni entrée de menu, ni icône. */
       { id:'editer',
         label:function(){ return '✏️ '+T('itin.etape.modifier'); },
         run:function(i){
@@ -4206,6 +4202,10 @@
             coord:s.c, adresse:'', arrivee:q[0]||'', heure:q[1]||'' } });
         } },
       { id:'meteo',
+        /* ⛅ EN BAS DE L'ÉTAPE, À LA PLACE DE LA CHAÎNE — 02/09/2026, Helmy :
+           « la météo, l'icône, on la mettra à la place de la chaîne en bas de
+           l'étape ». `horsMenu` : elle n'encombre plus la modale. */
+        icone:'⛅', horsMenu:true,
         label:function(){ return T('itin.meteo'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
@@ -4220,21 +4220,18 @@
          Une étape que le voyageur a posée (un hôtel, une adresse, un café)
          n'a aucune description : on va en chercher une SOURCÉE et on propose
          de la reprendre dans son carnet. On n'invente rien. */
-      { id:'decouvrir',
-        label:function(){ return T('itin.etape.decouvrir'); },
-        run:function(i){
-          var s=(LASTRES.route||[])[i]; if(!s||!window.HDecouvrir) return;
-          HDecouvrir.ouvrir({ nom:s.p.nom, lat:s.c&&s.c[1], lon:s.c&&s.c[0],
-            surPlace:function(txt){
-              /* on l'écrit dans le carnet de CETTE étape, là où le voyageur écrit */
-              try{
-                var cle=(typeof placeKey==='function') ? placeKey(s) : s.p.nom;
-                var vieux=localStorage.getItem('the-note-'+cle)||'';
-                localStorage.setItem('the-note-'+cle, vieux ? (vieux+'\n\n'+txt) : txt);
-              }catch(e){}
-              render(LASTORIGIN, LASTRES);
-            } });
-        } },
+      /* 🚫 « DÉCOUVRIR CE LIEU » RETIRÉ DU MENU — 02/09/2026, Helmy : « on
+         supprime découvrir ce lieu, qui est déjà sur l'étape ».
+         ⚠️ À SAVOIR, ET SIGNALÉ : ce n'était PAS le bouton « 📖 Découvrir ce lieu »
+         visible sur l'étape. Celui-là (`.st-livre`, l. 2485) déplie le texte que
+         le lieu porte DÉJÀ, et il n'apparaît que s'il y en a un. Le geste retiré
+         ici appelait `HDecouvrir`, qui va CHERCHER une description sourcée pour
+         une étape qui n'en a aucune — un hôtel, une adresse, un café posés à la
+         main. Les deux portaient un nom voisin, d'où la confusion.
+         Il est supprimé et non simplement masqué : `horsMenu` sans `icone` ne
+         produit aucun bouton, et une entrée que rien n'atteint est du code mort.
+         `brique-decouvrir-lieu.js` reste chargée — dites un mot et le geste
+         revient en icône. */
       { id:'autour',
         /* ⚠️ ON NE MET PAS `principal:true`. Ce drapeau produit un bouton pleine
            largeur : deux d'entre eux feraient déborder la rangée sur un petit
@@ -4243,8 +4240,8 @@
            le bouton "ce qu'il y a autour de moi" en plus de celui tout en bas,
            mais que des icônes. » L'entrée reste AUSSI dans le menu « Modifier » :
            qui l'y cherchait l'y retrouve. */
-        icone:'🔎',
-        label:function(){ return T('itin.etape.autour','🔎 Ce qu\'il y a autour de cette étape'); },
+        icone:'🔎', horsMenu:true,
+        label:function(){ return T('itin.etape.autour'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
           if(window.THEautour) THEautour(s.c, s.p.nom);

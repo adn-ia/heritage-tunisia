@@ -115,3 +115,57 @@ après rechargement, et après être sorti de l'itinéraire puis revenu.
 **La leçon.** Une libération groupée n'est sûre que si le groupe correspond
 exactement à ce qui est redessiné. Ici le groupe était la page, alors que l'unité
 redessinée était l'étape.
+
+## 02/09/2026 — « Une fois entier, une fois juste Partager » : la carte coupait le menu
+
+**Symptôme.** « La modale du crayon apparaît une fois entière et une fois il y a
+juste Partager dedans, aléatoirement. »
+
+**Ce que ce n'était pas.** Ni le bornage de hauteur posé le matin même, ni le
+manque de place autour du bouton. J'ai cherché des deux côtés avant de mesurer
+les ancêtres.
+
+**La cause.** `.stop` porte **`overflow:hidden`**. Le menu est en
+`position:absolute` À L'INTÉRIEUR de la carte d'étape : dès qu'il en déborde, la
+carte le **coupe**. Aucun `z-index` n'y peut rien — l'`overflow` d'un ancêtre
+clippe avant tout empilement. Selon l'endroit où le menu tombait, on en voyait
+tout, ou une seule ligne. D'où l'« aléatoire ».
+
+**Correctif.** Le menu s'ouvre en `position:fixed`, qui échappe à l'`overflow`
+d'un ancêtre, et sa place est calculée à la main depuis le bouton : côté où il
+tient, sinon le plus grand des deux, borné à la place réelle avec défilement
+interne. Aligné sur le bord GAUCHE du crayon — aligné par la droite, il partait
+hors de la carte, dans le vide à côté d'elle.
+
+⚠️ **Le piège à connaître** : `position:fixed` se règle sur l'ancêtre le plus
+proche portant un `transform`, `filter` ou `contain`, s'il y en a un. Vérifié le
+02/09 : aucun ancêtre de `.rtp-pop` n'en porte. Si l'un venait à en recevoir, ce
+menu se replacerait par rapport à lui.
+
+**Et le menu a maigri.** Helmy, le même jour : « dans la modale il restera
+modifier, monter, descendre, définir comme base, recaler et retirer cette
+étape ». Il en portait neuf. Sont partis :
+- **Partager** — retiré entièrement, du menu et du bas de l'étape ; sa place en
+  bas revient à la **météo ⛅** ;
+- **Ce qu'il y a autour** — garde son icône 🔎, quitte le menu ;
+- **Découvrir ce lieu** — supprimé. ⚠️ **À savoir** : ce n'était PAS le bouton
+  « 📖 Découvrir ce lieu » visible sur l'étape. Celui-là (`.st-livre`) déplie le
+  texte que le lieu porte déjà, et ne paraît que s'il y en a un. Le geste retiré
+  appelait `HDecouvrir`, qui va CHERCHER une description sourcée pour une étape
+  qui n'en a aucune — un hôtel, une adresse posés à la main. Deux noms voisins,
+  deux fonctions différentes. `brique-decouvrir-lieu.js` reste chargée.
+
+**Nouveau drapeau `horsMenu`** dans `roadtrip-plan.js` : la page demande une
+icône sans entrée de menu. Le module place, il ne décide toujours pas. Un geste
+`horsMenu` SANS `icone` n'est atteignable par rien — le module l'écrit maintenant
+en console plutôt que de le laisser disparaître en silence.
+
+**Vérifié à l'écran** : six entrées (cinq sur la première étape, « Monter » n'y a
+pas lieu d'être), menu entier, contenu dans la carte, en `fixed`.
+
+**Second avis DeepSeek** demandé sur ce changement. Il a vu juste sur trois
+points — le geste inatteignable, le risque de références par `id` (aucune, après
+vérification), et le plancher `Math.max(120, place)` qui transformait la place
+disponible en minimum. Il s'est trompé sur un quatrième, en affirmant que `i`
+n'était pas défini dans le `forEach` : il vient de `cards.forEach(function(card,
+i))`, c'est l'index de l'ÉTAPE, et c'est voulu. Vérifié avant d'agir.

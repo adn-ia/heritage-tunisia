@@ -309,28 +309,55 @@
                On choisit maintenant le côté qui a le PLUS de place, on borne la
                hauteur à cette place, et le menu défile en lui-même s'il le faut. */
             try{
-              pop.style.bottom=''; pop.style.top=''; pop.style.left=''; pop.style.right='';
-              pop.style.maxHeight=''; pop.style.overflowY='';
-              var MARGE=10;
-              var rb=mb.getBoundingClientRect();
-              var dessus  = rb.top - MARGE;                        // place au-dessus
-              var dessous = window.innerHeight - rb.bottom - MARGE; // place au-dessous
-              var h = pop.getBoundingClientRect().height;
+              /* ⚠️ LA VRAIE CAUSE, TROUVÉE LE 02/09/2026 : `.stop` porte
+                 `overflow:hidden`. Le menu, en `position:absolute`, est DANS la
+                 carte de l'étape — dès qu'il en déborde, la carte le COUPE. Aucun
+                 `z-index` n'y peut rien, et aucun choix de côté non plus : selon
+                 l'endroit où il tombait, on en voyait tout, ou une seule ligne.
+                 C'est le « une fois entier, une fois juste Partager dedans,
+                 aléatoirement » de Helmy — ce n'était ni le bornage, ni la place.
 
+                 Il s'ouvre donc en `position:fixed`, qui échappe à l'`overflow`
+                 d'un ancêtre, et on calcule sa place à la main par rapport au
+                 bouton. Un seul chemin, plus de cas particulier.
+                 ⚠️ `fixed` ne tiendrait pas si un ancêtre portait un `transform` :
+                 vérifié le 02/09, aucun n'en a. Si l'un venait à en recevoir, ce
+                 menu se replacerait par rapport à lui — c'est le piège à connaître. */
+              pop.style.position='fixed';
+              pop.style.bottom='auto'; pop.style.right='auto';
+              pop.style.transform=''; pop.style.maxHeight=''; pop.style.overflowY='';
+              pop.style.maxWidth='calc(100vw - 16px)';
+
+              var MARGE=8, ECART=6;
+              var rb=mb.getBoundingClientRect();
+              var h=pop.getBoundingClientRect().height;
+              var l=pop.getBoundingClientRect().width;
+              var dessus  = rb.top - MARGE - ECART;
+              var dessous = window.innerHeight - rb.bottom - MARGE - ECART;
+
+              /* on prend le côté où il tient ; sinon le plus grand des deux, et on
+                 s'y borne — jamais de plancher, sinon il ressort de l'écran. */
               if(h <= dessus){
-                /* il tient au-dessus : c'est sa place d'origine, on n'y touche pas */
-              } else if(h <= dessous || dessous > dessus){
-                pop.style.bottom='auto'; pop.style.top='calc(100% + 6px)';
-                if(h > dessous){ pop.style.maxHeight=Math.max(120,dessous)+'px'; pop.style.overflowY='auto'; }
+                pop.style.top = (rb.top - ECART - h)+'px';
+              } else if(h <= dessous){
+                pop.style.top = (rb.bottom + ECART)+'px';
+              } else if(dessous >= dessus){
+                pop.style.top = (rb.bottom + ECART)+'px';
+                pop.style.maxHeight = dessous+'px'; pop.style.overflowY='auto';
               } else {
-                pop.style.maxHeight=Math.max(120,dessus)+'px'; pop.style.overflowY='auto';
+                pop.style.top = MARGE+'px';
+                pop.style.maxHeight = dessus+'px'; pop.style.overflowY='auto';
               }
 
-              /* et jamais hors des bords latéraux */
-              var r2=pop.getBoundingClientRect();
-              if(r2.right > window.innerWidth - 8){ pop.style.left='auto'; pop.style.right='0'; }
-              r2=pop.getBoundingClientRect();
-              if(r2.left < 8){ pop.style.right='auto'; pop.style.left='0'; }
+              /* Aligné sur le bord GAUCHE du bouton : le crayon est en bas à gauche
+                 de la carte, et un menu aligné par la droite partait à gauche, hors
+                 de la carte — juste à côté d'elle, dans le vide. On ne replie sur la
+                 droite que s'il sortirait de l'écran. */
+              var x = rb.left;
+              if(x + l > window.innerWidth - MARGE) x = rb.right - l;
+              if(x < MARGE) x = MARGE;
+              if(x + l > window.innerWidth - MARGE) x = Math.max(MARGE, window.innerWidth - MARGE - l);
+              pop.style.left = x+'px';
             }catch(e){}
           }
         };
@@ -348,7 +375,20 @@
             (function(idx){ pb.onclick=function(){ a.run(idx); }; })(i);
             row.appendChild(pb);
           } else {
-            (function(idx){ item(lib, function(){ a.run(idx); }); })(i);
+            /* ── UNE ICÔNE PEUT VIVRE SANS ENTRÉE DE MENU ──────────────────────
+               02/09/2026, Helmy : « dans la modale il restera modifier, monter,
+               descendre, définir comme base, recaler et retirer cette étape ».
+               « Découvrir ce lieu » et « ce qu'il y a autour » sont DÉJÀ sur
+               l'étape, en clair ; les répéter dans le menu le portait à neuf
+               entrées — assez pour qu'il ne tienne plus dans l'écran d'un
+               téléphone, et c'est de là que venait le menu tantôt entier, tantôt
+               réduit à une ligne. La page déclare maintenant `horsMenu` : le
+               module pose l'icône et rien dans le menu. Il place, il ne décide
+               toujours pas. */
+            /* un geste qui ne veut ni menu ni icône n'est atteignable par rien :
+               on le dit tout haut plutôt que de le laisser disparaître en silence. */
+            if(a.horsMenu && !a.icone && window.console) console.warn('[plan] geste inatteignable :', a.id);
+            if(!a.horsMenu){ (function(idx){ item(lib, function(){ a.run(idx); }); })(i); }
             /* ── UN GESTE PEUT DEMANDER SA PLACE SUR LA CARTE, EN ICÔNE ────────
                La page déclare `icone` ; le module la pose dans la rangée, sans
                savoir de quel geste il s'agit — il place, il ne décide pas.
