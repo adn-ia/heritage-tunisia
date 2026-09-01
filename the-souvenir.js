@@ -1,3 +1,16 @@
+/* Un nom de fichier lisible : on translittère les accents au lieu de les hacher.
+   « Marchés » donnait « March-s » — la classe \w ne connaît pas le é, qui tombait
+   donc dans « caractère à remplacer ». `normalize('NFD')` sépare la lettre de son
+   accent, et l'on ne retire que l'accent. Signalé par Helmy le 01/09/2026. */
+function nomDeFichier(txt, repli){
+  var s = String(txt || '').trim();
+  try{ s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }catch(e){}
+  s = s.replace(/[\/\\?%*:|"<>&,;]/g, ' ')   // interdits par les systèmes de fichiers, ou gênants dans une adresse
+       .replace(/\s+/g, '-')
+       .replace(/-{2,}/g, '-')
+       .replace(/^-+|-+$/g, '');
+  return s || repli;
+}
 /* the-souvenir.js — MODULE « Site souvenir HTML »
    Exporte l'album déjà rendu (n'importe lequel des 10 styles) en UN fichier .html AUTONOME :
    photos converties en data-URI, CSS inliné → consultable HORS-LIGNE, propriété de l'utilisateur.
@@ -47,7 +60,7 @@
         +'<div id="album">'+clone.outerHTML+'</div>'+footer+'</body></html>';
       var blob=new Blob([html],{type:'text/html;charset=utf-8'});
       var url=URL.createObjectURL(blob), a=document.createElement('a');
-      a.href=url; a.download=(title.replace(/[^\w-]+/g,'-').replace(/^-+|-+$/g,'')||'voyage')+'-souvenir.html';
+      a.href=url; a.download=nomDeFichier(title,'voyage')+'-souvenir.html';
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
       btn.textContent=old; btn.disabled=false;

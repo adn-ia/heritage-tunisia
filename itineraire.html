@@ -316,7 +316,7 @@
     .tpl-baroudeur .pg-sub{color:#7a6644;}
     .tpl-baroudeur .pic{background:#fff;padding:7px 7px 22px;box-shadow:0 4px 12px rgba(0,0,0,.28);transform:rotate(-1.6deg);border:1px solid #e7d8b8;}
     .tpl-baroudeur .pic:nth-child(even){transform:rotate(1.7deg);}
-    .tpl-baroudeur .pic img,.tpl-baroudeur .pic video{width:148px;height:148px;object-fit:cover;display:block;}
+    .tpl-baroudeur .pic img,.tpl-baroudeur .pic video{width:148px;max-height:190px;height:auto;object-fit:contain;display:block;background:#f1ece0;}
 
     /* Thème PASSEPORT — vrai LIVRE, pages en vis-à-vis */
     .tpl-passeport .album-doc{background:#0f1b33;padding:14px;}
@@ -331,8 +331,8 @@
     .pp-page:nth-child(even){border-radius:0 6px 6px 0;box-shadow:inset 16px 0 22px -12px rgba(80,60,30,.4);}
     .pp-nm{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;color:#2a3a5c;margin:0 0 2px;line-height:1.1;}
     .pp-sub{font-size:11px;color:#7a6a44;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
-    .pp-photo{display:block;width:100%;max-height:215px;object-fit:cover;border:5px solid #fff;box-shadow:0 3px 11px rgba(0,0,0,.28);margin-bottom:8px;}
-    .pp-photo2{width:48%;max-height:100px;object-fit:cover;border:4px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.22);}
+    .pp-photo{display:block;width:100%;max-height:260px;height:auto;object-fit:contain;background:#f1ece0;border:5px solid #fff;box-shadow:0 3px 11px rgba(0,0,0,.28);margin-bottom:8px;}
+    .pp-photo2{width:48%;max-height:130px;height:auto;object-fit:contain;background:#f1ece0;border:4px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.22);}
     .pp-stamp{position:absolute;top:16px;right:16px;border:2.5px solid #9a5042;color:#9a5042;border-radius:8px;
       padding:7px 10px;font-size:9.5px;line-height:1.3;text-align:center;text-transform:uppercase;letter-spacing:1px;
       transform:rotate(-11deg);opacity:.8;font-weight:700;}
@@ -363,7 +363,7 @@
     .dep-card .dep-sub{font-size:12px;color:#8a7252;margin:2px 0 0;}
     .dep-card .dep-when{font-size:12px;color:#9a6a2e;margin:6px 0;}
     .dep-photos{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;}
-    .dep-th{width:68px;height:68px;object-fit:cover;border-radius:4px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transform:rotate(-1.5deg);}
+    .dep-th{width:68px;height:68px;object-fit:contain;background:#f1ece0;border-radius:4px;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transform:rotate(-1.5deg);}
     .dep-th:nth-child(even){transform:rotate(1.6deg);}
     .dep-cap{width:100%;border:1px dashed #cdb98c;background:rgba(255,255,255,.6);border-radius:5px;padding:6px;font-size:13px;font-family:inherit;resize:vertical;min-height:42px;color:#3a2c18;}
 
@@ -1074,10 +1074,10 @@
   }
   async function startRec(btn, ph, box){
     if(ACTIVE_REC){ try{ ACTIVE_REC.stop(); }catch(e){} return; }
-    if(!navigator.mediaDevices || !window.MediaRecorder){ alert(uiT('Enregistrement audio non disponible sur ce navigateur.')); return; }
+    if(!navigator.mediaDevices || !window.MediaRecorder){ THEtoast(uiT('Enregistrement audio non disponible sur ce navigateur.')); return; }
     let stream;
     try{ stream=await navigator.mediaDevices.getUserMedia({audio:true}); }
-    catch(e){ alert(uiT('Micro refusé ou indisponible.')); return; }
+    catch(e){ THEtoast(uiT('Micro refusé ou indisponible.')); return; }
     const mr=new MediaRecorder(stream), chunks=[]; ACTIVE_REC=mr;
     mr.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
     mr.onstop=async()=>{ stream.getTracks().forEach(t=>t.stop()); ACTIVE_REC=null;
@@ -1290,7 +1290,7 @@
 
   // ---------- résolution du point de départ ----------
   /* ← Avant : on attendait la position jusqu'à 8 secondes SANS RIEN AFFICHER, puis on
-       tentait une alert() — invisible dans l'app Android. L'utilisateur cliquait sur
+       tentait une THEtoast() — invisible dans l'app Android. L'utilisateur cliquait sur
        « Composer », rien ne se passait, et il croyait l'application cassée.
      Maintenant : retour visuel immédiat, message dans le bandeau de la page (qui, lui,
      s'affiche partout), et on ramène le point de départ à portée de main. */
@@ -1329,7 +1329,14 @@
           +'border-radius:10px;font:15px/1.5 Georgia,serif;box-shadow:0 8px 28px rgba(0,0,0,.4);'
           +'z-index:4000;opacity:0;transition:opacity .25s';
         document.body.appendChild(d); }
-      d.textContent=txt; requestAnimationFrame(function(){ d.style.opacity='1'; });
+      /* ⚠️ L'AFFICHAGE NE DÉPEND PLUS D'UNE TRAME — 01/09/2026. L'opacité était
+         posée dans un `requestAnimationFrame`, qui ne s'exécute pas quand la page
+         n'est pas au premier plan : le message existait dans le document, à zéro
+         d'opacité, et personne ne le voyait. Trouvé en remplaçant les quinze
+         `alert()` — le premier essai n'affichait rien du tout.
+         Et au-dessus de l'album, qui s'ouvre en pleine page. */
+      d.textContent=txt; d.style.opacity='1'; d.style.zIndex='100002';
+      requestAnimationFrame(function(){ d.style.opacity='1'; });
       clearTimeout(d._t); d._t=setTimeout(function(){ d.style.opacity='0'; }, ms||5200);
     }catch(e){}
   }
@@ -1460,7 +1467,7 @@
 
   // insérer un lieu connu (objet SITES) dans le parcours, replacé par proximité
   function removeStep(i){
-    if(!LASTRES || LASTRES.route.length<=1){ alert(uiT('Gardez au moins une étape — ou revenez modifier vos choix.')); return; }
+    if(!LASTRES || LASTRES.route.length<=1){ THEtoast(uiT('Gardez au moins une étape — ou revenez modifier vos choix.')); return; }
     LASTRES.route.splice(i,1);
     let prev=LASTORIGIN.coord; LASTRES.route.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
     render(LASTORIGIN, LASTRES);
@@ -1941,7 +1948,7 @@
   }
   function shareTrip(){
     if(!LASTRES) return;
-    if(!LASTRES.route.length){ alert(uiT('itin.partage.vide')); return; }
+    if(!LASTRES.route.length){ THEtoast(uiT('itin.partage.vide')); return; }
     var titre=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:'';
     tripCourt().then(function(code){
       var url=location.origin+location.pathname.replace(/[^/]*$/,'')+'itineraire.html?t='+code;
@@ -1949,7 +1956,7 @@
       /* la brique n'est pas là : on ne laisse pas l'utilisateur sans rien */
       if(navigator.share){ navigator.share({title:titre, url:url}).catch(function(){}); return; }
       if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(url).then(function(){ alert(uiT('itin.lien.copie')); },
+        navigator.clipboard.writeText(url).then(function(){ THEtoast(uiT('itin.lien.copie')); },
                                                function(){ prompt(uiT('itin.lien.copier'), url); });
         return;
       }
@@ -1973,14 +1980,14 @@
     try{ u=deb64url(String(code).slice(1)); }catch(e){ return; }
     if(mode==='1'){ try{ appliquerTrip(JSON.parse(new TextDecoder().decode(u))); }catch(e){} return; }
     if(mode!=='2') return;
-    if(typeof DecompressionStream==='undefined'){ alert(uiT('itin.lien.illisible')); return; }
+    if(typeof DecompressionStream==='undefined'){ THEtoast(uiT('itin.lien.illisible')); return; }
     try{
       var ds=new DecompressionStream('deflate-raw'), w=ds.writable.getWriter();
       w.write(u); w.close();
       new Response(ds.readable).arrayBuffer()
         .then(function(ab){ appliquerTrip(JSON.parse(new TextDecoder().decode(ab))); })
-        .catch(function(){ alert(uiT('itin.lien.illisible')); });
-    }catch(e){ alert(uiT('itin.lien.illisible')); }
+        .catch(function(){ THEtoast(uiT('itin.lien.illisible')); });
+    }catch(e){ THEtoast(uiT('itin.lien.illisible')); }
   }
   // ---------- Le passe (freemium « généreux ») ----------
   function isPremium(){ try{ return window.THEPass ? THEPass.isActive() : (localStorage.getItem('the_premium')==='1'); }catch(e){ return false; } }
@@ -2435,7 +2442,15 @@
       
     });
     updateCarnetTotal();
-    window.scrollTo({top:0,behavior:'smooth'});
+    /* ON RESTE OÙ L'ON ÉTAIT — 01/09/2026, Helmy : « il y a aussi un souci de
+       rester sur l'étape quand on l'édite, au lieu de scroller vers le haut ».
+       Remonter en tête a du sens quand on vient de composer un itinéraire : on le
+       découvre. Après avoir corrigé la douzième étape, c'est une punition — il
+       faut redescendre chercher où l'on en était.
+       Le drapeau est posé par l'écouteur d'édition et retombe aussitôt : l'oublier
+       ferait s'ouvrir un itinéraire neuf en son milieu. */
+    if(window._resterSurPlace){ window._resterSurPlace=false; }
+    else window.scrollTo({top:0,behavior:'smooth'});
   }
 
   // ---------- actions ----------
@@ -2868,13 +2883,13 @@
     });
   }
   function shareNative(){                // SYNCHRONE : navigator.share appelé dans le geste utilisateur (sinon iOS refuse)
-    if(!navigator.share){ alert(uiT('Le partage direct n\'est pas disponible ici. Utilisez WhatsApp, e-mail, ou l\'export PDF.')); return; }
+    if(!navigator.share){ THEtoast(uiT('Le partage direct n\'est pas disponible ici. Utilisez WhatsApp, e-mail, ou l\'export PDF.')); return; }
     const data={title:'Mon itinéraire THE', text:shareText()};
     if(SHARE_FILES.length && navigator.canShare && navigator.canShare({files:SHARE_FILES})) data.files=SHARE_FILES;
     navigator.share(data).catch(()=>{});
   }
   function publishOptin(){
-    alert(uiT('Publier sur le site THE — fonctionnalité à venir.\n\nCe sera toujours sur votre accord explicite : c\'est le seul cas où vos photos quitteraient votre appareil. Par défaut, tout reste chez vous.'));
+    THEtoast(uiT('Publier sur le site THE — fonctionnalité à venir.\n\nCe sera toujours sur votre accord explicite : c\'est le seul cas où vos photos quitteraient votre appareil. Par défaut, tout reste chez vous.'));
   }
 
   document.getElementById('printbtn').onclick=()=>{
@@ -2916,7 +2931,7 @@
       + '&destination=' + encodeURIComponent(dest)
       + (mids.length ? '&waypoints=' + encodeURIComponent(mids.join('|')) : '')
       + '&travelmode=driving';
-    if(capped) alert(uiT('Google Maps limite un trajet à une dizaine d’arrêts. On ouvre les ')+(LIMIT+1)+uiT(' premiers ; pour un long circuit, exportez jour par jour (retirez les étapes des autres journées avant d’exporter).'));
+    if(capped) THEtoast(uiT('Google Maps limite un trajet à une dizaine d’arrêts. On ouvre les ')+(LIMIT+1)+uiT(' premiers ; pour un long circuit, exportez jour par jour (retirez les étapes des autres journées avant d’exporter).'));
     window.open(url, '_blank', 'noopener');
   }
   // données communes de navigation (coordonnées dans l'ordre du parcours)
@@ -2955,7 +2970,14 @@
     const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="'+((window.HConf&&HConf.marque)||"Heritage Experience")+'" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>'+xe(name)+'</name></metadata>\n'+wpts+'\n  <rte><name>'+xe(name)+'</name>\n'+rtepts+'\n  </rte>\n</gpx>\n';
     const blob=new Blob([gpx],{type:'application/gpx+xml'});
     const url=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=url; a.download=(name.replace(/[^\w\-]+/g,'-').replace(/^-+|-+$/g,'')||'itineraire')+'.gpx';
+    /* Même correction que pour le site souvenir : on translittère au lieu de hacher.
+       « Marchés » donnait « March-s ». Écrit ici plutôt qu'appelé ailleurs : ce
+       fichier ne charge pas the-souvenir.js. */
+    var _nomF=(function(t){ var x=String(t||'').trim();
+      try{ x=x.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }catch(e){}
+      return x.replace(/[\/\\?%*:|"<>&,;]/g,' ').replace(/\s+/g,'-').replace(/-{2,}/g,'-').replace(/^-+|-+$/g,'') || 'itineraire';
+    })(name);
+    a.href=url; a.download=_nomF+'.gpx';
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
   }
   // bouton « Naviguer » → menu de choix
@@ -3188,7 +3210,7 @@
   let scanStream=null, scanRAF=null;
   const scanModal=document.getElementById('scanModal');
   function openScan(){
-    if(!LASTRES || !LASTRES.route.length){ alert(uiT('Composez d\'abord un itinéraire.')); return; }
+    if(!LASTRES || !LASTRES.route.length){ THEtoast(uiT('Composez d\'abord un itinéraire.')); return; }
     document.getElementById('scanResult').style.display='none';
     document.getElementById('scanStage').style.display='';
     document.getElementById('scanStatus').textContent=uiT('Visez le QR code…');
@@ -3295,7 +3317,7 @@
   }
   async function openProjection(){
     PROJ=await buildProjItems();
-    if(!PROJ.length){ alert(uiT('Votre carnet est vide pour cet itinéraire.')+'\n'+uiT('Ajoutez des photos, des notes ou des prises de son à vos étapes, puis revenez projeter.')); return; }
+    if(!PROJ.length){ THEtoast(uiT('Votre carnet est vide pour cet itinéraire.')+'\n'+uiT('Ajoutez des photos, des notes ou des prises de son à vos étapes, puis revenez projeter.')); return; }
     projIdx=0; projPlaying=true;
     document.getElementById('projOv').style.display='block';
     document.getElementById('projPlay').textContent='⏸';
@@ -3554,7 +3576,7 @@
     var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
         btn=document.getElementById('mMes');
     if(!mod||!liste||!btn) return;
-    document.getElementById('itiTitre').textContent=T('menu.mes.itineraires','Mes itinéraires');
+    document.getElementById('itiTitre').textContent=T('menu.mes.itineraires');
     function lire(){ try{ var a=JSON.parse(localStorage.getItem('the_saved')||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
     function actif(){ try{ return localStorage.getItem('the_actif')||''; }catch(e){ return ''; } }
     function remplir(){
@@ -3562,7 +3584,7 @@
       if(!arr.length){
         var v=document.createElement('div');
         v.style.cssText='color:#8a7c66;font-size:15px;line-height:1.6';
-        v.textContent=T('menu.aucun.itineraire','Aucun itinéraire enregistré pour le moment.');
+        v.textContent=T('menu.aucun.itineraire');
         liste.appendChild(v); return;
       }
       /* DEUX FAMILLES, PAS UN TAS. Un voyage libre et un itinéraire composé ne
@@ -3576,8 +3598,8 @@
       var libres=arr.filter(function(r){ return r && r.mode==='libre'; });
       var composes=arr.filter(function(r){ return !r || r.mode!=='libre'; });
       var ordonne=[];
-      if(libres.length){ ordonne.push({t:T('itin.groupe.libres','🎒 Voyages libres'), l:libres}); }
-      if(composes.length){ ordonne.push({t:T('itin.groupe.composes','🧭 Itinéraires composés'), l:composes}); }
+      if(libres.length){ ordonne.push({t:T('itin.groupe.libres'), l:libres}); }
+      if(composes.length){ ordonne.push({t:T('itin.groupe.composes'), l:composes}); }
       ordonne.forEach(function(g){
         if(ordonne.length>1) titreGroupe(g.t);
         g.l.slice(0,20).forEach(function(r){
@@ -3586,16 +3608,16 @@
         a.href='itineraire.html?ouvrir='+encodeURIComponent(r.id||'');
         a.style.cssText='display:flex;gap:10px;align-items:center;padding:11px 4px;border-bottom:1px solid #efe7d8;text-decoration:none;color:inherit';
         a.innerHTML='<span style="font-size:19px">'+(r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(r.mode==='circuit'?'✨':'🧭')))+'</span>'
-          + '<span style="flex:1"><b>'+String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,'')+'</b>'
+          + '<span style="flex:1"><b>'+String(r.title||T('menu.itineraire.sans.nom')).replace(/[<>&]/g,'')+'</b>'
           + '<br><small style="color:#8a7c66">'
           + (window.THEdatePuce?THEdatePuce(r):'')
-          + (r.mode==='libre' ? T('menu.voyage.libre','voyage libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes','étapes'))
+          + (r.mode==='libre' ? T('menu.voyage.libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes'))
           + '</small></span>';
         /* Étoile « celui-ci est mon voyage en cours » : à la réouverture de
            l'application on retombe dessus, sans jamais y être enfermé. */
         var et=document.createElement('button');
         et.type='button';
-        et.title=T('itin.actif.aide','Ouvrir ce voyage au démarrage');
+        et.title=T('itin.actif.aide');
         et.style.cssText='background:none;border:none;font-size:19px;cursor:pointer;padding:4px 6px;opacity:'
           + (actif()===r.id ? '1' : '.28');
         et.textContent='★';
@@ -3608,11 +3630,11 @@
            On demande confirmation — c'est définitif, carnet compris. */
         var sup=document.createElement('button');
         sup.type='button';
-        sup.title=T('itin.supprimer','Supprimer cet itinéraire');
+        sup.title=T('itin.supprimer');
         sup.style.cssText='background:none;border:none;font-size:17px;cursor:pointer;padding:4px 6px;opacity:.45';
         sup.textContent='🗑';
         sup.onclick=function(ev){ ev.preventDefault(); ev.stopPropagation();
-          var q=T('itin.supprimer.sur','Supprimer « {n} » ? Son carnet part avec lui.').replace('{n}', r.title||'');
+          var q=T('itin.supprimer.sur').replace('{n}', r.title||'');
           if(!confirm(q)) return;
           try{
             var reste=lire().filter(function(x){ return x.id!==r.id; });
@@ -3678,7 +3700,7 @@
     var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
         titre=document.getElementById('itiTitre');
     if(!mod||!liste){ apres(null); return; }
-    titre.textContent=T('itin.ajouter.a.quel','À quel itinéraire ajouter ?');
+    titre.textContent=T('itin.ajouter.a.quel');
     liste.innerHTML='';
     function ligne(txt, sous, ic, cb){
       var b=document.createElement('button'); b.type='button';
@@ -3691,11 +3713,11 @@
     }
     arr.slice(0,20).forEach(function(r){
       var nb=(r.steps&&r.steps.length)||0;
-      ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
-            (window.THEdatePuce?THEdatePuce(r):'')+(r.mode==='libre' ? T('menu.voyage.libre','voyage libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes','étapes')),
+      ligne(String(r.title||T('menu.itineraire.sans.nom')).replace(/[<>&]/g,''),
+            (window.THEdatePuce?THEdatePuce(r):'')+(r.mode==='libre' ? T('menu.voyage.libre')+(nb?' · '+nb:'') : nb+' '+T('menu.etapes')),
             (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(r.mode==='circuit'?'✨':'🧭'))), function(){ apres(r); });
     });
-    ligne(T('menu.nouvel.itineraire','Nouvel itinéraire'), '', '＋', function(){ apres(null); });
+    ligne(T('menu.nouvel.itineraire'), '', '＋', function(){ apres(null); });
     mod.style.display='flex';
   };
 
@@ -3731,8 +3753,8 @@
       siens.slice(0,20).forEach(function(r){
         var nb=(r.steps&&r.steps.length)||0;
         var sous=(window.THEdatePuce?THEdatePuce(r):'')
-               + (nb ? nb+' '+T('itin.libre.etapes','étapes') : T('itin.libre.reprendre.sous','Reprendre là où vous en étiez.'));
-        ligne(String(r.title||T('menu.itineraire.sans.nom','Sans nom')).replace(/[<>&]/g,''),
+               + (nb ? nb+' '+T('itin.libre.etapes') : T('itin.libre.reprendre.sous'));
+        ligne(String(r.title||T('menu.itineraire.sans.nom')).replace(/[<>&]/g,''),
               sous, (r.mode==='libre'?'🎒':(r.mode==='surprise'?'🎲':(r.mode==='circuit'?'✨':(opts.icone||'🧭')))),
               function(){ reprendre(r); });
       });
@@ -3742,34 +3764,34 @@
     window.THElibreChoisir = function(neuf, reprendre){
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
-        titre:'🎒 '+T('itin.libre.choix.titre','Voyage libre'), icone:'🎒',
+        titre:'🎒 '+T('itin.libre.choix.titre'), icone:'🎒',
         garder:function(r){ return r && r.mode==='libre'; },
-        libelleNeuf:T('itin.libre.nouveau','Commencer un nouveau voyage libre'),
-        sousNeuf:T('itin.libre.nouveau.sous','On le nomme, puis on pose sa première étape.')
+        libelleNeuf:T('itin.libre.nouveau'),
+        sousNeuf:T('itin.libre.nouveau.sous')
       }, neuf, reprendre);
     };
     window.THEcircuitChoisir = function(neuf, reprendre){
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
-        titre:'✨ '+T('itin.circuit.choix.titre','Circuits'), icone:'✨',
+        titre:'✨ '+T('itin.circuit.choix.titre'), icone:'✨',
         garder:function(r){ return r && r.mode==='circuit'; },
-        libelleNeuf:T('itin.circuit.nouveau','Choisir un circuit'),
-        sousNeuf:T('itin.circuit.nouveau.sous','Un parcours déjà tracé, que vous ferez vôtre.')
+        libelleNeuf:T('itin.circuit.nouveau'),
+        sousNeuf:T('itin.circuit.nouveau.sous')
       }, neuf, reprendre);
     };
     window.THEsurpriseChoisir = function(neuf, reprendre){
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
-        titre:'🎲 '+T('itin.surprise.choix.titre','Surprenez-moi'), icone:'🎲',
+        titre:'🎲 '+T('itin.surprise.choix.titre'), icone:'🎲',
         garder:function(r){ return r && r.mode==='surprise'; },
-        libelleNeuf:T('itin.surprise.nouveau','Tirer une nouvelle surprise'),
-        sousNeuf:T('itin.surprise.nouveau.sous','Un parcours au hasard, à partir de votre départ et de votre temps.')
+        libelleNeuf:T('itin.surprise.nouveau'),
+        sousNeuf:T('itin.surprise.nouveau.sous')
       }, neuf, reprendre);
     };
     window.THEcomposeChoisir = function(neuf, reprendre){
       var T=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
       THEchoisirDepart({
-        titre:'🧭 '+T('itin.compose.choix.titre','Composer un itinéraire'), icone:'🧭',
+        titre:'🧭 '+T('itin.compose.choix.titre'), icone:'🧭',
         /* Chaque façon de partir ne rouvre QUE les siens : le voyage libre ne
            propose que des voyages libres, Composer que des itinéraires composés.
            Les avoir mélangés ici était mon erreur — la raison pour laquelle le
@@ -3778,8 +3800,8 @@
         /* ni les voyages libres, ni les surprises : chacun a sa porte.
            Les fiches d'avant ce jour n'ont pas de mode et restent ici. */
         garder:function(r){ return r && r.mode!=='libre' && r.mode!=='surprise' && r.mode!=='circuit'; },
-        libelleNeuf:T('itin.compose.nouveau','Composer un nouvel itinéraire'),
-        sousNeuf:T('itin.compose.nouveau.sous','On le nomme, puis on règle départ, durée et thèmes.')
+        libelleNeuf:T('itin.compose.nouveau'),
+        sousNeuf:T('itin.compose.nouveau.sous')
       }, neuf, reprendre);
     };
   </script>
@@ -3818,7 +3840,7 @@
     function fermer(){ mod.style.display='none'; }
     document.getElementById('autourX').onclick=fermer;
     mod.addEventListener('click', function(e){ if(e.target===mod) fermer(); });
-    document.getElementById('autourTitre').textContent=T('autour.titre','Autour de moi');
+    document.getElementById('autourTitre').textContent=T('autour.titre');
 
     function dejaLa(nom){
       try{ return (LASTRES.route||[]).some(function(s){ return norm(s.p.nom)===norm(nom); }); }catch(e){ return false; }
@@ -3836,7 +3858,7 @@
         rayons.appendChild(b);
       });
       if(!centre || typeof SITES==='undefined' || !SITES.length){
-        liste.textContent=T('autour.rien','Aucun lieu trouvé.'); return;
+        liste.textContent=T('autour.rien'); return;
       }
       var proches=SITES.map(function(s){ return {s:s, d:haversine(centre, s.c)}; })
         .filter(function(x){ return x.d<=rayon && !dejaLa(x.s.p.nom); })
@@ -3844,7 +3866,7 @@
       if(!proches.length){
         var v=document.createElement('div');
         v.style.cssText='color:#8a7c66;font-size:15px;line-height:1.6';
-        v.textContent=T('autour.rien.rayon','Rien de sourcé dans ce rayon — essayez plus large.');
+        v.textContent=T('autour.rien.rayon');
         liste.appendChild(v); return;
       }
       /* CHOISIR PLUSIEURS LIEUX D'UN COUP
@@ -3884,8 +3906,8 @@
       go.disabled = !CHOISIS.length;
       go.style.opacity = CHOISIS.length ? '1' : '.45';
       go.textContent = CHOISIS.length
-        ? T('autour.ajouter','➕ Ajouter les {n} lieux choisis').split('{n}').join(CHOISIS.length)
-        : T('autour.ajouter.aucun','Aucun lieu choisi');
+        ? T('autour.ajouter').split('{n}').join(CHOISIS.length)
+        : T('autour.ajouter.aucun');
     }
 
     (function(){
@@ -3900,7 +3922,7 @@
         base.route=suite; base.manualOrder=true;      // l'ordre choisi est respecté
         render(LASTORIGIN, base);
         try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
-        if(typeof showGuide==='function') showGuide(T('autour.ajoutes','Ajouté à votre itinéraire.'), 8000);
+        if(typeof showGuide==='function') showGuide(T('autour.ajoutes'), 8000);
       };
     })();
 
@@ -4002,6 +4024,9 @@
       try{ if(window.__planAppliquerMetaEnAttente) window.__planAppliquerMetaEnAttente(stop); }catch(err){}
       var base0=(LASTRES.route||[]).map(function(s){ var o={}; for(var k in s) o[k]=s[k]; return o; });
       var items;
+      /* une correction porte un `index` ; un ajout n'en a pas. On ne garde sa
+         place que dans le premier cas. */
+      if(x.index!=null) window._resterSurPlace = true;
       if(x.index!=null && base0[x.index]){
         /* correction d'une étape : on remplace SUR PLACE, sans toucher aux autres
            ni à son carnet, qui est rangé sous son nom et sa position. */
@@ -4071,20 +4096,20 @@
          « Partager » quitte le libellé en clair pour rejoindre les icônes de la
          rangée. Le geste ne change pas ; son nom vit en `title` et `aria-label`. */
       { id:'partager', icone:'🔗',
-        label:function(){ return '🔗 '+T('itin.etape.partager','Partager'); },
+        label:function(){ return '🔗 '+T('itin.etape.partager'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s) return;
           var lien='https://www.openstreetmap.org/?mlat='+s.c[1]+'&mlon='+s.c[0]+'#map=16/'+s.c[1]+'/'+s.c[0];
           var txt=s.p.nom+(s.p.description?' — '+s.p.description:'');
           if(navigator.share){ navigator.share({title:s.p.nom, text:txt, url:lien}).catch(function(){}); return; }
           if(navigator.clipboard&&navigator.clipboard.writeText){
-            navigator.clipboard.writeText(txt+String.fromCharCode(10)+lien).then(function(){ alert(T('itin.etape.partage.copie','Étape copiée — collez-la où vous voulez.')); });
+            navigator.clipboard.writeText(txt+String.fromCharCode(10)+lien).then(function(){ THEtoast(T('itin.etape.partage.copie')); });
             return;
           }
-          prompt(T('itin.etape.partager','Partager'), txt+' '+lien);
+          prompt(T('itin.etape.partager'), txt+' '+lien);
         } },
       { id:'editer',
-        label:function(){ return '✏️ '+T('itin.etape.modifier','Modifier'); },
+        label:function(){ return '✏️ '+T('itin.etape.modifier'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!window.THEetape) return;
           var q=String(s.quand||'').split(' ');
@@ -4092,7 +4117,7 @@
             coord:s.c, adresse:'', arrivee:q[0]||'', heure:q[1]||'' } });
         } },
       { id:'meteo',
-        label:function(){ return T('itin.meteo','🌤️ Météo'); },
+        label:function(){ return T('itin.meteo'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
           if(window.HMeteo) HMeteo.ouvrir({lat:s.c[1], lon:s.c[0], nom:s.p.nom});
@@ -4107,7 +4132,7 @@
          n'a aucune description : on va en chercher une SOURCÉE et on propose
          de la reprendre dans son carnet. On n'invente rien. */
       { id:'decouvrir',
-        label:function(){ return T('itin.etape.decouvrir','📖 Découvrir ce lieu'); },
+        label:function(){ return T('itin.etape.decouvrir'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!window.HDecouvrir) return;
           HDecouvrir.ouvrir({ nom:s.p.nom, lat:s.c&&s.c[1], lon:s.c&&s.c[0],

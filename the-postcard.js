@@ -80,7 +80,7 @@
     var n=items.length;
     if(!n){ ctx.fillStyle='#f2ece0'; ctx.fillRect(x,y,w,h); ctx.fillStyle=STONE;
       ctx.font='22px '+BODY; ctx.textAlign='center';
-      ctx.fillText(T('pc.choisis.photos','Choisissez des photos ci-dessous'), x+w/2, y+h/2);
+      ctx.fillText(T('pc.choisis.photos'), x+w/2, y+h/2);
       ctx.textAlign='left'; return; }
     var cols=(n===1?1:2), g=12, colW=(w-g*(cols-1))/cols;
     var colH=[], colItems=[]; for(var c=0;c<cols;c++){ colH[c]=0; colItems[c]=[]; }
@@ -202,7 +202,7 @@
     } else {
       ctx.fillStyle=DEEP; ctx.fillRect(0,0,W,H); ctx.fillStyle='rgba(255,255,255,.7)';
       ctx.font='24px '+BODY; ctx.textAlign='center';
-      ctx.fillText(T('pc.choisis.fond','Choisissez la photo de fond (★)'),W/2,H/2); ctx.textAlign='left';
+      ctx.fillText(T('pc.choisis.fond'),W/2,H/2); ctx.textAlign='left';
     }
     var gt=ctx.createLinearGradient(0,0,0,H*0.24); gt.addColorStop(0,'rgba(0,0,0,.42)'); gt.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=gt; ctx.fillRect(0,0,W,H*0.28);
@@ -236,7 +236,7 @@
     } else {
       ctx.fillStyle=DEEP; ctx.fillRect(0,0,W,H); ctx.fillStyle='rgba(255,255,255,.6)';
       ctx.font='24px '+BODY; ctx.textAlign='center';
-      ctx.fillText(T('pc.choisis.fond.bas','Choisissez une photo de fond (★) ci-dessous'), W/2, H/2); ctx.textAlign='left';
+      ctx.fillText(T('pc.choisis.fond.bas'), W/2, H/2); ctx.textAlign='left';
     }
     var gb=ctx.createLinearGradient(0,H*0.24,0,H);
     gb.addColorStop(0,'rgba(0,0,0,0)'); gb.addColorStop(.6,'rgba(0,0,0,.42)'); gb.addColorStop(1,'rgba(0,0,0,.84)');
@@ -314,7 +314,7 @@
     return '<div class="pc-pk '+(PC.sel[i]?'on':'off')+(i===PC.bgIdx?' bg':'')+'"'
       + ' style="background-image:url(\''+p.url+'\')" data-pk="'+i+'"><span class="chk">✓</span>'
       + (p.label?'<span class="pc-src">📍 '+esc(String(p.label).slice(0,18))+'</span>':'')
-      + '<button class="pc-star" data-bg="'+i+'" title="'+esc(T('pc.photo.de.fond','Photo de fond'))+'">★</button></div>';
+      + '<button class="pc-star" data-bg="'+i+'" title="'+esc(T('pc.photo.de.fond'))+'">★</button></div>';
   }
   function pickInner(){ return PC.photos.map(pickCell).join(''); }
 
@@ -341,9 +341,9 @@
   function majLibelle(){
     var lab=$('pc-picklab'); if(!lab) return;
     lab.innerHTML = PC.photos.length
-      ? esc(T('pc.photos.sur.la.carte','Photos sur la carte postale'))
-        +' <span class="pc-mut">('+esc(T('pc.appuie.pour.choisir','appuyez pour choisir · \u2605 = photo de fond'))+')</span>'
-      : esc(T('pc.aucune.photo','Aucune photo pour ce lieu \u2014 ajoutez-en avec \uFF0B.'));
+      ? esc(T('pc.photos.sur.la.carte'))
+        +' <span class="pc-mut">('+esc(T('pc.appuie.pour.choisir'))+')</span>'
+      : esc(T('pc.aucune.photo'));
   }
   function refreshPicks(){
     majLibelle();
@@ -358,11 +358,11 @@
       if(!PC.sel[i]) continue;
       rows+='<div class="pc-caprow"><span class="pc-capthumb" style="background-image:url(\''+PC.photos[i].url+'\')"></span>'
         + '<input class="pc-capinput" type="text" value="'+esc(PC.caps[i])+'" data-cap="'+i+'" placeholder="'
-        + esc(T('pc.legende.photo','légende de la photo…'))+'"></div>';
+        + esc(T('pc.legende.photo'))+'"></div>';
     }
     box.innerHTML = rows
-      ? ('<div class="pc-s">'+esc(T('pc.legende.sous.chaque','Légende sous chaque photo'))
-         +' <span class="pc-mut">('+esc(T('pc.optionnel','optionnel'))+')</span></div>'+rows)
+      ? ('<div class="pc-s">'+esc(T('pc.legende.sous.chaque'))
+         +' <span class="pc-mut">('+esc(T('pc.optionnel'))+')</span></div>'+rows)
       : '';
     box.querySelectorAll('[data-cap]').forEach(function(inp){
       inp.oninput=function(){ PC.caps[+inp.getAttribute('data-cap')]=this.value; redraw(); };
@@ -411,24 +411,24 @@
 
     $('pc-box').innerHTML =
         '<button class="pc-x" data-close="1">✕</button>'
-      + '<h3 class="pc-h3">✉️ '+esc(T('carnet.carte.postale','Carte postale'))+' — '+esc(PC.nom)+'</h3>'
+      + '<h3 class="pc-h3">✉️ '+esc(T('carnet.carte.postale'))+' — '+esc(PC.nom)+'</h3>'
       + '<div class="pc-tpl">'
-        + '<button class="pc-stybtn" data-tpl="collage">🗂️ '+esc(T('pc.style.collage','Collage'))+'</button>'
-        + '<button class="pc-stybtn" data-tpl="full">🌙 '+esc(T('pc.style.immersif','Immersif'))+'</button>'
-        + '<button class="pc-stybtn" data-tpl="clean">☀️ '+esc(T('pc.style.nette','Photo nette'))+'</button>'
+        + '<button class="pc-stybtn" data-tpl="collage">🗂️ '+esc(T('pc.style.collage'))+'</button>'
+        + '<button class="pc-stybtn" data-tpl="full">🌙 '+esc(T('pc.style.immersif'))+'</button>'
+        + '<button class="pc-stybtn" data-tpl="clean">☀️ '+esc(T('pc.style.nette'))+'</button>'
       + '</div>'
       + '<canvas id="pc-canvas"></canvas>'
       + '<div class="pc-s" id="pc-picklab"></div>'
       + '<div class="pc-pick" id="pc-pick"></div>'
-      + '<div class="pc-addrow"><label class="pc-addbtn">＋ '+esc(T('pc.ajouter.photo','Ajouter une photo'))
+      + '<div class="pc-addrow"><label class="pc-addbtn">＋ '+esc(T('pc.ajouter.photo'))
         + '<input id="pc-img" type="file" accept="image/*" multiple hidden></label></div>'
       + '<div id="pc-caps"></div>'
       + '<div class="pc-row"><input id="pc-place" type="text" value="'+esc(lieu)+'" placeholder="'
-        + esc(T('postcard.nom.du.lieu','Nom du lieu'))+'"></div>'
+        + esc(T('postcard.nom.du.lieu'))+'"></div>'
       + '<div class="pc-row"><textarea id="pc-msg" placeholder="'
-        + esc(T('pc.ecris.un.mot','Écrivez un mot sur cette étape…'))+'">'+esc(PC.msg)+'</textarea></div>'
-      + '<div class="pc-act"><button id="pc-share">📤 '+esc(T('postcard.partager','Partager'))+'</button>'
-        + '<button id="pc-dl">⬇️ '+esc(T('postcard.telecharger','Télécharger'))+'</button></div>';
+        + esc(T('pc.ecris.un.mot'))+'">'+esc(PC.msg)+'</textarea></div>'
+      + '<div class="pc-act"><button id="pc-share">📤 '+esc(T('postcard.partager'))+'</button>'
+        + '<button id="pc-dl">⬇️ '+esc(T('postcard.telecharger'))+'</button></div>';
 
     DATA={ place:lieu, dates:dates, message:PC.msg, imgs:[], url:domaine(), style:PC.style };
 

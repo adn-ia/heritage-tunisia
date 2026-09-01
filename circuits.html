@@ -80,7 +80,7 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
       var verrou = (c.premium===true || i>=FREE_TOURS) && !premium();
       var carte = document.createElement('div');
       carte.className = 'card' + (verrou ? ' locked' : '');
-      var meta = [c.duree, (c.etapes||[]).length + ' ' + T('circ.etapes','étapes')]
+      var meta = [c.duree, (c.etapes||[]).length + ' ' + T('circ.etapes')]
                  .filter(Boolean).join(' · ');
       carte.innerHTML =
         '<h2>' + (verrou ? '🔒 ' : '✨ ') + esc(c.titre||id) + '</h2>' +
@@ -88,7 +88,7 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
         '<div class="meta">' + esc(meta) + '</div>' +
         (c.note ? '<p class="note">' + esc(c.note) + '</p>' : '') +
         '<button class="go" type="button">' +
-          (verrou ? T('circ.verrou','Réservé au passe') : T('circ.choisir','Choisir ce circuit')) +
+          (verrou ? T('circ.verrou') : T('circ.choisir')) +
         '</button>';
       carte.querySelector('.go').onclick = function(){
         if(verrou){ location.href='premium.html'; return; }

@@ -903,7 +903,7 @@
     var principal=document.getElementById('pbGo'),
         second=document.getElementById('pbAdd');
     if(!principal) return false;
-    principal.textContent=T('picks.ajouter.a','➕ Ajouter à « {n} »').split('{n}').join(nom);
+    principal.textContent=T('picks.ajouter.a').split('{n}').join(nom);
     principal.removeAttribute('data-i18n');          // sinon l'i18n réécrit par-dessus
     if(second) second.style.display='none';
     return true;

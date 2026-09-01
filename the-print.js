@@ -21,7 +21,7 @@
     +'body.pr-contact .album-doc .album-page{display:block;padding:0 0 4mm;border:none}'
     +'body.pr-contact .album-doc .album-ph{display:grid!important;grid-template-columns:repeat(3,1fr);gap:3mm}'
     +'body.pr-contact .album-doc .pic{transform:none!important;margin:0;padding:0;box-shadow:none;background:none;border:none}'
-    +'body.pr-contact .album-doc .pic img,body.pr-contact .album-doc .pic video{width:100%;height:32mm;object-fit:cover;display:block}'
+    +'body.pr-contact .album-doc .pic img,body.pr-contact .album-doc .pic video{width:100%;height:32mm;object-fit:contain;background:#f4f0e8;display:block}'
     +'body.pr-contact .album-doc .pic-cap,body.pr-contact .album-doc .album-cap,body.pr-contact .album-doc .pg-sub{display:none!important}'
     +'body.pr-contact .album-doc .pg-nm{font-size:12pt;margin:6mm 0 2mm}'
     /* --- 📖 livret 2 par page : ~2 étapes par feuille (pagination naturelle par la hauteur) --- */
@@ -64,7 +64,7 @@
     +'body.pr-fridge .pg-sub,body.pr-fridge .album-cap,body.pr-fridge .album-empty{display:none!important}'
     +'body.pr-fridge .album-ph{display:flex;flex-wrap:wrap;gap:9mm 8mm;justify-content:center;align-items:flex-start;padding-top:7mm}'
     +'body.pr-fridge .pic{position:relative;background:#fff;padding:2.5mm 2.5mm 8mm;box-shadow:0 3px 8px rgba(0,0,0,.35);border:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
-    +'body.pr-fridge .pic img,body.pr-fridge .pic video{width:44mm;height:44mm;object-fit:cover;display:block}'
+    +'body.pr-fridge .pic img,body.pr-fridge .pic video{width:44mm;height:44mm;object-fit:contain;background:#f4f0e8;display:block}'
     +'body.pr-fridge .pic-cap{font-size:8.5pt;text-align:center;margin-top:1.5mm;color:#444;max-width:44mm}'
     +'body.pr-fridge .pic:nth-child(4n+1){transform:rotate(-4deg)}'
     +'body.pr-fridge .pic:nth-child(4n+2){transform:rotate(3deg)}'

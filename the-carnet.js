@@ -109,6 +109,16 @@
       img.onload=function(){ if(done)return; done=true; clearTimeout(to); URL.revokeObjectURL(u); res(true); };
       img.onerror=function(){ if(done)return; done=true; clearTimeout(to); URL.revokeObjectURL(u); res(false); }; img.src=u; }); }
 
+  /* VOIR UNE PHOTO EN GRAND — 01/09/2026, Helmy le demande, et c'était DÉJÀ FAIT :
+     `the-lightbox.js` (72 lignes, chargé par itineraire.html, précaché) ouvre toute
+     image de plus de 70 px au clic, en plein écran, avec croix, flèches gauche et
+     droite, échappement, et une barre Enregistrer · Partager · Imprimer.
+     J'en avais écrit une seconde avant de regarder. Elle est retirée : deux
+     visionneuses, c'est deux comportements à tenir d'accord et une qui prend le
+     pas sur l'autre selon l'ordre de chargement.
+     Ce qui restait à faire, et qui est fait : la vignette annonce qu'elle s'ouvre
+     — curseur d'agrandissement, `title`, et sa légende en `alt` pour qui écoute. */
+
   /* ---- rendu de la section d'une étape ---- */
   function renderSection(el){
     var place=el.dataset.place, nom=el.dataset.nom||'', lat=el.dataset.lat, lng=el.dataset.lng;
@@ -309,7 +319,7 @@
       var list = arr.length ? arr.map(function(m,i){ var k=kind(m), url=lien(m.blob,'manager');
         var media = k==='video'?'<video src="'+url+'" controls playsinline style="width:100%;border-radius:8px"></video>'
           : k==='audio'?'<audio src="'+url+'" controls style="width:100%"></audio>'
-          : '<img src="'+url+'" style="width:100%;border-radius:8px">';
+          : '<img src="'+url+'" class="cn-ouvrable" title="'+T('carnet.voir.en.grand')+'" alt="'+esc(m.caption||'')+'" style="width:100%;border-radius:8px;cursor:zoom-in">';
         return '<div class="cn-item" data-item="'+m.id+'">'+media+
           (k==='image'?'<input class="cn-cap" data-cap="'+m.id+'" maxlength="90" placeholder="'+T('carnet.legende.photo')+'" value="'+esc(m.caption||'')+'">':'')+
           '<div class="cn-ctr">'+
