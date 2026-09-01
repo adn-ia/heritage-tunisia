@@ -110,8 +110,15 @@
      en dur — et une édition affichait celui d'une autre, tandis que la table
      générique proposait pour l'arabe un drapeau qui n'est le pays de personne.
      Une langue n'est pas un pays : seul le pays de l'ÉDITION a un drapeau. */
+  /* ⚠️ On lit « langPays », PAS « langNatCode ». Les deux clés ne disent pas la
+     même chose : langNatCode DÉCLARE les langues offertes (ligne 23, il construit
+     LANGS) ; langPays dit lesquelles portent le drapeau de l'édition. Les avoir
+     confondues donnait 3 drapeaux tunisiens à la Tunisie — ar, de et it — vu à
+     l'écran le 30/08/2026 dans l'app en production. Le repli sur langNatCode
+     garde le comportement d'origine si une édition n'a pas encore langPays. */
   function drapeauNational(code) {
-    var nat = [].concat((window.HConf && HConf.langNatCode) || []);
+    var _c = (window.HConf || {});
+    var nat = [].concat(_c.langPays || _c.langNatCode || []);
     if (nat.indexOf(code) < 0) return '';
     var iso = String((window.HConf && HConf.iso) || '').toUpperCase();
     if (!/^[A-Z]{2}$/.test(iso)) return '';

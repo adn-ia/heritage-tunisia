@@ -37,7 +37,9 @@
     "source.adresse": "adresse",
     "position.indisponible": "Position introuvable depuis cet appareil. Cherchez plutôt une adresse ci-dessus.",
     "position.lente": "La localisation ne répond pas. Réessayez, ou cherchez une adresse ci-dessus.",
-    "manque.nom": "Donnez un nom à cette étape."
+    "manque.nom": "Donnez un nom à cette étape.",
+    "titre.edit": "✏️ Modifier l'étape",
+    "valider.edit": "Enregistrer"
   },
   "en": {
     "titre": "➕ Add a stop",
@@ -71,7 +73,9 @@
     "source.adresse": "address",
     "position.indisponible": "Location cannot be found on this device. Please try searching for an address listed above instead.",
     "position.lente": "The location is not responding. Please try again, or search for an address from the list above.",
-    "manque.nom": "Give this step a name."
+    "manque.nom": "Give this step a name.",
+    "titre.edit": "✏️ Edit this waypoint",
+    "valider.edit": "Save"
   },
   "ar": {
     "titre": "➕ إضافة محطة",
@@ -105,7 +109,9 @@
     "source.adresse": "العنوان",
     "position.indisponible": "لا يمكن تحديد الموقع من هذا الجهاز. يرجى البحث عن عنوان من العناوين المذكورة أعلاه بدلاً من ذلك.",
     "position.lente": "الموقع لا يستجيب. يرجى إعادة المحاولة، أو البحث عن عنوان من العناوين المذكورة أعلاه.",
-    "manque.nom": "أعطِ هذه الخطوة اسمًا."
+    "manque.nom": "أعطِ هذه الخطوة اسمًا.",
+    "titre.edit": "✏️ تعديل المرحلة",
+    "valider.edit": "حفظ"
   },
   "de": {
     "titre": "➕ Zwischenstopp hinzufügen",
@@ -139,7 +145,9 @@
     "source.adresse": "Adresse",
     "position.indisponible": "Diese Position kann von diesem Gerät aus nicht ermittelt werden. Suchen Sie stattdessen nach einer der oben genannten Adressen.",
     "position.lente": "Der Standort reagiert nicht. Versuchen Sie es erneut oder suchen Sie oben nach einer Adresse.",
-    "manque.nom": "Geben Sie diesem Schritt einen Namen."
+    "manque.nom": "Geben Sie diesem Schritt einen Namen.",
+    "titre.edit": "✏️ Etappe bearbeiten",
+    "valider.edit": "Speichern"
   },
   "it": {
     "titre": "➕ Aggiungi una tappa",
@@ -173,6 +181,8 @@
     "source.adresse": "indirizzo",
     "position.indisponible": "Posizione non individuabile da questo dispositivo. Cerca invece un indirizzo tra quelli sopra indicati.",
     "position.lente": "La sede non risponde. Riprovare oppure cercare un indirizzo tra quelli sopra indicati.",
-    "manque.nom": "Assegnate un nome a questa fase."
+    "manque.nom": "Assegnate un nome a questa fase.",
+    "titre.edit": "✏️ Modifica la tappa",
+    "valider.edit": "Salva"
   }
 }

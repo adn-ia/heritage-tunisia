@@ -36,9 +36,14 @@
        un voyageur d'une édition recevait le nom d'une autre. Il vient de HConf,
        le seul fichier qui change par pays. */
     var _marque=((window.HConf&&HConf.exportNom)||'Heritage').replace(/[^\w-]+/g,'-');
-    a.href=url; a.download=_marque+'-sauvegarde-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'.json';
+    var _nom=_marque+'-sauvegarde-'+d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'.json';
+    a.href=url; a.download=_nom;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){ URL.revokeObjectURL(url); },1500);
-    return { photos:data.photos.length, itineraires:(data.local.the_saved? (JSON.parse(data.local.the_saved||'[]').length||0):0) };
+    /* ⚠️ ON REND LE NOM DU FICHIER. Sans lui, la page ne pouvait annoncer que
+       « sauvegarde téléchargée » — et Helmy, le 30/08/2026 : « on ne sait pas où
+       c'est sauvegardé […] il faut chercher, ce n'est pas évident. » Le nom est la
+       seule chose qui permette de retrouver le fichier dans Téléchargements. */
+    return { fichier:_nom, photos:data.photos.length, itineraires:(data.local.the_saved? (JSON.parse(data.local.the_saved||'[]').length||0):0) };
   }
 
   async function importFile(file){

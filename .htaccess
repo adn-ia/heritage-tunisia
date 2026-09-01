@@ -23,3 +23,13 @@ DirectoryIndex bienvenue.html
 <FilesMatch "^\.(git|gitignore|gitattributes|env)">
   Require all denied
 </FilesMatch>
+
+# ── Le fond de carte ne se télécharge pas en entier ───────────────────────
+# Repris de Terralog. `tuiles/fond.pmtiles` pèse 78 Mo pour la seule Tunisie.
+# Servi en direct il se ferait aspirer, et c'est notre hébergement qui paierait.
+# Personne n'a besoin du fichier : on a besoin d'UNE tuile à la fois, et c'est
+# `tuile.php` qui la lit sur le disque. Le fichier reste donc lisible par PHP
+# et refusé au public.
+<FilesMatch "\.(pmtiles|mbtiles)$">
+  Require all denied
+</FilesMatch>

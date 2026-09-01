@@ -3,16 +3,39 @@
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'heritage-27564c60';
+const VERSION = 'heritage-70fa0343';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
-const TILES   = 'the-tiles-' + VERSION;
+/* ⚠️ LE CACHE DES TUILES NE PORTE PAS DE VERSION, ET SURVIT AUX MISES À JOUR.
+   Il s'appelait `the-tiles-<VERSION>` : à chaque nouvelle version, la purge de
+   l'activation l'emportait. Un voyageur qui avait emporté sa carte la perdait à
+   la première mise à jour, sans rien comprendre. Repris de Terralog
+   (`RoadTrip-Generique/sw.js:109-113`), où le défaut a été corrigé le 26/08. */
+const TILES   = 'the-tuiles';
 
 const CORE_ASSETS = [
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=EB+Garamond:ital@0;1&display=swap',
   'accueil.html', 'bienvenue.html', 'itineraire.html', 'circuits.html', 'analytics.js', 'index.html', 'liste.html', 'premium.html', 'confidentialite.html', 'hors-ligne.html', 'contribuer.html',
   'decouvrir.html', 'a-propos.html', 'soutien.html', 'voyage.html', 'sources-credits.html', 'credits-photos.html', 'rome-immersion.html', 'contribuer.html',
-  'manifest.json', 'icon-the.svg', 'icon-192.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'logo-the.png', 'logo-threshold.png', 'the-footer.js', 'the-pass.js', 'the-lightbox.js', 'the-print.js', 'the-souvenir.js', 'the-i18n.js', 'the-backup.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
+  'manifest.json', 'icon-the.svg', 'icon-192.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'logo-the.png', 'logo-threshold.png', 'the-footer.js', 'the-pass.js', 'the-lightbox.js', 'the-print.js', 'the-souvenir.js', 'the-i18n.js', 'the-backup.js',
+  /* ⚠️ HUIT FICHIERS APPELÉS PAR LES PAGES MANQUAIENT À CETTE LISTE — relevé le
+     30/08/2026 en croisant les <script src> des 19 pages précachées avec ce tableau.
+     Le plus lourd de conséquences : `heritage.config.js`, réclamé par DIX-SEPT pages.
+     C'est lui qui dit à l'application quel pays elle est — marque, langues, carte,
+     domaine. Absent du précache, une ouverture hors-réseau pouvait le manquer, et
+     l'application ne savait plus qui elle était. Les quatre `brique-*.data.json` sont
+     les dictionnaires de leurs briques : sans eux la brique se charge et n'a rien à
+     dire. Ce n'était pas visible en ligne — le réseau les servait à chaque fois. */
+  'heritage.config.js',
+  'the-carnet.js', 'the-etape.js', 'the-postcard.js', 'the-fiche-audio.js',
+  'brique-qr.js', 'brique-qr.data.json',
+  'brique-meteo.js', 'brique-meteo.data.json',
+  'brique-decouvrir-lieu.js', 'brique-decouvrir-lieu.data.json',
+  'brique-partage-lieu.js', 'brique-partage-lieu.data.json',
+  // Le rendu du fond de carte. SANS LUI, la carte ne se peint pas hors-ligne :
+  // les tuiles seraient en cache et personne pour les dessiner. `tuile.php`, lui,
+  // n'est PAS précaché — c'est voulu : ce sont les TUILES qui se gardent, une à une.
+  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
   'sites.geojson', 'sites-nature.geojson', 'tours.json', 'mer-antique.geojson', 'photos.json', 
   'musee/index.html', 'webar/index.html'
 ];
@@ -28,14 +51,24 @@ self.addEventListener('install', e => {
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys()
-      .then(keys => Promise.all(keys.filter(k => !k.endsWith(VERSION)).map(k => caches.delete(k))))
+      // `TILES` et `heritage-offline` ne sont PAS versionnés : ce que l'utilisateur a
+      // emporté lui appartient et ne se jette pas à la mise à jour suivante.
+      .then(keys => Promise.all(keys
+        .filter(k => !k.endsWith(VERSION) && k !== TILES && k !== 'heritage-offline')
+        .map(k => caches.delete(k))))
       .then(() => self.clients.claim())
       .then(() => self.clients.matchAll({ type: 'window' }))
       .then(cs => cs.forEach(c => { try { if ('navigate' in c) c.navigate(c.url); } catch(e){} }))
   );
 });
 
-const isTile = url => /basemaps\.cartocdn\.com|tile\.openstreetmap\.org/.test(url);
+/* ⚠️ NOS TUILES SONT SERVIES PAR NOTRE PROPRE ADRESSE depuis le 30/08 — `tuile.php`,
+   qui lit le fond de carte dans `tuiles/fond.pmtiles`. L'ancien motif ne visait que
+   les serveurs de CARTO : il ne reconnaîtrait plus rien, donc plus une seule tuile ne
+   serait gardée, et le hors-réseau tomberait EN SILENCE. Les deux anciens noms restent
+   pour ne pas jeter ce qu'un utilisateur a déjà emporté avant la bascule.
+   Repris de Terralog (`RoadTrip-Generique/sw.js:119`). */
+const isTile = url => /\/tuile\.php\?|basemaps\.cartocdn\.com|tile\.openstreetmap\.org/.test(url);
 
 self.addEventListener('fetch', e => {
   const req = e.request;

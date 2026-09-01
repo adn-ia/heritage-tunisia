@@ -1,6 +1,42 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <!-- DÉCIDER AVANT DE PEINDRE — 01/09, Helmy : « pourquoi pendant une fraction
+       de seconde la page itinéraires sauvegardés apparaît avant la page
+       rafraîchie ». Parce que le HTML montre d'abord l'écran de départ, et que
+       le basculement vers l'itinéraire ne vient qu'après le chargement des
+       scripts, des traductions et des données. Entre les deux, on voit l'écran
+       d'avant.
+       Ce bloc est le PREMIER de la page, exprès : il lit ce qu'il faut lire —
+       l'adresse et l'itinéraire en cours — et pose une marque sur <html> avant
+       qu'un seul pixel soit peint. Le style qui suit cache alors ce qui n'est
+       plus d'actualité. La marque est retirée dès que l'affichage est décidé.
+       ⚠️ Il ne doit RIEN demander au réseau ni à un autre script : tout ce qui
+       attend recrée l'instant qu'on cherche à supprimer. -->
+  <script>
+  (function(){
+    try{
+      var p = new URLSearchParams(location.search);
+      /* Une INTENTION D'ARRIVÉE l'emporte : on a demandé l'écran de choix ou la
+         liste, on doit les voir. Sinon, un itinéraire en cours sera repris. */
+      if (p.get('choix') || p.get('mes')) return;
+      var c = localStorage.getItem('the_current');
+      if (!c || c.length < 20) return;
+      document.documentElement.className += ' the-reprise';
+      /* FILET — une page invisible est pire qu'une page qui clignote. Si la
+         décision d'affichage n'arrive jamais (script en échec, données qui ne
+         viennent pas), on redonne la vue au bout de trois secondes plutôt que
+         de laisser un écran vide. */
+      setTimeout(function(){
+        document.documentElement.classList.remove('the-reprise');
+      }, 3000);
+    }catch(e){}
+  })();
+  </script>
+  <style>
+    /* Invisible, mais present : la page garde sa hauteur et ne saute pas. */
+    html.the-reprise #builder, html.the-reprise .lead { visibility: hidden }
+  </style>
   <script src="heritage.config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -126,8 +162,19 @@
     .dayhdr{display:flex;align-items:baseline;gap:8px;margin:18px 2px 8px;padding-bottom:5px;border-bottom:2px solid var(--gold-soft);
       font-family:'Cormorant Garamond',serif;font-weight:700;font-size:20px;color:var(--ivory);}
     .dayhdr span{font-family:'EB Garamond';font-weight:400;font-size:12.5px;color:var(--gold-soft);}
-    .times{font-size:12.5px;color:var(--stone);margin-top:7px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
-    .vis-select{font-family:inherit;font-size:12.5px;border:1px solid var(--gold-soft);border-radius:6px;padding:3px 6px;background:#fff;color:var(--ink);cursor:pointer;font-weight:600;}
+    /* POINT 6 et 7 — 01/09/2026, Helmy : le temps sur place descend sur SA ligne,
+       et un trait sépare le bandeau du carnet, comme chez Terralog. */
+    .times{font-size:12.5px;color:var(--stone);margin-top:7px;display:flex;flex-wrap:wrap;gap:5px 7px;align-items:center;}
+    /* 01/09/2026, Helmy : « le temps sur place occupe une ligne entière alors
+       qu'il devait être petit devant la phrase ». Il reprend sa taille et reste
+       à la suite du texte. */
+    .times .vis-select{flex:0 0 auto;margin:0;}
+    .stop .the-carnet{border-top:1px solid var(--line);padding-top:12px;margin-top:12px;}
+    /* 01/09/2026, Helmy : « le temps sur place ne doit pas prendre une ligne
+       entière ». La règle générale `select{width:100%}` sert au formulaire de
+       composition, où un menu pleine largeur se touche facilement. Ici c'est un
+       réglage au fil du texte : il se met à la taille de ce qu'il dit. */
+    .vis-select{width:auto;min-width:0;flex:0 0 auto;font-family:inherit;font-size:12.5px;border:1px solid var(--gold-soft);border-radius:6px;padding:3px 6px;background:#fff;color:var(--ink);cursor:pointer;font-weight:600;}
     .nuit{margin-top:10px;background:#eef3fb;border:1px solid #c7d6ea;border-left:4px solid #5a78a8;border-radius:6px;padding:9px 11px;font-size:13.5px;color:#3a4a63;line-height:1.45;}
     .nuit-note{margin-top:3px;}
     a.lodging{display:inline-block;margin-top:6px;color:#3a5a8a;font-size:13px;text-decoration:underline;}
@@ -337,6 +384,15 @@
     #projCap .pc-cap2{font-size:15px;font-style:italic;opacity:.92;margin-top:6px;max-width:780px;}
 
     @media print{
+      /* RÈGLES D'IMPRESSION REPRISES D'ESTONIE ET DU PORTUGAL — 01/09/2026,
+         Helmy : « au lieu de deviner vous devriez voir ce qu'on a fait comme
+         solution pour Portugal, Estonie ». Il manquait 1 552 caractères ici, dont
+         les trois `overflow:visible` : sans eux, tout ce qui dépasse du cadre est
+         COUPÉ à l'impression — les photos, les pages du passeport, les en-têtes.
+         L'écran allait bien, la feuille non. Repris tel quel, pas reconstitué. */
+      .album-doc{overflow:visible !important;border-radius:0 !important;box-shadow:none !important;}
+      #album{overflow:visible !important;}
+      .wrap,#result,.album-bar~*{overflow:visible !important;}
       @page{margin:14mm;}
       body{background:#fff !important;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
       .wrap{max-width:none;padding:0;}
@@ -345,7 +401,22 @@
       #result{margin:0;}
       .album-cap{border:none !important;background:transparent !important;padding:0 !important;}
       .album-cover{break-after:page;page-break-after:always;}
+      /* La carte de couverture est propre à la Tunisie : posée le 01/09 sur
+         demande de Helmy. Elle se réduit un peu sur la feuille et ne se coupe
+         jamais en deux. */
+      .ac-carte{height:170px !important;break-inside:avoid !important;page-break-inside:avoid !important;}
       .album-page{break-inside:avoid;page-break-inside:avoid;}
+      /* UNE IMAGE NE SE COUPE PAS EN DEUX.
+         Une page d'album porte plusieurs photos : quand elle dépasse la feuille,
+         le moteur coupait au milieu d'une image — la moitié en bas d'une page, la
+         moitié en haut de la suivante. On protège chaque photo individuellement,
+         et on la laisse à sa taille : « max-height » la comprimait pour la faire
+         entrer, ce qui l'écrasait. */
+      .album-ph .pic,.pic,.pp-page img,.dep-panel img,.album-doc img,.album-doc video{
+        break-inside:avoid !important;page-break-inside:avoid !important;}
+      .album-doc img,.album-doc video{max-width:100% !important;height:auto !important;
+        object-fit:contain !important;display:block;}
+      .album-doc .album-ph{display:block;}
       .tpl-passeport .pp-book{display:block;}
       .pp-page{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;border:1px solid #d8c9a4;margin-bottom:8mm;min-height:auto;flex:none;max-width:none;}
       .pp-wm{opacity:.05 !important;}
@@ -496,10 +567,140 @@
       <!-- Fermer, AUSSI en haut : sur un itinéraire de quinze étapes, atteindre
            le bas pour ranger et sortir est un trajet inutile. Même geste, même
            libellé, même code — seulement à portée de main. -->
-      <button id="fermerItiHaut" type="button" class="btn go"
+      <!-- LE BANDEAU DE TÊTE — 01/09, Helmy, d'après Terralog : les gestes du
+           voyage vivaient tout en bas, dispersés en quatre groupes, sous quinze
+           étapes. On les remonte là où commence la lecture. Ils deviennent des
+           pictogrammes : un bandeau qui s'écrit en toutes lettres prend la place
+           de l'itinéraire qu'il surmonte.
+           ⚠️ UN BOUTON RÉDUIT À SON PICTOGRAMME N'A PLUS DE NOM. Le nom part en
+           `title` ET en `aria-label` — sans quoi la personne qui écoute entend
+           « bouton ». Il est repris du libellé d'origine, donc déjà traduit.
+           ⚠️ ON DÉPLACE, ON NE RECRÉE PAS. Chaque bouton garde l'élément et le
+           gestionnaire qu'il avait en bas : un second bouton qui refait le même
+           geste, c'est deux codes à corriger le jour où l'un se casse.
+           Le budget de Terralog ne vient pas — il n'a pas d'objet ici. Le home
+           reste, décidé par Helmy le 01/09. -->
+      <style id="bandeau-css">
+      #bandeau{display:none}
+      body.iti-ouvert #bandeau{display:block;margin:0 0 12px}
+      .bd-ligne{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+      .bd-ligne + .bd-ligne{margin-top:6px}
+      #bandeau button{font-family:inherit;cursor:pointer}
+      .bd-ic{min-width:44px;min-height:44px;font-size:19px;line-height:1;background:#fffdf7;border:1.5px solid #cbbb95;border-radius:11px;padding:0 10px}
+      .bd-ic:hover{background:#f4ecd9}
+      .bd-sortie{border-color:#b4462f;color:#b4462f}
+      /* un suivi ou une alerte en marche se voit : sinon on l'oublie allumé,
+         et c'est la batterie qui le rappelle. */
+      .bd-ic.on,#rtq-suivi.on,#rtq-prox.on{background:#2e6a4d;border-color:#2e6a4d;color:#fff}
+      .bd-large{flex:1;min-width:150px;min-height:44px;font-size:14.5px;font-weight:600;color:#4a3d22;background:#fffdf7;border:1.5px solid #cbbb95;border-radius:11px;padding:9px 12px}
+      .bd-menu{position:relative;flex:1;min-width:170px;display:flex}
+      .bd-menu > button{width:100%}
+      .bd-pop{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:1200;background:#fffdf7;border:1.5px solid #b9a77e;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.28);padding:6px;text-align:left;max-height:min(400px,60vh);overflow:auto}
+      .bd-pop button{display:block;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:10px;font-size:14px;color:#3d3320}
+      .bd-pop button:hover{background:#f2ead8}
+      .bd-sep{height:1px;background:#e7ddc8;margin:5px 8px}
+      #bdConfirm{position:fixed;inset:0;z-index:9999;background:#00000066;display:none;align-items:center;justify-content:center;padding:20px}
+      .bdc-carte{background:#fffdf7;border-radius:14px;padding:18px;max-width:340px;width:100%;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+      #bdConfirm h3{margin:0 0 8px;font-size:16px;color:#3d3320}
+      #bdConfirm p{margin:0 0 15px;font-size:13.5px;line-height:1.5;color:#6b5c3a}
+      .bdc-actes{display:flex;gap:8px}
+      .bdc-actes button{flex:1;font-family:inherit;border-radius:9px;padding:11px;font-size:14.5px;font-weight:600;cursor:pointer;border:1.5px solid #cbbb95;background:#fffdf7;color:#4a3d22}
+      .bdc-actes #bdcOui{background:#b4462f;border-color:#b4462f;color:#fff}
+      </style>
+      <div id="bandeau">
+        <div class="bd-ligne" id="bdIcones"></div>
+        <div class="bd-ligne" id="bdLarges"></div>
+      </div>
+      <!-- LIRE UN LIEU — le texte de l'étape vient s'y lire, puis repart d'où il
+           vient. Vide au repos : son contenu est le bloc même de l'étape. -->
+      <div id="lireModal" class="modal" style="display:none" role="dialog" aria-modal="true">
+        <div class="modal-card">
+          <button class="modal-x" id="lireX" type="button" aria-label="Fermer">✕</button>
+          <h3 class="md-title" id="lireTitre"></h3>
+          <div id="lireCorps"></div>
+        </div>
+      </div>
+      <div id="bdConfirm" role="dialog" aria-modal="true">
+        <div class="bdc-carte">
+          <h3 data-i18n="bandeau.sortir.titre">Fermer cet itinéraire ?</h3>
+          <p data-i18n="bandeau.sortir.texte">Il est enregistré avant de se fermer. Vous revenez aux cinq façons de partir, et vous le retrouverez dans « Itinéraires sauvegardés ».</p>
+          <div class="bdc-actes">
+            <button id="bdcNon" type="button" data-i18n="bandeau.sortir.non">Non, rester</button>
+            <button id="bdcOui" type="button" data-i18n="bandeau.sortir.oui">Oui, fermer</button>
+          </div>
+        </div>
+      </div>
+      <button id="fermerItiHaut" type="button" class="btn go" hidden
               style="width:100%;margin:0 0 10px" data-i18n="itin.fermer">✓ Fermer l'itinéraire</button>
       <div class="rsum" id="rsum"></div>
-      <div id="map"></div>
+      <!-- Naviguer et emporter tenaient dans deux boutons éloignés l'un de
+           l'autre, et se recouvraient sur Google Maps : on ne savait plus lequel
+           prendre. Ils n'en font plus qu'un, posé sur la carte, là où l'œil est
+           déjà. Chaque sortie s'explique avant de partir : on confirme en
+           sachant ce qu'on obtient. Le style est ici, dans son propre bloc, et
+           ne touche à aucune règle existante. -->
+      <!-- Un itinéraire affiché occupe tout l'écran et se lit de haut en bas.
+           Le nom du produit, « Votre voyage en Tunisie » et l'invitation à
+           choisir sa façon de partir ont déjà fait leur travail : ils poussent
+           l'itinéraire vers le bas sans rien apprendre. Ils s'effacent tant
+           qu'un itinéraire est ouvert, et reviennent dès qu'on le ferme. Les
+           deux liens du bandeau, eux, restent : on en a besoin pour sortir. -->
+      <style id="iti-entete-css">
+      .top .mark{display:none}
+      .lead h1{display:none}
+      body.iti-ouvert .lead{display:none}
+      </style>
+      <style id="navdock-css">
+      #mapwrap{position:relative}
+      #navdock{position:absolute;top:10px;right:10px;z-index:1000}
+      #navdockbtn{font-family:inherit;background:#fffdf7;border:1.5px solid #b9a77e;border-radius:10px;padding:8px 12px;font-size:14px;font-weight:600;color:#4a3d22;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);white-space:nowrap}
+      #navdockpop{position:absolute;top:calc(100% + 6px);right:0;width:min(310px,calc(100vw - 32px));max-height:min(430px,62vh);overflow:auto;background:#fffdf7;border:1.5px solid #b9a77e;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.28);padding:6px;text-align:left}
+      .nd-sec{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#8a7952;padding:9px 10px 3px}
+      .nd-opt{display:block;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:9px 10px;font-size:14px;color:#3d3320;cursor:pointer;font-family:inherit;line-height:1.3}
+      .nd-opt:hover,.nd-opt:focus{background:#f2ead8}
+      .nd-exp{display:none}
+      #navdockconfirm{padding:12px 10px 10px}
+      #ndcTitre{font-weight:700;font-size:15px;margin-bottom:7px;color:#3d3320}
+      #ndcTexte{font-size:13px;line-height:1.5;color:#6b5c3a;margin:0 0 13px}
+      #ndcActs{display:flex;gap:8px}
+      #ndcActs button{flex:1;font-family:inherit;border-radius:9px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid #b9a77e;background:#fffdf7;color:#4a3d22}
+      #ndcActs #ndcOk{background:#2e6a4d;border-color:#2e6a4d;color:#fff}
+      .ac-carte{height:230px;margin:14px 0 0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+      @media print{.ac-carte{height:170px;break-inside:avoid}}
+      .st-livre{display:inline-flex;align-items:center;gap:7px;margin:2px 0 4px;padding:10px 15px;
+                font:inherit;font-size:14px;color:#5a4a2a;background:#fffdf7;cursor:pointer;
+                border:1.5px dashed #cbbb95;border-radius:11px;min-height:44px}
+      .st-livre:hover{background:#f4ecd9;border-style:solid}
+      #lireCorps p{margin:0 0 11px}
+      </style>
+      <div id="mapwrap">
+        <div id="map"></div>
+        <div id="navdock">
+          <button id="navdockbtn" type="button" aria-haspopup="true" aria-expanded="false"><span data-i18n="nav.dock.bouton">🧭 Emporter l'itinéraire</span> ▾</button>
+          <div id="navdockpop" hidden>
+            <div id="navdocklist">
+              <div class="nd-sec" data-i18n="nav.dock.sec.ouvrir">Ouvrir dans une application</div>
+              <button class="nd-opt" type="button" data-nd="google"><span data-i18n="nav.dock.google">🗺️ Google Maps</span><span class="nd-exp" data-i18n="nav.exp.google">Votre itinéraire s'ouvre d'un seul tenant, en visant l'entrée officielle des sites. Au-delà de dix arrêts, Google refuse le circuit : prenez alors « Découper le parcours ».</span></button>
+              <button class="nd-opt" type="button" data-nd="osm"><span data-i18n="nav.dock.osm">🌍 OpenStreetMap</span><span class="nd-exp" data-i18n="nav.exp.osm">Libre, sans compte. La navigation vise la coordonnée du lieu — parfois au cœur du site plutôt qu'à son entrée.</span></button>
+              <button class="nd-opt" type="button" data-nd="apple"><span data-i18n="nav.dock.apple">🍏 Apple Plans</span><span class="nd-exp" data-i18n="nav.exp.apple">S'ouvre dans Plans, sur iPhone, iPad et Mac. La navigation vise la coordonnée du lieu.</span></button>
+              <button class="nd-opt" type="button" data-nd="waze"><span data-i18n="nav.dock.waze">🚗 Waze</span><span class="nd-exp" data-i18n="nav.exp.waze">Waze ne reçoit qu'une seule destination : votre premier arrêt s'ouvrira, pas le circuit complet.</span></button>
+              <div class="nd-sec" data-i18n="nav.dock.sec.emporter">Emporter avec soi</div>
+              <button class="nd-opt" type="button" data-nd="gpx"><span data-i18n="nav.dock.gpx">📄 Fichier GPX — hors-ligne</span><span class="nd-exp" data-i18n="nav.exp.gpx">Le parcours descend sur votre appareil. À ouvrir dans OsmAnd, Organic Maps ou un GPS Garmin : ils guident sans réseau, ce qui compte là où la couverture manque. Le fichier ne quitte pas votre téléphone.</span></button>
+              <button class="nd-opt" type="button" data-nd="kml"><span data-i18n="nav.dock.kml">🗺️ Carte partageable — KML</span><span class="nd-exp" data-i18n="nav.exp.kml">Télécharge un fichier à importer dans Google My Maps. Vous obtenez la carte entière du voyage, à garder et à envoyer à qui vous accompagne.</span></button>
+              <div class="nd-sec" data-i18n="nav.dock.sec.long">Long parcours, ou déjà en route</div>
+              <button class="nd-opt" type="button" data-nd="chunks"><span data-i18n="nav.dock.chunks">🧩 Découper le parcours</span><span class="nd-exp" data-i18n="nav.exp.chunks">Coupe l'itinéraire en tronçons de dix arrêts — la limite de Google — avec un lien par tronçon. On y trouve aussi « depuis ma position » : la navigation vers vos neuf prochains arrêts, qui avance avec vous.</span></button>
+            </div>
+            <div id="navdockconfirm" hidden>
+              <div id="ndcTitre"></div>
+              <p id="ndcTexte"></p>
+              <div id="ndcActs">
+                <button id="ndcNo" type="button" data-i18n="nav.dock.annuler">Annuler</button>
+                <button id="ndcOk" type="button" data-i18n="nav.dock.confirmer">Confirmer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div id="stops"></div>
       <!-- Encart d'ajout retiré : la brique d'étape fait la même chose en mieux
            (nom, position, note, dates, place dans le parcours). Le balisage reste
@@ -517,8 +718,7 @@
         <div class="exp-lbl" data-i18n="itin.groupe.terrain">🧭 Sur le terrain</div>
         <div class="exp">
           <button id="haltebtn" type="button" hidden>📍 <span data-i18n="halte_btn">J'ai fait une halte ici</span></button>
-          <button id="gmapsbtn" type="button">🧭 Naviguer (GPS)</button>
-          <button id="scanbtn" type="button">📷 Scanner un QR</button>
+            <button id="scanbtn" type="button">📷 Scanner un QR</button>
           <button id="mapbtn" type="button">🗺️ Voir sur la grande carte</button>
         </div>
       </div>
@@ -541,7 +741,7 @@
           </div>
           <div class="hint" id="bkStatusIti" data-i18n="itin.carnet.pourquoi">Vos itinéraires, vos notes et vos photos ne vivent que dans cet appareil : rien n'est conservé chez nous. La sauvegarde les met dans un fichier qui reste chez vous — à garder pour changer de téléphone, ou pour tout retrouver si l'application est réinstallée.</div>
         </div>
-      <div class="hint" id="gmapshint" style="margin-top:-4px">🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google&nbsp;Maps, OpenStreetMap, Apple&nbsp;Plans, Waze) ou en <b>fichier GPX hors-ligne</b> (OsmAnd, Organic&nbsp;Maps…). Sur Google&nbsp;Maps, on vise l'<b>entrée officielle</b> des sites. Au-delà de ~10 arrêts, exportez jour par jour.</div>
+      <div class="hint" id="gmapshint" hidden><!-- ancre d'injection (roadtrip-plus.js) : le conseil de navigation est passé dans le bouton de la carte, option par option --></div>
       <button class="restart" id="restart">↻ Recommencer avec d'autres choix</button>
     </div>
 
@@ -661,12 +861,12 @@
 
     <div class="foot">
       <span data-i18n="itineraire.donnees.carto.historique"></span><br>
-      Carnet photo le long du parcours : vos photos restent sur votre appareil — rien n'est envoyé.<br>
-      Bientôt : export en album &amp; partage au choix (WhatsApp · e-mail).
+      Carnet photo le long du parcours : vos photos restent sur votre appareil — rien n'est envoyé.
     </div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="vendor/protomaps-leaflet.js"></script>
   <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
   <script>
   // ---------- utilitaires ----------
@@ -707,12 +907,42 @@
       rq.onsuccess=()=>res(rq.result); rq.onerror=()=>rej(rq.error);
     }));
   }
+  /* ── L'ALBUM CHERCHAIT LÀ OÙ LE CARNET AVAIT DÉJÀ APPRIS À REGARDER DEUX FOIS ──
+     Helmy, 30/08/2026, points 13 et 14 : « l'album ne prend pas en compte les photos
+     et le texte de toutes les étapes ; pareil pour passeport, dépliant, baroudeur —
+     tout l'export. » Et les photos étaient pourtant bien VISIBLES dans le carnet.
+
+     La cause est le §10 du dépannage, revenu par une porte qu'on n'avait pas fermée.
+     La clé d'un carnet vaut `<identifiant de l'itinéraire>#<lieu@coordonnées>` ; or
+     cet identifiant n'existe pas tant que le voyage n'est pas enregistré. Une photo
+     prise avant part donc sous la clé COURTE. Deux lectures de la même base
+     coexistaient, asymétriques :
+       · `getMediaLarge()` du carnet retombait sur la clé courte  → il trouvait ;
+       · `photosFor()` d'ici cherchait la clé exacte, sans repli   → il ne trouvait rien.
+     Le TEXTE, lui, avait déjà son repli (`capLire(cle, s)` → `placeBase(s)`, « carnet
+     d'avant ») : il suivait, pendant que les photos restaient invisibles à l'export.
+     Les quatre modèles — album, passeport, dépliant, baroudeur — lisent tous par ici,
+     d'où un seul défaut vu quatre fois.
+
+     ⚠️ LE REPLI N'AGIT QUE SI LA CLÉ EXACTE NE REND RIEN, et seulement si la clé
+     porte un `#` — donc uniquement pour un carnet écrit avant l'enregistrement du
+     voyage. Deux itinéraires partageant un même lieu ont bien la même clé courte :
+     le risque est réel, mais il ne peut se produire QUE lorsque le voyage n'a encore
+     aucun identifiant, cas où la clé courte est la seule vérité disponible. C'est le
+     moindre mal, et c'est déjà le choix fait pour le carnet.
+     ⚠️ PAS DE MIGRATION DES CLÉS : elle a été tentée, et sa suppression a emporté
+     `capLire()` avec elle (§11.1) — trois modèles vides pour une coupe trop large. */
   function photosFor(place){
-    return store('readonly').then(os=>new Promise((res,rej)=>{
-      const out=[], rq=os.index('place').openCursor(IDBKeyRange.only(place));
+    const lire = (cle) => store('readonly').then(os=>new Promise((res,rej)=>{
+      const out=[], rq=os.index('place').openCursor(IDBKeyRange.only(cle));
       rq.onsuccess=e=>{ const c=e.target.result; if(c){ out.push(c.value); c.continue(); } else res(out); };
       rq.onerror=()=>rej(rq.error);
     }));
+    return lire(place).then(out=>{
+      if(out.length || String(place||'').indexOf('#')<0) return out;
+      const court=String(place).split('#').pop();
+      return (court && court!==place) ? lire(court) : out;
+    });
   }
   function delPhoto(id){
     return store('readwrite').then(os=>new Promise((res,rej)=>{
@@ -741,12 +971,59 @@
      retombe sur l'ancienne — les carnets déjà remplis restent lisibles. */
   const placeBase = s => norm(s.p.nom)+'@'+s.c[0].toFixed(4)+','+s.c[1].toFixed(4);
   function itiId(){ try{ return (typeof LASTRES!=='undefined' && LASTRES && LASTRES._id) || localStorage.getItem('the_actif') || ''; }catch(e){ return ''; } }
-  const placeKey = s => { const id=itiId(); return id ? (id+'#'+placeBase(s)) : placeBase(s); };
+  /* LA RÉFÉRENCE STRICTE DE L'ITINÉRAIRE, PUIS LE NUMÉRO D'ÉTAPE.
+     Repris du socle le 01/09/2026, tel quel. L'Estonie l'a reçu le 24/08 en
+     s'alignant dessus (commit `a7b3857`, « 473 lignes de retard ») ; la Tunisie
+     ne l'a jamais reçu, et c'est pourquoi son album revenait vide.
+     Le socle range le carnet d'une étape sous « <référence>#<numéro d'étape> ».
+     Notre clé portait le NOM et les COORDONNÉES au dix-millième : elle changeait
+     dès qu'une étape bougeait de onze mètres ou qu'un lieu était renommé, et les
+     photos devenaient introuvables — elles étaient toujours là, sous un nom que
+     plus personne ne demandait.
+     ⚠️ L'ANCIENNE CLÉ RESTE LUE. Les carnets déjà écrits sont rangés sous elle ;
+     basculer sans repli les perdrait tous. `placeKeyAncien` sert de second essai,
+     et seulement en lecture. */
+  function itiRef(){
+    try{
+      var id = (typeof LASTRES!=='undefined' && LASTRES && LASTRES._id) || '';
+      if(!id) id = localStorage.getItem('the_encours') || localStorage.getItem('the_actif') || '';
+      if(id) return id;
+    }catch(e){}
+    return '';
+  }
+  const placeKey = s => {
+    var i = -1;
+    try{ if(LASTRES && LASTRES.route) i = LASTRES.route.indexOf(s); }catch(e){}
+    return itiRef()+'#'+(i>=0 ? (i+1) : 0);
+  };
+  const placeKeyAncien = s => { const id=itiId(); return id ? (id+'#'+placeBase(s)) : placeBase(s); };
+  /* LA NOTE SE LIT OÙ ELLE EST ÉCRITE — 01/09/2026, Helmy : « aucune note » dans
+     l'album. Deux clés existaient pour la même chose : le carnet écrit sous
+     `the-note-<lieu>` (`the-carnet.js` l.87), l'album relisait `the-cap:<lieu>`.
+     Jamais le même endroit — l'album cherchait donc une note là où personne n'en
+     avait posé. La légende de l'album garde la priorité : si on a écrit dedans,
+     c'est un choix. Sinon on reprend la note du carnet, ce que le voyageur a
+     écrit sur place. Même repli de clé que `photosFor` — le §40 du dépannage,
+     appliqué au texte cette fois. */
   function capLire(cle, s){
     try{
       var v=localStorage.getItem('the-cap:'+cle);
-      if(v!=null) return v;
-      if(s) return localStorage.getItem('the-cap:'+placeBase(s));   // carnet d'avant
+      if(v!=null && v!=='') return v;
+      if(s){
+        var b=localStorage.getItem('the-cap:'+placeBase(s));   // carnet d'avant
+        if(b!=null && b!=='') return b;
+      }
+      var n=localStorage.getItem('the-note-'+cle);             // le carnet de l'étape
+      if(n) return n;
+      var court=String(cle||'').split('#').pop();
+      if(court && court!==cle){
+        var c=localStorage.getItem('the-note-'+court);
+        if(c) return c;
+      }
+      if(s){
+        var pb=localStorage.getItem('the-note-'+placeBase(s));
+        if(pb) return pb;
+      }
     }catch(e){}
     return null;
   }
@@ -980,6 +1257,17 @@
         else { try{ localStorage.removeItem('the_actif'); }catch(e2){} }
       }
       else if(ret){ try{ sessionStorage.removeItem('the_return'); }catch(e){} renderRecord(readCurrent()); }  // retour de la grande carte → on restaure
+      /* RAFRAÎCHIR NE DOIT RIEN PERDRE — 01/09, Helmy : « quand je rafraîchis un
+         itinéraire, je retombe sur les itinéraires sauvegardés ». La reprise ne
+         regardait que « the_actif », qui n'est posé que si l'on désigne un voyage
+         depuis le menu : un itinéraire qu'on vient de composer n'en avait pas, et
+         disparaissait au premier rechargement. On le reprend depuis « the_current »,
+         qui le porte déjà. Sans « ?choix=1 » : ce paramètre dit qu'on veut choisir,
+         et il reste prioritaire. */
+      else if(!params.get('choix')){
+        var _c=readCurrent();
+        if(_c && (_c.mode==='libre' || (_c.steps && _c.steps.length))) renderRecord(_c);
+      }
     });
     }
 
@@ -1145,7 +1433,12 @@
   function nearestBucket(m){ return VIS_BUCKETS.reduce((a,b)=>Math.abs(b-m)<Math.abs(a-m)?b:a); }
   function visSelectHtml(s){
     const recoB=nearestBucket(visitMin(s)), curB=nearestBucket(s._vis||visitMin(s));
-    let opts=''; VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+'>'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
+    /* 01/09/2026, Helmy : reprendre la ligne de durée de Terralog. Chez eux
+       (`blocs/20-itineraire.js` l.116) le menu s'ouvre sur une INVITATION —
+       « — combien de temps ? » — au lieu de commencer par une valeur : on voit
+       qu'on a le droit de choisir, au lieu de croire que c'est décidé. */
+    let opts='<option value="" disabled'+(curB?'':' selected')+'>—</option>';
+    VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+'>'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
     return '<select class="vis-select" data-nom="'+norm(s.p.nom).replace(/"/g,'&quot;')+'" title="Combien de temps voulez-vous passer sur place ? (✓ = recommandé)">'+opts+'</select>';
   }
   function planDays(route, walking){
@@ -1176,7 +1469,10 @@
     if(!LASTRES) return;
     if(LASTRES.route.some(s=>norm(s.p.nom)===norm(stop.p.nom))) return;
     const items=LASTRES.route.concat([{...stop}]).map(s=>({...s}));
-    render(LASTORIGIN, {...LASTRES, route:nearestOrder(LASTORIGIN.coord, items, null)});
+    /* À LA FIN, SANS RE-TRI — voir la note de l'écouteur « the:etape ». Une pépite
+       acceptée en chemin se posait ici, puis `nearestOrder` la déplaçait ailleurs
+       dans la liste : on ne retrouvait pas ce qu'on venait d'accepter. */
+    render(LASTORIGIN, {...LASTRES, route:items});
   }
 
   // ---------- Halte / Capture : un moment non planifié, à la position GPS ----------
@@ -1200,11 +1496,15 @@
     const t=HALTE_TYPES.find(x=>x.k===halteType)||HALTE_TYPES[0];
     const name=(document.getElementById('halteName').value||'').trim();
     const label=t.ic+' '+t.l+(name?' — '+name:'');
-    const stop={ c:[lon,lat], layer:'perso', genre:'perso', halte:true, htype:t.k,
+    const stop={ c:[lon,lat], layer:'perso', genre:'perso', halte:true, htype:t.k, cree:Date.now(),
       p:{ nom:label, type:'Halte', gouvernorat:'', description:'', source:'Halte ajoutée pendant votre voyage (position GPS).', a_voir:'', conseil:'' } };
     const items=LASTRES.route.concat([stop]).map(s=>({...s}));   // pas de dédup : les haltes sont distinctes par position
     closeHalte();
-    render(LASTORIGIN, {...LASTRES, route:nearestOrder((LASTORIGIN&&LASTORIGIN.coord)||[lon,lat], items, null)});
+    /* ⚠️ UNE HALTE NE SE RÉORDONNE PAS. C'est un moment VÉCU, à une heure et à un
+       endroit : sa place dans le carnet est celle du parcours réel, pas celle que
+       le plus court chemin lui donnerait. Elle était re-triée comme une étape à
+       planifier — le récit du voyage s'en trouvait réécrit. */
+    render(LASTORIGIN, {...LASTRES, route:items});
     showGuide('📍 <b>Halte ajoutée</b> à votre voyage ! Ajoutez-y des <b>photos / notes / voix</b> dans son carnet, juste en dessous.', 8000);
   }
   document.getElementById('haltebtn').onclick=openHalte;
@@ -1514,6 +1814,22 @@
     try{ return new Date(t).toLocaleDateString(l,{day:'numeric',month:'short',year:'numeric'}); }
     catch(e){ try{ return new Date(t).toLocaleDateString(); }catch(e2){ return ''; } }
   }
+  /* ── LA LANGUE DES DATES SUIT L'APPLICATION ────────────────────────────────
+     Quatre endroits écrivaient `'fr-FR'` en dur : l'en-tête d'impression, la
+     couverture de l'album et deux dates de photos. Une application servie en cinq
+     langues rendait donc ses dates en français, y compris dans les exports que le
+     voyageur garde ou partage. Signalé par Helmy le 30/08/2026 — « pour le rendu
+     comme pour l'export ».
+     Repris de Terralog (`RoadTrip-Generique/blocs/05-dates.js:68`) : aucun nom de
+     mois n'est écrit ici, le navigateur les connaît. Et si le code de langue ne lui
+     convient pas — une langue régionale lèverait `RangeError` — on retombe sur le
+     français : un repli ANNONCÉ, pas silencieux. C'est la date qui doit rester
+     lisible, pas la langue qui doit avoir raison. */
+  function localeDate(){
+    var l='fr'; try{ l=(localStorage.getItem('the_lang')||'fr').slice(0,2); }catch(e){}
+    try{ new Date().toLocaleDateString(l); return l; }catch(e){ return 'fr'; }
+  }
+  window.THElocaleDate = localeDate;
   function datePuce(r){ var d=dateItin(r); return d ? d+' · ' : ''; }
   window.THEdateItin = dateItin; window.THEdatePuce = datePuce;
   function saveCurrent(){
@@ -1800,7 +2116,10 @@
       }catch(e){}
       /* on ne le laisse pas « actif au démarrage » : fermer, c'est fermer */
       try{ localStorage.removeItem('the_current'); }catch(e){}
-      location.href='decouvrir.html';
+      /* Helmy, 31/08 : après avoir fermé, on veut retrouver les façons de partir,
+         pas le menu principal. L'adresse existait déjà pour la sortie « Les
+         façons de partir » ; on la réemploie plutôt que d'inventer un chemin. */
+      location.href='itineraire.html?choix=1';
     };
     boutons.forEach(function(x){ x.onclick=fermer; });   // haut et bas : le même geste
   })();
@@ -1815,11 +2134,26 @@
         fi=document.getElementById('bkFileIti'), st=document.getElementById('bkStatusIti');
     if(!ex||!im||!fi||!st) return;
     var repos=st.textContent;
+    var _bkResultat=0;   // quand un résultat a été affiché — voir le pageshow, plus bas
     ex.onclick=function(){
       if(!window.THEBackup){ st.textContent='\u26a0\ufe0f '+uiT('itin.carnet.echec'); return; }
       st.textContent=uiT('itin.carnet.preparation');
-      THEBackup.download().then(function(){ st.textContent=uiT('itin.carnet.faite'); },
-                                function(e){ st.textContent='\u26a0\ufe0f '+((e&&e.message)||uiT('itin.carnet.echec')); });
+      /* ── DIRE OÙ EST LE FICHIER, ET NE PAS EFFACER LA RÉPONSE ─────────────────
+         Helmy, 30/08/2026 : « sauvegarder, on ne sait pas où c'est sauvegardé et ça
+         clignote, il faut chercher, ce n'est pas évident. »
+         Deux défauts, pas un :
+         ① le message ne nommait PAS le fichier — or son nom est la seule prise pour
+            le retrouver dans les téléchargements de l'appareil ;
+         ② le `pageshow` plus bas remet l'explication de repos DÈS le retour sur la
+            page. Or le téléchargement en déclenche un : la confirmation était
+            remplacée aussitôt qu'affichée. C'est ça qui « clignote ».
+         Le nom vient de `THEBackup.download()`, qui le rend désormais. Aucun texte
+         n'est écrit ici : le message reste la clé i18n, le nom est une donnée. */
+      THEBackup.download().then(function(r){
+                                  _bkResultat=Date.now();
+                                  st.textContent=uiT('itin.carnet.faite')+((r&&r.fichier)?('  📄 '+r.fichier):'');
+                                },
+                                function(e){ _bkResultat=Date.now(); st.textContent='\u26a0\ufe0f '+((e&&e.message)||uiT('itin.carnet.echec')); });
     };
     /* Restaurer un carnet CRÉE des itinéraires : même règle que les créer à la
        main. Sans cette garde, un essai fini pouvait remplir son carnet par
@@ -1829,11 +2163,17 @@
       var f=e.target.files[0]; if(!f) return;
       if(!confirm(uiT('itin.carnet.confirmer'))){ e.target.value=''; return; }
       st.textContent=uiT('itin.carnet.restauration');
-      THEBackup.importFile(f).then(function(){ st.textContent=uiT('itin.carnet.restaure'); renderSaved(); },
-                                   function(err){ st.textContent='\u26a0\ufe0f '+((err&&err.message)||uiT('itin.carnet.echec')); });
+      THEBackup.importFile(f).then(function(){ _bkResultat=Date.now(); st.textContent=uiT('itin.carnet.restaure'); renderSaved(); },
+                                   function(err){ _bkResultat=Date.now(); st.textContent='\u26a0\ufe0f '+((err&&err.message)||uiT('itin.carnet.echec')); });
       e.target.value='';
     };
-    window.addEventListener('pageshow', function(){ st.textContent=repos; });   // on remet l'explication au retour
+    /* ⚠️ On ne remet l'explication QUE si aucun résultat n'a été montré dans les
+       trente dernières secondes. Sans cette garde, le retour sur la page effaçait
+       la confirmation de sauvegarde à l'instant même où elle s'affichait. */
+    window.addEventListener('pageshow', function(){
+      if(Date.now()-_bkResultat < 30000) return;
+      st.textContent=repos;
+    });
   })();
    // gratuit : enregistrer/reprendre ses itinéraires
 
@@ -1891,7 +2231,46 @@
       rsum.innerHTML = res.mode==='libre'
         ? '<h2>🎒 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
         : '<h2>Rien trouvé pour ces critères</h2><div class="meta">'+uiT('itin.rien.trouve.conseil')+'.</div>';
-      document.getElementById('map').style.display='none';
+      /* ── LE VOYAGE LIBRE A DROIT À SA CARTE ────────────────────────────────
+         Helmy, 30/08/2026 : « dans la Tunisie la carte n'apparaît pas quand
+         j'essaie de composer un voyage libre, ni quand je reprends un itinéraire
+         sauvegardé dans voyage libre. »
+
+         La cause était ici : cette branche sert DEUX cas que rien ne distinguait —
+         « rien trouvé pour ces critères », où il n'y a effectivement rien à
+         montrer, et le VOYAGE LIBRE, qui commence vide **par nature** et se
+         remplit en marchant. Le second héritait du traitement du premier : carte
+         masquée, puis `return` AVANT la ligne qui la crée. `L.map()` n'était
+         jamais appelé — la carte n'existait pas, elle n'était pas seulement
+         cachée. Le défaut est antérieur au changement de fond de carte : avec
+         CARTO non plus elle ne s'affichait pas.
+
+         On sépare donc les deux. Le libre reçoit une carte centrée sur son point
+         de départ, avec le seul repère du départ — choix de Helmy, le 30/08 :
+         « centré sur point de départ ». Et c'est le bon : notre fond ne couvre
+         que la Tunisie, une carte centrée sur la position réelle d'un voyageur
+         encore à l'étranger serait blanche. */
+      if(res.mode==='libre'){
+        document.getElementById('map').style.display='block';
+        if(mapObj){ mapObj.remove(); mapObj=null; }
+        mapObj=L.map('map',{scrollWheelZoom:false});
+        protomapsL.leafletLayer({
+          url: 'tuile.php?z={z}&x={x}&y={y}',
+          flavor: 'light',
+          maxDataZoom: 14,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mapObj);
+        const oLL0=[origin.coord[1], origin.coord[0]];
+        L.marker(oLL0,{icon:L.divIcon({className:'',html:'<div class="num-pin dep">⌂</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(mapObj);
+        /* Échelle de ville : on part d'un lieu, pas d'un pays. Le zoom de
+           `HConf.carte` cadre l'édition entière — trop large pour un départ. */
+        mapObj.setView(oLL0, 12);
+        /* La carte vient d'être démasquée : elle a mesuré 0 de haut. Sans ce
+           rappel elle reste grise alors que les tuiles arrivent. */
+        setTimeout(function(){ try{ mapObj.invalidateSize(); }catch(e){} }, 200);
+      } else {
+        document.getElementById('map').style.display='none';
+      }
       document.getElementById('stops').innerHTML='';
       window.scrollTo({top:0,behavior:'smooth'}); return;
     }
@@ -1910,7 +2289,7 @@
     // en-tête visible seulement à l'impression / export PDF
     document.getElementById('printhead').innerHTML=
       '<div class="b">'+((window.HConf&&HConf.marqueCourte)||'Heritage')+'</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
-      new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</div>';
+      new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'})+'</div>';
     const hasNature=route.some(s=>s.genre==='nature');
     rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
       (tour&&tour.soustitre?'<div style="font-style:italic;color:var(--stone);margin:-2px 0 6px;font-size:14px">'+tour.soustitre+'</div>':'')+
@@ -1924,7 +2303,23 @@
     // carte
     if(mapObj){ mapObj.remove(); mapObj=null; }
     mapObj=L.map('map',{scrollWheelZoom:false});
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap, &copy; CARTO'}).addTo(mapObj);
+    /* Notre propre fond de carte depuis le 30/08/2026. Repris de Terralog
+       (`RoadTrip-Generique/blocs/99-demarrage.js:142`). CARTO tamponnait
+       « API KEY REQUIRED » dans le PNG tout en répondant 200 : la carte est le
+       squelette du produit, elle ne peut pas dépendre des conditions d'un tiers.
+       `tuile.php` lit UNE tuile dans `tuiles/fond.pmtiles` (78 Mo, la Tunisie).
+       Leaflet RESTE : `protomaps-leaflet` (128 ko) rend le vectoriel dans une
+       couche ordinaire — pastilles, tracé et popups ne changent pas d'une ligne.
+       ⚠️ L'option s'appelle `flavor`, PAS `theme` : un `theme:` n'est pas une
+       erreur, il est ignoré, et la carte reste GRISE alors que les tuiles arrivent.
+       Le fond s'arrête aux données du zoom 14 ; au-delà la dernière tuile est
+       agrandie — gratuit en vectoriel, et on zoome jusqu'à 19 sans rien stocker. */
+    protomapsL.leafletLayer({
+      url: 'tuile.php?z={z}&x={x}&y={y}',
+      flavor: 'light',
+      maxDataZoom: 14,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(mapObj);
     const latlngs=[];
     route.forEach((s,i)=>{
       const ll=[s.c[1],s.c[0]]; latlngs.push(ll);
@@ -2011,12 +2406,22 @@
         '</div><button class="rm-step" type="button" title="Retirer cette étape">✕</button></div>'+
         '<div class="times">'+(walking?'🚶':'🚗')+' '+uiT('trajet')+' ~'+fmtDur(s._tv)+' · 🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
         nightHtml+
-        (desc?'<p>'+ (desc.length>320?desc.slice(0,320)+'…':desc) +'</p>'+(window.THEFicheAudio&&s.genre!=='perso'?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):''):'')+
+        /* 📖 DÉCOUVRIR CE LIEU — 01/09/2026, Helmy : « Découvrir ce lieu, oui, je
+           ne l'ai pas retiré, je vous ai demandé d'y mettre le texte, que vous
+           n'aviez pas fait ». Le texte du lieu part donc DANS le bouton : la
+           description, ce qu'il y a à voir, le conseil, les horaires et le détail.
+           ⚠️ Le bloc est DÉPLACÉ dans la fenêtre, jamais recopié : une copie
+           perdrait le lecteur audio et tout ce qui y est branché. Il revient à sa
+           place à la fermeture. */
+        '<div class="st-lire" hidden>'+
+        (desc?'<p>'+desc+'</p>'+(window.THEFicheAudio&&s.genre!=='perso'?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):''):'')+
         (Lav?'<div class="kv"><b>'+LBL('avoir')+'</b> '+Lav+'</div>':'')+
         (Lcons?'<div class="kv"><b>'+LBL('conseil')+'</b> '+Lcons+'</div>':'')+
         (Lhor?'<div class="kv"><b>'+LBL('horaires')+'</b> '+Lhor+'</div>':'')+
         (Lan?(isPremium()?'<div class="kv" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px">👁️ <b>Le détail</b> — '+Lan+'</div>':'<a href="premium.html" class="kv" style="display:block;background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px;text-decoration:none;color:inherit">👁️ <b>Le détail</b> — '+String(Lan).replace(/<[^>]*>/g,'').slice(0,45).trim()+'… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></a>'):'')+
         (p.acces_note?'<div class="kv acc"><b>🅿️ Accès / GPS :</b> '+p.acces_note+'</div>':'')+
+        '</div>'+
+        ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)?'<button class="st-livre" type="button">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>':'')+
         /* Une étape que le voyageur a posée lui-même n'a pas besoin qu'on lui
            rappelle de vérifier l'accès : il sait où il va, il y est. L'encart ne
            vaut que pour les lieux venus de la base. */
@@ -2137,15 +2542,16 @@
         const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=fr&countrycodes='+((window.HConf&&HConf.iso)||'')+'&q='+encodeURIComponent(q));
         const j=await r.json();
         if(!j.length){ msg.textContent=uiT('Lieu introuvable — vérifiez l\'orthographe.'); return; }
-        stop={ c:[parseFloat(j[0].lon),parseFloat(j[0].lat)], layer:'perso', genre:'perso',
+        stop={ c:[parseFloat(j[0].lon),parseFloat(j[0].lat)], layer:'perso', genre:'perso', cree:Date.now(),
                p:{nom:q, type:'Ajout perso', gouvernorat:'', description:'', source:'Position : OpenStreetMap (lieu ajouté par vous, non vérifié).'} };
       }catch(e){ msg.textContent=uiT('Localisation impossible (vérifiez la connexion).'); return; }
     }
     if(LASTRES.route.some(s=>norm(s.p.nom)===norm(stop.p.nom))){ msg.textContent=uiT('Ce lieu est déjà dans le parcours.'); return; }
     const items=LASTRES.route.concat([stop]).map(s=>({...s}));
-    const newRoute=nearestOrder(LASTORIGIN.coord, items, null);
+    /* Ajouté À LA FIN, sans re-tri : c'est le voyageur qui a cherché ce lieu et
+       qui décide où il va. Il le déplacera s'il le souhaite. */
     inp.value='';
-    render(LASTORIGIN, {...LASTRES, route:newRoute});
+    render(LASTORIGIN, {...LASTRES, route:items});
     document.getElementById('addmsg').textContent='« '+stop.p.nom+uiT(' » ajouté et replacé selon sa position ✓');
   }
 
@@ -2310,14 +2716,49 @@
     const {route,theme}=LASTRES;
     const isDep = albumTemplate==='depliant';
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
-    const dateStr=new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    const dateStr=new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'});
     const coverHtml='<div class="album-cover"><div class="ac-brand">'+(((window.HConf&&HConf.marque)||'Heritage Experience').toUpperCase())+'</div>'+
       '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
-      (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+'</div>';
+      (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+
+      '<div class="ac-carte" id="acCarte"></div>'+'</div>';
     if(isDep){ doc.innerHTML='<div class="depliant-strip" id="depStrip">'+coverHtml+'</div>'; }
     else if(albumTemplate==='passeport'){ doc.innerHTML=coverHtml+'<div class="pp-book" id="ppBook"></div>'; }
     else { doc.innerHTML=coverHtml; }
+    /* LA CARTE FAIT PARTIE DE L'ALBUM — 01/09/2026, Helmy : « j'ai demandé il y a
+       longtemps que la carte fasse partie de l'album ». Elle n'y avait jamais été
+       posée : la couverture ne portait que la marque, le titre et le compte des
+       étapes. Un carnet de voyage sans le trajet, c'est une liste.
+       On réemploie le fond du pays (`tuile.php`) et le même tracé que la page —
+       rien de neuf, et rien qui parte chercher une image chez quelqu'un d'autre.
+       ⚠️ Elle est posée APRÈS la couverture : Leaflet mesure son conteneur au
+       moment où on le lui donne, et un conteneur pas encore dans la page se
+       mesure à zéro. */
+    setTimeout(function(){
+      var boite=document.getElementById('acCarte');
+      if(!boite || typeof L==='undefined' || boite.dataset.faite) return;
+      try{
+        boite.dataset.faite='1';
+        var carte=L.map(boite,{zoomControl:false, attributionControl:true,
+                               scrollWheelZoom:false, dragging:false, keyboard:false});
+        if(window.protomapsL && protomapsL.leafletLayer){
+          protomapsL.leafletLayer({url:'tuile.php?z={z}&x={x}&y={y}', flavor:'light', maxDataZoom:14,
+            attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(carte);
+        }
+        var pts=route.map(function(x){ return [x.c[1], x.c[0]]; });
+        if(LASTORIGIN && LASTORIGIN.coord) pts.unshift([LASTORIGIN.coord[1], LASTORIGIN.coord[0]]);
+        if(pts.length>1) L.polyline(pts,{color:'#2e6a4d',weight:3,opacity:.85}).addTo(carte);
+        route.forEach(function(x,k){
+          L.marker([x.c[1],x.c[0]],{icon:L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,11],
+            html:'<div style="width:22px;height:22px;border-radius:50%;background:#a8884f;color:#fff;'
+               + 'display:flex;align-items:center;justify-content:center;font:700 11px/1 sans-serif;'
+               + 'box-shadow:0 1px 4px rgba(0,0,0,.4)">'+(k+1)+'</div>'})}).addTo(carte);
+        });
+        carte.fitBounds(L.latLngBounds(pts).pad(0.15));
+        setTimeout(function(){ try{ carte.invalidateSize(); }catch(e){} }, 200);
+      }catch(e){ boite.style.display='none'; }
+    }, 60);
+
     const container = isDep ? document.getElementById('depStrip') : (albumTemplate==='passeport' ? document.getElementById('ppBook') : doc);
     const PP_WM=[
       '<svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M50 92 Q47 62 51 44"/><path d="M51 44 Q32 34 18 40"/><path d="M51 44 Q70 34 84 40"/><path d="M51 44 Q36 24 26 14"/><path d="M51 44 Q66 24 78 16"/><path d="M51 44 Q51 24 51 10"/></svg>',
@@ -2330,9 +2771,13 @@
     ];
     for(let i=0;i<route.length;i++){
       const s=route[i], p=s.p, key=placeKey(s);
+      /* On demande la clé du socle ; si le carnet a été écrit avant le portage du
+         01/09, il est rangé sous l'ancienne — on la demande alors. Sans ce second
+         essai, tous les carnets déjà remplis disparaîtraient de l'album. */
       let photos=[]; try{ photos=await photosFor(key); }catch(e){}
+      if(!photos.length){ try{ photos=await photosFor(placeKeyAncien(s)); }catch(e){} }
       photos.sort((a,b)=>a.ts-b.ts);
-      const cap=(capLire(key,s)||'').replace(/</g,'&lt;');
+      const cap=(capLire(key,s)||capLire(placeKeyAncien(s),s)||'').replace(/</g,'&lt;');
       let el;
       if(isDep){
         // panneau « dépliant » : étape reliée le long du trajet + où & quand
@@ -2340,7 +2785,7 @@
           thumbs += (ph.blob.type||'').startsWith('video')
             ? '<video class="dep-th" src="'+url+'" muted playsinline></video>'
             : '<img class="dep-th" src="'+url+'" alt="">'; });
-        const when = photos.length ? new Date(photos[0].ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}) : '';
+        const when = photos.length ? new Date(photos[0].ts).toLocaleDateString(localeDate(),{day:'numeric',month:'short',year:'numeric'}) : '';
         const hasSnd = photos.some(ph=>ph.audio);
         el=document.createElement('div'); el.className='dep-panel';
         el.innerHTML=
@@ -2362,7 +2807,7 @@
           if(ph.audio){ const aurl=URL.createObjectURL(ph.audio); ALBUM_URLS.push(aurl); audioTags+='<audio controls src="'+aurl+'"></audio>'; }
         });
         const place=(p.gouvernorat||'');
-        const vdate=photos.length?new Date(photos[0].ts).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):dateStr;
+        const vdate=photos.length?new Date(photos[0].ts).toLocaleDateString(localeDate(),{day:'numeric',month:'short',year:'numeric'}):dateStr;
         el=document.createElement('div'); el.className='pp-page';
         el.innerHTML=
           '<div class="pp-wm">'+PP_WM[i%PP_WM.length]+'</div>'+
@@ -2516,7 +2961,9 @@
   // bouton « Naviguer » → menu de choix
   function openNav(){ if(!LASTRES || !LASTRES.route.length) return; document.getElementById('navModal').style.display='flex'; }
   function closeNav(){ document.getElementById('navModal').style.display='none'; }
-  document.getElementById('gmapsbtn').onclick=openNav;
+  /* Le bouton a rejoint la carte ; on ne câble que s'il est encore là — une
+     ligne qui cherche un élément absent tue tout le script qui la suit. */
+  const _gb=document.getElementById('gmapsbtn'); if(_gb) _gb.onclick=openNav;
   document.getElementById('navX').onclick=closeNav;
   document.getElementById('navModal').onclick=e=>{ if(e.target.id==='navModal') closeNav(); };
   document.querySelectorAll('.nav-opt').forEach(b=>b.onclick=()=>{
@@ -2527,6 +2974,215 @@
     else if(k==='waze') openInWaze();
     else if(k==='gpx') downloadGPX();
   });
+
+  /* ---------- Le bouton unique de la carte ----------
+     Sept sorties, un seul point d'entrée, en haut à droite de la carte. On
+     déroule, on choisit, on lit ce qu'on va obtenir, puis on confirme — ou on
+     annule sans rien déclencher. Les quatre applications réutilisent les mêmes
+     fonctions que l'ancien menu ; les deux dernières viennent de
+     roadtrip-plus.js, qui les publie sur window.THErt. Rien n'a été réécrit. */
+  /* ---------- LIRE UN LIEU ---------- */
+  (function(){
+    const mod=document.getElementById('lireModal'); if(!mod) return;
+    const corps=document.getElementById('lireCorps'), titre=document.getElementById('lireTitre');
+    let bloc=null, retour=null;
+    function ranger(){
+      if(bloc && retour){ retour.appendChild(bloc); bloc.hidden=true; }
+      bloc=null; retour=null; mod.style.display='none';
+    }
+    document.getElementById('lireX').onclick=ranger;
+    mod.addEventListener('click',e=>{ if(e.target===mod) ranger(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape' && mod.style.display==='flex') ranger(); });
+    document.addEventListener('click',function(e){
+      const b=e.target.closest && e.target.closest('.st-livre'); if(!b) return;
+      const stop=b.closest('.stop'); if(!stop) return;
+      const t=stop.querySelector('.st-lire'); if(!t) return;
+      ranger();
+      bloc=t; retour=t.parentNode;
+      titre.textContent=(stop.querySelector('.ribbon h3')||stop.querySelector('.nm')||{}).textContent||'';
+      corps.innerHTML=''; corps.appendChild(t); t.hidden=false;
+      mod.style.display='flex';
+    });
+  })();
+
+  /* ---------- LE BANDEAU DE TÊTE ----------
+     On DÉPLACE les boutons du bas, on n'en refait pas. `appendChild` sur un
+     élément déjà dans la page le retire de son ancien parent : le bouton, son
+     `onclick`, son état `hidden` et sa traduction voyagent d'un bloc.
+     Le nom écrit devient `title` + `aria-label`, l'emoji reste seul à l'écran.
+     Le suivi de proximité est posé après nous par roadtrip-plus.js, toutes les
+     900 ms : on repasse, au lieu de courir après lui. */
+  (function(){
+    const barre=document.getElementById('bandeau'); if(!barre) return;
+    const ligne1=document.getElementById('bdIcones'), ligne2=document.getElementById('bdLarges');
+
+    const PICTO=/^(\p{Extended_Pictographic}\uFE0F?|[✓✕↻←→])\s*/u;
+    function enIcone(b){
+      if(!b || b.dataset.bdFait) return null;
+      const txt=(b.textContent||'').trim();
+      const m=txt.match(PICTO);
+      const nom=(m ? txt.slice(m[0].length) : txt).trim();
+      if(nom){ b.title=nom; b.setAttribute('aria-label',nom); }
+      b.textContent = m ? m[1] : txt.slice(0,2);
+      b.className='bd-ic'; b.style.cssText='';
+      b.dataset.bdFait='1';
+      return b;
+    }
+    function enEntree(b){
+      if(!b || b.dataset.bdFait) return null;
+      b.className=''; b.style.cssText=''; b.dataset.bdFait='1';
+      return b;
+    }
+
+    /* Le home : la seule pièce du bandeau de Terralog qu'on ajoute vraiment.
+       Il sort de l'itinéraire vers le menu, sans rien fermer — c'est la sortie
+       de celui qui va voir ailleurs, pas de celui qui a fini. */
+    const home=document.createElement('button');
+    home.type='button'; home.className='bd-ic'; home.textContent='🏛️';
+    home.id='bdHome'; home.dataset.bdFait='1';
+    home.onclick=function(){ location.href='decouvrir.html'; };
+
+    /* La sortie : le geste de « ✓ Fermer l'itinéraire », mais précédé d'une
+       question. Fermer enregistre puis quitte — on ne le déclenche pas d'un
+       doigt qui glisse. */
+    const sortie=document.createElement('button');
+    sortie.type='button'; sortie.className='bd-ic bd-sortie'; sortie.textContent='🚪';
+    sortie.id='bdSortie'; sortie.dataset.bdFait='1';
+    const conf=document.getElementById('bdConfirm');
+    sortie.onclick=function(){ conf.style.display='flex'; };
+    document.getElementById('bdcNon').onclick=function(){ conf.style.display='none'; };
+    document.getElementById('bdcOui').onclick=function(){
+      conf.style.display='none';
+      const vrai=document.getElementById('fermerIti');   // le geste complet vit là
+      if(vrai) vrai.click(); else location.href='itineraire.html?choix=1';
+    };
+    conf.addEventListener('click',e=>{ if(e.target===conf) conf.style.display='none'; });
+
+    /* Le menu « Documents » : ce qu'on sort de son voyage — à lire, à imprimer,
+       à donner, à mettre à l'abri. Les deux derniers sont séparés du reste :
+       sauvegarder son carnet n'est pas produire un document, c'est se protéger. */
+    const menu=document.createElement('span'); menu.className='bd-menu';
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='bd-large'; btn.id='bdDocsBtn';
+    btn.setAttribute('aria-haspopup','true'); btn.setAttribute('aria-expanded','false');
+    btn.innerHTML='<span data-i18n="bandeau.documents">📄 Documents</span> ▾';
+    const pop=document.createElement('div'); pop.className='bd-pop'; pop.hidden=true; pop.id='bdDocsPop';
+    menu.appendChild(btn); menu.appendChild(pop);
+    btn.onclick=function(e){ e.stopPropagation(); pop.hidden=!pop.hidden;
+      btn.setAttribute('aria-expanded', pop.hidden?'false':'true'); };
+    document.addEventListener('click',function(e){ if(!pop.hidden && !menu.contains(e.target)){ pop.hidden=true;
+      btn.setAttribute('aria-expanded','false'); } });
+    pop.addEventListener('click',function(){ pop.hidden=true; btn.setAttribute('aria-expanded','false'); });
+
+    let posé=false;
+    function poser(){
+      if(!posé){
+        ligne1.appendChild(home);
+        ['haltebtn','scanbtn','savebtn'].forEach(function(id){
+          const b=enIcone(document.getElementById(id)); if(b) ligne1.appendChild(b);
+        });
+        ligne1.appendChild(sortie);
+        ligne2.appendChild(menu);
+        ['albumbtn','printbtn','sharebtn'].forEach(function(id){
+          const b=enEntree(document.getElementById(id)); if(b) pop.appendChild(b);
+        });
+        const sep=document.createElement('div'); sep.className='bd-sep'; pop.appendChild(sep);
+        ['bkExportIti','bkImportIti'].forEach(function(id){
+          const b=enEntree(document.getElementById(id)); if(b) pop.appendChild(b);
+        });
+        posé=true;
+      }
+      /* le suivi de proximité arrive après coup — on le cueille quand il paraît */
+      ['rtq-suivi','rtq-prox'].forEach(function(id){
+        const t=document.getElementById(id);
+        if(t && !t.dataset.bdFait){ const b=enIcone(t); if(b) ligne1.insertBefore(b, sortie); }
+      });
+      /* les groupes du bas n'ont plus rien à montrer : on les efface s'ils sont vides */
+      document.querySelectorAll('.exp-group').forEach(function(g){
+        const reste=[...g.querySelectorAll('button')].filter(function(b){ return !b.hidden && b.offsetParent!==null; });
+        g.style.display = reste.length ? '' : 'none';
+      });
+    }
+    poser();
+    setInterval(poser, 900);
+  })();
+
+  (function(){
+    const res=document.getElementById('result'), alb=document.getElementById('album');
+    if(!res) return;
+    const relire=()=>{
+      const ouvert = res.style.display==='block' || (alb && alb.style.display==='block');
+      document.body.classList.toggle('iti-ouvert', ouvert);
+      /* la décision est prise : on rend la page visible, quoi qu'elle montre */
+      document.documentElement.classList.remove('the-reprise');
+      /* « ?choix=1 » dit : je veux CHOISIR ma façon de partir. Une fois le choix
+         fait et l'itinéraire affiché, cette intention est périmée — mais elle
+         restait dans la barre d'adresse, et un rafraîchissement la relisait :
+         on repartait à l'écran des cinq options, l'itinéraire perdu de vue.
+         On efface le paramètre dès qu'il a servi. Les autres — « ouvrir »,
+         « reprendre » — ne sont pas touchés : eux désignent un itinéraire. */
+      if(ouvert){
+        try{
+          const u=new URL(location.href); let sale=false;
+          /* Ces deux-là disent une INTENTION D'ARRIVÉE — « je veux choisir »,
+             « montre-moi mes itinéraires ». Une fois l'itinéraire à l'écran,
+             elles sont satisfaites. Elles restaient pourtant dans l'adresse :
+             au rafraîchissement, la page rejouait l'arrivée. On repartait aux
+             cinq façons de partir, ou la liste des sauvegardés se rouvrait
+             par-dessus l'itinéraire qu'on était en train de lire.
+             « ouvrir », « reprendre », « tour », « trip », « picks » ne sont pas
+             touchés : eux DÉSIGNENT ce qu'on regarde, et doivent survivre au
+             rechargement. */
+          ['choix','mes'].forEach(function(k){
+            if(u.searchParams.has(k)){ u.searchParams.delete(k); sale=true; }
+          });
+          if(sale) history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);
+        }catch(e){}
+      }
+    };
+    const oeil=new MutationObserver(relire);
+    oeil.observe(res,{attributes:true,attributeFilter:['style']});
+    if(alb) oeil.observe(alb,{attributes:true,attributeFilter:['style']});
+    relire();
+  })();
+
+  (function(){
+    const dock=document.getElementById('navdock'); if(!dock) return;
+    const btn=document.getElementById('navdockbtn'), pop=document.getElementById('navdockpop'),
+          liste=document.getElementById('navdocklist'), conf=document.getElementById('navdockconfirm'),
+          ndcT=document.getElementById('ndcTitre'), ndcX=document.getElementById('ndcTexte');
+    let choix=null;
+    const FAIRE={
+      google:()=>openInGoogleMaps(), osm:()=>openInOSM(), apple:()=>openInApple(),
+      waze:()=>openInWaze(),         gpx:()=>downloadGPX(),
+      kml:   ()=>{ if(window.THErt) THErt.kml(); },
+      chunks:()=>{ if(window.THErt) THErt.chunks(); }
+    };
+    function fermer(){ pop.hidden=true; btn.setAttribute('aria-expanded','false'); liste.hidden=false; conf.hidden=true; choix=null; }
+    function ouvrir(){
+      if(!LASTRES || !LASTRES.route || !LASTRES.route.length) return;   // rien à emporter
+      liste.hidden=false; conf.hidden=true; choix=null;
+      pop.hidden=false; btn.setAttribute('aria-expanded','true');
+    }
+    btn.addEventListener('click',e=>{ e.stopPropagation(); pop.hidden?ouvrir():fermer(); });
+    document.addEventListener('click',e=>{ if(!pop.hidden && !dock.contains(e.target)) fermer(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !pop.hidden) fermer(); });
+    dock.querySelectorAll('.nd-opt').forEach(b=>b.addEventListener('click',e=>{
+      e.stopPropagation();
+      choix=b.dataset.nd;
+      const lbl=b.querySelector('span:not(.nd-exp)'), exp=b.querySelector('.nd-exp');
+      ndcT.textContent = lbl ? lbl.textContent : '';
+      ndcX.textContent = exp ? exp.textContent : '';
+      liste.hidden=true; conf.hidden=false;
+      document.getElementById('ndcOk').focus();
+    }));
+    document.getElementById('ndcNo').addEventListener('click',e=>{ e.stopPropagation(); liste.hidden=false; conf.hidden=true; choix=null; });
+    document.getElementById('ndcOk').addEventListener('click',e=>{
+      e.stopPropagation();
+      const k=choix; fermer();
+      if(k && FAIRE[k]) FAIRE[k]();
+    });
+  })();
 
   // ---------- Scanner QR (musée / monument) : marque « vu », sans copier le contenu officiel ----------
   let scanStream=null, scanRAF=null;
@@ -2778,6 +3434,13 @@
 <script src="the-postcard.js" defer></script>
 <script src="the-backup.js" defer></script>
 <script src="the-carnet.js" defer></script>
+<!-- LA MISE EN FORME D'UNE ÉTAPE — portée d'Estonie le 01/09/2026, telle
+     quelle, sur demande de Helmy : « je veux le rendu d'Estonie d'une étape ».
+     Ce fichier manquait purement et simplement en Tunisie (404 en ligne). C'est
+     lui qui remonte la photo en tête de l'étape et pose le numéro, le nom, la
+     nature et la situation dessus. Aucune dépendance au pays : il lit ce que le
+     moteur produit déjà et le réagence. -->
+<script src="the-etape.js" defer></script>
 <script src="roadtrip-plus.js" defer></script>
 <script src="roadtrip-plan.js" defer></script>
 <script src="the-souvenir.js" defer></script>
@@ -3251,24 +3914,20 @@
 
     /* Bouton d'accès : à côté de « J'ai fait une halte ici », donc visible dans
        tous les modes une fois un itinéraire ouvert. */
-    function poser(){
-      var h=document.getElementById('haltebtn');
-      if(!h || document.getElementById('autourbtn')) return;
-      var b=document.createElement('button');
-      b.id='autourbtn'; b.type='button';
-      b.textContent='🔎 '+T('autour.bouton','Ce qui est autour de moi');
-      b.style.cssText=h.style.cssText;
-      b.onclick=function(){
-        if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
-          function(p){ THEautour([p.coords.longitude,p.coords.latitude], T('autour.ma.position','ma position')); },
-          function(){ THEautour(null, (LASTORIGIN&&LASTORIGIN.label)||''); },
-          {enableHighAccuracy:true, timeout:8000, maximumAge:120000});
-        else THEautour(null, (LASTORIGIN&&LASTORIGIN.label)||'');
-      };
-      h.parentNode.insertBefore(b, h.nextSibling);
-    }
-    var t=setInterval(function(){ poser(); }, 700);
-    setTimeout(function(){ clearInterval(t); }, 20000);
+    /* ── LE BOUTON GÉNÉRAL « CE QUI EST AUTOUR DE MOI » EST RETIRÉ ─────────────
+       Helmy, 31/08/2026 : « ça veut dire que le bouton "ce qui est autour de moi"
+       tout à la fin doit disparaître ». Et avant : « il n'apparaît qu'à la fin de
+       l'itinéraire, après les étapes — c'est trop loin et ça n'a rien à faire là ».
+    
+       Il fallait dérouler tout le parcours pour demander ce qu'il y avait autour
+       d'une étape précise, alors que la réponse dépend justement de l'étape. Le
+       geste vit désormais SUR CHAQUE CARTE : en icône 🔎 à droite de « Modifier »,
+       et en clair dans son menu.
+    
+       ⚠️ `THEautour(coord, nom)` n'est PAS supprimée : c'est elle qu'appelle le
+       geste d'étape (THEactionsEtape, geste `autour`). Seuls disparaissent ce
+       bouton, sa boucle de pose toutes les 700 ms, et sa demande de position en
+       haute précision — celle-là même que le §4 du dépannage proscrit. */
   })();
   </script>
 
@@ -3332,6 +3991,8 @@
       if(typeof LASTRES==='undefined' || !LASTRES) return;
       var quand=[x.arrivee, x.heure].filter(Boolean).join(' ');
       var stop={ c:x.coord, layer:'perso', genre:'perso', halte:true, htype:'', quand:quand,
+        /* quand l'étape a été POSÉE — sert à pré-remplir sa date sans rien inventer */
+        cree:Date.now(),
         p:{ nom:x.nom, type:'Étape', gouvernorat:'', description:x.note||'',
             source:x.adresse ? ('Position : OpenStreetMap — '+x.adresse) : 'Position GPS relevée sur place',
             a_voir:'', conseil:'' } };
@@ -3352,11 +4013,35 @@
            réordonne pas. Un voyage libre suit le chemin réellement parcouru, pas le
            plus court. */
         base0.splice(x.apres+1, 0, stop); items=base0; x._ordreImpose=true;
-      } else { items=base0.concat([stop]); }
+      } else {
+        /* Position hors bornes (la liste a bougé depuis l'ouverture de l'écran) :
+           on ajoute À LA FIN. On ne réordonne pas pour autant — voir ci-dessous. */
+        items=base0.concat([stop]);
+      }
       var origine = LASTORIGIN && LASTORIGIN.coord ? LASTORIGIN : {coord:x.coord, label:x.nom};
       var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
-      base.route = (x._ordreImpose || x.index!=null || (typeof nearestOrder!=='function'))
-        ? items : nearestOrder(origine.coord, items, null);
+      /* ── AJOUTER UNE ÉTAPE NE RÉORDONNE JAMAIS L'ITINÉRAIRE ────────────────────
+         Helmy, 30/08/2026, points 9·10·11 : « l'ajout doit se faire à cet endroit
+         même si les dates et heures diffèrent — l'utilisateur réorganisera. Par
+         défaut la personne ajoute ses étapes chronologiquement, par intérêt : c'est
+         ça la priorité. »
+
+         Ce que le code faisait : dès que la position choisie n'était pas retenue, il
+         passait toute la liste à `nearestOrder()` — un re-tri par plus court chemin.
+         L'étape se retrouvait donc ailleurs que là où on l'avait mise, et « à la
+         fin » ne tenait pas davantage : le tri géographique décidait à la place du
+         voyageur.
+
+         ALIGNÉ SUR TERRALOG, qui l'a déjà tranché — `RoadTrip-Generique/blocs/
+         20-itineraire.js:155` : « ORDRE MANUEL respecté : on ajoute dans l'ordre de
+         la liste. L'optimisation géographique est un BOUTON one-shot, pas un re-tri
+         permanent — l'utilisateur garde la main. »
+
+         `nearestOrder` n'est PAS supprimé : il compose toujours un itinéraire au
+         départ, dans « Composer » et « Surprenez-moi », où on lui demande justement
+         de proposer un ordre. Il ne s'invite plus quand c'est le voyageur qui pose
+         une étape à la main. */
+      base.route = items;
       render(origine, base);
       try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(err){}
       /* la fiche enregistrée suit, sans bouton : c'est un voyage qui se remplit */
@@ -3382,7 +4067,10 @@
        le planificateur les place dans l'unique rangée de la carte, sur le
        modèle du RoadTrip (le fréquent en clair, le rare dans « Modifier »). */
     window.THEactionsEtape = [
-      { id:'partager', principal:true,
+      /* 01/09/2026, Helmy : « tout le texte en bas doit être réduit aux icônes ».
+         « Partager » quitte le libellé en clair pour rejoindre les icônes de la
+         rangée. Le geste ne change pas ; son nom vit en `title` et `aria-label`. */
+      { id:'partager', icone:'🔗',
         label:function(){ return '🔗 '+T('itin.etape.partager','Partager'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s) return;
@@ -3434,6 +4122,14 @@
             } });
         } },
       { id:'autour',
+        /* ⚠️ ON NE MET PAS `principal:true`. Ce drapeau produit un bouton pleine
+           largeur : deux d'entre eux feraient déborder la rangée sur un petit
+           écran. `icone` demande au planificateur un bouton COMPACT — il place,
+           il ne décide pas. Demandé par Helmy le 30/08/2026 : « sur chaque étape,
+           le bouton "ce qu'il y a autour de moi" en plus de celui tout en bas,
+           mais que des icônes. » L'entrée reste AUSSI dans le menu « Modifier » :
+           qui l'y cherchait l'y retrouve. */
+        icone:'🔎',
         label:function(){ return T('itin.etape.autour','🔎 Ce qu\'il y a autour de cette étape'); },
         run:function(i){
           var s=(LASTRES.route||[])[i]; if(!s||!s.c) return;
@@ -3444,31 +4140,28 @@
     /* Bouton « ajouter une étape », posé à côté de la halte : même geste, en mode libre */
     function poser(){
       var h=document.getElementById('haltebtn');
-      if(!h || document.getElementById('betAdd')) return;
-      /* « Ajouter une étape » n'appartient PAS au seul voyage libre : un circuit
-         tout tracé et un itinéraire composé se remanient de la même façon —
-         c'est le même format, seule la façon de le remplir au départ change. */
+      if(!h) return;
       if(!(typeof LASTRES!=='undefined' && LASTRES)) return;
-      var b=document.createElement('button');
-      b.id='betAdd'; b.type='button';
-      b.textContent='➕ '+T('itin.etape.ajouter','Ajouter une étape');
-      b.style.cssText=h.style.cssText;
-      b.onclick=function(){ if(window.THEetape) THEetape.ouvrir({premiere:false,
-        etapes:(LASTRES&&LASTRES.route||[]).map(function(s){ return {nom:s.p.nom}; })}); };
-      h.parentNode.insertBefore(b, h);
+      /* ── « ➕ AJOUTER UNE ÉTAPE » RETIRÉ DU MENU DU BAS ─────────────────────────
+         Helmy, 31/08/2026 : « le + ajouter une étape dans le menu tout en bas n'a
+         rien à y faire, on peut l'enlever ».
+         Il faisait doublon : le planificateur pose déjà « ＋ Ajouter une étape ici »
+         ENTRE chaque étape et avant la première (`.rtp-ins`). Celui-ci obligeait à
+         descendre sous tout le parcours pour un geste qui, en bas de page, ne dit
+         plus à quel endroit l'étape ira — d'où l'ajout systématique à la fin.
+         Le geste reste entier, il est simplement là où il se comprend.
+         ⚠️ On ne retire QUE ce bouton : « 🔗 Coller un lien de carte », posé par la
+         même fonction juste en dessous, n'a pas été demandé et reste en place. */
 
-      /* Le lieu trouvé ailleurs — un hôtel dans Google Maps, un restaurant dans
-         Waze — se colle ici. Sur Android l'application apparaît aussi dans la
-         feuille de partage ; sur iPhone, le collage est la seule porte, d'où ce
-         bouton qui existe partout. */
-      if(window.HPartage && !document.getElementById('betColler')){
-        var c=document.createElement('button');
-        c.id='betColler'; c.type='button';
-        c.textContent='🔗 '+T('itin.lien.coller','Coller un lien de carte');
-        c.style.cssText=h.style.cssText;
-        c.onclick=function(){ HPartage.ouvrir(); };
-        h.parentNode.insertBefore(c, h);
-      }
+      /* « Coller un lien de carte » RETIRÉ — 01/09, Helmy : « c'est inutile ».
+         Donner un lieu à une étape se fait par l'écran d'étape lui-même : une
+         adresse cherchée dans OpenStreetMap, des coordonnées saisies, ou « ma
+         position » quand on est sur place. Trois portes valent mieux qu'une
+         quatrième qui demande de savoir ce qu'est un lien de carte.
+         ⚠️ La brique `brique-partage-lieu.js` reste chargée : sur Android
+         l'application figure encore dans la feuille de partage du système, et
+         `HPartage.auDemarrage()`, plus bas, traite ce cas. Ce n'est pas ce
+         bouton, et Helmy ne l'a pas visé. */
     }
     setInterval(poser, 900);
 

@@ -1,0 +1,29 @@
+Le fond de carte vit ici, sous le nom `fond.pmtiles`.
+
+Il n'est PAS dans le dépôt : 78 Mo pour la seule Tunisie. Il se refabrique en treize
+secondes depuis le fichier planète public de Protomaps, avec l'outil officiel :
+
+  pmtiles extract https://build.protomaps.com/AAAAMMJJ.pmtiles fond.pmtiles \
+      --bbox=7.5224,30.2280,11.5983,37.5439 --maxzoom=14
+
+⚠️ L'ADRESSE DE LA RECETTE DE ROADTRIP EST MORTE. `demo-bucket.protomaps.com/v4.pmtiles`
+rend 404 au 30/08/2026. Les builds vivent désormais sous `build.protomaps.com/AAAAMMJJ.pmtiles`
+— vérifié : HTTP 206, donc les requêtes par plage marchent, ce qu'exige `pmtiles extract`.
+
+Fabriqué le 30/08/2026 depuis le build du 29/08. Mesuré, pas estimé :
+  Tunisie z0-14 : 78 396 435 octets      <- celui qui est ici
+  99 894 tuiles adressées, 55 740 contenus distincts, clustered, gzip
+  données OSM du 29/08/2026 à 04h00 UTC (osmosisreplicationtime)
+
+Pour comparaison, mesuré sur RoadTrip le 26/08 : Belgique z0-14 = 542 350 918 octets,
+planète z0-15 = 137 560 784 345. La Tunisie est sept fois plus légère que la Belgique :
+c'est la densité qui décide, pas la surface. N'extrapole pas d'un pays à l'autre.
+
+POURQUOI CE FICHIER EXISTE : CARTO a commencé le 26/08/2026 à tamponner
+« API KEY REQUIRED » dans les images qu'il servait. Prouvé le 30/08 en récupérant une
+tuile hors de l'application : le filigrane est cuit dans le PNG, et le serveur répond
+pourtant HTTP 200. La carte est le squelette du produit : elle ne peut pas dépendre des
+conditions de quelqu'un d'autre.
+
+IL NE SE SERT JAMAIS EN DIRECT : `.htaccess` doit le refuser, `tuile.php` le lit.
+Ces deux fichiers ne sont PAS encore posés ici — voir le plan repris de RoadTrip.

@@ -10,6 +10,11 @@
     // langues de CETTE édition en plus du français et de l'anglais.
     // Le drapeau se déduit de « iso » — jamais écrit en dur.
     langNatCode: ["ar","de","it"],
+    // Seule(s) la ou les langues DU PAYS portent le drapeau de l'édition (🇹🇳).
+    // « langNatCode » déclare les langues offertes — il ne dit PAS quel drapeau
+    // leur donner. Les confondre affichait 3 drapeaux tunisiens (ar, de, it) le
+    // 30/08/2026. L'allemand et l'italien reprennent le leur : 🇩🇪 et 🇮🇹.
+    langPays:     ["ar"],
     domaine:      "heritage.threshold-analytics.com",
     marque:       "Tunisia Heritage Experience",
     marqueCourte: "Tunisia Heritage",

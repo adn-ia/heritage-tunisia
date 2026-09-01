@@ -84,7 +84,7 @@
     return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
   }
 
-  function construire(premiere) {
+  function construire(premiere, _edit) {
     styles();
     var m = document.getElementById("betModal");
     if (m) m.remove();
@@ -93,7 +93,11 @@
     var n = new Date();
     m.innerHTML =
       '<div class="bet-box">' +
-        '<h3>' + ech(L(premiere ? "titre.premiere" : "titre")) + '</h3>' +
+        /* ON DIT CE QU'ON FAIT — 01/09/2026, Helmy : la date d'une étape ouvre
+           cette fenêtre, et elle annonçait « Ajouter une étape » alors qu'elle en
+           corrige une. Le geste était juste, le titre mentait. Une correction
+           arrive avec un `index` : c'est à ça qu'on la reconnaît. */
+        '<h3>' + ech(L(premiere ? "titre.premiere" : (_edit ? "titre.edit" : "titre"))) + '</h3>' +
         '<input id="bet-nom" type="text" placeholder="' + ech(L("nom.exemple")) + '" aria-label="' + ech(L("nom")) + '">' +
         '<div class="bet-l">' + ech(L("chercher")) + '</div>' +
         '<div class="bet-row">' +
@@ -119,7 +123,7 @@
         '<input id="bet-dep" type="date">' +
         '<div class="bet-l">' + ech(L("inserer")) + '</div>' +
         '<select id="bet-ou"></select>' +
-        '<button type="button" class="bet-go" id="bet-ok">' + ech(L("valider")) + '</button>' +
+        '<button type="button" class="bet-go" id="bet-ok">' + ech(L(_edit ? "valider.edit" : "valider")) + '</button>' +
         '<button type="button" class="bet-no" id="bet-non">' + ech(L("annuler")) + '</button>' +
         '<div class="bet-pos" style="text-align:center;margin-top:10px">' + ech(L("auto")) + '</div>' +
       '</div>';
@@ -225,7 +229,7 @@
     return load().then(function () {
       POS = v && v.coord ? v.coord : null;
       ADRESSE = (v && v.adresse) || "";
-      var m = construire(!!opts.premiere);
+      var m = construire(!!opts.premiere, !!(v && v.index != null));
       if (v) {
         var q = function (id) { return document.getElementById(id); };
         if (v.nom) q("bet-nom").value = v.nom;

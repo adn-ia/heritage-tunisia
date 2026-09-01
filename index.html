@@ -233,6 +233,7 @@
   <div class="sheet-ov" id="tourOv"><div class="sheet" id="tourSheet"></div></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="vendor/protomaps-leaflet.js"></script>
   <script>
     const DEFAULT_CENTER = (window.HConf&&HConf.carte) ? [HConf.carte.lat, HConf.carte.lon] : [34.5, 9.5];
     const DEFAULT_ZOOM = (window.HConf&&HConf.carte&&HConf.carte.zoom) || 7;
@@ -240,7 +241,23 @@
 
     const map = L.map('map', { zoomControl:false }).setView(DEFAULT_CENTER, DEFAULT_ZOOM);
     L.control.zoom({ position:'bottomleft' }).addTo(map);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { maxZoom:19, attribution:'&copy; OpenStreetMap, &copy; CARTO' }).addTo(map);
+    /* Notre propre fond de carte depuis le 30/08/2026. Repris de Terralog
+       (`RoadTrip-Generique/blocs/99-demarrage.js:142`). CARTO tamponnait
+       « API KEY REQUIRED » dans le PNG tout en répondant 200 : la carte est le
+       squelette du produit, elle ne peut pas dépendre des conditions d'un tiers.
+       `tuile.php` lit UNE tuile dans `tuiles/fond.pmtiles` (78 Mo, la Tunisie).
+       Leaflet RESTE : `protomaps-leaflet` (128 ko) rend le vectoriel dans une
+       couche ordinaire — pastilles, tracé et popups ne changent pas d'une ligne.
+       ⚠️ L'option s'appelle `flavor`, PAS `theme` : un `theme:` n'est pas une
+       erreur, il est ignoré, et la carte reste GRISE alors que les tuiles arrivent.
+       Le fond s'arrête aux données du zoom 14 ; au-delà la dernière tuile est
+       agrandie — gratuit en vectoriel, et on zoome jusqu'à 19 sans rien stocker. */
+    protomapsL.leafletLayer({
+      url: 'tuile.php?z={z}&x={x}&y={y}',
+      flavor: 'light',
+      maxDataZoom: 14,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
     // Emojis fiables (rendus partout) par type
     const EMOJI = {

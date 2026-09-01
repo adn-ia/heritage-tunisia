@@ -7,3 +7,6 @@ musee/
 *.mp3
 *.zip
 .DS_Store
+
+# Le fond de carte : 78 Mo, jamais dans le dépôt (voir tuiles/LISEZ-MOI.txt)
+*.pmtiles

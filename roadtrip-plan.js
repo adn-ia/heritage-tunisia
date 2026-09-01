@@ -59,7 +59,7 @@
     if(document.getElementById("rtp-css")) return;
     var s=document.createElement("style"); s.id="rtp-css";
     s.textContent=
-      ".rtp-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}"+".rtp-actions .rtp-pb,.rtp-actions .rtp-mb{border:1px solid var(--line,#e3d8c4);background:#fff;color:#6b5a39;  border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;}"+".rtp-menu{position:relative;display:inline-block;}"+".rtp-pop{display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:60;background:#fffdf8;  border:1px solid var(--line,#e3d8c4);border-radius:9px;box-shadow:0 8px 26px rgba(0,0,0,.16);  min-width:214px;padding:5px;}"+".rtp-menu.on .rtp-pop{display:block;}"+".rtp-pop button{display:block;width:100%;text-align:left;border:none;background:none;font:inherit;  font-size:14px;color:#6b5a39;padding:9px 11px;border-radius:6px;cursor:pointer;}"+".rtp-pop button:hover{background:#f6efe2;}"+".rtp-pop button.danger{color:#a4442f;}"+".rtp-visits{margin-top:10px;border-top:1px solid #efe7d8;padding-top:8px;}"+".rtp-visits>summary{cursor:pointer;font-size:14px;color:#8a7c66;list-style:none;}"+".rtp-visits>summary::-webkit-details-marker{display:none}"+".rtp-visits-in{padding:8px 0 2px;}"+".rtp-visit-item{font-size:14px;color:#6b5a39;padding:3px 0;}"+".rtp-addvisit{margin-top:6px;border:1px solid var(--line,#e3d8c4);background:#fff;color:#6b5a39;  border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;}"+
+      ".rtp-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px;}"+".rtp-actions .rtp-pb,.rtp-actions .rtp-mb{border:1px solid var(--line,#e3d8c4);background:#fff;color:#6b5a39;  border-radius:7px;width:46px;min-width:46px;height:46px;display:inline-flex;align-items:center;justify-content:center;padding:0;font:inherit;font-size:19px;line-height:1;cursor:pointer;}"+/* Le bouton d'un geste en icône : carré, lisible, et surtout ASSEZ GRAND. Une cible de 24 px est intouchable au doigt — Apple demande 44, et le dépannage §1a garde la trace du bouton qu'on croyait mort et qui était seulement trop petit. */".rtp-actions .rtp-ib{border:1px solid var(--line,#e3d8c4);background:#fff;border-radius:7px;width:46px;min-width:46px;height:46px;display:inline-flex;align-items:center;justify-content:center;font-size:19px;line-height:1;padding:0;cursor:pointer;}"+".rtp-menu{position:relative;display:inline-block;}"+".rtp-pop{display:none;position:absolute;right:0;bottom:calc(100% + 6px);z-index:60;background:#fffdf8;  border:1px solid var(--line,#e3d8c4);border-radius:9px;box-shadow:0 8px 26px rgba(0,0,0,.16);  min-width:214px;padding:5px;}"+".rtp-menu.on .rtp-pop{display:block;}"+".rtp-pop button{display:block;width:100%;text-align:left;border:none;background:none;font:inherit;  font-size:14px;color:#6b5a39;padding:9px 11px;border-radius:6px;cursor:pointer;}"+".rtp-pop button:hover{background:#f6efe2;}"+".rtp-pop button.danger{color:#a4442f;}"+".rtp-visits{margin-top:10px;border-top:1px solid #efe7d8;padding-top:8px;}"+".rtp-visits>summary{cursor:pointer;font-size:14px;color:#8a7c66;list-style:none;}"+".rtp-visits>summary::-webkit-details-marker{display:none}"+".rtp-visits-in{padding:8px 0 2px;}"+".rtp-visit-item{font-size:14px;color:#6b5a39;padding:3px 0;}"+".rtp-addvisit{margin-top:6px;border:1px solid var(--line,#e3d8c4);background:#fff;color:#6b5a39;  border-radius:7px;padding:8px 12px;font:inherit;font-size:14px;cursor:pointer;}"+
       "  width:32px;height:30px;line-height:1;cursor:pointer;font-size:14px;font-family:inherit;padding:0;transition:.12s;}"+
       ".rtp-daterow{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;color:var(--stone,#8a7c66);}"+
       ".rtp-daterow input{font-family:inherit;font-size:14px;border:1px solid var(--line,#e3d8c4);border-radius:6px;padding:5px 8px;background:#fff;color:var(--ink,#2b2318);}"+
@@ -276,7 +276,7 @@
 
         var wrap=document.createElement("span"); wrap.className="rtp-menu";
         var mb=document.createElement("button"); mb.type="button"; mb.className="rtp-mb";
-        mb.textContent="✏️ "+T("plan.modifier")+" ▾";
+        mb.textContent="✏️"; mb.title=T("plan.modifier"); mb.setAttribute("aria-label", T("plan.modifier"));
         var pop=document.createElement("span"); pop.className="rtp-pop";
         wrap.appendChild(mb); wrap.appendChild(pop);
 
@@ -290,12 +290,28 @@
           ev.stopPropagation();
           var ouvert=wrap.classList.contains("on");
           [].forEach.call(document.querySelectorAll(".rtp-menu.on"), function(x){ x.classList.remove("on"); });
-          if(!ouvert) wrap.classList.add("on");
+          if(!ouvert){
+            wrap.classList.add("on");
+            /* IL DOIT RESTER DANS L'ÉCRAN — 01/09/2026, Helmy : « le crayon
+               cliquable en bas de chaque étape ouvre sa modale hors écran ».
+               Le menu s'ouvre vers le haut ; sur une étape haute dans la page il
+               sort par le dessus. On le mesure APRÈS l'avoir montré — avant, il
+               n'a pas de taille — et on le bascule vers le bas s'il ne tient pas.
+               Même chose à droite si le bouton est près du bord. */
+            try{
+              pop.style.bottom=''; pop.style.top=''; pop.style.left=''; pop.style.right='';
+              var r=pop.getBoundingClientRect();
+              if(r.top < 8){ pop.style.bottom='auto'; pop.style.top='calc(100% + 6px)'; }
+              var r2=pop.getBoundingClientRect();
+              if(r2.right > window.innerWidth - 8){ pop.style.left='auto'; pop.style.right='0'; }
+            }catch(e){}
+          }
         };
 
         /* Les actions de la PAGE (éditer, météo, partager…) : elle les décrit,
            elle les exécute ; le module ne fait que leur donner leur place. */
         var hote = (window.THEactionsEtape || []);
+        var icones = [];   // posés APRÈS « Modifier » — voir plus bas
         hote.forEach(function(a){
           if(!a || typeof a.run!=="function") return;
           var lib = (typeof a.label==="function") ? a.label() : (a.label||"");
@@ -306,6 +322,35 @@
             row.appendChild(pb);
           } else {
             (function(idx){ item(lib, function(){ a.run(idx); }); })(i);
+            /* ── UN GESTE PEUT DEMANDER SA PLACE SUR LA CARTE, EN ICÔNE ────────
+               La page déclare `icone` ; le module la pose dans la rangée, sans
+               savoir de quel geste il s'agit — il place, il ne décide pas.
+               Le geste RESTE dans le menu ci-dessus : on ne le déplace pas, on
+               le rend atteignable en un doigt.
+               ⚠️ Le libellé complet part en `aria-label` : une icône seule est
+               muette pour une synthèse vocale. `title` ne suffit pas sur mobile. */
+            if(a.icone){
+              (function(idx){
+                var ib=document.createElement("button"); ib.type="button"; ib.className="rtp-ib";
+                ib.textContent=a.icone; ib.title=lib; ib.setAttribute("aria-label", lib);
+                ib.onclick=function(){ a.run(idx); };
+                /* ⚠️ PAS POSÉ ICI. Helmy, 31/08/2026 : « tout à fait à droite de
+                   Modifier, le plus à droite possible ». Dans la boucle, il se
+                   retrouvait AVANT le menu. On le réserve.
+                   ⚠️ ET SA TAILLE SE RÈGLE ICI, EN LIGNE — PAS DANS LE CSS.
+                   Le 31/08 j'ai voulu modifier la règle `.rtp-ib` : tout le CSS de
+                   ce fichier tient sur UNE seule ligne, et le remplacement a emporté
+                   `.rtp-menu` et `.rtp-pop` avec elle. Le JavaScript restait valide,
+                   `node --check` passait — mais le menu « Modifier » ne se repliait
+                   plus et la carte éclatait. On ne retouche plus cette ligne. */
+                ib.style.minWidth='0'; ib.style.minHeight='0';
+                ib.style.display='inline-block';
+                ib.style.padding='8px 12px';      // exactement `.rtp-pb` / `.rtp-mb`
+                ib.style.fontSize='16px';         // le glyphe seul se lit moins qu'un mot
+                ib.style.lineHeight='1.15';
+                icones.push(ib);
+              })(i);
+            }
           }
         });
 
@@ -317,6 +362,10 @@
         item("🗑 "+T("plan.retirer"), function(){ dropStep(i); }, true);
 
         row.appendChild(wrap);
+        /* Les gestes en icône ferment la rangée, APRÈS « Modifier ». Le premier reçoit
+           `margin-left:auto` : dans une rangée en flex, c'est ce qui le pousse contre le
+           bord droit — « le plus à droite possible ». */
+        icones.forEach(function(ib, n){ if(n===0) ib.style.marginLeft='auto'; row.appendChild(ib); });
         card.appendChild(row);
       }
 
@@ -326,9 +375,32 @@
         /* Date ET heure : une halte se note parfois sur le moment, parfois le soir.
            Les deux vivent dans la MÊME métadonnée d'étape que le reste — jamais
            dans un second endroit de stockage. */
+        /* ── LA DATE SE PRÉSENTE REMPLIE, PAS VIDE ────────────────────────────
+           Helmy, 30/08/2026 : « le rendu de la date est mauvais — juste mettre la
+           date de création et l'heure, et laisser cliquable pour changer. »
+           Les deux champs s'affichaient VIDES : rien ne disait quand l'étape avait
+           été posée, et il fallait tout saisir pour obtenir une information que
+           l'application avait déjà. On les pré-remplit avec la date de création.
+
+           ⚠️ ON NE REMPLACE PAS LES CHAMPS PAR DU TEXTE. Ils sont déjà cliquables :
+           les changer en libellé retirerait la saisie directe et obligerait à passer
+           par un écran de plus. C'est le RENDU qui était mauvais, pas la saisie.
+
+           ⚠️ HEURE LOCALE, JAMAIS `toISOString()`. Celle-ci rend de l'UTC : en
+           Tunisie comme en Belgique l'heure affichée aurait été fausse d'une à deux
+           heures. On découpe à la main, comme `rtLocalISO` chez Terralog
+           (`RoadTrip-Generique/blocs/05-dates.js:64`).
+
+           ⚠️ AUCUNE DATE INVENTÉE : une étape enregistrée avant ce jour n'a pas de
+           date de création. Les champs restent alors vides, comme avant. */
+        var _cree = (s && +s.cree) || 0;
+        var _p = function(n){ return (n<10?'0':'')+n; };
+        var _dCree = _cree ? new Date(_cree) : null;
+        var _dateDef = md.date || (_dCree ? (_dCree.getFullYear()+'-'+_p(_dCree.getMonth()+1)+'-'+_p(_dCree.getDate())) : "");
+        var _heureDef = md.heure || (_dCree ? (_p(_dCree.getHours())+':'+_p(_dCree.getMinutes())) : "");
         drow.innerHTML='<span>📅 '+xe(T("plan.quand"))+'</span>'
-          + '<input type="date" data-rtp-date value="'+xe(md.date||"")+'">'
-          + '<input type="time" data-rtp-heure value="'+xe(md.heure||"")+'">';
+          + '<input type="date" data-rtp-date value="'+xe(_dateDef)+'">'
+          + '<input type="time" data-rtp-heure value="'+xe(_heureDef)+'">';
         /* La date se lit avec le nom de l'étape, comme le sous-titre d'une carte de
            RoadTrip : elle se place juste après lui. On insère chez SON parent —
            le nom est niché dans l'en-tête, donc son voisin n'est pas un enfant de

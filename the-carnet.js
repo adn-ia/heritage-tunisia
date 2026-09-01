@@ -114,12 +114,36 @@
     var place=el.dataset.place, nom=el.dataset.nom||'', lat=el.dataset.lat, lng=el.dataset.lng;
     el.innerHTML=
       '<div class="cn-hero" style="display:none"></div>'+
-      '<div class="cn-head">✏️ '+T('carnet.carnet.de.letape')+' <span class="cn-priv">— '+T('carnet.prive.tant.que.vous.ne')+'</span></div>'+
+      /* Le rappel « — privé tant que vous ne partagez pas » retiré du titre le
+         31/08/2026, sur demande de Helmy. Il alourdissait l'en-tête de CHAQUE
+         étape pour redire ce que la ligne du bas dit déjà une fois, en bas de la
+         section. La clé i18n reste en place, elle n'est pas supprimée. */
+      /* LE CRAYON SEUL — 01/09/2026, Helmy : « on avait enlevé la phrase carnet
+         de l'étape en laissant un crayon ». Le mot redisait ce que le crayon dit
+         déjà, au-dessus d'un champ dont le texte d'invite le redit une troisieme
+         fois. Le nom part en `title` et `aria-label` : à l'écran il n'y a qu'un
+         crayon, à l'oreille il y a toujours un nom. */
+      /* LE CRAYON SEUL — 01/09/2026, Helmy, deux fois : « j'ai demandé un crayon ».
+         Le nom part en `title` et `aria-label` : rien à l'écran, tout à l'oreille. */
+      '<div class="cn-head" title="'+T('carnet.carnet.de.letape')+'" aria-label="'+T('carnet.carnet.de.letape')+'">✏️</div>'+
       '<textarea class="cn-note" placeholder="'+T('carnet.un.mot.sur.cette.etape')+'"></textarea>'+
       '<div class="cn-grid"></div>'+
-      '<div class="cn-row"><button class="cn-btn cn-manage">🖼️ '+T('carnet.gerer.ajouter.medias')+'</button>'+
-        '<button class="cn-btn cn-pc">🖼️ '+T('carnet.carte.postale')+'</button></div>'+
-      (lat&&lng?'<a class="cn-maps" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query='+lat+','+lng+'">🧭 '+T('carnet.cette.etape.dans.maps')+'</a>':'')+
+      /* ⚠️ DEUX BOUTONS, DEUX ICÔNES. Les deux portaient 🖼️ : rien ne distinguait
+         « gérer les médias » de « carte postale », signalé par Helmy le 30/08/2026.
+         La carte postale prend ✉️ — ce n'est pas un choix arbitraire : sa PROPRE
+         fenêtre porte déjà ✉️ (`the-postcard.js:414`). Un bouton doit montrer
+         l'icône de ce qu'il ouvre, sans quoi on ne relie pas les deux écrans.
+         🖼️ reste aux médias, où il désigne bien ce qu'il fait. */
+      /* DES ICÔNES, PAS DES PHRASES — 01/09/2026, Helmy : « tout le texte en bas
+         doit être réduit aux icônes ». Trois libellés pleine largeur pour trois
+         gestes qu'un pictogramme dit mieux. Le nom reste en `title` ET en
+         `aria-label`, traduit comme avant : à l'écran il n'y a qu'une icône, à
+         l'oreille il y a toujours un nom. */
+      '<div class="cn-row">'+
+        '<button class="cn-btn cn-ic cn-manage" title="'+T('carnet.gerer.ajouter.medias')+'" aria-label="'+T('carnet.gerer.ajouter.medias')+'">🖼️</button>'+
+        '<button class="cn-btn cn-ic cn-pc" title="'+T('carnet.carte.postale')+'" aria-label="'+T('carnet.carte.postale')+'">✉️</button>'+
+        (lat&&lng?'<a class="cn-btn cn-ic cn-maps" target="_blank" rel="noopener" title="'+T('carnet.cette.etape.dans.maps')+'" aria-label="'+T('carnet.cette.etape.dans.maps')+'" href="https://www.google.com/maps/search/?api=1&query='+lat+','+lng+'">🧭</a>':'')+
+      '</div>'+
       '<div class="cn-note-priv">🔒 '+T('carnet.vos.medias.restent.sur.votre')+'</div>';
     var ta=el.querySelector('.cn-note'); ta.value=note(place); ta.onchange=function(){ note(place,ta.value); };
     el.querySelector('.cn-manage').onclick=function(){ openManager(place,nom); };
@@ -138,41 +162,155 @@
       return (court && court !== place) ? getMedia(court) : a;
     });
   }
+  /* ── RECADRER L'IMAGE D'EN-TÊTE AU DOIGT ────────────────────────────────────────
+     Demandé par Helmy le 30/08/2026 : « il faudra pouvoir CENTRER AU DOIGT car le
+     format change. Sur l'étape même, en appuyant on recentre l'image où on veut. »
+     Le bandeau est un fond en `cover` : selon l'écran, il coupait où il voulait.
+     Terralog n'a pas ce geste — il est écrit ici, pas repris.
+
+     ⚠️ LE POURCENTAGE NE SUIT PAS LE DOIGT. En `cover`, `background-position` ne
+     parcourt QUE le débordement de l'image, pas sa largeur : 40 px de doigt ne font
+     pas 40 px d'image. Il faut les dimensions naturelles de la photo pour convertir,
+     sinon la carte glisse dix fois trop vite ou pas du tout.
+
+     ⚠️ UN AXE SANS DÉBORDEMENT NE BOUGE PAS, et c'est normal : une photo qui remplit
+     exactement la largeur n'a rien à découvrir de ce côté. On l'ignore au lieu de
+     laisser croire à une panne — le curseur reste la seule promesse faite.
+
+     Le cadrage est rangé sur la PHOTO (`heroPos`) : chaque enregistrement porte un
+     seul `place` (cf. addMedia), donc une photo appartient à une étape et une seule.
+     Limite connue : quand une étape sans photo retombe sur la clé courte (photos
+     prises avant que l'itinéraire ait un identifiant), deux étapes peuvent montrer
+     le même média — elles partagent alors son cadrage. C'est la même photo. */
+  function tailleNaturelle(blob){
+    return new Promise(function(res){
+      var u=URL.createObjectURL(blob), im=new Image();
+      im.onload=function(){ var s={w:im.naturalWidth,h:im.naturalHeight}; URL.revokeObjectURL(u); res(s); };
+      im.onerror=function(){ URL.revokeObjectURL(u); res(null); };
+      im.src=u;
+    });
+  }
+  function debordement(box,taille){
+    var r=box.getBoundingClientRect();                       // relu AU GESTE : la page a pu tourner
+    if(!taille||!taille.w||!taille.h||!r.width||!r.height) return {x:0,y:0};
+    var e=Math.max(r.width/taille.w, r.height/taille.h);      // c'est ce que fait « cover »
+    return { x:taille.w*e-r.width, y:taille.h*e-r.height };
+  }
+  function lirePos(s){
+    var p=String(s||'50% 50%').trim().split(/\s+/); if(p.length<2) p[1]='50%';
+    var x=parseFloat(p[0]), y=parseFloat(p[1]);
+    return { x:isNaN(x)?50:x, y:isNaN(y)?50:y };
+  }
+  function borner(v){ return v<0?0:(v>100?100:v); }
+  function poserGesteEnTete(box, place, h, ouvrir){
+    var g=null, avaler=false;
+    box.style.touchAction='none';    // sans quoi iOS fait défiler la page et tue le geste
+    box.style.cursor='grab';
+    box.onpointerdown=function(e){
+      if(g) return; if(e.pointerType==='mouse' && e.button!==0) return;
+      g={ id:e.pointerId, x:e.clientX, y:e.clientY, pos:lirePos(box.style.backgroundPosition), deb:null, bouge:false };
+      avaler=false;
+      try{ box.setPointerCapture(e.pointerId); }catch(err){}   // garder le geste même hors du bandeau
+    };
+    box.onpointermove=function(e){
+      if(!g || e.pointerId!==g.id) return;
+      var dx=e.clientX-g.x, dy=e.clientY-g.y;
+      if(!g.bouge && (dx*dx+dy*dy)<36) return;                 // sous 6 px c'est un APPUI, pas un glissement
+      g.bouge=true;
+      if(!box._tailleHero) return;
+      if(!g.deb) g.deb=debordement(box, box._tailleHero);
+      var px=g.pos.x, py=g.pos.y;
+      if(g.deb.x>0.5) px=borner(g.pos.x-(dx/g.deb.x)*100);
+      if(g.deb.y>0.5) py=borner(g.pos.y-(dy/g.deb.y)*100);
+      box.style.backgroundPosition=px+'% '+py+'%';
+      box.style.cursor='grabbing';
+      e.preventDefault();
+    };
+    function fin(e){
+      if(!g || e.pointerId!==g.id) return;
+      if(g.bouge){ avaler=true; updateMedia(h.id,{heroPos:box.style.backgroundPosition}); }
+      g=null; box.style.cursor='grab';
+    }
+    box.onpointerup=fin; box.onpointercancel=fin;
+    box.onclick=function(ev){
+      ev.stopPropagation();
+      if(avaler){ avaler=false; ev.preventDefault(); return; }  // un recadrage n'ouvre pas le panneau
+      ouvrir();
+    };
+  }
   function heroFill(el, place){ getMediaLarge(place).then(function(arr){
     var h=arr.filter(function(m){return m.hero && kind(m)==='image';})[0];
     var box=el.querySelector('.cn-hero'); if(!box) return;
-    if(h){ box.style.display='block'; box.style.backgroundImage="url('"+URL.createObjectURL(h.blob)+"')"; box.innerHTML=(h.caption?'<span class="cn-hero-cap">'+esc(h.caption)+'</span>':'');
-           box.style.cursor='pointer';
-           box.onclick=function(ev){ ev.stopPropagation(); panneauEnTete(place, (el.dataset&&el.dataset.nom)||''); }; }
+    if(h){ box.style.display='block'; box.classList.remove('vide');
+           var purgeH=libererZone('hero'); box.style.backgroundImage="url('"+lien(h.blob,'hero')+"')"; purgeH(); box.innerHTML=(h.caption?'<span class="cn-hero-cap">'+esc(h.caption)+'</span>':'');
+           box.style.backgroundPosition=h.heroPos||'50% 50%';
+           /* La mesure est asynchrone et le bandeau peut être re-rempli entre-temps :
+              ce jeton dit si le résultat concerne encore la photo affichée. */
+           var jeton={}; box._jetonHero=jeton; box._tailleHero=null;
+           tailleNaturelle(h.blob).then(function(s){ if(box._jetonHero===jeton) box._tailleHero=s; });
+           poserGesteEnTete(box, place, h, function(){ panneauEnTete(place, (el.dataset&&el.dataset.nom)||''); }); }
     else { /* Pas encore de photo d'en-tête : on le PROPOSE au lieu de ne rien montrer.
               Le bandeau existait mais restait caché — on ne pouvait pas deviner qu'il
               suffisait de marquer une photo d'une étoile pour l'obtenir. */
       box.style.display='block'; box.style.backgroundImage=''; box.classList.add('vide');
+      /* On rend le bandeau à son état neuf : sans ça, le geste et le cadrage d'une
+         photo retirée restaient collés dessus et le défilement restait bloqué. */
+      box.onpointerdown=box.onpointermove=box.onpointerup=box.onpointercancel=null;
+      box.style.touchAction=''; box.style.cursor='pointer'; box.style.backgroundPosition='';
+      box._tailleHero=null; box._jetonHero=null;
       box.innerHTML='<button type="button" class="cn-hero-add">📷 '+T('carnet.photo.en.tete')+'</button>';
       var b=box.querySelector('.cn-hero-add');
       if(b) b.onclick=function(ev){ ev.stopPropagation(); panneauEnTete(place, (el.dataset&&el.dataset.nom)||''); };
     }
   }); }
   function grid(g,place){ getMediaLarge(place).then(function(arr){
+    var purge=libererZone('grid');
     g.innerHTML=arr.map(function(m){ var k=kind(m);
       if(k==='video') return '<div class="cn-th cn-vid">▶</div>';
       if(k==='audio') return '<div class="cn-th cn-aud">🎙️</div>';
-      return '<div class="cn-th" style="background-image:url(\''+URL.createObjectURL(m.blob)+'\')"></div>'; }).join('')
+      return '<div class="cn-th" style="background-image:url(\''+lien(m.blob,'grid')+'\')"></div>'; }).join('')
       +'<div class="cn-th cn-addt">＋</div>';
+    purge();
   }); }
 
   /* ---- modale gestionnaire ---- */
   function modal(html){ var w=document.getElementById('cn-modal'); w.querySelector('.cn-box').innerHTML=html; w.classList.add('on'); }
+  /* ── LES LIENS D'OBJET SE LIBÈRENT ──────────────────────────────────────────
+     Signalé le 30/08/2026, corrigé sur ordre de Helmy. Chaque photo affichée créait
+     un `URL.createObjectURL` que personne ne libérait : le bandeau, la bande de
+     vignettes, le gestionnaire et le panneau d'en-tête en refaisaient à CHAQUE
+     rendu. Un carnet de cinquante photos rouvert dix fois retenait cinq cents blobs
+     en mémoire jusqu'à la fermeture de l'onglet — sur un iPad, c'est ce qui finit
+     par faire vider la page à l'utilisateur sans qu'il comprenne pourquoi.
+
+     ⚠️ ON LIBÈRE APRÈS AVOIR POSÉ LE NOUVEAU CONTENU, JAMAIS AVANT : libérer un
+     lien encore porté par une image affichée la casse à l'écran. */
+  var LIENS={};
+  function lien(blob, zone){
+    var u=URL.createObjectURL(blob);
+    (LIENS[zone]=LIENS[zone]||[]).push(u);
+    return u;
+  }
+  function libererZone(zone){
+    var anciens=LIENS[zone]||[]; LIENS[zone]=[];
+    return function(){ anciens.forEach(function(u){ try{URL.revokeObjectURL(u);}catch(e){} }); };
+  }
   function closeModal(){ var w=document.getElementById('cn-modal'); if(w)w.classList.remove('on'); CUR=null; }
   var CUR=null, CNSEL=[];
-  function openManager(place,nom){
+  /* ── APRÈS UN AJOUT, ON MONTRE LA PHOTO AJOUTÉE ─────────────────────────────
+     Helmy, 30/08/2026 : « quand on rajoute une photo l'album revient à la première
+     image alors qu'il devrait être à celle qu'on a rajoutée, comme ça on sait que
+     c'est bon. » Le gestionnaire se reconstruit en entier et repartait donc du haut :
+     rien ne disait que l'ajout avait pris. `focusId` désigne la photo à faire voir. */
+  function openManager(place,nom,focusId){
     CUR={place:place,nom:nom}; CNSEL=[];
     getMedia(place).then(function(arr){
-      var list = arr.length ? arr.map(function(m,i){ var k=kind(m), url=URL.createObjectURL(m.blob);
+      var purgeM=libererZone('manager');
+      var list = arr.length ? arr.map(function(m,i){ var k=kind(m), url=lien(m.blob,'manager');
         var media = k==='video'?'<video src="'+url+'" controls playsinline style="width:100%;border-radius:8px"></video>'
           : k==='audio'?'<audio src="'+url+'" controls style="width:100%"></audio>'
           : '<img src="'+url+'" style="width:100%;border-radius:8px">';
-        return '<div class="cn-item">'+media+
+        return '<div class="cn-item" data-item="'+m.id+'">'+media+
           (k==='image'?'<input class="cn-cap" data-cap="'+m.id+'" maxlength="90" placeholder="'+T('carnet.legende.photo')+'" value="'+esc(m.caption||'')+'">':'')+
           '<div class="cn-ctr">'+
           '<input type="checkbox" class="cn-selk" data-sel="'+m.id+'" style="width:18px;height:18px;margin-right:auto">'+
@@ -186,15 +324,45 @@
         '<h3>🖼️ '+T('carnet.carnet')+' — '+esc(nom)+'</h3>'+
         '<div class="cn-list">'+list+'</div>'+
         (arr.length>1?'<div style="text-align:center;margin:6px 0 0"><button class="cn-btn cn-delsel" disabled>🗑️ '+T('carnet.supprimer')+' (0)</button></div>':'')+
-        '<div class="cn-row" style="margin-top:12px">'+
-          '<label class="cn-btn">📷 '+T('carnet.photo')+'<input type="file" accept="image/*" capture="environment" multiple hidden data-add="image"></label>'+
-          '<label class="cn-btn">🖼️ '+T('carnet.galerie')+'<input type="file" accept="image/*" multiple hidden data-add="image"></label>'+
-          '<label class="cn-btn">🎥 '+T('carnet.video')+'<input type="file" accept="video/*,.mov,.mp4,.m4v,.avi,.3gp,.mkv" capture="environment" hidden data-add="video"></label>'+
-          '<label class="cn-btn">📁 '+T('carnet.fichiers')+'<input type="file" accept="image/*,video/*,audio/*,.mov,.mp4,.m4v,.m4a,.mp3,.wav,.aac,.ogg" multiple hidden data-add=""></label>'+
-          '<button class="cn-btn cn-rec">🎙️ '+T('carnet.son')+'</button></div>'+
+        /* ── DES ICÔNES, PAS DES ÉTIQUETTES ────────────────────────────────────
+           Helmy, 30/08/2026 : « l'organisation des icônes sur la page média est
+           chaotique […] on n'a pas besoin des écrits, seules les icônes suffisent :
+           appareil photo, cadre, etc. » Cinq boutons portant chacun son mot faisaient
+           une rangée qui se repliait sur deux ou trois lignes selon la langue —
+           l'allemand gonfle d'un sixième, et le carnet devenait illisible.
+           ⚠️ LE MOT N'EST PAS SUPPRIMÉ, IL EST DÉPLACÉ : `title` pour la souris,
+           `aria-label` pour la voix de synthèse. Il reste traduit par i18n, donc
+           aucun texte en dur n'entre ici. Un bouton muet pour tout le monde aurait
+           été un recul, pas une simplification.
+           ⚠️ 44 px de côté au moins : une cible plus petite est intouchable au doigt
+           (dépannage §1a), et retirer le mot rétrécit justement le bouton. */
+        '<div class="cn-row cn-row-ic" style="margin-top:12px">'+
+          '<label class="cn-btn cn-ic" title="'+esc(T('carnet.photo'))+'" aria-label="'+esc(T('carnet.photo'))+'">📷<input type="file" accept="image/*" capture="environment" multiple hidden data-add="image"></label>'+
+          '<label class="cn-btn cn-ic" title="'+esc(T('carnet.galerie'))+'" aria-label="'+esc(T('carnet.galerie'))+'">🖼️<input type="file" accept="image/*" multiple hidden data-add="image"></label>'+
+          '<label class="cn-btn cn-ic" title="'+esc(T('carnet.video'))+'" aria-label="'+esc(T('carnet.video'))+'">🎥<input type="file" accept="video/*,.mov,.mp4,.m4v,.avi,.3gp,.mkv" capture="environment" hidden data-add="video"></label>'+
+          '<label class="cn-btn cn-ic" title="'+esc(T('carnet.fichiers'))+'" aria-label="'+esc(T('carnet.fichiers'))+'">📁<input type="file" accept="image/*,video/*,audio/*,.mov,.mp4,.m4v,.m4a,.mp3,.wav,.aac,.ogg" multiple hidden data-add=""></label>'+
+          '<button class="cn-btn cn-ic cn-rec" title="'+esc(T('carnet.son'))+'" aria-label="'+esc(T('carnet.son'))+'">🎙️</button></div>'+
         '<p class="cn-tip">🔒 '+T('carnet.vos.medias.restent.sur.votre')+'</p>'+
         '<button class="cn-close-b" onclick="THECarnet.close()">'+T('index.fermer')+'</button>');
+      purgeM();
       var w=document.getElementById('cn-modal');
+      /* ⚠️ C'EST `.cn-list` QUI DÉFILE (max-height:50vh; overflow:auto), pas la page.
+         Et `.cn-item` n'est pas positionné par rapport à elle : son `offsetTop` se
+         compte depuis `.cn-box`, donc il mentirait. On mesure les rectangles réels.
+         ⚠️ Deux `requestAnimationFrame` : le premier rend la modale visible, le
+         second laisse le calcul de mise en page se faire. Sans cela on défile vers
+         une position qui n'existe pas encore. */
+      if(focusId){
+        requestAnimationFrame(function(){ requestAnimationFrame(function(){
+          var boite=w&&w.querySelector('.cn-list');
+          var vign=boite&&boite.querySelector('[data-item="'+focusId+'"]');
+          if(!boite||!vign) return;
+          var rb=boite.getBoundingClientRect(), rv=vign.getBoundingClientRect();
+          boite.scrollTop += (rv.top-rb.top) - (boite.clientHeight-vign.offsetHeight)/2;
+          vign.classList.add('cn-neuf');
+          setTimeout(function(){ vign.classList.remove('cn-neuf'); }, 1800);
+        }); });
+      }
       arr.forEach(function(){});
       /* Le bouton unique accepte tout : le type vient donc du FICHIER, pas du
          bouton. Sans cela une vidéo déposée là s'affichait comme une image. */
@@ -210,7 +378,7 @@
         Promise.all(fs.map(function(f){ return decodable(f); })).then(function(oks){
           var keep=fs.filter(function(f,i){ return oks[i]; }), skipped=fs.length-keep.length;
           Promise.all(keep.map(function(f){ var t=typeDu(f, e.target.getAttribute('data-add'));
-            return (t==='image'?compresser(f):Promise.resolve(f)).then(function(ff){ return addMedia(place, f.name, ff, t); }); })).then(function(){ openManager(place,nom); refreshSections(place); if(window.THEBackup&&THEBackup.offer) THEBackup.offer(); if(skipped) alert(T('carnet.non.lisible')); });
+            return (t==='image'?compresser(f):Promise.resolve(f)).then(function(ff){ return addMedia(place, f.name, ff, t); }); })).then(function(ids){ openManager(place,nom, (ids||[]).filter(Boolean).pop()); refreshSections(place); if(window.THEBackup&&THEBackup.offer) THEBackup.offer(); if(skipped) alert(T('carnet.non.lisible')); });
         }); }; });
         /* ⬇️ ENREGISTRER — un média pris dans le carnet ne va PAS dans la
            pellicule du téléphone. Sans ce bouton il reste prisonnier de
@@ -249,7 +417,7 @@
     if(!navigator.mediaDevices||!window.MediaRecorder){ alert(T('carnet.enregistrement.audio.non.supporte.sur')); return; }
     navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
       var mr=new MediaRecorder(stream), chunks=[]; mr.ondataavailable=function(e){ if(e.data&&e.data.size)chunks.push(e.data); };
-      mr.onstop=function(){ stream.getTracks().forEach(function(t){t.stop();}); var blob=new Blob(chunks,{type:'audio/webm'}); addMedia(place,'son.webm',blob,'audio').then(function(){ openManager(place,nom); refreshSections(place); }); };
+      mr.onstop=function(){ stream.getTracks().forEach(function(t){t.stop();}); var blob=new Blob(chunks,{type:'audio/webm'}); addMedia(place,'son.webm',blob,'audio').then(function(id){ openManager(place,nom,id); refreshSections(place); }); };
       modal('<h3>🎙️ '+T('carnet.enregistrement')+'</h3><p class="cn-tip">'+T('carnet.parlez.puis.arretez')+'</p><button class="cn-close-b" id="cn-stop">⏹ '+T('carnet.arreter')+'</button>');
       document.getElementById('cn-stop').onclick=function(){ try{mr.stop();}catch(e){} };
       mr.start();
@@ -266,13 +434,16 @@
       +'.the-carnet .cn-hero .cn-hero-cap{position:absolute;left:0;right:0;bottom:0;padding:14px 12px 8px;color:#fff;font-family:Georgia,serif;font-style:italic;font-size:14px;background:linear-gradient(transparent,rgba(0,0,0,.7))}'
       +'.cn-cap{width:100%;margin-top:6px;border:1px solid #ddd;border-radius:6px;padding:6px 8px;font:inherit;font-size:13px}'
       +'.cn-hero-b{border:1px solid #ccc;border-radius:6px;background:#fff;padding:6px 9px;cursor:pointer;font:inherit;filter:grayscale(1);opacity:.6}.cn-hero-b.on{filter:none;opacity:1;border-color:#c9a24a;background:#fdf6e6}'
-      +'.the-carnet .cn-head{font-family:Georgia,serif;font-weight:700;font-size:15px}.the-carnet .cn-priv{font-weight:400;color:#8a7c66;font-size:12px}'
+      +'.the-carnet .cn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}'
+      +'.the-carnet .cn-ic:hover{background:#f4ecd9}'
+      +'.the-carnet .cn-head{font-family:Georgia,serif;font-weight:600;font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:#8a7c66;margin-bottom:7px}.the-carnet .cn-priv{font-weight:400;color:#8a7c66;font-size:12px}'
       +'.the-carnet .cn-note{width:100%;min-height:54px;margin:8px 0;border:1px solid #ddd;border-radius:8px;padding:8px;font:inherit;font-size:14px}'
-      +'.the-carnet .cn-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}'
+      +'.the-carnet .cn-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:9px}'
+      +'.the-carnet .cn-grid > *{aspect-ratio:1/1;width:100%;height:auto;border-radius:9px;overflow:hidden}'
       +'.cn-th{width:54px;height:54px;border-radius:7px;background:#eee center/cover no-repeat;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;color:#a8884f}'
       +'.cn-th.cn-vid,.cn-th.cn-aud{background:#26201a;color:#f5ecd8}.cn-th.cn-addt{background:#f1e7d5;border:1px dashed #c9b896}'
-      +'.the-carnet .cn-row{display:flex;gap:8px;flex-wrap:wrap}.cn-btn{flex:1;min-width:130px;min-height:44px;padding:12px 10px;border:1px solid #c9b896;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-align:center}'
-      +'.the-carnet .cn-pc{background:#14305c}.the-carnet .cn-maps{display:inline-block;margin-top:8px;color:#9a6a2e;text-decoration:underline;font-size:13px}'
+      +'.the-carnet .cn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.cn-btn{flex:1;min-width:130px;min-height:44px;padding:12px 10px;border:1px solid #c9b896;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:600;font-size:13px;cursor:pointer;text-align:center}'
+      +'.the-carnet .cn-pc{background:#14305c}.the-carnet .cn-maps{color:inherit;text-decoration:none}'
 +'.cn-hprev{height:150px;border-radius:10px;background:#eef2f6 center/cover no-repeat;border:1px solid #ddd}'
       +'.cn-hpgrid{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}'
       +'.cn-hp{width:66px;height:66px;border-radius:8px;background:#eee center/cover no-repeat;border:2px solid transparent;cursor:pointer}'
@@ -283,6 +454,9 @@
       +'#cn-modal .cn-x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:22px;cursor:pointer;color:#666}'
       +'#cn-modal h3{font-family:Georgia,serif;margin:0 0 10px}.cn-list{display:flex;flex-direction:column;gap:12px;max-height:50vh;overflow:auto}'
       +'.cn-item{border:1px solid #eee;border-radius:8px;padding:8px}.cn-ctr{display:flex;gap:6px;margin-top:6px}.cn-ctr button{border:1px solid #ccc;border-radius:6px;background:#fff;padding:6px 9px;cursor:pointer;font:inherit}.cn-ctr .cn-rm{margin-left:auto;color:#a3402a;border-color:#e0b8ac}'
+      +'.cn-row-ic{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap}'
+      +'.cn-btn.cn-ic{flex:0 0 auto;width:46px;min-width:46px;height:46px;min-height:46px;display:inline-flex;align-items:center;justify-content:center;font-size:22px;line-height:1;padding:0;text-decoration:none;background:#fffdf7;color:inherit;border-color:#cbbb95}'
+      +'.cn-item.cn-neuf{border-color:#c9a24a;box-shadow:0 0 0 3px rgba(201,162,74,.28);transition:box-shadow .3s,border-color .3s}'
       +'.cn-empty{color:#8a7c66;font-style:italic;padding:14px;text-align:center}.cn-tip{font-size:12px;color:#8a7c66;font-style:italic;margin:9px 0 0}'
       +'.cn-close-b{width:100%;margin-top:12px;padding:11px;border:none;border-radius:8px;background:#a8884f;color:#fff;font:inherit;font-weight:700;cursor:pointer}';
     var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
@@ -307,19 +481,21 @@
      sur une étape sans photo il n'y avait rien à choisir. */
   function panneauEnTete(place, nom){
     getMediaLarge(place).then(function(arr){
+      var purgeE=libererZone('entete');   // libéré après `modal()`, jamais avant
       var imgs = arr.filter(function(m){ return kind(m)==='image'; });
       var h = imgs.filter(function(m){ return m.hero; })[0];
       var vign = imgs.map(function(m){
-        return '<div class="cn-hp'+(m.hero?' on':'')+'" data-hp="'+m.id+'" style="background-image:url(\''+URL.createObjectURL(m.blob)+'\')"></div>'; }).join('');
+        return '<div class="cn-hp'+(m.hero?' on':'')+'" data-hp="'+m.id+'" style="background-image:url(\''+lien(m.blob,'entete')+'\')"></div>'; }).join('');
       modal('<button class="cn-x" onclick="THECarnet.close()">×</button>'+
         '<h3>📷 '+T('carnet.photo.en.tete')+' — '+esc(nom)+'</h3>'+
-        '<div class="cn-hprev"'+(h?' style="background-image:url(\''+URL.createObjectURL(h.blob)+'\')"':'')+'></div>'+
+        '<div class="cn-hprev"'+(h?' style="background-image:url(\''+lien(h.blob,'entete')+'\')"':'')+'></div>'+
         '<div class="cn-row" style="margin-top:10px">'+
           '<label class="cn-btn">🖼️ '+T('carnet.galerie')+'<input type="file" accept="image/*" hidden class="cn-hpick"></label>'+
           '<label class="cn-btn">📷 '+T('carnet.photo')+'<input type="file" accept="image/*" capture="environment" hidden class="cn-hpick"></label>'+
           (h?'<button class="cn-btn cn-hclr">✕ '+T('carnet.supprimer')+'</button>':'')+'</div>'+
         (vign?'<div class="cn-hpgrid">'+vign+'</div>':'')+
         '<button class="cn-close-b" onclick="THECarnet.close()">'+T('index.fermer')+'</button>');
+      purgeE();
       var w=document.getElementById('cn-modal');
       w.querySelectorAll('.cn-hpick').forEach(function(inp){ inp.onchange=function(){
         var f=inp.files&&inp.files[0]; if(!f) return;
