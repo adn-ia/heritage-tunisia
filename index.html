@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="the-message.js"></script>
   <script src="heritage.config.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -444,7 +445,7 @@
       if(seq.length===1){ map.setView(seq[0], 12); }
       else if(seq.length) map.fitBounds(L.latLngBounds(seq).pad(0.25), {maxZoom:13});
       const bar=document.createElement('div'); bar.className='route-banner'; bar.id='routeBanner';
-      bar.innerHTML='<span class="rb-txt">'+uiT('🧭 Votre itinéraire — ')+seq.length+uiT(' étape')+(seq.length>1?'s':'')+uiT(' tracée')+(seq.length>1?'s':'')+'</span><button class="rb-clear" id="rbClear" data-i18n="acc.uit.voir.toute.la.carte">'+uiT('Voir toute la carte')+'</button>';
+      bar.innerHTML='<span class="rb-txt">'+uiT('🧭 Votre itinéraire — ')+seq.length+uiT(' étape')+(seq.length>1?'s':'')+uiT(' tracée')+(seq.length>1?'s':'')+'</span><button class="rb-clear" id="rbClear">'+uiT('Voir toute la carte')+'</button>';
       document.querySelector('.topbar').appendChild(bar);
       document.getElementById('rbClear').onclick=clearRoute;
     }
@@ -568,7 +569,7 @@
       CUR_SITE=f; const p=f.properties; const [lon,lat]=f.geometry.coordinates;
       const body=document.getElementById('siteBody'), add=document.getElementById('siteAdd');
       if(!isRevealed(f)){
-        body.innerHTML='<div class="site-kick">'+uiT('À découvrir')+'</div><h2 data-i18n="acc.uit.quelque.chose.ici">'+uiT('Quelque chose, ici…')+'</h2><p>'+uiT('Approchez-vous à moins de')+' '+REVEAL_DISTANCE+' '+uiT('m pour révéler ce lieu.')+'</p>';
+        body.innerHTML='<div class="site-kick">'+uiT('À découvrir')+'</div><h2>'+uiT('Quelque chose, ici…')+'</h2><p>'+uiT('Approchez-vous à moins de')+' '+REVEAL_DISTANCE+' '+uiT('m pour révéler ce lieu.')+'</p>';
         add.style.display='none'; document.getElementById('siteOv').style.display='flex'; return;
       }
       const isNat=p.categorie==='nature';
@@ -577,10 +578,10 @@
       const dist=userPos?'<div class="site-dist">◎ '+uiT('à')+' '+fmtDist(distanceM(userPos,[lat,lon]))+'</div>':'';
       const photo=p.photo?'<img class="site-img" src="'+p.photo+'" alt="" loading="lazy">'+(p.photo_credit?'<div class="site-credit">'+p.photo_credit+'</div>':''):'';
       body.innerHTML='<div class="site-kick">'+({nature:'🌿 '+uiT('Nature & paysage'),musee:'🏛️ '+uiT('Musées'),marche:'🛒 '+uiT('Marchés & souks'),festival:'🎭 '+uiT('Festivals & événements')}[p.categorie]||'🏛️ '+uiT('Patrimoine'))+'</div>'+
-        '<h2 data-i18n="acc.p.nom.sans.nom">'+(p.nom||'Sans nom')+'</h2>'+(isPremium()?'<div class="site-meta">'+meta+'</div>'+dist:'')+photo+
+        '<h2>'+(p.nom||'Sans nom')+'</h2>'+(isPremium()?'<div class="site-meta">'+meta+'</div>'+dist:'')+photo+
         (isPremium() ? '<p>'+_desc+'</p>'+(_desc&&window.THEFicheAudio?THEFicheAudio.html(p.vkey,uiT('Écouter ce lieu')):'') : '')+infoBlock(p)+
         (p.acces_note?'<p class="info">🅿️ <b>Accès</b> : '+p.acces_note+'</p>':'')+
-        (isPremium()?'<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>':'')+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer" data-i18n="acc.uit.carte.postale">🖼️ '+uiT('Carte postale')+'</button>';
+        (isPremium()?'<div class="site-src">Source — '+(p.source||'non renseignée')+'</div>':'')+'<button class="site-pc" id="site-pc-btn" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:8px;background:#26201a;color:#f5ecd8;font:inherit;font-weight:700;cursor:pointer">🖼️ '+uiT('Carte postale')+'</button>';
       var _pcb=document.getElementById('site-pc-btn');if(_pcb)_pcb.onclick=function(){if(window.THEPostcard)THEPostcard.open(p.nom,p.gouvernorat||'');}; add.style.display='block'; setAddBtn(hasPick(p.nom));
       document.getElementById('siteOv').style.display='flex';
     }
@@ -655,7 +656,7 @@
       + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
       + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
       + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
-      + '<button class="pa-no" data-i18n="acc.uit.prem.ask.non">'+uiT('prem.ask.non')+'</button>'
+      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
       + '</div>';
     function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) ferme(); });

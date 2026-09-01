@@ -168,8 +168,13 @@
   function getMediaLarge(place){
     return getMedia(place).then(function(a){
       if(a && a.length) return a;
+      /* ⚠️ `split('#').pop()` MANGE LE DIÈSE — 02/09/2026, troisième endroit où le
+         même repli ratait d'un caractère. Une photo prise avant que l'itinéraire
+         ait un identifiant est rangée sous « #1 », AVEC le dièse ; ce repli
+         cherchait « 1 », une clé qui n'a jamais existé. On essaie les deux. */
       var court = String(place||'').split('#').pop();
-      return (court && court !== place) ? getMedia(court) : a;
+      if(!court || court === place) return a;
+      return getMedia('#'+court).then(function(av){ return (av && av.length) ? av : getMedia(court); });
     });
   }
   /* ── RECADRER L'IMAGE D'EN-TÊTE AU DOIGT ────────────────────────────────────────
@@ -540,5 +545,11 @@
     inp.click();
   }
 
-  window.THECarnet={ open:openManager, close:closeModal, render:renderSection, enTete:choisirEnTete, panneauEnTete:panneauEnTete };
+  /* `ajouter` et `compresser` sortent au grand jour — 02/09/2026. Ils étaient
+     enfermés ici, si bien qu'un bloc extérieur voulant ranger une photo devait
+     réécrire l'accès à IndexedDB : deux chemins vers la même table, dont un seul
+     compresse. `the-prise.js` s'en sert pour poser la photo prise au bandeau
+     dans le carnet de l'étape choisie. Rien d'autre ne change ici. */
+  window.THECarnet={ open:openManager, close:closeModal, render:renderSection, enTete:choisirEnTete, panneauEnTete:panneauEnTete,
+                     ajouter:addMedia, compresser:compresser };
 })();

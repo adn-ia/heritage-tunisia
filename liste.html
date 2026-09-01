@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="the-message.js"></script>
   <script src="heritage.config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -136,7 +137,7 @@ function isPremium(){ try{return window.THEPass ? THEPass.isActive() : false;}ca
       + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
       + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
       + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
-      + '<button class="pa-no" data-i18n="lst.uit.prem.ask.non">'+uiT('prem.ask.non')+'</button>'
+      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
       + '</div>';
     function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) ferme(); });

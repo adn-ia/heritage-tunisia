@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="the-message.js"></script>
   <script src="heritage.config.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -202,11 +203,11 @@ a.exit{position:fixed;top:16px;left:16px;z-index:40;color:var(--gold);text-decor
     slides.forEach((s,i)=>{
       const d=document.createElement('div'); d.className='slide'+(s.type==='text'?' text':''); d.dataset.i=i;
       if(s.type==='text'){
-        d.innerHTML='<div class="cap"><div class="mark">'+TR(s.k+'.mark',s.mark)+'</div>'+'<h2 data-i18n="rom.tr.s.k.titre.s.titre">'+TR(s.k+'.titre',s.titre)+'</h2>'+'<p>'+TR(s.k+'.texte',s.texte)+'</p></div>';
+        d.innerHTML='<div class="cap"><div class="mark">'+TR(s.k+'.mark',s.mark)+'</div>'+'<h2>'+TR(s.k+'.titre',s.titre)+'</h2>'+'<p>'+TR(s.k+'.texte',s.texte)+'</p></div>';
       } else {
         const bg = s.photo ? 'style="background-image:url(\''+s.photo+'\')"' : 'style="background:#1a140d"';
         d.innerHTML='<div class="bg" '+bg+'></div><div class="veil"></div>'+
-          '<div class="cap"><div class="kick">'+s.act+'</div><h2 data-i18n="rom.s.nom">'+s.nom+'</h2>'+
+          '<div class="cap"><div class="kick">'+s.act+'</div><h2>'+s.nom+'</h2>'+
           (s.desc?'<p>'+(s.desc.length>260?s.desc.slice(0,260)+'…':s.desc)+'</p>':'')+
           '<div class="src">'+[s.credit,s.source].filter(Boolean).join(' · ')+'</div></div>';
       }

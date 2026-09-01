@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script src="the-message.js"></script>
   <!-- DÉCIDER AVANT DE PEINDRE — 01/09, Helmy : « pourquoi pendant une fraction
        de seconde la page itinéraires sauvegardés apparaît avant la page
        rafraîchie ». Parce que le HTML montre d'abord l'écran de départ, et que
@@ -586,7 +587,15 @@
       .bd-ligne{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
       .bd-ligne + .bd-ligne{margin-top:6px}
       #bandeau button{font-family:inherit;cursor:pointer}
-      .bd-ic{min-width:44px;min-height:44px;font-size:19px;line-height:1;background:#fffdf7;border:1.5px solid #cbbb95;border-radius:11px;padding:0 10px}
+      /* QUATRE PAR RANGÉE — 02/09/2026, Helmy : « on pourrait avoir 4 icônes sur
+         la ligne 1 et 4 sur la seconde ligne, bien équilibré ». Une grille plutôt
+         qu'un `flex-wrap` : le flex les serrait toutes sur une ligne et laissait
+         le hasard décider du retour. Ici la rangée fait quatre colonnes égales,
+         et le compte s'ajuste seul quand une icône est masquée (la halte ne
+         paraît qu'en suivi GPS) — un élément caché ne prend pas de colonne. */
+      #bdIcones{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+      .bd-ic{min-width:44px;min-height:44px;font-size:19px;line-height:1;background:#fffdf7;border:1.5px solid #cbbb95;border-radius:11px;padding:0 10px;
+             display:flex;align-items:center;justify-content:center}
       .bd-ic:hover{background:#f4ecd9}
       .bd-sortie{border-color:#b4462f;color:#b4462f}
       /* un suivi ou une alerte en marche se voit : sinon on l'oublie allumé,
@@ -718,14 +727,25 @@
         <div class="exp-lbl" data-i18n="itin.groupe.terrain">🧭 Sur le terrain</div>
         <div class="exp">
           <button id="haltebtn" type="button" hidden>📍 <span data-i18n="halte_btn">J'ai fait une halte ici</span></button>
-            <button id="scanbtn" type="button" data-i18n="iti.scanner.un.qr">📷 Scanner un QR</button>
+          <!-- 🚫 « SCANNER UN QR » RETIRÉ — 02/09/2026, Helmy : « scanner un QR
+               n'a pas de raison d'être, ça n'a jamais eu de chapitre tant que ce
+               n'est pas défini ». Rien dans l'application ne PRODUIT de QR à
+               scanner : le bouton ouvrait la caméra sur une fonction sans emploi.
+               Le lecteur (`openScan`) reste dans le code, prêt si la fonction est
+               un jour définie ; c'est seulement son entrée qui disparaît. -->
           <button id="mapbtn" type="button" data-i18n="iti.voir.sur.la.grande.carte">🗺️ Voir sur la grande carte</button>
         </div>
       </div>
       <div class="exp-group">
         <div class="exp-lbl">💾 Garder &amp; partager</div>
         <div class="exp">
-          <button id="savebtn" type="button" data-i18n="iti.enregistrer">💾 Enregistrer</button>
+          <!-- L'ICÔNE EST LE LIBELLÉ — méthode reprise de Terralog verbatim
+               (`RoadTrip-Generique/index.html` l. 213 : `data-t="pouce.photo"` où
+               `pouce.photo` vaut « 📷 », le nom vivant en `data-t-titre`). C'est
+               plus sûr que de découper le texte après coup : la traduction ne peut
+               plus faire repousser la phrase, puisqu'elle rend déjà l'icône. -->
+          <button id="savebtn" type="button" data-i18n="iti.enregistrer.icone"
+                  data-i18n-title="iti.enregistrer" data-i18n-aria="iti.enregistrer">💾</button>
           <button id="sharebtn" type="button" data-i18n="itin.donner.qr">📱 Dupliquer l'itinéraire</button>
           <button id="albumbtn" type="button" data-i18n="iti.album.souvenir">📔 Album souvenir</button>
           <button id="printbtn" type="button" data-i18n="iti.pdf.imprimer">🖨️ PDF / Imprimer</button>
@@ -940,8 +960,18 @@
     }));
     return lire(place).then(out=>{
       if(out.length || String(place||'').indexOf('#')<0) return out;
+      /* ⚠️ LE REPLI RATAIT D'UN CARACTÈRE — 02/09/2026, et c'est POUR ÇA que
+         l'album, le passeport, le dépliant et le PDF montraient la carte sans
+         aucune photo. Un itinéraire pas encore enregistré n'a pas d'identifiant :
+         `placeKey` rend « #1 », avec le dièse. Les photos partent donc sous
+         « #1 ». À l'enregistrement l'identifiant apparaît et la clé devient
+         « it123…#1 » ; ce repli cherchait alors « 1 » — `split('#').pop()` mange
+         le dièse — au lieu de « #1 ». Il cherchait une clé qui n'a jamais existé.
+         On essaie maintenant les deux formes. La cause de fond est traitée à part :
+         l'identifiant naît désormais AVEC l'itinéraire (voir `render`). */
       const court=String(place).split('#').pop();
-      return (court && court!==place) ? lire(court) : out;
+      if(!court || court===place) return out;
+      return lire('#'+court).then(av => av.length ? av : lire(court));
     });
   }
   function delPhoto(id){
@@ -1015,8 +1045,12 @@
       }
       var n=localStorage.getItem('the-note-'+cle);             // le carnet de l'étape
       if(n) return n;
+      /* même défaut que dans `photosFor` : la note d'un itinéraire pas encore
+         enregistré vit sous « the-note-#1 », pas « the-note-1 ». */
       var court=String(cle||'').split('#').pop();
       if(court && court!==cle){
+        var av=localStorage.getItem('the-note-#'+court);
+        if(av) return av;
         var c=localStorage.getItem('the-note-'+court);
         if(c) return c;
       }
@@ -1445,7 +1479,7 @@
        « — combien de temps ? » — au lieu de commencer par une valeur : on voit
        qu'on a le droit de choisir, au lieu de croire que c'est décidé. */
     let opts='<option value="" disabled'+(curB?'':' selected')+'>—</option>';
-    VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+' data-i18n="iti.fmtdur.b.b.recob">'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
+    VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+'>'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
     return '<select class="vis-select" data-nom="'+norm(s.p.nom).replace(/"/g,'&quot;')+'" title="Combien de temps voulez-vous passer sur place ? (✓ = recommandé)">'+opts+'</select>';
   }
   function planDays(route, walking){
@@ -1703,7 +1737,11 @@
       /* si on enrichit une fiche existante, on la REMPLACE : même identifiant,
          même date de création, même origine — c'est le même voyage. */
       var place = idCible ? arr.findIndex(function(r){ return r && r.id===idCible; }) : -1;
-      var id  = (place>=0) ? arr[place].id : 'it'+Date.now();
+      /* ⚠️ ON NE FABRIQUE PAS UNE SECONDE IDENTITÉ — 02/09/2026. L'itinéraire
+         affiché en a déjà une, posée au rendu : photos et notes sont rangées sous
+         elle. En créer une autre ici les rendait orphelines. */
+      var id  = (place>=0) ? arr[place].id : ((LASTRES && LASTRES._id) || 'it'+Date.now());
+      if(LASTRES) LASTRES._id = id;
       var fiche = { id:id, cree:(place>=0 ? (arr[place].cree||Date.now()) : Date.now()),
         title:nom, forme:LASTRES.forme||'oneway', mode:(place>=0 ? (arr[place].mode||origine||'compose') : (origine||'compose')),
         origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
@@ -1864,7 +1902,9 @@
     const arr=readSaved();
     const idExistant = LASTRES && LASTRES._id;
     const place = idExistant ? arr.findIndex(function(r){ return r && r.id===idExistant; }) : -1;
-    const fiche = { id: (place>=0 ? arr[place].id : 'it'+Date.now()),
+    /* on ne fabrique plus d'identifiant ici : celui du rendu fait foi, sinon les
+       photos déjà rangées sous l'ancien seraient orphelines. */
+    const fiche = { id: (place>=0 ? arr[place].id : (idExistant || 'it'+Date.now())),
       cree: (place>=0 ? (arr[place].cree||Date.now()) : Date.now()), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
@@ -1898,7 +1938,9 @@
     if(!_org.coord) return;
     let prev=_org.coord; _placees.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
     ENTRY=entry||rec.entry||'funnel';
-    render(_org, {route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||'itinéraire enregistré'},
+    /* `_id` voyage DANS `res` : il doit être là avant que `render` n'écrive les
+       `data-place`, sinon la page porte un identifiant neuf le temps d'un rendu. */
+    render(_org, {_id:rec.id, route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||'itinéraire enregistré'},
       per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'enregistré'}, forme:rec.forme||'oneway', pepites:[], mode:rec.mode||'',
       tour:rec.tour||{titre:rec.title, soustitre:'Itinéraire enregistré'}});
   }
@@ -2006,7 +2048,7 @@
       + (quoi?'<div class="pa-q">'+quoi+'</div>':'')
       + '<div class="pa-d">'+uiT('prem.ask.detail')+'</div>'
       + '<a class="pa-go" href="premium.html">'+uiT('prem.ask.oui')+'</a>'
-      + '<button class="pa-no" data-i18n="iti.uit.prem.ask.non">'+uiT('prem.ask.non')+'</button>'
+      + '<button class="pa-no">'+uiT('prem.ask.non')+'</button>'
       + '</div>';
     function ferme(){ var e=document.getElementById('premAsk'); if(e) e.remove(); }
     d.addEventListener('click',function(e){ if(e.target===d) ferme(); });
@@ -2110,7 +2152,8 @@
           var id=LASTRES._id;
           var place = id ? arr.findIndex(function(r){ return r && r.id===id; }) : -1;
           var titre=(LASTRES.tour&&LASTRES.tour.titre) || (place>=0 ? arr[place].title : '') || uiT('itin.nom.compose');
-          var fiche={ id:(place>=0?arr[place].id:'it'+Date.now()),
+          /* même règle : l'identité du rendu fait foi. */
+          var fiche={ id:(place>=0?arr[place].id:(id || 'it'+Date.now())),
             cree:(place>=0?(arr[place].cree||Date.now()):Date.now()),
             title:titre, forme:LASTRES.forme||'oneway', mode:(place>=0?arr[place].mode:(LASTRES.mode||'compose')),
             origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
@@ -2223,6 +2266,13 @@
   function render(origin, res){
     const {route, theme, dur, per, forme, pepites, tour}=res;
     LASTORIGIN=origin; LASTRES=res;
+    /* L'IDENTITÉ NAÎT AVEC L'ITINÉRAIRE, PAS À SON ENREGISTREMENT — 02/09/2026.
+       Sans elle, `placeKey` rendait « #1 » tant qu'on n'avait pas enregistré, puis
+       « it123…#1 » ensuite : les photos et les notes rangées entre-temps devenaient
+       introuvables, et l'album ne sortait plus que la carte. Un itinéraire a une
+       identité dès qu'il existe ; l'enregistrement lui donne un NOM, pas un être.
+       (Une fiche rouverte apporte la sienne dans `res._id` : on ne l'écrase pas.) */
+    if(!LASTRES._id) LASTRES._id = 'it'+Date.now();
     autosaveCurrent();   // garde l'itinéraire courant (récupérable au retour de la grande carte / après rechargement)
     PHOTO_URLS.forEach(u=>URL.revokeObjectURL(u)); PHOTO_URLS=[];  // libère les aperçus du rendu précédent
     document.getElementById('builder').style.display='none';
@@ -2298,14 +2348,14 @@
       '<div class="b">'+((window.HConf&&HConf.marqueCourte)||'Heritage')+'</div><div class="s">Mon itinéraire patrimonial — '+((window.HConf&&HConf.marqueCourte)||'Heritage')+' · '+
       new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'})+'</div>';
     const hasNature=route.some(s=>s.genre==='nature');
-    rsum.innerHTML=(res.notice||'')+'<h2 data-i18n="iti.tour.tour.titre.theme.theme.ic">'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
+    rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
       (tour&&tour.soustitre?'<div style="font-style:italic;color:var(--stone);margin:-2px 0 6px;font-size:14px">'+tour.soustitre+'</div>':'')+
       '<div class="meta"><b>'+route.length+' '+uiT('étapes')+'</b> · '+durLabel+' · '+uiT(per.lib)+
       ' · '+uiT(formeLbl)+' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label+'.<span class="tag-ind">durées indicatives</span><span id="carnet-total"></span></div>'+
       (res.island?'<div class="advis">🏝️ <b>'+uiT('Exploration limitée à')+' '+res.island+'</b> — '+uiT('île : pas de route vers le continent. Ajoutez une étape à la main pour un trajet en ferry ou en avion.')+'</div>':'')+
       (tour&&tour.note?'<div class="advis">🗓️ <b>Rythme conseillé :</b> '+tour.note+'</div>':'')+
       (hasNature?'<div class="advis">⚠️ <b>Balades nature :</b> renseignez-vous (météo, état du terrain, balisage) et partez de préférence avec un <b>groupe ou un guide local</b> plutôt que seul à l\'aventure. Selon les sites (parcs, réserves, zones du Sud), l\'accès peut exiger une <b>autorisation</b> (Eaux &amp; Forêts, patrimoine, parfois l\'armée).</div>':'')+
-      '<details class="tnote"><summary data-i18n="iti.uit.itin.se.deplacer.titre">'+uiT('itin.se.deplacer.titre')+'</summary><div>'+uiT('itin.se.deplacer.corps')+'</div></details>';
+      '<details class="tnote"><summary>'+uiT('itin.se.deplacer.titre')+'</summary><div>'+uiT('itin.se.deplacer.corps')+'</div></details>';
 
     // carte
     if(mapObj){ mapObj.remove(); mapObj=null; }
@@ -2411,14 +2461,11 @@
           '<div class="sub">'+(p.gouvernorat||'')+' · '+trCat(p.type||'')+(i>0?' · '+uiT('à')+' ~'+Math.round(s.fromPrev)+' '+uiT('km')+' '+uiT('de l\'étape précédente'):'')+'</div>'+
           (tag?'<span class="badge'+(s.halte?' halte-badge':'')+'">'+tag+'</span>':'')+
         '</div><button class="rm-step" type="button" title="Retirer cette étape">✕</button></div>'+
-        /* L'ESTIMATION EST UN REPLI, PAS LA VÉRITÉ — 01/09/2026. Elle est calculée
-           à vol d'oiseau ; dès que le routeur répond, roadtrip-plus.js la masque et
-           met la durée réelle à sa place. Elle reste dans la page pour le cas où le
-           réseau manque : sans elle, il n'y aurait plus rien du tout. */
-        /* `data-km` porte la distance à vol d'oiseau de cette étape. Sans elle, le
-           bouton de mode ne pourrait rien recalculer quand le routeur est muet —
-           c'est-à-dire hors réseau, là où l'on marche justement le plus. */
-        '<div class="times" data-km="'+(s.fromPrev||0).toFixed(2)+'"><span class="rt-vieux">'+(walking?'🚶':'🚗')+' '+uiT('trajet')+' ~'+fmtDur(s._tv)+'</span> · 🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
+        /* 🚫 PLUS DE DURÉE DE TRAJET — 02/09/2026, Helmy : « enlever le mode de
+           transport et le temps estimé, pas besoin », redit le lendemain devant
+           « 🚗 trajet ~8 min · » toujours à l'écran. Il ne reste que le temps SUR
+           PLACE, qui n'est pas une estimation : c'est lui qui le choisit. */
+        '<div class="times">🕒 '+uiT('Sur place')+' : '+visSelectHtml(s)+'</div>'+
         nightHtml+
         /* 📖 DÉCOUVRIR CE LIEU — 01/09/2026, Helmy : « Découvrir ce lieu, oui, je
            ne l'ai pas retiré, je vous ai demandé d'y mettre le texte, que vous
@@ -2435,7 +2482,7 @@
         (Lan?(isPremium()?'<div class="kv" style="background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px">👁️ <b>Le détail</b> — '+Lan+'</div>':'<a href="premium.html" class="kv" style="display:block;background:#eef6f0;border-left:3px solid #6f9c7a;padding:7px 10px;border-radius:6px;margin-top:6px;text-decoration:none;color:inherit">👁️ <b>Le détail</b> — '+String(Lan).replace(/<[^>]*>/g,'').slice(0,45).trim()+'… <span style="color:#6f9c7a;font-weight:700;white-space:nowrap">🔒 Premium</span></a>'):'')+
         (p.acces_note?'<div class="kv acc"><b>🅿️ Accès / GPS :</b> '+p.acces_note+'</div>':'')+
         '</div>'+
-        ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)?'<button class="st-livre" type="button" data-i18n="iti.uit.itin.decouvrir.ce.lieu">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>':'')+
+        ((desc||Lav||Lcons||Lhor||Lan||p.acces_note)?'<button class="st-livre" type="button">📖 '+uiT('itin.decouvrir.ce.lieu')+'</button>':'')+
         /* Une étape que le voyageur a posée lui-même n'a pas besoin qu'on lui
            rappelle de vérifier l'accès : il sait où il va, il y est. L'encart ne
            vaut que pour les lieux venus de la base. */
@@ -2701,7 +2748,10 @@
     (function(){ var arr=readSaved();
        /* on retient l'identifiant : chaque étape ajoutée met À JOUR cette fiche,
           au lieu d'en laisser une vide à côté du voyage réel. */
-       var _idLibre='it'+Date.now();
+       /* le voyage libre reprend l'identité née au rendu, sinon la première halte
+          se rangerait sous une clé et la fiche en porterait une autre. */
+       var _idLibre=(LASTRES && LASTRES._id) || 'it'+Date.now();
+       if(LASTRES) LASTRES._id=_idLibre;
        arr.unshift({ id:_idLibre, cree:Date.now(), title:_nomLibre, forme:'oneway', mode:'libre',
          origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null, steps:[] });
        writeSaved(arr.slice(0,40)); renderSaved();
@@ -2731,7 +2781,7 @@
   async function renderAlbum(){
     ALBUM_URLS.forEach(u=>URL.revokeObjectURL(u)); ALBUM_URLS=[];
     const doc=document.getElementById('albumdoc');
-    if(!LASTRES || !LASTRES.route.length){ doc.innerHTML='<div class="album-cover"><h2 data-i18n="iti.uit.aucun.itineraire">'+uiT('Aucun itinéraire')+'</h2></div>'; return; }
+    if(!LASTRES || !LASTRES.route.length){ doc.innerHTML='<div class="album-cover"><h2>'+uiT('Aucun itinéraire')+'</h2></div>'; return; }
     document.body.classList.remove('tpl-baroudeur','tpl-passeport','tpl-depliant');
     document.body.classList.add('tpl-'+albumTemplate);
     [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>c.classList.toggle('on',c.dataset.tpl===albumTemplate));
@@ -2740,7 +2790,7 @@
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
     const dateStr=new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'});
     const coverHtml='<div class="album-cover"><div class="ac-brand">'+(((window.HConf&&HConf.marque)||'Heritage Experience').toUpperCase())+'</div>'+
-      '<h2 data-i18n="iti.theme.theme.ic.uit.theme.label">'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
+      '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
       (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+
       '<div class="ac-carte" id="acCarte"></div>'+'</div>';
@@ -3047,7 +3097,24 @@
 
     const PICTO=/^(\p{Extended_Pictographic}\uFE0F?|[✓✕↻←→])\s*/u;
     function enIcone(b){
-      if(!b || b.dataset.bdFait) return null;
+      /* ⚠️ LE MOTEUR DE TRADUCTION REPASSE APRÈS NOUS — 02/09/2026. Ces boutons
+         portent un `data-i18n` ; à chaque changement de langue, `el.textContent`
+         est réécrit avec le libellé entier et l'icône seule repousse en phrase.
+         `bdFait` empêchait de refaire le travail. On le refait donc dès que du
+         texte est revenu : le nom reste en `title`, qui lui n'est pas écrasé. */
+      if(b && b.dataset.bdFait){
+        var t=(b.textContent||'').trim();
+        if(t.length>3 && b.title){
+          /* ⚠️ PAS « m » : il est déjà déclaré en `const` plus bas dans cette
+             même fonction. Un `var` du même nom dans la même portée est une
+             erreur de syntaxe qui tue TOUT le script — la page se charge et plus
+             rien ne s'exécute. C'est ce qui a cassé l'application le 02/09. */
+          var mi=t.match(/^(\p{Extended_Pictographic}\uFE0F?|[✓✕↻←→])\s*/u);
+          b.textContent = mi ? mi[1] : t.slice(0,2);
+        }
+        return null;
+      }
+      if(!b) return null;
       const txt=(b.textContent||'').trim();
       const m=txt.match(PICTO);
       const nom=(m ? txt.slice(m[0].length) : txt).trim();
@@ -3107,7 +3174,7 @@
     function poser(){
       if(!posé){
         ligne1.appendChild(home);
-        ['haltebtn','scanbtn','savebtn'].forEach(function(id){
+        ['haltebtn','savebtn'].forEach(function(id){
           const b=enIcone(document.getElementById(id)); if(b) ligne1.appendChild(b);
         });
         ligne1.appendChild(sortie);
@@ -3125,6 +3192,17 @@
       ['rtq-suivi','rtq-prox'].forEach(function(id){
         const t=document.getElementById(id);
         if(t && !t.dataset.bdFait){ const b=enIcone(t); if(b) ligne1.insertBefore(b, sortie); }
+      });
+      /* ⚠️ LE MOTEUR DE TRADUCTION REPASSE APRÈS NOUS. Ces boutons portent un
+         `data-i18n` : à chaque application des traductions, `textContent` est
+         réécrit avec le libellé entier et l'icône seule redevient une phrase.
+         La pose ne se fait qu'une fois — il faut donc REVENIR, à chaque tour, sur
+         ceux qui ont repoussé. Le nom vit en `title`, que l'i18n n'écrase pas. */
+      [].forEach.call(ligne1.querySelectorAll('button[title]'), function(b){
+        var t=(b.textContent||'').trim();
+        if(t.length<=3) return;
+        var pic=t.match(/^(\p{Extended_Pictographic}\uFE0F?|[✓✕↻←→])\s*/u);
+        b.textContent = pic ? pic[1] : t.slice(0,2);
       });
       /* les groupes du bas n'ont plus rien à montrer : on les efface s'ils sont vides */
       document.querySelectorAll('.exp-group').forEach(function(g){
@@ -3268,7 +3346,8 @@
     };
   }
   function closeScan(){ stopCam(); scanModal.style.display='none'; }
-  document.getElementById('scanbtn').onclick=openScan;
+  /* le bouton a été retiré de l'écran le 02/09 ; le branchement survit à son absence */
+  var _scan=document.getElementById('scanbtn'); if(_scan) _scan.onclick=openScan;
   document.getElementById('scanX').onclick=closeScan;
   scanModal.onclick=e=>{ if(e.target.id==='scanModal') closeScan(); };
   document.addEventListener('keydown',e=>{ if(e.key==='Escape' && scanModal.style.display==='flex') closeScan(); });
@@ -3282,7 +3361,7 @@
     const desc=(ip.description||'').trim();
     document.getElementById('detourBody').innerHTML=
       '<div class="md-kick">🛣️ '+uiT('À voir en chemin vers')+' '+p.ctx+'</div>'+
-      '<h3 class="md-title" data-i18n="iti.ip.nom.tags">'+ip.nom+' '+tags+'</h3>'+
+      '<h3 class="md-title">'+ip.nom+' '+tags+'</h3>'+
       '<div class="md-meta">'+meta+' · détour ≈ '+p.detourMin+' min</div>'+
       (p.note?'<p class="md-note">'+p.note+'</p>':'')+
       (desc?'<p>'+desc+'</p>':'')+
@@ -3453,7 +3532,7 @@
   var bn=document.createElement('div'); bn.id='buildBanner';
   bn.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:60;background:#a8884f;color:#fff;padding:10px 14px;display:flex;gap:9px;align-items:center;justify-content:center;flex-wrap:wrap;font-size:14px;box-shadow:0 -3px 14px rgba(0,0,0,.32)';
   bn.innerHTML='<span>'+uiT('🧭 Itinéraire en construction')+'</span>'+
-    '<button id="bbBack" style="background:#fff;color:#a8884f;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer" data-i18n="iti.retour.aux.choix.origine">‹ Retour aux choix ('+origine+')</button>'+
+    '<button id="bbBack" style="background:#fff;color:#a8884f;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer">‹ Retour aux choix ('+origine+')</button>'+
     '<button id="bbDone" style="background:#5a4420;color:#fff;border:none;border-radius:8px;padding:8px 13px;font-family:inherit;font-weight:600;cursor:pointer" data-i18n="iti.termine.editer">✓ Terminé — éditer</button>';
   document.body.appendChild(bn);
   document.getElementById('bbBack').onclick=function(){ history.back(); };
@@ -3463,6 +3542,9 @@
 <script src="the-postcard.js" defer></script>
 <script src="the-backup.js" defer></script>
 <script src="the-carnet.js" defer></script>
+  <!-- 📷 / 🎥 au bandeau, rangés dans le carnet de l'étape choisie. Bloc autoporté :
+       il se retire en effaçant cette ligne. Voir l'en-tête de the-prise.js. -->
+  <script src="the-prise.js" defer></script>
 <!-- LA MISE EN FORME D'UNE ÉTAPE — portée d'Estonie le 01/09/2026, telle
      quelle, sur demande de Helmy : « je veux le rendu d'Estonie d'une étape ».
      Ce fichier manquait purement et simplement en Tunisie (404 en ligne). C'est
