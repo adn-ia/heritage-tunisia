@@ -52,3 +52,30 @@ l'album → carte, en-tête, titre, ville, note et photo, tous présents.
 bouge JAMAIS : `blocs/50-medias.js:189` range sous `'s'+n`, le numéro d'étape seul.
 Et quand une clé doit malgré tout changer, `blocs/21-edition.js:112` **déplace**
 les médias vers la nouvelle. Il n'y laisse pas d'orphelins.
+
+## 02/09/2026 — Le menu du crayon sortait de l'écran (deuxième passe)
+
+**Symptôme.** « La modale du crayon sur chaque étape apparaît hors écran, on
+avait déjà corrigé ça, ça recommence. »
+
+**Pourquoi la première correction n'a pas tenu.** Elle datait du 01/09 et ne
+traitait qu'un cas : si le menu débordait par le HAUT, il basculait vers le bas.
+Elle ne vérifiait jamais qu'il tenait **en bas**, et ne bornait pas sa hauteur.
+Or ce menu fait **358 px pour neuf entrées** : sur un téléphone en paysage
+(~374 px utiles), aucun des deux côtés ne peut l'accueillir. Il sortait quoi
+qu'on fasse. C'est, à l'identique, le défaut qui a valu le rejet 2.1(a) sur le ✕
+d'une fiche.
+
+**Correctif.** `roadtrip-plan.js`, à l'ouverture du menu : on mesure la place
+au-dessus et au-dessous du bouton, on choisit **celle qui est la plus grande**,
+on borne `max-height` à cette place et on met `overflow-y:auto`. Les bords
+latéraux sont vérifiés dans les deux sens, plus seulement à droite.
+
+**Vérifié à l'écran** dans un cadre de 390 × 380 px — un téléphone en paysage :
+menu borné à 154 px, défilement interne, entièrement dans l'écran (216 → 370
+sur 374). Et sur grand écran, crayon en haut de page : bascule vers le bas,
+top 52, dans l'écran.
+
+**La leçon.** Un repositionnement qui choisit un côté sans borner la hauteur ne
+résout rien : il déplace le débordement. La seule règle sûre est *choisir la plus
+grande place, puis s'y contraindre*.

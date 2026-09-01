@@ -298,12 +298,39 @@
                sort par le dessus. On le mesure APRÈS l'avoir montré — avant, il
                n'a pas de taille — et on le bascule vers le bas s'il ne tient pas.
                Même chose à droite si le bouton est près du bord. */
+            /* ⚠️ LA PREMIÈRE CORRECTION NE SUFFISAIT PAS — 02/09/2026, Helmy :
+               « la modale du crayon sur chaque étape apparaît hors écran, on avait
+               déjà corrigé ça, ça recommence ». Elle basculait vers le bas quand le
+               haut manquait — SANS vérifier que ça tenait en bas, et sans borner la
+               hauteur. Ce menu fait 358 px pour neuf entrées : en paysage sur un
+               téléphone, aucun des deux côtés ne l'accueille, et il sortait quoi
+               qu'on fasse. C'est le défaut qui a valu le rejet 2.1(a) sur le ✕ d'une
+               fiche, à l'identique.
+               On choisit maintenant le côté qui a le PLUS de place, on borne la
+               hauteur à cette place, et le menu défile en lui-même s'il le faut. */
             try{
               pop.style.bottom=''; pop.style.top=''; pop.style.left=''; pop.style.right='';
-              var r=pop.getBoundingClientRect();
-              if(r.top < 8){ pop.style.bottom='auto'; pop.style.top='calc(100% + 6px)'; }
+              pop.style.maxHeight=''; pop.style.overflowY='';
+              var MARGE=10;
+              var rb=mb.getBoundingClientRect();
+              var dessus  = rb.top - MARGE;                        // place au-dessus
+              var dessous = window.innerHeight - rb.bottom - MARGE; // place au-dessous
+              var h = pop.getBoundingClientRect().height;
+
+              if(h <= dessus){
+                /* il tient au-dessus : c'est sa place d'origine, on n'y touche pas */
+              } else if(h <= dessous || dessous > dessus){
+                pop.style.bottom='auto'; pop.style.top='calc(100% + 6px)';
+                if(h > dessous){ pop.style.maxHeight=Math.max(120,dessous)+'px'; pop.style.overflowY='auto'; }
+              } else {
+                pop.style.maxHeight=Math.max(120,dessus)+'px'; pop.style.overflowY='auto';
+              }
+
+              /* et jamais hors des bords latéraux */
               var r2=pop.getBoundingClientRect();
               if(r2.right > window.innerWidth - 8){ pop.style.left='auto'; pop.style.right='0'; }
+              r2=pop.getBoundingClientRect();
+              if(r2.left < 8){ pop.style.right='auto'; pop.style.left='0'; }
             }catch(e){}
           }
         };
