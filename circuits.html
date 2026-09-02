@@ -59,7 +59,11 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
    ordinaire, enregistré, éditable, avec toutes ses fonctions.
    ============================================================ */
 (function(){
-  function T(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; }
+  /* Sans second argument, cette fonction rendait `undefined` — un mot de
+     programmeur, affiché tel quel au voyageur. Elle rend maintenant du VIDE : un
+     trou se voit et se corrige, « undefined » fait croire à une panne.
+     (Ce n'est PAS un repli en dur : aucun texte n'est écrit ici.) */
+  function T(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:(d||''); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function premium(){ try{ return window.THEPass ? THEPass.isActive() : false; }catch(e){ return false; } }
@@ -71,7 +75,18 @@ main{max-width:900px;margin:0 auto;padding:18px 14px 60px;}
   var FREE_TOURS = 4;                      // même règle que l'écran d'itinéraire
   var url = (window.THEi18n && THEi18n.data) ? THEi18n.data('tours') : 'tours.json';
 
-  fetch(url).then(function(r){ return r.json(); }).then(function(t){
+  /* ⚠️ ON ATTEND LE DICTIONNAIRE — 02/09/2026. La liste se dessinait dès que
+     `tours.json` répondait, sans attendre que `the-i18n.js` ait chargé ses
+     libellés : `T('circ.etapes')`, appelé sans valeur par défaut, rendait alors
+     `undefined`, et l'écran affichait « 6 undefined » et un bouton « undefined ».
+     Les clés existaient et le serveur les servait — c'était une COURSE, gagnée
+     une fois sur deux. Cinq autres pages attendaient déjà `THEi18n.ready`
+     (confidentialite, decouvrir, liste, premium, rome-immersion) ; celle-ci était
+     la seule à ne pas le faire. */
+  Promise.all([
+    fetch(url).then(function(r){ return r.json(); }),
+    (window.THEi18n && THEi18n.ready) ? THEi18n.ready : Promise.resolve()
+  ]).then(function(deux){ return deux[0]; }).then(function(t){
     var ids = Object.keys(t||{});
     var grille = document.getElementById('grille');
     if(!ids.length){ document.getElementById('vide').style.display=''; return; }

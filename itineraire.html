@@ -4220,18 +4220,34 @@
          Une étape que le voyageur a posée (un hôtel, une adresse, un café)
          n'a aucune description : on va en chercher une SOURCÉE et on propose
          de la reprendre dans son carnet. On n'invente rien. */
-      /* 🚫 « DÉCOUVRIR CE LIEU » RETIRÉ DU MENU — 02/09/2026, Helmy : « on
-         supprime découvrir ce lieu, qui est déjà sur l'étape ».
-         ⚠️ À SAVOIR, ET SIGNALÉ : ce n'était PAS le bouton « 📖 Découvrir ce lieu »
-         visible sur l'étape. Celui-là (`.st-livre`, l. 2485) déplie le texte que
-         le lieu porte DÉJÀ, et il n'apparaît que s'il y en a un. Le geste retiré
-         ici appelait `HDecouvrir`, qui va CHERCHER une description sourcée pour
-         une étape qui n'en a aucune — un hôtel, une adresse, un café posés à la
-         main. Les deux portaient un nom voisin, d'où la confusion.
-         Il est supprimé et non simplement masqué : `horsMenu` sans `icone` ne
-         produit aucun bouton, et une entrée que rien n'atteint est du code mort.
-         `brique-decouvrir-lieu.js` reste chargée — dites un mot et le geste
-         revient en icône. */
+      /* 📚 « DÉCOUVRIR CE LIEU » REVIENT EN ICÔNE — 02/09/2026, Helmy : « remettez
+         le découvrir en icône ». Il avait quitté le menu le matin même ; sans
+         `icone`, `horsMenu` le rendait inatteignable, alors il avait été supprimé.
+         Il retrouve donc sa place, mais en bas de l'étape et non dans la modale.
+
+         📚 ET NON 📖. Le livre ouvert appartient déjà au bouton « 📖 Découvrir ce
+         lieu » de la ligne du temps, qui déplie le texte que le lieu PORTE DÉJÀ.
+         Celui-ci fait autre chose : il va CHERCHER une description sourcée pour
+         une étape qui n'en a aucune — un hôtel, une adresse posés à la main — et
+         propose de la reprendre dans le carnet. On n'invente rien : la source est
+         citée. Deux gestes voisins ont besoin de deux signes distincts, sinon on
+         ne relie plus le bouton à ce qu'il ouvre. */
+      { id:'decouvrir',
+        icone:'📚', horsMenu:true,
+        label:function(){ return T('itin.etape.decouvrir'); },
+        run:function(i){
+          var s=(LASTRES.route||[])[i]; if(!s||!window.HDecouvrir) return;
+          HDecouvrir.ouvrir({ nom:s.p.nom, lat:s.c&&s.c[1], lon:s.c&&s.c[0],
+            surPlace:function(txt){
+              /* on l'écrit dans le carnet de CETTE étape, là où le voyageur écrit */
+              try{
+                var cle=(typeof placeKey==='function') ? placeKey(s) : s.p.nom;
+                var vieux=localStorage.getItem('the-note-'+cle)||'';
+                localStorage.setItem('the-note-'+cle, vieux ? (vieux+'\n\n'+txt) : txt);
+              }catch(e){}
+              render(LASTORIGIN, LASTRES);
+            } });
+        } },
       { id:'autour',
         /* ⚠️ ON NE MET PAS `principal:true`. Ce drapeau produit un bouton pleine
            largeur : deux d'entre eux feraient déborder la rangée sur un petit

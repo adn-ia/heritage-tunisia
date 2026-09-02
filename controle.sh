@@ -71,6 +71,35 @@ PY
 if [ -z "$R" ]; then ok "toutes les clés existent dans les 5 langues"
 else ko "clés absentes — rendront du vide :"; echo "$R" | sed 's/^/      /'; fi
 
+# ── 3bis. Clé appelée EN JAVASCRIPT et absente d'une langue → « undefined » ──
+#    Le contrôle 3 ne regardait que les `data-i18n` du HTML. Or `T('rt.suivi.gps')`
+#    et ses quatorze voisines, appelées depuis roadtrip-plus.js SANS valeur par
+#    défaut, ne figuraient dans aucun dictionnaire : elles rendaient le mot
+#    `undefined`, affiché tel quel au voyageur. Vu par Helmy le 02/09 sur l'écran
+#    des circuits — « 6 undefined », un bouton « undefined ».
+R=$(python3 - <<'PY3B'
+import io,re,json,os
+ui={}
+for l in ['fr','en','de','it','ar']:
+    p=f'i18n/ui.{l}.json'
+    if os.path.exists(p): ui[l]=json.load(io.open(p,encoding='utf-8'))
+trous=[]
+for f in sorted(os.listdir('.')):
+    if not (f.endswith('.html') or f.endswith('.js')) or '.avant' in f: continue
+    s=io.open(f,encoding='utf-8',errors='ignore').read()
+    s=re.sub(r'/\*.*?\*/', lambda m: re.sub(r'[^\n]',' ',m.group(0)), s, flags=re.S)
+    # une CLÉ porte un point ; `uiT('lieu')` est un texte français, pas une clé.
+    # et seulement les appels SANS second argument : avec, il y a un repli.
+    for m in re.finditer(r"\b(?:ui)?T\(\s*'([a-z0-9_]+(?:\.[a-z0-9_]+)+)'\s*\)", s):
+        c=m.group(1)
+        a=[l for l in ui if c not in ui[l]]
+        if a: trous.append(f"{f} : {c} manque en {','.join(a)}")
+for t in trous[:12]: print(t)
+PY3B
+)
+if [ -z "$R" ]; then ok "aucune clé JavaScript ne rendra « undefined »"
+else ko "clé appelée en JS et absente — affichera « undefined » :"; echo "$R" | sed 's/^/      /'; fi
+
 # ── 4. Replis en dur T('cle','texte') — règle en granit, zéro repli ──────────
 R=$(grep -ohE "T\(\s*'[^']+'\s*,\s*'[^']{3,}'\s*\)" ./*.js ./*.html 2>/dev/null | head -5)
 if [ -z "$R" ]; then ok "aucun repli en dur"
@@ -166,7 +195,7 @@ else ko "la clé peut bouger — album/passeport/PDF perdront photos et notes :"
 
 printf "\n"
 if [ "$ECHECS" -eq 0 ]; then
-  printf "${VERT}═══ les 7 contrôles passent ═══${FIN}\n"
+  printf "${VERT}═══ les 8 contrôles passent ═══${FIN}\n"
   printf "${JAUNE}Il reste le seul qui compte : ouvrir l'application et s'en servir.${FIN}\n"
   printf "  Composer un itinéraire · ouvrir une étape · l'album · changer de langue.\n\n"
   exit 0
