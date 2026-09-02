@@ -3,7 +3,7 @@
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'heritage-35748d94';
+const VERSION = 'heritage-a4d13956';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 /* ⚠️ LE CACHE DES TUILES NE PORTE PAS DE VERSION, ET SURVIT AUX MISES À JOUR.
@@ -27,7 +27,7 @@ const CORE_ASSETS = [
      les dictionnaires de leurs briques : sans eux la brique se charge et n'a rien à
      dire. Ce n'était pas visible en ligne — le réseau les servait à chaque fois. */
   'heritage.config.js',
-  'the-carnet.js', 'the-prise.js', 'the-affiche.js', 'the-etape.js', 'the-message.js', 'the-postcard.js', 'the-fiche-audio.js',
+  'the-carnet.js', 'the-prise.js', 'the-etape.js', 'the-message.js', 'the-postcard.js', 'the-fiche-audio.js',
   /* LES TRADUCTIONS, PRÉCACHÉES — 01/09/2026, Helmy. Elles n'y étaient pas du
      tout : hors réseau, l'application n'avait aucune garantie d'avoir ses textes,
      et le cœur multilingue tenait à une connexion. Les treize fichiers y sont —
