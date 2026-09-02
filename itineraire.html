@@ -3013,7 +3013,9 @@
     THEtoast(uiT('Publier sur le site THE — fonctionnalité à venir.\n\nCe sera toujours sur votre accord explicite : c\'est le seul cas où vos photos quitteraient votre appareil. Par défaut, tout reste chez vous.'));
   }
 
-  document.getElementById('printbtn').onclick=()=>{
+  /* le bouton a quitté le menu le 02/09 : le branchement survit à son absence */
+  var _pb=document.getElementById('printbtn');
+  if(_pb) _pb.onclick=()=>{
     if(mapObj) mapObj.invalidateSize();          // la carte se recadre avant l'aperçu d'impression
     setTimeout(()=>window.print(),350);
   };
@@ -3243,7 +3245,18 @@
         });
         ligne1.appendChild(sortie);
         ligne2.appendChild(menu);
-        ['albumbtn','printbtn','sharebtn'].forEach(function(id){
+        /* 🚫 « PDF / IMPRIMER » N'EST PAS UN PRODUIT — 02/09/2026, Helmy : « j'ai
+           deux fois PDF / imprimer, une fois en appuyant sur Documents et une fois
+           en appuyant sur Album… le PDF / imprimer est une SORTIE pour diverses
+           variantes de produit ».
+           Il avait raison sur les deux points. Le même libellé paraissait à deux
+           endroits et NE FAISAIT PAS LA MÊME CHOSE : celui du menu appelait
+           `window.print()` sur l'itinéraire brut ; celui de la barre du document
+           ouvre le choix des huit compositions. Et surtout, imprimer n'est pas un
+           document qu'on fabrique — c'est ce qu'on FAIT d'un document.
+           Le menu ne liste donc plus que des produits. La sortie vit dans la barre
+           du document, avec Partager, là où il y a quelque chose à sortir. */
+        ['albumbtn','sharebtn'].forEach(function(id){
           const b=enEntree(document.getElementById(id)); if(b) pop.appendChild(b);
         });
         const sep=document.createElement('div'); sep.className='bd-sep'; pop.appendChild(sep);
