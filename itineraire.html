@@ -889,7 +889,12 @@
         <button class="ab" id="albumshare" type="button" data-i18n="iti.partager">↗ Partager</button>
         <button class="ab" id="albumback" type="button" data-i18n="iti.itineraire">← Itinéraire</button>
       </div>
-      <div class="album-doc" id="albumdoc"></div>
+      <!-- ⚠️ LE PANNEAU DE PARTAGE REMONTE — 02/09/2026, Helmy : « dans le menu,
+           après avoir appuyé sur document, le bouton partager ne mène nulle part ».
+           Il menait quelque part : il dépliait ce panneau — 1 825 px plus bas, SOUS
+           tout le document. On appuyait, l'écran ne bougeait pas. Un panneau qui
+           s'ouvre doit s'ouvrir là où l'on a cliqué : il se place donc juste sous la
+           barre, AVANT le document. Aucun code n'a changé, seulement sa place. -->
       <div class="share-panel" id="sharepanel" style="display:none">
         <div class="sp-row">
           <button id="shwhatsapp" type="button" data-i18n="iti.whatsapp">🟢 WhatsApp</button>
@@ -899,6 +904,7 @@
         </div>
         <div class="share-note">🔒 WhatsApp et e-mail partagent le <b>texte</b> de l'itinéraire. « Partager (photos) » utilise le partage de votre téléphone. « Publier sur le site » n'enverra vos photos <b>que sur votre accord explicite</b> — par défaut, tout reste sur votre appareil.</div>
       </div>
+      <div class="album-doc" id="albumdoc"></div>
     </div>
 
     <div class="foot">
@@ -3489,7 +3495,13 @@
     const sp=document.getElementById('sharepanel');
     const opening = sp.style.display==='none';
     sp.style.display = opening ? 'block' : 'none';
-    if(opening) buildShareFiles();
+    if(opening){
+      buildShareFiles();
+      /* On a pu descendre dans le document avant d'appuyer : le panneau serait
+         alors ouvert au-dessus de l'écran, et le geste paraîtrait sans effet —
+         le défaut qu'on vient de corriger, sous une autre forme. */
+      try{ sp.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){}
+    }
   };
   [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>{
     c.onclick=()=>{ albumTemplate=c.dataset.tpl; renderAlbum(); };
