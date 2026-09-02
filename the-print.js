@@ -115,6 +115,12 @@
      « Pas de photo ici » répété six fois, sous une page blanche.
      Quatre des huit compositions reposent entièrement sur les photos. Quand il
      n'y en a aucune, elles le disent maintenant, au lieu de produire du vide. */
+  /* ⚠️ CE GARDE-FOU DORT AVEC LES COMPOSITIONS QU'IL PROTÈGE — 03/09/2026. Depuis
+     que la fenêtre de choix est retirée, `doPrint` n'est plus appelé qu'avec la
+     composition vide (l'album tel qu'à l'écran), qui ne figure pas ici : le test
+     ne se déclenche donc jamais. Il reste en place avec elles, prêt à servir si
+     l'une revient — il a été écrit pour un défaut réel, six pages blanches
+     imprimées le 03/09. On ne jette pas une leçon avec la porte qu'on ferme. */
   var EXIGE_PHOTOS = { one:1, contact:1, big:1, fridge:1 };
 
   function combienDePhotos(){
@@ -157,71 +163,60 @@
     plate.then(function(url){
       var remis = null;
       if(url && cadre && cadre.parentNode){
+        var parent = cadre.parentNode;                 // ⚠️ retenu AVANT le retrait
+        var suivant = cadre.nextSibling;               // pour remettre à la même place
         var im = document.createElement('img');
         im.src = url; im.alt = '';
         im.className = 'ac-carte ac-carte-plate';
         im.style.cssText = 'display:block;width:100%;height:auto;object-fit:contain';
-        cadre.parentNode.replaceChild(im, cadre);
-        remis = function(){ try{ im.parentNode.replaceChild(cadre, im); }catch(e){} };
+        parent.replaceChild(im, cadre);
+        /* ⚠️ ON NE PASSE PAS PAR `im.parentNode` — 03/09/2026. La restauration
+           échouait en silence : elle demandait à l'image son parent, mais entre
+           l'impression et le retour l'album peut s'être redessiné, et l'image se
+           retrouve alors hors du document — `parentNode` vaut null, le
+           `replaceChild` lève, le `catch` avale, et la carte ne revient jamais.
+           Constaté à l'écran : l'image plate restait à sa place, la vraie carte
+           avait disparu. On retient le parent et le voisin AVANT de retirer, et
+           on remet là, quoi qu'il soit arrivé entre-temps. Et la remise ne se
+           fait qu'UNE fois, même si les deux déclencheurs tombent. */
+        var fait = false;
+        remis = function(){
+          if(fait) return; fait = true;
+          try{
+            if(im.parentNode) im.parentNode.removeChild(im);
+            parent.insertBefore(cadre, suivant);
+          }catch(e){
+            try{ parent.appendChild(cadre); }catch(e2){}
+          }
+        };
+        /* deux déclencheurs valent mieux qu'un : le navigateur annonce la fin de
+           l'impression, mais il ne le fait pas partout — le délai reste le filet. */
+        try{ window.addEventListener('afterprint', remis, { once:true }); }catch(e){}
       }
       imprimer(remis);
     }).catch(function(){ imprimer(null); });
   }
 
-  /* ---------- modale autonome (palette album) ---------- */
-  var OV=null;
-  function ensureModal(){
-    if(OV) return OV;
-    var mcss='#pr-modal{position:fixed;inset:0;z-index:1500;background:rgba(20,15,10,.78);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:22px}'
-      +'#pr-modal.on{display:flex}'
-      +'#pr-modal .pr-box{background:#fffdf8;color:#2b2318;border-radius:14px;padding:18px 18px 20px;max-width:420px;width:100%;position:relative;box-shadow:0 12px 44px rgba(0,0,0,.5)}'
-      +'#pr-modal .pr-x{position:absolute;top:8px;right:11px;background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:#8a7c66}'
-      +'#pr-modal h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;font-size:22px;margin:0 2px 2px}'
-      +'#pr-modal .pr-lead{font-size:13px;color:#8a7c66;margin:0 2px 12px}'
-      +'#pr-modal .pr-opt{display:block;width:100%;text-align:left;margin:7px 0;padding:11px 13px;border:1px solid #e3d8c4;border-radius:9px;background:#fff;color:#2b2318;font:inherit;font-size:14px;cursor:pointer}'
-      +'#pr-modal .pr-opt:hover{border-color:#a8884f;background:#fbf6ea}'
-      +'#pr-modal .pr-opt.pr-primary{background:#2b2318;color:#f6f0e4;border-color:#2b2318}'
-      +'#pr-modal .pr-opt small{display:block;font-size:11.5px;opacity:.75;font-weight:400;margin-top:2px}';
-    var s=document.createElement('style'); s.textContent=mcss; document.head.appendChild(s);
-    OV=document.createElement('div'); OV.id='pr-modal';
-    OV.innerHTML='<div class="pr-box"></div>';
-    document.body.appendChild(OV);
-    OV.addEventListener('click',function(e){ if(e.target===OV) closeChooser(); });
-    document.addEventListener('keydown',function(e){ if(e.key==='Escape' && OV.classList.contains('on')) closeChooser(); });
-    return OV;
-  }
-  function closeChooser(){ if(OV) OV.classList.remove('on'); }
+  /* ── 🚫 LE CHOIX DE COMPOSITION EST RETIRÉ — 03/09/2026 ──────────────────────
+     Helmy, capture de la fenêtre à l'appui : « on va enlever les 7 dernières
+     options, on laisse le premier ».
+     Il ne reste donc que « Album (mise en page actuelle) » — c'est-à-dire la
+     feuille telle qu'on la voit à l'écran. Une fenêtre qui ne propose qu'une
+     chose n'est plus un choix : c'est un obstacle de plus entre le bouton et le
+     papier. Le bouton imprime maintenant directement.
 
-  function opt(mode,primary,ic,title,sub){
-    return '<button class="pr-opt'+(primary?' pr-primary':'')+'" type="button" data-mode="'+mode+'">'+ic+' '+T(title)+'<small>'+T(sub)+'</small></button>';
-  }
-  function chooser(){
-    var ov=ensureModal();
-    ov.querySelector('.pr-box').innerHTML=
-      /* ⚠️ DIX-NEUF TEXTES ÉTAIENT ÉCRITS EN DUR ICI — 02/09/2026. Le module passait
-         par `T('phrase française')`, qui rend la phrase telle quelle quand aucune
-         traduction n'existe : en arabe, en allemand, en italien, toute cette fenêtre
-         restait en français. Les clés sont posées, traduites par DeepL. */
-      '<button class="pr-x" type="button" aria-label="'+T('print.fermer')+'">×</button>'+
-      '<h3>🖨️ '+T('print.titre')+'</h3>'+
-      '<p class="pr-lead">'+T('print.lead')+'</p>'+
-      opt('',       1,'📔','print.album',  'print.album.sous')+
-      opt('one',    0,'🖼️','print.one',    'print.one.sous')+
-      opt('contact',0,'🔲','print.contact','print.contact.sous')+
-      opt('two',    0,'📖','print.two',    'print.two.sous')+
-      opt('big',    0,'🖼️','print.big',    'print.big.sous')+
-      opt('mag',    0,'📰','print.mag',    'print.mag.sous')+
-      opt('text',   0,'📝','print.text',   'print.text.sous')+
-      opt('fridge', 0,'🧲','print.fridge', 'print.fridge.sous');
-    ov.querySelector('.pr-x').onclick=closeChooser;
-    [].forEach.call(ov.querySelectorAll('.pr-opt'),function(b){
-      b.onclick=function(){ var m=b.getAttribute('data-mode'); closeChooser(); doPrint(m); };
-    });
-    ov.classList.add('on');
-  }
+     CE MODULE RESTE, ET IL SERT. Deux choses vivent ici et n'ont rien à voir avec
+     le choix disparu :
+       · le CSS d'impression `pr-mode`, qui écarte les barres et les fenêtres de
+         la feuille ;
+       · l'aplatissement de la carte, sans lequel elle s'imprime coupée (voir le
+         commentaire de `doPrint`).
+     Les sept compositions elles-mêmes — leurs règles CSS plus haut — restent en
+     place, inertes : elles ne coûtent rien, et le jour où l'une d'elles est
+     redemandée, elle est là. Seule leur PORTE est fermée. */
 
   /* ---------- branchement sur le bouton PDF/Imprimer de l'album ---------- */
-  function hook(){ var b=document.getElementById('albumprint'); if(b && b._prhook!==2){ b._prhook=2; b.onclick=function(e){ if(e)e.preventDefault(); chooser(); }; } }
+  function hook(){ var b=document.getElementById('albumprint'); if(b && b._prhook!==3){ b._prhook=3; b.onclick=function(e){ if(e)e.preventDefault(); doPrint(''); }; } }
   if(document.readyState!=='loading') hook(); else document.addEventListener('DOMContentLoaded', hook);
   setTimeout(hook, 1200); setTimeout(hook, 2200);
   try{ new MutationObserver(hook).observe(document.body,{childList:true,subtree:true}); }catch(e){}
