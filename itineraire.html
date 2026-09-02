@@ -2855,7 +2855,9 @@
       '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
       (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+
-      '<div class="ac-carte" id="acCarte"></div>'+'</div>';
+      (CARTE_IMAGE
+        ? '<img class="ac-carte" src="'+CARTE_IMAGE+'" alt="">'
+        : '<div class="ac-carte" id="acCarte"></div>')+'</div>';
     if(isDep){ doc.innerHTML='<div class="depliant-strip" id="depStrip">'+coverHtml+'</div>'; }
     else if(albumTemplate==='passeport'){ doc.innerHTML=coverHtml+'<div class="pp-book" id="ppBook"></div>'; }
     else { doc.innerHTML=coverHtml; }
@@ -2974,13 +2976,38 @@
       if(ta) ta.addEventListener('input',()=>localStorage.setItem('the-cap:'+key, ta.value));
     }
   }
+  /* L'IMAGE DE LA CARTE, PRISE SUR L'ITINÉRAIRE LUI-MÊME — 03/09/2026.
+     Helmy : « vous faites une capture d'écran de la carte dans l'itinéraire, avec
+     TOUT l'itinéraire, et vous la collez dans l'album — il ne faut pas
+     reconstruire la carte ».
+     Il avait raison. L'album fabriquait sa PROPRE carte : une seconde instance
+     Leaflet, dans un cadre court et large, qui se recadrait à sa façon. Sur un
+     parcours de 300 km elle n'en montrait qu'un morceau, le tracé sortant du cadre
+     et une bande grise à droite. La carte juste existe déjà — c'est celle de
+     l'itinéraire, cadrée sur le parcours entier. On la prend en image, telle
+     quelle, et on la colle. */
+  var CARTE_IMAGE = null;
+
+  function saisirLaCarte(){
+    try{
+      var m = document.getElementById('map');
+      if(!m || !m.offsetParent || !window.THEcartePlate) return Promise.resolve(null);
+      return window.THEcartePlate(m).then(function(u){ CARTE_IMAGE = u || null; return CARTE_IMAGE; })
+                                    .catch(function(){ return null; });
+    }catch(e){ return Promise.resolve(null); }
+  }
+
   function openAlbum(){
-    document.getElementById('result').style.display='none';
-    document.getElementById('sharepanel').style.display='none';
-    document.getElementById('album').style.display='block';
-    document.body.classList.add('doc-ouvert');
-    renderAlbum();
-    window.scrollTo({top:0,behavior:'smooth'});
+    /* ⚠️ LA SAISIE D'ABORD, LE MASQUAGE ENSUITE. Une carte cachée mesure zéro :
+       capturée après `display:none`, elle ne rendrait qu'une image vide. */
+    saisirLaCarte().then(function(){
+      document.getElementById('result').style.display='none';
+      document.getElementById('sharepanel').style.display='none';
+      document.getElementById('album').style.display='block';
+      document.body.classList.add('doc-ouvert');
+      renderAlbum();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
   }
   function closeAlbum(){
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');

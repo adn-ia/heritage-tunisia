@@ -250,3 +250,33 @@ avant qu'un itinéraire ait son identifiant — dans un itinéraire neuf. Consta
 test : un itinéraire fraîchement créé affichait une photo d'un essai précédent.
 Sans gravité (la photo appartient bien au voyageur) mais inattendu. Le repli
 reste : sans lui, les photos d'avant la correction seraient perdues.
+
+
+## 03/09/2026 — L'album fabriquait sa propre carte, au lieu de prendre la bonne
+
+**Helmy, après un premier correctif jugé insuffisant :** « non, ce n'est pas bon,
+la carte, vous avez reproduit n'importe quoi. Vous faites une capture d'écran de
+la carte dans l'itinéraire, avec TOUT l'itinéraire, et vous la collez dans
+l'album — il ne faut pas reconstruire la carte. »
+
+**Il avait raison, et le premier correctif traitait le mauvais problème.**
+J'avais rendu la carte de l'album imprimable ; je n'avais pas vu que cette
+carte-là ne devait pas exister.
+
+**Ce qui se passait.** L'album créait sa PROPRE instance Leaflet (`#acCarte`),
+dans un cadre court et large de 230 px de haut, avec son propre `fitBounds`. Sur
+un parcours de 300 km, elle n'en montrait qu'un morceau : le tracé sortait du
+cadre, et la zone non couverte restait grise. Deux cartes du même voyage, cadrées
+différemment, dont une fausse.
+
+**Le correctif.** `openAlbum()` saisit en image la carte de l'itinéraire —
+`#map`, la vraie, cadrée sur le parcours entier — **avant** de la masquer (une
+carte cachée mesure zéro et rendrait une image vide), et la couverture pose cette
+image. La seconde instance Leaflet n'est plus créée du tout.
+
+**Vérifié en ligne** : image de 1368 × 660 dans l'album, `#acCarte` absent, tout
+le parcours visible avec ses quatre points, ses rues et ses noms de lieux.
+
+**La leçon.** Deux vues du même objet finissent toujours par diverger. La bonne
+question n'était pas « comment réparer la seconde carte » mais « pourquoi y en
+a-t-il deux ».
