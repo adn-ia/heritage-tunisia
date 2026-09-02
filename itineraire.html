@@ -58,6 +58,14 @@
       background:linear-gradient(160deg,#2b2318 0%,#3a2f22 38%,#5a4a33 100%);}
     .wrap{max-width:720px;margin:0 auto;padding:22px 18px 70px;}
     .top{display:flex;align-items:center;justify-content:space-between;color:var(--ivory);margin-bottom:8px;}
+    /* 🚫 PAS DE NAVIGATION SUR UN DOCUMENT — 02/09/2026, Helmy : « quand on arrive
+       sur la page après avoir appuyé sur document, il y a les navigations en haut
+       à droite Carte et en haut à gauche Menu, c'est à supprimer. La sortie de
+       cette page est déjà dans les options. » Un album, un passeport, un dépliant
+       se referment par « ← Itinéraire », dans leur propre barre. Deux autres
+       sorties, qui mènent ailleurs dans le site, n'ont rien à y faire.
+       ⚠️ Sur l'itinéraire, la barre reste : c'est là qu'elle sert. */
+    body.doc-ouvert .top{display:none;}
     .top a{color:var(--gold-soft);text-decoration:none;font-size:14px;letter-spacing:1px;}
     .top .mark{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:26px;letter-spacing:6px;}
     .lead{text-align:center;color:var(--ivory);margin:6px 0 22px;}
@@ -2952,12 +2960,14 @@
     document.getElementById('result').style.display='none';
     document.getElementById('sharepanel').style.display='none';
     document.getElementById('album').style.display='block';
+    document.body.classList.add('doc-ouvert');
     renderAlbum();
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function closeAlbum(){
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');
     document.getElementById('album').style.display='none';
+    document.body.classList.remove('doc-ouvert');
     document.getElementById('result').style.display='block';
     window.scrollTo({top:0,behavior:'smooth'});
   }
@@ -3547,6 +3557,7 @@
     if(ENTRY==='picks'){ location.href='index.html'; return; }   // venu de la carte → on y retourne
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');
     document.getElementById('album').style.display='none';
+    document.body.classList.remove('doc-ouvert');
     document.getElementById('result').style.display='none';
     document.getElementById('builder').style.display='block';    // garde tous les choix saisis
     window.scrollTo({top:0,behavior:'smooth'});
