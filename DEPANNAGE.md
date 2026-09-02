@@ -343,3 +343,48 @@ moment d'appuyer.
 **Vérifié en ligne, fichier produit depuis le Passeport et ouvert** : 277 Ko,
 aucun `pp-book` ni `pp-page` dans le corps, la carte à sa place, et le style
 Passeport toujours actif à l'écran après coup.
+
+
+## 03/09/2026 — Le fichier souvenir devient un tableau de bord
+
+**Helmy :** « HTML équivalent à album. Un HTML avec un tableau de bord : la carte
+avec les étapes cliquables, qui ouvrent une fenêtre avec les photos et les
+commentaires. » Puis, pour lever le doute : « la carte reprend la carte dynamique
+de l'itinéraire, on n'invente rien ».
+
+Le fichier ne clone plus le DOM de l'album — c'est ce clonage qui le faisait
+changer d'allure selon le style affiché. Il lit les DONNÉES (nom, ville, note,
+photos) et écrit un document à lui : en-tête, la carte de l'itinéraire en image,
+les pastilles posées dessus **en pourcentage** (un pourcentage suit l'image quand
+elle est redimensionnée, un pixel non), et sous la carte la liste complète des
+étapes — qui sert de repli sans script, sans souris, et à l'impression.
+
+**Limite assumée.** Dans le fichier, la carte est une image : on ne peut ni
+zoomer ni déplacer. Une carte réellement interactive hors ligne exigerait
+d'embarquer le fond de carte entier, soit 75 Mo de tuiles. Le fichier fait 213 Ko.
+
+### Trois défauts traversés, et ce qu'ils ont appris
+
+**① Le sélecteur prenait la mauvaise carte.** `.ac-carte, #map` rend `#map`, qui
+vient en premier dans le document — or l'album étant ouvert, `#map` est masqué, et
+une carte cachée mesure zéro. Le fichier partait sans carte ni pastilles.
+L'ordre d'un sélecteur groupé suit le DOM, jamais l'ordre écrit.
+
+**② Une ligne dupliquée tuait le script embarqué.** Une correction précédente
+avait laissé `document.body.style.overflow="hidden";}` deux fois : la fonction se
+refermait trop tôt. `node --check` validait le module — il ne voit pas ce que le
+module ÉCRIT.
+
+**③ `'<\\/script>'` au lieu de `'<\/script>'`.** En double, la barre oblique
+inverse n'échappe plus rien : elle se retrouve VISIBLE dans le fichier produit, et
+le navigateur refuse tout le script. Le fichier s'ouvrait, la carte s'affichait,
+et aucune étape ne réagissait au clic.
+
+**Contrôle n°1bis, né de ② et ③** — `.controle-scripts-embarques.py` : il
+reconstitue la chaîne comme le ferait le navigateur, la compile, et refuse la
+barre oblique en trop devant `/script`. Éprouvé sur du code volontairement
+fautif : il l'attrape ; sur le code corrigé : il se tait.
+
+**La leçon.** Un module qui ÉCRIT du code doit voir son écriture contrôlée, pas
+seulement sa propre syntaxe. Sans cela, le vert du contrôle ne dit rien de ce qui
+est livré.

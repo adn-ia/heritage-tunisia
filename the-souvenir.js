@@ -19,16 +19,6 @@ function nomDeFichier(txt, repli){
 (function(){
   function T(fr){ try{ return (window.THEi18n && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
 
-  function toDataURL(url){
-    return fetch(url).then(function(r){ return r.blob(); }).then(function(b){
-      return new Promise(function(res){ var fr=new FileReader(); fr.onload=function(){res(fr.result);}; fr.onerror=function(){res(url);}; fr.readAsDataURL(b); });
-    }).catch(function(){ return url; });
-  }
-  function collectCSS(){
-    var out=''; var st=document.querySelectorAll('style');
-    for(var i=0;i<st.length;i++) out+=st[i].textContent+'\n';
-    return out;
-  }
 
   /* ── LA CARTE S'APLATIT EN UNE IMAGE ─────────────────────────────────────────
      Signalé par Helmy le 03/09/2026 : « la carte itinéraire n'apparaît pas dans le
@@ -87,12 +77,19 @@ function nomDeFichier(txt, repli){
       /* ③ les points numérotés — REDESSINÉS, pas photographiés : ce sont des
             éléments HTML, et on ne fabrique pas une image depuis du HTML sans y
             perdre les polices. On lit leur numéro et leur place. */
+      /* ⚠️ ON RETIENT AUSSI OÙ SONT LES POINTS — 03/09/2026. Le fichier souvenir
+         n'est plus une page qui déroule : c'est une carte où l'on clique sur une
+         étape pour voir ses photos. Il lui faut donc, pour chaque point, sa place
+         SUR L'IMAGE, en pourcentage — un pourcentage suit l'image quand elle est
+         redimensionnée, un pixel non. */
+      var places = [];
       return suite.then(function(){
         [].forEach.call(cadre.querySelectorAll('.leaflet-marker-icon'), function(m){
           try{
             var r = m.getBoundingClientRect();
             var x = r.left - r0.left + r.width / 2, y = r.top - r0.top + r.height / 2;
             var n = (m.textContent || '').trim();
+            if(n) places.push({ n:n, x:(x / r0.width) * 100, y:(y / r0.height) * 100 });
             var ray = Math.max(11, Math.min(r.width, r.height) / 2);
             g.beginPath(); g.arc(x, y, ray, 0, 6.2832);
             g.fillStyle = '#a8884f'; g.fill();
@@ -104,7 +101,12 @@ function nomDeFichier(txt, repli){
             }
           }catch(e){}
         });
-        return c.toDataURL('image/jpeg', 0.9);
+        var url = c.toDataURL('image/jpeg', 0.9);
+        /* deux appelants, deux besoins : `the-print.js` veut l'image, le fichier
+           souvenir veut aussi les points. On rend l'image, et on dépose les points
+           à côté — la signature ne change pas pour l'autre. */
+        window.THEcartePoints = places;
+        return url;
       });
     }catch(e){ return Promise.resolve(null); }
   }
@@ -114,91 +116,203 @@ function nomDeFichier(txt, repli){
      une image plate, si. Un seul aplatissement pour les deux usages. */
   window.THEcartePlate = aplatirCarte;
 
-  /* ── LE FICHIER NE DÉPEND PAS DU BOUTON OÙ L'ON SE TROUVE ────────────────────
-     03/09/2026, Helmy : « HTML n'a rien à voir avec le style ».
-     Retirer la classe du `<body>` ne suffisait pas : le passeport et le dépliant
-     changent aussi la STRUCTURE — l'un range les étapes en livre à deux pages sur
-     papier ligné, l'autre en bande horizontale. Le fichier gardait donc leur
-     forme, tampon compris.
-     On repasse au rendu de base le temps de fabriquer le fichier, puis on remet
-     l'écran comme on l'a trouvé. Le même itinéraire donne ainsi le même fichier,
-     qu'on ait appuyé depuis Baroudeur, Passeport ou Dépliant. */
-  function surRenduDeBase(faire){
-    var actif = document.querySelector('.album-bar .tpl.on');
-    var base  = document.querySelector('.album-bar .tpl[data-tpl="baroudeur"]');
-    if(!actif || !base || actif === base) return faire().then(function(r){ return r; });
-    base.click();
-    return new Promise(function(res){ setTimeout(res, 1400); })   // le rendu se refait
-      .then(faire)
-      .then(function(r){ try{ actif.click(); }catch(e){} return r; })
-      .catch(function(e){ try{ actif.click(); }catch(e2){} throw e; });
+  /* ── LE FICHIER SOUVENIR : UNE CARTE OÙ L'ON CLIQUE ──────────────────────────
+     03/09/2026, Helmy : « HTML équivalent à album. Un HTML avec un tableau de
+     bord : la carte avec les étapes cliquables, qui ouvrent une fenêtre avec les
+     photos et les commentaires. »
+
+     Ce n'est donc plus une page qui déroule les étapes les unes sous les autres —
+     ça, c'est l'album à l'écran, et le PDF. C'est un objet à part : on voit le
+     voyage d'un coup d'œil, on touche une étape, elle s'ouvre.
+
+     UN SEUL FICHIER, RIEN À CÔTÉ. La carte est une image, les photos sont des
+     `data:`, le script tient en trente lignes à la fin du document. Il s'ouvre
+     sans réseau, sans l'application, dans dix ans, et il appartient au voyageur.
+
+     ⚠️ IL NE COPIE PLUS LE DOM DE L'ALBUM. L'ancienne version clonait `.album-doc`
+     et traînait avec elle tout le CSS de l'application — d'où un fichier qui
+     changeait d'allure selon le style affiché. Ici on lit les DONNÉES (le nom, la
+     ville, la note, les photos) et on écrit un document à nous. */
+  function echapper(t){
+    return String(t==null?'':t).replace(/[&<>"]/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+  }
+
+  function lireLesEtapes(){
+    var lire = window.THECarnet && THECarnet.lire;
+    var stops = [].slice.call(document.querySelectorAll('.stop'));
+    return Promise.all(stops.map(function(st, i){
+      var cn = st.querySelector('.the-carnet');
+      var e = { n:i+1,
+                nom:(cn && cn.getAttribute('data-nom')) || '',
+                ville:(cn && cn.getAttribute('data-ville')) || '',
+                note:'', photos:[] };
+      var ta = st.querySelector('textarea');
+      if(ta) e.note = ta.value || '';
+      if(!cn || !lire) return Promise.resolve(e);
+      return lire(cn.getAttribute('data-place')).then(function(arr){
+        var images = (arr||[]).filter(function(m){
+          return m && m.blob && String(m.type||m.blob.type||'').indexOf('image')===0; });
+        return Promise.all(images.map(function(m){
+          return new Promise(function(res){
+            var fr=new FileReader();
+            fr.onload=function(){ res(fr.result); };
+            fr.onerror=function(){ res(null); };
+            fr.readAsDataURL(m.blob);
+          });
+        })).then(function(urls){ e.photos = urls.filter(Boolean); return e; });
+      }).catch(function(){ return e; });
+    }));
   }
 
   function buildSite(btn, fini){
-    var doc=document.querySelector('.album-doc');
-    if(!doc){ alert(T('Ouvrez d’abord l’album (choisissez un style), puis réessayez.'));
-              if(typeof fini==='function') fini(); return; }
-    var old=btn.textContent; btn.textContent='⏳ '+T('Création…'); btn.disabled=true;
-    var clone=doc.cloneNode(true);
+    /* ⚠️ L'IMAGE DE LA COUVERTURE D'ABORD — 03/09/2026. Le sélecteur
+       `.ac-carte, #map` rendait `#map`, qui vient en premier dans le document :
+       or l'album étant ouvert, `#map` est masqué, et une carte cachée mesure zéro.
+       La couverture porte déjà l'image de la bonne carte : on la prend. `#map` ne
+       sert que de recours, quand la couverture n'en a pas. */
+    var cadre = document.querySelector('img.ac-carte')
+             || document.querySelector('.ac-carte')
+             || document.getElementById('map');
+    if(!cadre){ alert(T('Ouvrez d’abord l’album, puis réessayez.'));
+                if(typeof fini==='function') fini(); return; }
+    var old = btn.textContent;
+    btn.textContent = '⏳ ' + T('Création…'); btn.disabled = true;
 
-    /* ⚠️ PLUS RIEN À APLATIR ICI — 03/09/2026. Depuis que la couverture porte
-       l'image de la carte de l'itinéraire (voir `openAlbum`), `.ac-carte` EST
-       une `<img>` en `data:`. L'aplatissement que j'avais posé la veille
-       s'exécutait quand même : ne trouvant ni canvas ni SVG dans une image, il
-       rendait un aplat uni de 4 Ko et REMPLAÇAIT la vraie carte par ce vide.
-       Le fichier repartait donc sans carte — le défaut d'origine, recréé par son
-       propre correctif. Le clonage suffit : une image se clone entière. */
-    var medias=[].slice.call(clone.querySelectorAll('img,video,source'));
-    // convertir chaque média (blob:/http) en data-URI, en série
-    var chain=Promise.resolve();
-    medias.forEach(function(m){
-      var src=m.getAttribute('src');
-      if(!src || src.indexOf('data:')===0) return;
-      chain=chain.then(function(){ return toDataURL(src).then(function(d){ m.setAttribute('src',d); m.removeAttribute('crossorigin'); }); });
-    });
-    chain.then(function(){
-      /* ⚠️ LE FICHIER N'HÉRITE D'AUCUN HABILLAGE — 03/09/2026, Helmy : « HTML n'a
-         rien à voir avec le style ».
-         Il a raison, et c'est sa règle depuis la veille : Baroudeur, Passeport et
-         Dépliant sont des PRODUITS ; imprimer, partager, enregistrer sont des
-         SORTIES. On ne dit pas « un PDF en passeport » — on ne dira pas non plus
-         « un HTML en passeport ». Le fichier portait pourtant `class="tpl-…"`,
-         reprise de l'écran : le même itinéraire donnait trois fichiers différents
-         selon le bouton où l'on se trouvait par hasard.
-         Le `<body>` n'a donc plus de classe de style. Les règles `tpl-*` voyagent
-         toujours dans le CSS embarqué — elles ne s'appliquent simplement à rien,
-         faute de classe pour les déclencher. Reste l'itinéraire sur fond neutre :
-         la couverture, la carte, les étapes, les photos, les notes. */
-      var title=((document.querySelector('.album-cover h2')||{}).textContent||T('Mon voyage')).trim();
-      var css=collectCSS()
-        +'\nbody{margin:0;background:#e9e4d6;padding:16px;font-family:Georgia,"Times New Roman",serif;color:#2b2318}'
-        +'#album{display:block !important;max-width:820px;margin:0 auto}'
-        +'.album-bar,.share-panel,.leaflet-control-container,#projOv{display:none!important}'
-        /* ⚠️ LA STRUCTURE SURVIT AU STYLE. Le passeport range ses étapes en livre à
-           deux pages, le dépliant en bande horizontale : sans leurs règles, ces
-           dispositions se lisent mal. On les ramène à une lecture simple, de haut
-           en bas — celle qui vaut sur n'importe quel écran. */
-        +'\n.pp-book,.depliant-strip{display:block !important;width:auto !important;overflow:visible !important}'
-        +'.pp-page,.dep-panel{display:block !important;width:auto !important;min-width:0 !important;margin:0 0 18px !important}'
-        +'.album-doc{background:#fffdf8 !important;color:#2b2318 !important;border-radius:10px;overflow:visible !important}'
-        +'.album-cover{background:#e4d6b8 !important;color:#3a2c18 !important}'
-        +'.ac-carte{display:block;width:100%;height:auto}';
-      var footer='<p style="text-align:center;font-size:12px;color:#8a7c66;margin:22px auto 6px;max-width:820px">'
-        + T('Souvenir créé avec Heritage — ce fichier vous appartient et reste consultable hors-ligne. Nous n’en conservons aucune copie.') + '</p>';
-      var html='<!doctype html><html lang="fr"><head><meta charset="utf-8">'
-        +'<meta name="viewport" content="width=device-width,initial-scale=1">'
-        +'<title>'+title.replace(/</g,'&lt;')+' — souvenir</title>'
-        +'<style>'+css+'</style></head><body>'
-        +'<div id="album">'+clone.outerHTML+'</div>'+footer+'</body></html>';
-      var blob=new Blob([html],{type:'text/html;charset=utf-8'});
-      var url=URL.createObjectURL(blob), a=document.createElement('a');
-      a.href=url; a.download=nomDeFichier(title,'voyage')+'-souvenir.html';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
-      btn.textContent=old; btn.disabled=false;
-      try{ if(window.toast) toast(T('Site souvenir enregistré — il est à vous, hors-ligne.')); }catch(e){}
-      if(typeof fini==='function') fini();
-    });
+    var titre = ((document.querySelector('.album-cover h2')||{}).textContent||T('Mon voyage')).trim();
+    var meta  = ((document.querySelector('.album-cover .ac-meta')||{}).textContent||'').trim();
+    var marque= (window.HConf && HConf.marque) || '';
+
+    var carteURL = null, points = [];
+    Promise.resolve()
+      .then(function(){
+        /* la carte de l'itinéraire est DÉJÀ une image dans la couverture ; sinon
+           on la prend sur `#map`. Dans les deux cas, ses points viennent avec. */
+        if(cadre.tagName === 'IMG'){
+          carteURL = cadre.getAttribute('src');
+          points = (window.THEcartePoints||[]).slice();
+          return;
+        }
+        return window.THEcartePlate(cadre).then(function(u){
+          carteURL = u; points = (window.THEcartePoints||[]).slice();
+        });
+      })
+      .then(lireLesEtapes)
+      .then(function(etapes){
+        var pastilles = points.map(function(p){
+          return '<button class="pt" style="left:'+p.x.toFixed(2)+'%;top:'+p.y.toFixed(2)+'%" '
+               + 'data-n="'+echapper(p.n)+'" aria-label="'+T('Étape')+' '+echapper(p.n)+'">'
+               + echapper(p.n)+'</button>';
+        }).join('');
+
+        var fiches = etapes.map(function(e){
+          var ph = e.photos.map(function(u){ return '<img src="'+u+'" alt="">'; }).join('');
+          return '<article class="fiche" id="e'+e.n+'">'
+               + '<h2><span class="num">'+e.n+'</span> '+echapper(e.nom)+'</h2>'
+               + (e.ville ? '<p class="ville">'+echapper(e.ville)+'</p>' : '')
+               + (e.note  ? '<p class="note">'+echapper(e.note)+'</p>' : '')
+               + (ph ? '<div class="photos">'+ph+'</div>' : '')
+               + '</article>';
+        }).join('');
+
+        var css =
+          ':root{--ivoire:#f6f0e4;--papier:#fffdf8;--encre:#2b2318;--pierre:#8a7c66;--or:#a8884f;--filet:#e3d8c4}'
+        + '*{box-sizing:border-box}'
+        + 'body{margin:0;background:var(--ivoire);color:var(--encre);'
+        + 'font:16px/1.65 Georgia,"Times New Roman",serif}'
+        + '.enveloppe{max-width:1000px;margin:0 auto;padding:18px}'
+        + 'header{text-align:center;padding:14px 0 18px}'
+        + '.marque{letter-spacing:.22em;font-size:12px;color:var(--pierre);text-transform:uppercase}'
+        + 'h1{font-size:30px;margin:8px 0 4px;font-weight:600}'
+        + '.meta{color:var(--pierre);font-size:14px;font-style:italic}'
+        + '.carte{position:relative;margin:0 auto;border-radius:12px;overflow:hidden;'
+        + 'box-shadow:0 8px 30px rgba(0,0,0,.18);background:#e9e4d6}'
+        + '.carte>img{display:block;width:100%;height:auto}'
+        + '.pt{position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;'
+        + 'border-radius:50%;background:var(--or);color:#fff;border:2.5px solid #fff;'
+        + 'font:700 14px/1 Georgia,serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);'
+        + 'display:flex;align-items:center;justify-content:center;padding:0}'
+        + '.pt:hover,.pt:focus{background:#2e6a4d;outline:none;transform:translate(-50%,-50%) scale(1.15)}'
+        + '.aide{text-align:center;color:var(--pierre);font-size:13.5px;font-style:italic;margin:12px 0 0}'
+        /* la liste sert de repli : sans script, sans souris, à l'impression */
+        + '.liste{margin:26px 0 0}'
+        + '.fiche{background:var(--papier);border:1px solid var(--filet);border-radius:12px;'
+        + 'padding:16px 18px;margin:0 0 14px}'
+        + '.fiche h2{font-size:20px;margin:0 0 2px;font-weight:600;display:flex;align-items:center;gap:10px}'
+        + '.num{flex:0 0 30px;height:30px;border-radius:50%;background:var(--or);color:#fff;'
+        + 'font-size:14px;display:flex;align-items:center;justify-content:center}'
+        + '.ville{margin:0 0 8px;color:var(--pierre);font-size:14px;font-style:italic}'
+        + '.note{margin:6px 0 10px;white-space:pre-line}'
+        + '.photos{display:flex;flex-wrap:wrap;gap:10px}'
+        + '.photos img{width:190px;height:145px;object-fit:cover;border-radius:8px;'
+        + 'border:5px solid #fff;box-shadow:0 3px 12px rgba(0,0,0,.2);cursor:pointer}'
+        /* la fenêtre d'une étape */
+        + '#vue{position:fixed;inset:0;background:rgba(20,15,10,.86);display:none;'
+        + 'align-items:flex-start;justify-content:center;overflow:auto;padding:22px;z-index:50}'
+        + '#vue.on{display:flex}'
+        + '#vue .boite{background:var(--papier);border-radius:14px;padding:20px;'
+        + 'max-width:720px;width:100%;position:relative;box-shadow:0 14px 50px rgba(0,0,0,.5)}'
+        + '#vue .fermer{position:absolute;top:8px;right:12px;background:none;border:none;'
+        + 'font-size:28px;line-height:1;cursor:pointer;color:var(--pierre)}'
+        + '#vue .fiche{border:none;box-shadow:none;padding:0;margin:0;background:none}'
+        + 'footer{text-align:center;color:var(--pierre);font-size:12px;margin:26px 0 8px}'
+        + '@media print{.pt,#vue,.aide{display:none!important}'
+        + '.fiche{break-inside:avoid;page-break-inside:avoid}}';
+
+        var script =
+          '(function(){'
+        + 'var v=document.getElementById("vue"),b=v.querySelector(".boite");'
+        + 'function ouvrir(n){var f=document.getElementById("e"+n);if(!f)return;'
+        + 'b.innerHTML=f.outerHTML;'
+        + 'var x=document.createElement("button");x.className="fermer";x.type="button";'
+        + 'x.setAttribute("aria-label","Fermer");x.innerHTML="&times;";x.onclick=fermer;'
+        + 'b.insertBefore(x,b.firstChild);'
+        + 'v.classList.add("on");document.body.style.overflow="hidden";}'
+        + 'function fermer(){v.classList.remove("on");document.body.style.overflow="";}'
+        + 'v.addEventListener("click",function(e){if(e.target===v)fermer();});'
+        + 'document.addEventListener("keydown",function(e){if(e.key==="Escape")fermer();});'
+        + '[].forEach.call(document.querySelectorAll(".pt"),function(p){'
+        + 'p.onclick=function(){ouvrir(p.getAttribute("data-n"));};});'
+        + '})();';
+
+        var html = '<!doctype html><html lang="'+((window.THEi18n&&THEi18n.lang())||'fr')+'">'
+          + '<head><meta charset="utf-8">'
+          + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+          + '<title>'+echapper(titre)+'</title><style>'+css+'</style></head><body>'
+          + '<div class="enveloppe">'
+          + '<header><div class="marque">'+echapper(marque)+'</div>'
+          + '<h1>'+echapper(titre)+'</h1>'
+          + (meta?'<div class="meta">'+echapper(meta)+'</div>':'')+'</header>'
+          + (carteURL
+              ? '<div class="carte"><img src="'+carteURL+'" alt="">'+pastilles+'</div>'
+                + '<p class="aide">'+T('souvenir.aide.carte')+'</p>'
+              : '')
+          + '<div class="liste">'+fiches+'</div>'
+          + '<footer>'+T('Souvenir créé avec Heritage — ce fichier vous appartient et reste consultable hors-ligne. Nous n’en conservons aucune copie.')+'</footer>'
+          + '</div><div id="vue"><div class="boite"></div></div>'
+          /* ⚠️ UNE SEULE BARRE OBLIQUE INVERSE — 03/09/2026. Écrite en double,
+             elle ne s'échappait plus : le fichier recevait « <\/script> » avec la
+             barre VISIBLE, et le navigateur, lisant un caractère qu'il n'attendait
+             pas, refusait tout le script. Le fichier s'ouvrait, la carte
+             s'affichait, et aucune étape ne réagissait au clic.
+             En JavaScript, « '<\/script>' » vaut « </script> » : la barre sert à
+             empêcher le navigateur de croire que la balise se ferme ICI, dans le
+             module. Elle ne doit pas se retrouver dans le fichier produit. */
+          + '<script>'+script+'<\/script></body></html>';
+
+        var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+        var url  = URL.createObjectURL(blob), a = document.createElement('a');
+        a.href = url; a.download = nomDeFichier(titre,'voyage')+'-souvenir.html';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 8000);
+        btn.textContent = old; btn.disabled = false;
+        try{ if(window.THEtoast) THEtoast(T('Site souvenir enregistré — il est à vous, hors-ligne.')); }catch(e){}
+        if(typeof fini==='function') fini();
+      })
+      .catch(function(){
+        btn.textContent = old; btn.disabled = false;
+        if(typeof fini==='function') fini();
+      });
   }
 
   function inject(){
@@ -207,10 +321,7 @@ function nomDeFichier(txt, repli){
     var b=document.createElement('button');
     b.className='ab'; b.id='albumsite'; b.type='button';
     b.textContent='🌐 '+T('Enregistrer en site');
-    b.onclick=function(){
-      /* rendu de base, fabrication, puis on remet l'écran comme il était */
-      surRenduDeBase(function(){ return new Promise(function(res){ buildSite(b, res); }); });
-    };
+    b.onclick=function(){ buildSite(b); };
     var back=document.getElementById('albumback');
     bar.insertBefore(b, back || null);
   }

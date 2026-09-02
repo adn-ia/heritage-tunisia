@@ -35,6 +35,12 @@ sys.exit(0)
 PY
 if [ $? -eq 0 ]; then ok "syntaxe : tous les scripts compilent"; else ko "syntaxe : un script ne compile pas"; fi
 
+# ── 1bis. Un script ÉCRIT DANS UNE CHAÎNE compile-t-il ? ────────────────────
+#    Voir .controle-scripts-embarques.py — il porte son propre mode d'emploi.
+R=$(python3 .controle-scripts-embarques.py)
+if [ -z "$R" ]; then ok "les scripts écrits dans des chaînes compilent"
+else ko "un fichier produit embarquerait un script mort :"; echo "$R" | sed 's/^/      /'; fi
+
 # ── 2. data-i18n posé DANS un gabarit JavaScript ─────────────────────────────
 #    Casse du 02/09/2026 : « '+fmtDu » affiché à l'écran en production.
 R=$(python3 - <<'PY'
@@ -195,7 +201,7 @@ else ko "la clé peut bouger — album/passeport/PDF perdront photos et notes :"
 
 printf "\n"
 if [ "$ECHECS" -eq 0 ]; then
-  printf "${VERT}═══ les 8 contrôles passent ═══${FIN}\n"
+  printf "${VERT}═══ les 9 contrôles passent ═══${FIN}\n"
   printf "${JAUNE}Il reste le seul qui compte : ouvrir l'application et s'en servir.${FIN}\n"
   printf "  Composer un itinéraire · ouvrir une étape · l'album · changer de langue.\n\n"
   exit 0
