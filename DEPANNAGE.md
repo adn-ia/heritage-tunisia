@@ -316,3 +316,30 @@ côte à côte, dont un seul est un onglet actif, et rien pour les distinguer.
 Le diaporama n'est pas un style, c'est un geste. Il garde sa mise en avant — fond
 clair, cadre doré plus épais — sans emprunter le signe de la sélection. Vérifié :
 `rgb(255,253,247)` contre `rgb(43,35,24)`, ils ne se confondent plus.
+
+
+## 03/09/2026 — Le fichier HTML héritait de l'habillage affiché
+
+**Helmy :** « HTML n'a rien à voir avec le style. »
+
+Il avait raison, et c'était sa règle de la veille appliquée ailleurs : Baroudeur,
+Passeport et Dépliant sont des **produits** ; imprimer, partager, enregistrer sont
+des **sorties**. On ne dit pas « un PDF en passeport ».
+
+**Ce qui se passait.** `the-souvenir.js` exportait « l'album déjà rendu » : le
+fichier reprenait `class="tpl-…"` du `<body>`, mais aussi la STRUCTURE du style —
+le passeport range ses étapes en livre à deux pages sur papier ligné, avec
+tampons, le dépliant en bande horizontale. Le même itinéraire donnait donc trois
+fichiers différents, selon le bouton sur lequel on se trouvait par hasard au
+moment d'appuyer.
+
+**Correctif, en deux temps.**
+- Le `<body>` du fichier n'a plus de classe de style. Les règles `tpl-*` voyagent
+  toujours dans le CSS embarqué : faute de classe, elles ne s'appliquent à rien.
+- Retirer la classe ne suffisait pas — la structure, elle, était déjà écrite dans
+  le DOM. On repasse donc au rendu de base le temps de fabriquer le fichier, puis
+  **on remet l'écran comme on l'a trouvé**.
+
+**Vérifié en ligne, fichier produit depuis le Passeport et ouvert** : 277 Ko,
+aucun `pp-book` ni `pp-page` dans le corps, la carte à sa place, et le style
+Passeport toujours actif à l'écran après coup.

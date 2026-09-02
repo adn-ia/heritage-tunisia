@@ -114,9 +114,30 @@ function nomDeFichier(txt, repli){
      une image plate, si. Un seul aplatissement pour les deux usages. */
   window.THEcartePlate = aplatirCarte;
 
-  function buildSite(btn){
+  /* ── LE FICHIER NE DÉPEND PAS DU BOUTON OÙ L'ON SE TROUVE ────────────────────
+     03/09/2026, Helmy : « HTML n'a rien à voir avec le style ».
+     Retirer la classe du `<body>` ne suffisait pas : le passeport et le dépliant
+     changent aussi la STRUCTURE — l'un range les étapes en livre à deux pages sur
+     papier ligné, l'autre en bande horizontale. Le fichier gardait donc leur
+     forme, tampon compris.
+     On repasse au rendu de base le temps de fabriquer le fichier, puis on remet
+     l'écran comme on l'a trouvé. Le même itinéraire donne ainsi le même fichier,
+     qu'on ait appuyé depuis Baroudeur, Passeport ou Dépliant. */
+  function surRenduDeBase(faire){
+    var actif = document.querySelector('.album-bar .tpl.on');
+    var base  = document.querySelector('.album-bar .tpl[data-tpl="baroudeur"]');
+    if(!actif || !base || actif === base) return faire().then(function(r){ return r; });
+    base.click();
+    return new Promise(function(res){ setTimeout(res, 1400); })   // le rendu se refait
+      .then(faire)
+      .then(function(r){ try{ actif.click(); }catch(e){} return r; })
+      .catch(function(e){ try{ actif.click(); }catch(e2){} throw e; });
+  }
+
+  function buildSite(btn, fini){
     var doc=document.querySelector('.album-doc');
-    if(!doc){ alert(T('Ouvrez d’abord l’album (choisissez un style), puis réessayez.')); return; }
+    if(!doc){ alert(T('Ouvrez d’abord l’album (choisissez un style), puis réessayez.'));
+              if(typeof fini==='function') fini(); return; }
     var old=btn.textContent; btn.textContent='⏳ '+T('Création…'); btn.disabled=true;
     var clone=doc.cloneNode(true);
 
@@ -136,19 +157,38 @@ function nomDeFichier(txt, repli){
       chain=chain.then(function(){ return toDataURL(src).then(function(d){ m.setAttribute('src',d); m.removeAttribute('crossorigin'); }); });
     });
     chain.then(function(){
-      var tplM=(document.body.className.match(/tpl-[a-zàâäéèêëîïôöùûüç-]+/)||['tpl-baroudeur']);
-      var tpl=tplM[0];
+      /* ⚠️ LE FICHIER N'HÉRITE D'AUCUN HABILLAGE — 03/09/2026, Helmy : « HTML n'a
+         rien à voir avec le style ».
+         Il a raison, et c'est sa règle depuis la veille : Baroudeur, Passeport et
+         Dépliant sont des PRODUITS ; imprimer, partager, enregistrer sont des
+         SORTIES. On ne dit pas « un PDF en passeport » — on ne dira pas non plus
+         « un HTML en passeport ». Le fichier portait pourtant `class="tpl-…"`,
+         reprise de l'écran : le même itinéraire donnait trois fichiers différents
+         selon le bouton où l'on se trouvait par hasard.
+         Le `<body>` n'a donc plus de classe de style. Les règles `tpl-*` voyagent
+         toujours dans le CSS embarqué — elles ne s'appliquent simplement à rien,
+         faute de classe pour les déclencher. Reste l'itinéraire sur fond neutre :
+         la couverture, la carte, les étapes, les photos, les notes. */
       var title=((document.querySelector('.album-cover h2')||{}).textContent||T('Mon voyage')).trim();
       var css=collectCSS()
-        +'\nbody{margin:0;background:#e9e4d6;padding:16px;font-family:Georgia,"Times New Roman",serif}'
+        +'\nbody{margin:0;background:#e9e4d6;padding:16px;font-family:Georgia,"Times New Roman",serif;color:#2b2318}'
         +'#album{display:block !important;max-width:820px;margin:0 auto}'
-        +'.album-bar,.share-panel,.leaflet-control-container,#projOv{display:none!important}';
+        +'.album-bar,.share-panel,.leaflet-control-container,#projOv{display:none!important}'
+        /* ⚠️ LA STRUCTURE SURVIT AU STYLE. Le passeport range ses étapes en livre à
+           deux pages, le dépliant en bande horizontale : sans leurs règles, ces
+           dispositions se lisent mal. On les ramène à une lecture simple, de haut
+           en bas — celle qui vaut sur n'importe quel écran. */
+        +'\n.pp-book,.depliant-strip{display:block !important;width:auto !important;overflow:visible !important}'
+        +'.pp-page,.dep-panel{display:block !important;width:auto !important;min-width:0 !important;margin:0 0 18px !important}'
+        +'.album-doc{background:#fffdf8 !important;color:#2b2318 !important;border-radius:10px;overflow:visible !important}'
+        +'.album-cover{background:#e4d6b8 !important;color:#3a2c18 !important}'
+        +'.ac-carte{display:block;width:100%;height:auto}';
       var footer='<p style="text-align:center;font-size:12px;color:#8a7c66;margin:22px auto 6px;max-width:820px">'
         + T('Souvenir créé avec Heritage — ce fichier vous appartient et reste consultable hors-ligne. Nous n’en conservons aucune copie.') + '</p>';
       var html='<!doctype html><html lang="fr"><head><meta charset="utf-8">'
         +'<meta name="viewport" content="width=device-width,initial-scale=1">'
         +'<title>'+title.replace(/</g,'&lt;')+' — souvenir</title>'
-        +'<style>'+css+'</style></head><body class="'+tpl+'">'
+        +'<style>'+css+'</style></head><body>'
         +'<div id="album">'+clone.outerHTML+'</div>'+footer+'</body></html>';
       var blob=new Blob([html],{type:'text/html;charset=utf-8'});
       var url=URL.createObjectURL(blob), a=document.createElement('a');
@@ -157,6 +197,7 @@ function nomDeFichier(txt, repli){
       setTimeout(function(){ URL.revokeObjectURL(url); }, 5000);
       btn.textContent=old; btn.disabled=false;
       try{ if(window.toast) toast(T('Site souvenir enregistré — il est à vous, hors-ligne.')); }catch(e){}
+      if(typeof fini==='function') fini();
     });
   }
 
@@ -166,7 +207,10 @@ function nomDeFichier(txt, repli){
     var b=document.createElement('button');
     b.className='ab'; b.id='albumsite'; b.type='button';
     b.textContent='🌐 '+T('Enregistrer en site');
-    b.onclick=function(){ buildSite(b); };
+    b.onclick=function(){
+      /* rendu de base, fabrication, puis on remet l'écran comme il était */
+      surRenduDeBase(function(){ return new Promise(function(res){ buildSite(b, res); }); });
+    };
     var back=document.getElementById('albumback');
     bar.insertBefore(b, back || null);
   }
