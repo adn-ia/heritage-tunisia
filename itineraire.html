@@ -623,14 +623,32 @@
          et le compte s'ajuste seul quand une icône est masquée (la halte ne
          paraît qu'en suivi GPS) — un élément caché ne prend pas de colonne. */
       #bdIcones{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-      .bd-ic{min-width:44px;min-height:44px;font-size:19px;line-height:1;background:#fffdf7;border:1.5px solid #cbbb95;border-radius:11px;padding:0 10px;
+      /* ⚠️ FONDUS DANS LE FOND, PAS POSÉS DESSUS — 02/09/2026, Helmy : « les
+         boutons en haut de l'itinéraire, il y en a 9, ils sont dans un rectangle
+         blanc ; ils devraient être fondus dans l'arrière-plan, pas sur un halo
+         blanc ». Ils portaient un fond ivoire plein (#fffdf7) sur le dégradé brun
+         de la page : deux rangées de blanc en travers de l'écran, avant même que
+         l'itinéraire commence. Ils prennent le registre des liens du haut —
+         ivoire sur transparent, un filet discret pour la cible du doigt. */
+      .bd-ic{min-width:44px;min-height:44px;font-size:19px;line-height:1;
+             background:transparent;border:1.5px solid rgba(246,240,228,.26);
+             color:var(--ivory);border-radius:11px;padding:0 10px;
              display:flex;align-items:center;justify-content:center}
-      .bd-ic:hover{background:#f4ecd9}
-      .bd-sortie{border-color:#b4462f;color:#b4462f}
+      .bd-ic:hover{background:rgba(246,240,228,.12);border-color:rgba(246,240,228,.42)}
+      /* La sortie reste rouge — c'est le seul geste qui referme. Sa teinte est
+         éclaircie : le brique d'origine se noyait dans le brun. */
+      .bd-sortie{border-color:rgba(214,110,86,.6);color:#e08c74}
+      .bd-sortie:hover{background:rgba(214,110,86,.16);border-color:#d66e56}
       /* un suivi ou une alerte en marche se voit : sinon on l'oublie allumé,
          et c'est la batterie qui le rappelle. */
       .bd-ic.on,#rtq-suivi.on,#rtq-prox.on{background:#2e6a4d;border-color:#2e6a4d;color:#fff}
-      .bd-large{flex:1;min-width:150px;min-height:44px;font-size:14.5px;font-weight:600;color:#4a3d22;background:#fffdf7;border:1.5px solid #cbbb95;border-radius:11px;padding:9px 12px}
+      /* « 📄 Documents » suit la même règle : c'est un bouton du bandeau, pas une
+         carte posée sur la page. Son PANNEAU, lui, reste sur fond clair — c'est là
+         qu'on lit une liste, elle a besoin de son papier. */
+      .bd-large{flex:1;min-width:150px;min-height:44px;font-size:14.5px;font-weight:600;
+                color:var(--ivory);background:transparent;border:1.5px solid rgba(246,240,228,.26);
+                border-radius:11px;padding:9px 12px}
+      .bd-large:hover{background:rgba(246,240,228,.12);border-color:rgba(246,240,228,.42)}
       .bd-menu{position:relative;flex:1;min-width:170px;display:flex}
       .bd-menu > button{width:100%}
       .bd-pop{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:1200;background:#fffdf7;border:1.5px solid #b9a77e;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.28);padding:6px;text-align:left;max-height:min(400px,60vh);overflow:auto}
