@@ -801,10 +801,10 @@
         </div>
       </div>
         <div class="exp-group">
-          <div class="exp-lbl" data-i18n="itin.carnet.titre">🛟 Mettre mon carnet à l'abri</div>
+          <div class="exp-lbl" data-i18n="itin.carnet.titre">🛟 Mettre mes itinéraires à l'abri</div>
           <div class="exp">
-            <button id="bkExportIti" type="button" data-i18n="itin.carnet.sauver">💾 Sauvegarder mon carnet</button>
-            <button id="bkImportIti" type="button" data-i18n="itin.carnet.restaurer">📥 Restaurer un carnet</button>
+            <button id="bkExportIti" type="button" data-i18n="itin.carnet.sauver">💾 Sauvegarder mes itinéraires</button>
+            <button id="bkImportIti" type="button" data-i18n="itin.carnet.restaurer">📥 Restaurer mes itinéraires</button>
             <input type="file" id="bkFileIti" accept="application/json,.json" style="display:none">
           </div>
           <div class="hint" id="bkStatusIti" data-i18n="itin.carnet.pourquoi">Vos itinéraires, vos notes et vos photos ne vivent que dans cet appareil : rien n'est conservé chez nous. La sauvegarde les met dans un fichier qui reste chez vous — à garder pour changer de téléphone, ou pour tout retrouver si l'application est réinstallée.</div>
@@ -854,7 +854,7 @@
           <div class="scan-status" id="scanStatus">Visez le QR code…</div>
         </div>
         <div id="scanResult" style="display:none"></div>
-        <div class="hint" style="margin-top:10px">THE ne copie pas le contenu officiel du QR : il vous laisse l'ouvrir, et marque le lieu comme <b>visité</b> dans votre itinéraire et votre carnet.</div>
+        <div class="hint" style="margin-top:10px" data-i18n-html="itin.qr.mention">THE ne copie pas le contenu officiel du QR : il vous laisse l'ouvrir, et marque le lieu comme <b>visité</b> dans votre itinéraire et vos notes.</div>
       </div>
     </div>
 
@@ -864,7 +864,7 @@
         <button class="modal-x" id="halteX" type="button" aria-label="Fermer">✕</button>
         <div class="md-kick">📍 Halte du voyage</div>
         <h3 class="md-title" data-i18n="iti.un.moment.non.prevu">Un moment non prévu</h3>
-        <p style="color:var(--stone);font-size:13.5px;margin:0 0 12px">Marquez un arrêt non planifié — un déjeuner, une vue, une rencontre, une balade — et gardez-le dans votre carnet. On utilise votre <b>position GPS</b>.</p>
+        <p style="color:var(--stone);font-size:13.5px;margin:0 0 12px" data-i18n-html="itineraire.rich.marquez.un.arret.non">Marquez un arrêt non planifié — un déjeuner, une vue, une rencontre, une balade — et gardez-le dans vos notes. On utilise votre <b>position GPS</b>.</p>
         <div class="halte-types" id="halteTypes"></div>
         <input id="halteName" type="text" placeholder="Un mot (facultatif) : « vue sur la vallée », « thé chez Ahmed »…" autocomplete="off">
         <button class="md-add" id="halteGo" type="button" style="width:100%;margin-top:10px" data-i18n="iti.enregistrer.cette.halte.ma.position">📍 Enregistrer cette halte (ma position)</button>
@@ -890,7 +890,7 @@
     </div>
 
     <!-- DIAPORAMA / PROJECTION du carnet (multimédia : photo/vidéo + note + voix) -->
-    <div id="projOv" role="dialog" aria-modal="true" aria-label="Diaporama du carnet">
+    <div id="projOv" role="dialog" aria-modal="true" data-i18n-aria="itineraire.aria.diaporama.du.carnet" aria-label="Diaporama de l'itinéraire">
       <div id="projStage"></div>
       <div id="projTop"><span id="projCount"></span></div>
       <div id="projCtl">
@@ -935,7 +935,7 @@
 
     <div class="foot">
       <span data-i18n="itineraire.donnees.carto.historique"></span><br>
-      Carnet photo le long du parcours : vos photos restent sur votre appareil — rien n'est envoyé.
+      <span data-i18n="itineraire.carnet.photo.le.long">Vos photos le long du parcours : elles restent sur votre appareil — rien n'est envoyé.</span>
     </div>
   </div>
 
@@ -1179,7 +1179,7 @@
   async function updateCarnetTotal(){
     const el=document.getElementById('carnet-total'); if(!el) return;
     const n=await countAll();
-    el.textContent = n ? ' · 📷 '+n+uiT(' souvenir')+(n>1?'s':'')+uiT(' dans votre carnet') : '';
+    el.textContent = n ? ' · 📷 '+n+uiT(' souvenir')+(n>1?'s':'')+uiT('itineraire.dans.votre.carnet') : '';
   }
 
   // ---------- thèmes (regroupement des 161 époques) ----------
@@ -1600,7 +1600,7 @@
        le plus court chemin lui donnerait. Elle était re-triée comme une étape à
        planifier — le récit du voyage s'en trouvait réécrit. */
     render(LASTORIGIN, {...LASTRES, route:items});
-    showGuide('📍 <b>Halte ajoutée</b> à votre voyage ! Ajoutez-y des <b>photos / notes / voix</b> dans son carnet, juste en dessous.', 8000);
+    showGuide(uiT('itin.halte.ajoutee.a.votre.voyage'), 8000);
   }
   document.getElementById('haltebtn').onclick=openHalte;
   document.getElementById('halteX').onclick=closeHalte;
@@ -1994,9 +1994,9 @@
     ENTRY=entry||rec.entry||'funnel';
     /* `_id` voyage DANS `res` : il doit être là avant que `render` n'écrive les
        `data-place`, sinon la page porte un identifiant neuf le temps d'un rendu. */
-    render(_org, {_id:rec.id, route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||'itinéraire enregistré'},
-      per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'enregistré'}, forme:rec.forme||'oneway', pepites:[], mode:rec.mode||'',
-      tour:rec.tour||{titre:rec.title, soustitre:'Itinéraire enregistré'}});
+    render(_org, {_id:rec.id, route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||uiT('iti.repris.duree')},
+      per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:uiT('iti.repris.perimetre')}, forme:rec.forme||'oneway', pepites:[], mode:rec.mode||'',
+      tour:rec.tour||{titre:rec.title, soustitre:uiT('iti.repris.soustitre')}});
   }
   function resumeSaved(id){ const rec=readSaved().find(r=>r.id===id); renderRecord(rec, 'saved'); }
   // sérialise l'itinéraire courant (pour ne pas le perdre en quittant la page, ex. « Voir la grande carte »)
@@ -2187,7 +2187,7 @@
       document.getElementById('picksClear').onclick=()=>{ if(confirm(uiT('Vider les lieux choisis sur la carte ?'))){ localStorage.removeItem('the_picks'); renderSaved(); } };
     }
     list.querySelectorAll('.saved-open[data-id]').forEach(b=>b.onclick=()=>resumeSaved(b.dataset.id));
-    list.querySelectorAll('.saved-del[data-id]').forEach(b=>b.onclick=()=>{ if(confirm(uiT('Supprimer cet itinéraire enregistré ?'))) deleteSaved(b.dataset.id); });
+    list.querySelectorAll('.saved-del[data-id]').forEach(b=>b.onclick=()=>{ if(confirm(uiT('iti.supprimer.enregistre'))) deleteSaved(b.dataset.id); });
   }
   document.getElementById('savebtn').onclick=saveCurrent;
 
@@ -2820,7 +2820,7 @@
        /* render() remplace LASTRES : l'identifiant ne peut pas y vivre. Chaque
           étape ajoutée met à jour CETTE fiche, au lieu d'en laisser une vide. */
        window.THElibreId=_idLibre; })();
-    showGuide('🎒 <b>Voyage libre</b> lancé ! Déplacez-vous, puis marquez chaque moment avec <b>« 📍 J\'ai fait une halte ici »</b> (plus bas) — tout va dans votre carnet.', 9000);
+    showGuide(uiT('itin.voyage.libre.lance.deplacez.vous'), 9000);
     // on cale l'origine sur la position réelle si dispo (pour ordonner les haltes autour de soi)
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
       p=>{ if(LASTRES&&LASTRES.mode==='libre') LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:'Ma position'}; },()=>{},
@@ -3467,7 +3467,7 @@
   }
   async function openProjection(){
     PROJ=await buildProjItems();
-    if(!PROJ.length){ THEtoast(uiT('Votre carnet est vide pour cet itinéraire.')+'\n'+uiT('Ajoutez des photos, des notes ou des prises de son à vos étapes, puis revenez projeter.')); return; }
+    if(!PROJ.length){ THEtoast(uiT('itineraire.votre.carnet.est.vide.pour')+'\n'+uiT('Ajoutez des photos, des notes ou des prises de son à vos étapes, puis revenez projeter.')); return; }
     projIdx=0; projPlaying=true;
     document.getElementById('projOv').style.display='block';
     document.getElementById('projPlay').textContent='⏸';
