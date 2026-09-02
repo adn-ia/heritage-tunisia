@@ -561,5 +561,10 @@
      compresse. `the-prise.js` s'en sert pour poser la photo prise au bandeau
      dans le carnet de l'étape choisie. Rien d'autre ne change ici. */
   window.THECarnet={ open:openManager, close:closeModal, render:renderSection, enTete:choisirEnTete, panneauEnTete:panneauEnTete,
-                     ajouter:addMedia, compresser:compresser };
+                     ajouter:addMedia, compresser:compresser,
+                     /* `lire` rend les médias d'une étape, dans l'ordre, avec le
+                        repli de clé. Publié pour `the-planche.js` : sans elle, un
+                        bloc extérieur rouvrirait IndexedDB pour son compte — deux
+                        chemins vers la même table, dont un seul connaît le repli. */
+                     lire:getMediaLarge };
 })();
