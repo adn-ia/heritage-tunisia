@@ -169,3 +169,34 @@ vérification), et le plancher `Math.max(120, place)` qui transformait la place
 disponible en minimum. Il s'est trompé sur un quatrième, en affirmant que `i`
 n'était pas défini dans le `forEach` : il vient de `cards.forEach(function(card,
 i))`, c'est l'index de l'ÉTAPE, et c'est voulu. Vérifié avant d'agir.
+
+## 02/09/2026 — Le PDF sortait de grands cadres blancs en travers de la page
+
+**Symptôme.** « Le PDF produit ou à imprimer produit l'itinéraire entier avec
+cadres, boutons, etc., alors qu'on devrait avoir juste les éléments ajoutés
+comme passeport : les médias par étape, les noms d'étape, la carte. »
+
+**Méthode.** Pour ne pas deviner, les règles `@media print` ont été extraites des
+feuilles de style et **appliquées pour de bon** au document : la feuille telle
+qu'elle sort, à l'écran, mesurable et photographiable.
+
+**La cause.** Le bloc print portait `.album-doc .album-ph{display:block;}`, posée
+la veille contre les coupures. `.album-ph` est en `flex` (l. 305) : forcée en
+`block`, chaque vignette passait de **168 px à 1751 px**. D'où les grands cadres
+blancs de travers qui traversaient la feuille — c'étaient les polaroids étirés.
+Les coupures étaient déjà tenues par le `break-inside:avoid` posé sur `.pic`
+juste au-dessus : la règle n'apportait rien qu'un dégât. Retirée.
+
+**Deux nettoyages dans la foulée.**
+- Le **pied de page du site** s'imprimait avec ses liens de navigation. Un album,
+  un passeport, un dépliant se lisent seuls : `#the-footer` masqué.
+- Les **notes d'étape** s'imprimaient comme des champs de saisie — bordure, coin
+  de redimensionnement, et pour les étapes sans note, le texte d'invite
+  « Écrivez un mot sur ce lieu… » imprimé comme s'il était du voyageur. Elles
+  s'impriment maintenant comme du texte, et `:placeholder-shown` écarte celles
+  qui sont vides.
+
+**Vérifié à l'écran**, règles print appliquées : vignette à 168 px, `.album-ph`
+resté en `flex`, pied de page à `none`, 3 notes vides masquées sur 4, la seule
+remplie visible. Feuille photographiée : en-tête, carte, puis chaque étape avec
+son nom, sa ville, sa note et ses photos.

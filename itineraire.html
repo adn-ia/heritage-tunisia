@@ -417,7 +417,28 @@
         break-inside:avoid !important;page-break-inside:avoid !important;}
       .album-doc img,.album-doc video{max-width:100% !important;height:auto !important;
         object-fit:contain !important;display:block;}
-      .album-doc .album-ph{display:block;}
+      /* ⚠️ CETTE RÈGLE ÉTIRAIT CHAQUE PHOTO SUR TOUTE LA LARGEUR — retirée le
+         02/09/2026. Posée la veille contre les coupures, elle forçait `.album-ph`
+         de `flex` (l. 305) à `block` : la vignette passait de 168 px à 1751 px, et
+         la feuille se couvrait de grands cadres blancs de travers qui la
+         traversaient. C'est le « le PDF produit l'itinéraire entier avec cadres »
+         signalé par Helmy. Les coupures sont déjà tenues par le
+         `break-inside:avoid` posé sur `.pic` juste au-dessus : cette règle-ci
+         n'apportait rien qu'un dégât. La disposition de l'écran est conservée. */
+
+      /* Un champ de saisie n'est pas du papier. Sur la feuille, la note d'étape
+         montrait sa bordure, son coin de redimensionnement, et — quand elle était
+         vide — son texte d'invite « Écrivez un mot sur ce lieu… », imprimé comme
+         s'il s'agissait du mot du voyageur. Elle s'imprime maintenant comme du
+         texte ; vide, elle ne s'imprime pas du tout. */
+      .album-doc textarea{border:none !important;background:transparent !important;
+        resize:none !important;padding:0 !important;overflow:hidden !important;}
+      .album-doc textarea:placeholder-shown{display:none !important;}
+
+      /* Le pied de page du SITE n'appartient pas au document : un album, un
+         passeport, un dépliant se lisent seuls. Il portait ses liens de
+         navigation jusque sur la feuille. */
+      #the-footer,.the-footer{display:none !important;}
       .tpl-passeport .pp-book{display:block;}
       .pp-page{break-inside:avoid;page-break-inside:avoid;box-shadow:none !important;border:1px solid #d8c9a4;margin-bottom:8mm;min-height:auto;flex:none;max-width:none;}
       .pp-wm{opacity:.05 !important;}
