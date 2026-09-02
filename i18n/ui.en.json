@@ -2873,6 +2873,7 @@
  "print.mag.sous": "Text and photos in columns, editorial style",
  "print.one": "One photo per page",
  "print.one.sous": "Each photo in full-frame, large format",
+ "print.sans.photo": "This itinerary only shows photos, and this route does not include any. Add some to your stops, or choose a different itinerary.",
  "print.text": "Notes only (without photos)",
  "print.text.sous": "Just your progress notes, like a diary",
  "print.titre": "Print my itinerary",

@@ -2772,6 +2772,7 @@
  "print.mag.sous": "Text und Fotos in Spalten, redaktioneller Stil",
  "print.one": "Ein Foto pro Seite",
  "print.one.sous": "Jedes Foto groß, im Vollbildmodus",
+ "print.sans.photo": "Diese Zusammenstellung zeigt nur Fotos, und diese Route enthält keine. Fügen Sie welche zu Ihren Etappen hinzu oder wählen Sie eine andere Zusammenstellung.",
  "print.text": "Nur Notizen (ohne Fotos)",
  "print.text.sous": "Nur Ihre Etappennotizen, wie in einem Tagebuch",
  "print.titre": "Meine Route ausdrucken",

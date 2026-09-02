@@ -1310,6 +1310,7 @@
  "print.mag.sous": "Texte et photos en colonnes, style éditorial",
  "print.one": "Une photo par page",
  "print.one.sous": "Chaque photo en grand, plein cadre",
+ "print.sans.photo": "Cette composition ne montre que les photos, et cet itinéraire n'en a aucune. Ajoutez-en à vos étapes, ou choisissez une autre composition.",
  "print.text": "Notes seules (sans photos)",
  "print.text.sous": "Vos notes d'étape seules, comme un journal",
  "print.titre": "Imprimer mon itinéraire",

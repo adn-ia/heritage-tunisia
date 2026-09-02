@@ -30,14 +30,113 @@ function nomDeFichier(txt, repli){
     return out;
   }
 
+  /* ── LA CARTE S'APLATIT EN UNE IMAGE ─────────────────────────────────────────
+     Signalé par Helmy le 03/09/2026 : « la carte itinéraire n'apparaît pas dans le
+     HTML produit ». Elle était bien clonée — mais VIDE.
+
+     Un `cloneNode` copie la balise `<canvas>`, jamais ce qui y est dessiné : le
+     pixel n'appartient pas au document, il appartient au contexte de rendu. Or
+     cette carte est faite de HUIT canvas de tuiles, plus deux SVG pour le tracé et
+     quatre marqueurs. Le fichier partait donc avec un cadre vide.
+
+     On la redessine ici sur un seul canvas, dans l'ordre où elle s'empile à
+     l'écran — les tuiles, puis le tracé, puis les points numérotés — et le fichier
+     reçoit une image plate, qui n'a plus besoin de Leaflet pour exister. C'est
+     aussi ce qui la rend consultable hors ligne, des années plus tard. */
+  function aplatirCarte(cadre){
+    try{
+      var r0 = cadre.getBoundingClientRect();
+      if(!r0.width || !r0.height) return Promise.resolve(null);
+      var ech = Math.min(2, window.devicePixelRatio || 1);   // net sans être énorme
+      var c = document.createElement('canvas');
+      c.width = Math.round(r0.width * ech); c.height = Math.round(r0.height * ech);
+      var g = c.getContext('2d');
+      g.scale(ech, ech);
+      g.fillStyle = '#e9e4d6'; g.fillRect(0, 0, r0.width, r0.height);
+
+      /* ① les tuiles */
+      [].forEach.call(cadre.querySelectorAll('canvas'), function(t){
+        try{
+          var r = t.getBoundingClientRect();
+          if(!r.width || !r.height) return;
+          g.drawImage(t, r.left - r0.left, r.top - r0.top, r.width, r.height);
+        }catch(e){}
+      });
+
+      /* ② le tracé, porté par le SVG de Leaflet */
+      var suite = Promise.resolve();
+      [].forEach.call(cadre.querySelectorAll('svg'), function(sv){
+        suite = suite.then(function(){
+          return new Promise(function(res){
+            try{
+              var r = sv.getBoundingClientRect();
+              if(!r.width || !r.height) return res();
+              var copie = sv.cloneNode(true);
+              copie.setAttribute('width',  r.width);
+              copie.setAttribute('height', r.height);
+              var txt = new XMLSerializer().serializeToString(copie);
+              var im = new Image();
+              im.onload  = function(){ g.drawImage(im, r.left - r0.left, r.top - r0.top, r.width, r.height); res(); };
+              im.onerror = function(){ res(); };
+              im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(txt);
+            }catch(e){ res(); }
+          });
+        });
+      });
+
+      /* ③ les points numérotés — REDESSINÉS, pas photographiés : ce sont des
+            éléments HTML, et on ne fabrique pas une image depuis du HTML sans y
+            perdre les polices. On lit leur numéro et leur place. */
+      return suite.then(function(){
+        [].forEach.call(cadre.querySelectorAll('.leaflet-marker-icon'), function(m){
+          try{
+            var r = m.getBoundingClientRect();
+            var x = r.left - r0.left + r.width / 2, y = r.top - r0.top + r.height / 2;
+            var n = (m.textContent || '').trim();
+            var ray = Math.max(11, Math.min(r.width, r.height) / 2);
+            g.beginPath(); g.arc(x, y, ray, 0, 6.2832);
+            g.fillStyle = '#a8884f'; g.fill();
+            g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
+            if(n){
+              g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+              g.font = '700 ' + Math.round(ray * 1.05) + 'px Georgia, serif';
+              g.fillText(n, x, y + 1);
+            }
+          }catch(e){}
+        });
+        return c.toDataURL('image/jpeg', 0.9);
+      });
+    }catch(e){ return Promise.resolve(null); }
+  }
+
+  /* Publiée : `the-print.js` s'en sert avant d'imprimer. Une carte Leaflet ne
+     survit ni au clonage ni au changement de largeur que l'impression impose ;
+     une image plate, si. Un seul aplatissement pour les deux usages. */
+  window.THEcartePlate = aplatirCarte;
+
   function buildSite(btn){
     var doc=document.querySelector('.album-doc');
     if(!doc){ alert(T('Ouvrez d’abord l’album (choisissez un style), puis réessayez.')); return; }
     var old=btn.textContent; btn.textContent='⏳ '+T('Création…'); btn.disabled=true;
     var clone=doc.cloneNode(true);
+
+    /* La carte s'aplatit AVANT la conversion des médias : l'image qui la remplace
+       est déjà un `data:`, elle n'aura rien à convertir ensuite. */
+    var carteSource = doc.querySelector('.ac-carte');
+    var carteClone  = clone.querySelector('.ac-carte');
+    var carteFaite  = (carteSource && carteClone)
+      ? aplatirCarte(carteSource).then(function(url){
+          if(!url) return;
+          var im = document.createElement('img');
+          im.src = url; im.alt = '';
+          im.style.cssText = 'display:block;width:100%;height:auto;border-radius:8px';
+          carteClone.parentNode.replaceChild(im, carteClone);
+        }).catch(function(){})
+      : Promise.resolve();
+
     var medias=[].slice.call(clone.querySelectorAll('img,video,source'));
     // convertir chaque média (blob:/http) en data-URI, en série
-    var chain=Promise.resolve();
+    var chain=carteFaite;
     medias.forEach(function(m){
       var src=m.getAttribute('src');
       if(!src || src.indexOf('data:')===0) return;

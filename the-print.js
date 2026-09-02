@@ -107,14 +107,65 @@
   var st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
 
   /* ---------- impression ---------- */
+  /* ⚠️ UNE COMPOSITION SANS MATIÈRE NE DOIT PAS SORTIR DES PAGES BLANCHES —
+     03/09/2026, Helmy : « tronqué », capture à l'appui. Il avait choisi « Une
+     photo par page » sur un itinéraire de six étapes SANS PHOTO. Cette
+     composition masque les titres et les notes — c'est son principe, elle ne
+     montre que l'image — si bien qu'il ne restait sur la feuille que le message
+     « Pas de photo ici » répété six fois, sous une page blanche.
+     Quatre des huit compositions reposent entièrement sur les photos. Quand il
+     n'y en a aucune, elles le disent maintenant, au lieu de produire du vide. */
+  var EXIGE_PHOTOS = { one:1, contact:1, big:1, fridge:1 };
+
+  function combienDePhotos(){
+    try{ return document.querySelectorAll('.album-doc .pic').length; }catch(e){ return 0; }
+  }
+
   function doPrint(mode){
+    if(EXIGE_PHOTOS[mode] && combienDePhotos() === 0){
+      var dire = window.THEtoast || window.THEmessage;
+      if(dire) dire(T('print.sans.photo'));
+      return;
+    }
     document.body.classList.remove('pr-one','pr-contact','pr-two','pr-big','pr-mag','pr-text','pr-fridge');
     document.body.classList.add('pr-mode');
     if(mode) document.body.classList.add('pr-'+mode);
-    setTimeout(function(){
-      window.print();
-      setTimeout(function(){ document.body.classList.remove('pr-mode','pr-one','pr-contact','pr-two','pr-big','pr-mag','pr-text','pr-fridge'); }, 600);
-    }, 180);
+
+    /* ⚠️ LA CARTE S'IMPRIMAIT COUPÉE — 03/09/2026, Helmy : « tronqué », avec une
+       bande grise à droite de la carte sur la feuille. Une carte Leaflet ne charge
+       que les tuiles de la zone qu'elle croit occuper ; or l'impression change la
+       largeur ET la hauteur de son conteneur (`@media print{.ac-carte{height:170px}}`)
+       APRÈS coup. Leaflet ne l'apprend jamais, et tout ce qui dépasse reste gris.
+       Recadrer avant ne suffirait pas : on ne connaît pas encore la taille imprimée.
+       On remplace donc la carte par une IMAGE PLATE le temps d'imprimer — une image
+       s'adapte à n'importe quelle largeur sans rien avoir à recharger — puis on la
+       remet telle qu'elle était. Même aplatissement que pour le fichier HTML :
+       une seule fonction, publiée par `the-souvenir.js`. */
+    var cadre = document.querySelector('.ac-carte');
+    var plate = (cadre && window.THEcartePlate) ? window.THEcartePlate(cadre) : Promise.resolve(null);
+
+    function imprimer(remis){
+      setTimeout(function(){
+        window.print();
+        setTimeout(function(){
+          document.body.classList.remove('pr-mode','pr-one','pr-contact','pr-two','pr-big','pr-mag','pr-text','pr-fridge');
+          if(remis) remis();
+        }, 600);
+      }, 180);
+    }
+
+    plate.then(function(url){
+      var remis = null;
+      if(url && cadre && cadre.parentNode){
+        var im = document.createElement('img');
+        im.src = url; im.alt = '';
+        im.className = 'ac-carte ac-carte-plate';
+        im.style.cssText = 'display:block;width:100%;height:auto;object-fit:contain';
+        cadre.parentNode.replaceChild(im, cadre);
+        remis = function(){ try{ im.parentNode.replaceChild(cadre, im); }catch(e){} };
+      }
+      imprimer(remis);
+    }).catch(function(){ imprimer(null); });
   }
 
   /* ---------- modale autonome (palette album) ---------- */

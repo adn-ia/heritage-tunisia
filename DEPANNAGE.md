@@ -200,3 +200,53 @@ juste au-dessus : la règle n'apportait rien qu'un dégât. Retirée.
 resté en `flex`, pied de page à `none`, 3 notes vides masquées sur 4, la seule
 remplie visible. Feuille photographiée : en-tête, carte, puis chaque étape avec
 son nom, sa ville, sa note et ses photos.
+
+## 03/09/2026 — La carte absente du HTML, coupée dans le PDF : une seule cause
+
+**Symptômes, signalés à une heure d'écart.** « La carte itinéraire n'apparaît pas
+dans le HTML produit. » Puis, capture à l'appui : « tronqué » — la carte du PDF
+coupée par une bande grise à droite.
+
+**La cause commune.** Une carte Leaflet n'existe pas dans le document : elle
+existe dans un contexte de rendu. Ici, huit canvas de tuiles, deux SVG pour le
+tracé, quatre marqueurs.
+
+- **En HTML**, `the-souvenir.js` clonait `.album-doc`. Un `cloneNode` copie la
+  BALISE `<canvas>`, jamais ce qui y est dessiné : le pixel n'appartient pas au
+  document. Le fichier partait avec un cadre vide.
+- **En PDF**, Leaflet ne charge que les tuiles de la zone qu'il croit occuper.
+  L'impression change la largeur ET la hauteur du conteneur
+  (`@media print{.ac-carte{height:170px}}`) **après** coup : il ne l'apprend
+  jamais, et tout ce qui dépasse reste gris. Recadrer avant ne servirait à rien —
+  la taille imprimée n'est pas encore connue.
+
+**Le correctif, un seul pour les deux.** `aplatirCarte()` redessine la carte sur
+un canvas unique, dans son ordre d'empilement : les tuiles, puis le tracé
+sérialisé depuis le SVG, puis les points numérotés — ces derniers **redessinés**
+et non photographiés, car on ne fabrique pas une image depuis du HTML sans y
+perdre les polices. La fonction est publiée par `the-souvenir.js` ;
+`the-print.js` s'en sert pour substituer une image plate le temps d'imprimer,
+puis remet la carte. Une image s'adapte à n'importe quelle largeur sans rien
+recharger.
+
+**Vérifié EN LIGNE** — en local les tuiles sont exclues de la copie de test, le
+fond y est donc uni : ne pas conclure de là. En ligne : rues, noms de lieux,
+tracé vert, quatre points numérotés, 144 Ko.
+
+## 03/09/2026 — Une composition sans photo sortait des pages blanches
+
+La même capture montrait six « Pas de photo ici » entassés, sans titres d'étape.
+Reproduit : composition **« Une photo par page »** sur un itinéraire **sans
+photo**. Cette composition masque titres et notes — c'est son principe, elle ne
+montre que l'image. Sans image, il ne reste que le message d'absence, répété.
+
+Quatre des huit compositions vivent entièrement des photos : *une photo par
+page*, *planche-contact*, *grande photo*, *frigo*. Elles refusent maintenant de
+s'exécuter à zéro photo et le disent, au lieu de produire du vide.
+
+**Vu au passage, à surveiller.** Le repli de clé posé le 02/09 (essayer `#1`
+quand `it123…#1` ne rend rien) peut faire remonter une photo ORPHELINE — rangée
+avant qu'un itinéraire ait son identifiant — dans un itinéraire neuf. Constaté en
+test : un itinéraire fraîchement créé affichait une photo d'un essai précédent.
+Sans gravité (la photo appartient bien au voyageur) mais inattendu. Le repli
+reste : sans lui, les photos d'avant la correction seraient perdues.
