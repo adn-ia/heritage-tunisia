@@ -15,6 +15,18 @@
     // leur donner. Les confondre affichait 3 drapeaux tunisiens (ar, de, it) le
     // 30/08/2026. L'allemand et l'italien reprennent le leur : 🇩🇪 et 🇮🇹.
     langPays:     ["ar"],
+    /* 🧲 LES AIMANTS DU FRIGO — ajoutés le 02/09/2026. La composition « Frigo
+       vintage » colle les photos comme des polaroïds sur une porte de
+       réfrigérateur, retenus par un aimant-souvenir. Ceux-ci étaient écrits EN DUR
+       dans `the-print.js`, repris du Québec : ⚜️ fleur de lys, 🍁 érable, 🏒 hockey,
+       🫎 orignal — sur l'édition tunisienne, et la description disait même
+       « aimants du Québec ». C'est une donnée de PAYS : elle vit ici.
+       Pour la Tunisie : 🧿 l'œil contre le mauvais sort et 🐟 le poisson, les deux
+       porte-bonheur qu'on voit partout sur les portes et les bijoux ; 🌴 le
+       palmier ; 🏺 la poterie de Nabeul.
+       ⚠️ Une édition qui n'en déclare pas n'aura AUCUN aimant — le polaroïd restera
+       nu. Pas de repli : un aimant d'un autre pays est pire que rien. */
+    aimants:      ["🧿","🐟","🌴","🏺"],
     domaine:      "heritage.threshold-analytics.com",
     marque:       "Tunisia Heritage Experience",
     marqueCourte: "Tunisia Heritage",

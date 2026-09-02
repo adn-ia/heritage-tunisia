@@ -5,7 +5,9 @@
      📖 Livret 2 par page · 🖼️ Grande photo + légende · 📰 Magazine 2 colonnes · 📝 Carnet écrit (sans photos).
    Modale AUTONOME (ne dépend d'aucun showModal global). À inclure après roadtrip-plus.js. */
 (function(){
-  function T(fr){ try{ return (window.THEi18n && THEi18n.ui && THEi18n.ui(fr)) || fr; }catch(e){ return fr; } }
+  /* Une clé absente rend du VIDE, jamais la clé elle-même : « print.titre » affiché
+     à l'écran serait pire qu'un trou, et un trou se voit et se corrige. */
+  function T(cle){ try{ var v=(window.THEi18n && THEi18n.ui && THEi18n.ui(cle)); return (v && v!==cle) ? v : ''; }catch(e){ return ''; } }
   /* Dispositions : '' album · one · contact · two · big · mag · text · fridge */
 
   /* ---------- CSS d'impression pour chaque disposition ---------- */
@@ -18,12 +20,25 @@
     +'body.pr-one .album-doc .pg-nm,body.pr-one .album-doc .pg-sub,body.pr-one .album-doc .album-cap,body.pr-one .album-doc .pic-cap{display:none!important}'
     +'body.pr-one .album-doc .album-page{padding:0;border:none}'
     /* --- 🔲 planche-contact (grille) --- */
-    +'body.pr-contact .album-doc .album-page{display:block;padding:0 0 4mm;border:none}'
-    +'body.pr-contact .album-doc .album-ph{display:grid!important;grid-template-columns:repeat(3,1fr);gap:3mm}'
-    +'body.pr-contact .album-doc .pic{transform:none!important;margin:0;padding:0;box-shadow:none;background:none;border:none}'
-    +'body.pr-contact .album-doc .pic img,body.pr-contact .album-doc .pic video{width:100%;height:32mm;object-fit:contain;background:#f4f0e8;display:block}'
-    +'body.pr-contact .album-doc .pic-cap,body.pr-contact .album-doc .album-cap,body.pr-contact .album-doc .pg-sub{display:none!important}'
-    +'body.pr-contact .album-doc .pg-nm{font-size:12pt;margin:6mm 0 2mm}'
+    /* ⚠️ CE N'ÉTAIT PAS UNE PLANCHE-CONTACT — refait le 02/09/2026, Helmy :
+       « si vous appuyez sur le format planche-contact, ce n'est vraiment pas une
+       planche-contact ». La grille de trois était posée sur `.album-ph`, c'est-à-dire
+       sur CHAQUE ÉTAPE prise à part. Une étape d'une seule photo donnait donc une
+       photo de 590 px et deux cases vides à côté, et les titres d'étape séparaient
+       le tout. Mesuré : 590 px de large là où une vignette en fait 40.
+       Une planche-contact, c'est TOUT le carnet en petites vignettes serrées sur la
+       même feuille, sans rien entre elles. Les boîtes intermédiaires s'effacent donc
+       (`display:contents` : la boîte disparaît, ses enfants remontent) et la grille
+       se pose sur le document entier. Quatre par ligne, 34 mm de côté. */
+    +'body.pr-contact .album-doc{display:grid!important;grid-template-columns:repeat(4,1fr);gap:3mm;padding:6mm}'
+    +'body.pr-contact .album-doc .album-page,body.pr-contact .album-doc .album-ph{display:contents!important}'
+    +'body.pr-contact .album-doc .album-cover{grid-column:1/-1;page-break-after:auto}'
+    +'body.pr-contact .album-doc .pic{transform:none!important;margin:0;padding:0;box-shadow:none;background:none;border:none;break-inside:avoid}'
+    +'body.pr-contact .album-doc .pic img,body.pr-contact .album-doc .pic video{width:100%;height:34mm;object-fit:cover;background:#f4f0e8;display:block}'
+    /* rien entre les vignettes : ni titre d'étape, ni note, ni légende */
+    +'body.pr-contact .album-doc .pic-cap,body.pr-contact .album-doc .album-cap,'
+    +'body.pr-contact .album-doc .pg-sub,body.pr-contact .album-doc .pg-nm,'
+    +'body.pr-contact .album-doc .album-empty{display:none!important}'
     /* --- 📖 livret 2 par page : ~2 étapes par feuille (pagination naturelle par la hauteur) --- */
     +'body.pr-two .album-doc .album-page{break-inside:avoid;page-break-inside:avoid;height:47vh;overflow:hidden;padding:8mm 12mm;box-sizing:border-box}'
     +'body.pr-two .album-doc .album-cover{page-break-after:always}'
@@ -71,11 +86,24 @@
     +'body.pr-fridge .pic:nth-child(4n+3){transform:rotate(-1.5deg)}'
     +'body.pr-fridge .pic:nth-child(4n){transform:rotate(2.5deg)}'
     +'body.pr-fridge .pic::before{position:absolute;top:-4mm;left:50%;transform:translateX(-50%);font-size:15pt;z-index:2;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
-    +'body.pr-fridge .pic:nth-child(4n+1)::before{content:"⚜️"}'
-    +'body.pr-fridge .pic:nth-child(4n+2)::before{content:"🍁"}'
-    +'body.pr-fridge .pic:nth-child(4n+3)::before{content:"🏒"}'
-    +'body.pr-fridge .pic:nth-child(4n)::before{content:"🫎"}'
     +'}';
+
+  /* 🧲 LES AIMANTS VIENNENT DU PAYS, PAS DU MODULE — 02/09/2026. Ils étaient
+     écrits ici en dur, repris du Québec : ⚜️ fleur de lys, 🍁 érable, 🏒 hockey,
+     🫎 orignal — sur l'édition tunisienne, et la description disait « aimants du
+     Québec ». C'est une donnée de pays : elle vit dans `heritage.config.js`.
+     Sans elle, aucun aimant n'est posé — un polaroïd nu vaut mieux que le
+     souvenir d'un autre pays. Ce module redevient ainsi 100 % générique. */
+  var AIM = (window.HConf && Array.isArray(HConf.aimants)) ? HConf.aimants : [];
+  if(AIM.length){
+    var regAim='@media print{';
+    for(var a=0; a<4; a++){
+      var em = String(AIM[a % AIM.length]).replace(/["\\]/g,'');   // rien d'autre qu'un pictogramme
+      var nth = (a===3) ? '4n' : ('4n+'+(a+1));
+      regAim += 'body.pr-fridge .pic:nth-child('+nth+')::before{content:"'+em+'"}';
+    }
+    CSS += regAim + '}';
+  }
   var st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
 
   /* ---------- impression ---------- */
@@ -119,17 +147,21 @@
   function chooser(){
     var ov=ensureModal();
     ov.querySelector('.pr-box').innerHTML=
-      '<button class="pr-x" type="button" aria-label="'+T('Fermer')+'">×</button>'+
-      '<h3>🖨️ '+T('Imprimer le carnet')+'</h3>'+
-      '<p class="pr-lead">'+T('Choisissez une composition :')+'</p>'+
-      opt('',      1,'📔','Album (mise en page actuelle)','La présentation que vous voyez à l’écran')+
-      opt('one',   0,'🖼️','Une photo par page','Chaque photo en grand, plein cadre')+
-      opt('contact',0,'🔲','Planche-contact','Grille de vignettes, 3 par ligne')+
-      opt('two',   0,'📖','Livret — 2 étapes par page','Compact, économe en papier')+
-      opt('big',   0,'🖼️','Grande photo + légende','Une photo dominante par étape, façon beau livre')+
-      opt('mag',   0,'📰','Magazine — 2 colonnes','Texte et photos en colonnes, style éditorial')+
-      opt('text',  0,'📝','Carnet écrit (sans photos)','Vos notes d’étape seules, comme un journal')+
-      opt('fridge',0,'🧲','Frigo vintage','Polaroïds collés sur la porte, aimants du Québec');
+      /* ⚠️ DIX-NEUF TEXTES ÉTAIENT ÉCRITS EN DUR ICI — 02/09/2026. Le module passait
+         par `T('phrase française')`, qui rend la phrase telle quelle quand aucune
+         traduction n'existe : en arabe, en allemand, en italien, toute cette fenêtre
+         restait en français. Les clés sont posées, traduites par DeepL. */
+      '<button class="pr-x" type="button" aria-label="'+T('print.fermer')+'">×</button>'+
+      '<h3>🖨️ '+T('print.titre')+'</h3>'+
+      '<p class="pr-lead">'+T('print.lead')+'</p>'+
+      opt('',       1,'📔','print.album',  'print.album.sous')+
+      opt('one',    0,'🖼️','print.one',    'print.one.sous')+
+      opt('contact',0,'🔲','print.contact','print.contact.sous')+
+      opt('two',    0,'📖','print.two',    'print.two.sous')+
+      opt('big',    0,'🖼️','print.big',    'print.big.sous')+
+      opt('mag',    0,'📰','print.mag',    'print.mag.sous')+
+      opt('text',   0,'📝','print.text',   'print.text.sous')+
+      opt('fridge', 0,'🧲','print.fridge', 'print.fridge.sous');
     ov.querySelector('.pr-x').onclick=closeChooser;
     [].forEach.call(ov.querySelectorAll('.pr-opt'),function(b){
       b.onclick=function(){ var m=b.getAttribute('data-mode'); closeChooser(); doPrint(m); };
