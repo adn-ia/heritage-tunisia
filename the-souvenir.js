@@ -120,23 +120,16 @@ function nomDeFichier(txt, repli){
     var old=btn.textContent; btn.textContent='⏳ '+T('Création…'); btn.disabled=true;
     var clone=doc.cloneNode(true);
 
-    /* La carte s'aplatit AVANT la conversion des médias : l'image qui la remplace
-       est déjà un `data:`, elle n'aura rien à convertir ensuite. */
-    var carteSource = doc.querySelector('.ac-carte');
-    var carteClone  = clone.querySelector('.ac-carte');
-    var carteFaite  = (carteSource && carteClone)
-      ? aplatirCarte(carteSource).then(function(url){
-          if(!url) return;
-          var im = document.createElement('img');
-          im.src = url; im.alt = '';
-          im.style.cssText = 'display:block;width:100%;height:auto;border-radius:8px';
-          carteClone.parentNode.replaceChild(im, carteClone);
-        }).catch(function(){})
-      : Promise.resolve();
-
+    /* ⚠️ PLUS RIEN À APLATIR ICI — 03/09/2026. Depuis que la couverture porte
+       l'image de la carte de l'itinéraire (voir `openAlbum`), `.ac-carte` EST
+       une `<img>` en `data:`. L'aplatissement que j'avais posé la veille
+       s'exécutait quand même : ne trouvant ni canvas ni SVG dans une image, il
+       rendait un aplat uni de 4 Ko et REMPLAÇAIT la vraie carte par ce vide.
+       Le fichier repartait donc sans carte — le défaut d'origine, recréé par son
+       propre correctif. Le clonage suffit : une image se clone entière. */
     var medias=[].slice.call(clone.querySelectorAll('img,video,source'));
     // convertir chaque média (blob:/http) en data-URI, en série
-    var chain=carteFaite;
+    var chain=Promise.resolve();
     medias.forEach(function(m){
       var src=m.getAttribute('src');
       if(!src || src.indexOf('data:')===0) return;

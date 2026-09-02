@@ -299,7 +299,15 @@
     .album-bar .tpl{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 14px;cursor:pointer;font-size:14px;color:var(--ink);}
     .album-bar .tpl.on{background:var(--ink);color:var(--ivory);border-color:var(--ink);}
     .album-bar .ab{border:none;border-radius:6px;padding:9px 14px;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:15px;cursor:pointer;background:#f1e7d5;color:var(--ink);}
-    .album-bar .ab.go{background:var(--ink);color:var(--ivory);}
+    /* ⚠️ IL AVAIT L'AIR SÉLECTIONNÉ — 03/09/2026, Helmy : « je ne sais pas pourquoi
+       le diaporama est en noir en permanence ». Il portait `background:var(--ink)`,
+       c'est-à-dire EXACTEMENT le noir de `.tpl.on` juste au-dessus, qui marque le
+       style choisi. Deux boutons noirs côte à côte, dont un seul est un onglet
+       actif : rien ne les distinguait. Le diaporama n'est pas un style, c'est un
+       geste. Il garde sa mise en avant — un cadre doré, plus épais — sans imiter
+       la sélection. */
+    .album-bar .ab.go{background:#fffdf7;color:var(--ink);border:2px solid var(--gold-soft);font-weight:600;}
+    .album-bar .ab.go:hover{background:#f4ecd9;border-color:var(--gold);}
     .album-doc{border-radius:8px;overflow:hidden;box-shadow:0 8px 26px rgba(0,0,0,.22);}
     .album-cover{padding:42px 26px;text-align:center;}
     .album-cover .ac-brand{letter-spacing:5px;font-size:13px;opacity:.8;}

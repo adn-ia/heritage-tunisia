@@ -280,3 +280,39 @@ le parcours visible avec ses quatre points, ses rues et ses noms de lieux.
 **La leçon.** Deux vues du même objet finissent toujours par diverger. La bonne
 question n'était pas « comment réparer la seconde carte » mais « pourquoi y en
 a-t-il deux ».
+
+
+## 03/09/2026 — Le correctif de la carte recréait le défaut qu'il corrigeait
+
+**Helmy :** « le HTML, c'est réglé ? » — non. Vérifié en produisant vraiment le
+fichier et en le lisant : deux images de 4 et 7 Ko, aucune carte.
+
+**Ce qui s'était passé.** La veille, `the-souvenir.js` avait reçu un
+aplatissement de la carte, parce que le clone rendait un canvas vide. Le
+lendemain, la couverture a cessé de créer sa propre carte : elle porte désormais
+l'IMAGE de celle de l'itinéraire. L'aplatissement, lui, s'exécutait toujours — et
+ne trouvant ni canvas ni SVG dans une image, il produisait un aplat uni de 4 Ko
+et REMPLAÇAIT la vraie carte par ce vide.
+
+**Un correctif devenu nuisible parce que la cause avait disparu sous lui.** Le
+clonage suffit désormais : une `<img>` se clone entière, avec son `data:`. Le
+bloc est retiré.
+
+**Vérifié en ligne, fichier produit et ouvert** : 277 Ko contre 80, la carte à
+201 Ko dedans, tout le parcours visible.
+
+**La leçon.** Quand la cause d'un défaut disparaît, son correctif ne devient pas
+inoffensif : il devient un défaut. À chaque changement de fond, relire ce qui
+avait été posé pour l'ancien état.
+
+## 03/09/2026 — Le diaporama avait l'air d'un onglet sélectionné
+
+**Helmy :** « je ne sais pas pourquoi le diaporama est en noir en permanence ».
+
+`.album-bar .ab.go` portait `background:var(--ink)` — EXACTEMENT le noir de
+`.tpl.on`, deux lignes plus haut, qui marque le style choisi. Deux boutons noirs
+côte à côte, dont un seul est un onglet actif, et rien pour les distinguer.
+
+Le diaporama n'est pas un style, c'est un geste. Il garde sa mise en avant — fond
+clair, cadre doré plus épais — sans emprunter le signe de la sélection. Vérifié :
+`rgb(255,253,247)` contre `rgb(43,35,24)`, ils ne se confondent plus.
