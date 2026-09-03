@@ -384,21 +384,6 @@
     .dep-th:nth-child(even){transform:rotate(1.6deg);}
     .dep-cap{width:100%;border:1px dashed #cdb98c;background:rgba(255,255,255,.6);border-radius:5px;padding:6px;font-size:13px;font-family:inherit;resize:vertical;min-height:42px;color:#3a2c18;}
 
-    /* Diaporama / Projection du carnet */
-    #projOv{display:none;position:fixed;inset:0;z-index:10000;background:#0b0a08;}
-    #projStage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-    .proj-media{max-width:100%;max-height:100%;object-fit:contain;display:block;}
-    #projTop{position:absolute;top:16px;left:18px;color:#fff;font-size:13px;letter-spacing:1px;opacity:.85;z-index:2;}
-    #projCtl{position:absolute;top:12px;right:12px;display:flex;gap:6px;z-index:3;}
-    #projCtl button{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:8px;width:44px;height:40px;font-size:16px;cursor:pointer;}
-    #projCtl button:hover{background:rgba(255,255,255,.30);}
-    #projClose{background:rgba(190,55,40,.62);font-weight:700;}
-    #projClose:hover{background:rgba(190,55,40,.9);}
-    #projCap{position:absolute;left:0;right:0;bottom:0;padding:26px 28px 32px;z-index:2;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.85));}
-    #projCap .pc-stop{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:700;line-height:1.12;}
-    #projCap .pc-sub{font-size:13px;opacity:.82;letter-spacing:.5px;margin-top:2px;}
-    #projCap .pc-note2{font-size:16px;margin-top:9px;max-width:780px;line-height:1.5;}
-    #projCap .pc-cap2{font-size:15px;font-style:italic;opacity:.92;margin-top:6px;max-width:780px;}
 
     @media print{
       /* RÈGLES D'IMPRESSION REPRISES D'ESTONIE ET DU PORTUGAL — 01/09/2026,
@@ -898,18 +883,6 @@
     </div>
 
     <!-- DIAPORAMA / PROJECTION du carnet (multimédia : photo/vidéo + note + voix) -->
-    <div id="projOv" role="dialog" aria-modal="true" data-i18n-aria="itineraire.aria.diaporama.du.carnet" aria-label="Diaporama de l'itinéraire">
-      <div id="projStage"></div>
-      <div id="projTop"><span id="projCount"></span></div>
-      <div id="projCtl">
-        <button id="projPrev" type="button" title="Précédent">⏮</button>
-        <button id="projPlay" type="button" title="Lecture / Pause">⏸</button>
-        <button id="projNext" type="button" title="Suivant">⏭</button>
-        <button id="projFs" type="button" title="Plein écran">⛶</button>
-        <button id="projClose" type="button" title="Fermer">✕</button>
-      </div>
-      <div id="projCap"></div>
-    </div>
 
     <!-- ALBUM SOUVENIR (I6) -->
     <div id="album">
@@ -3005,6 +2978,48 @@
     }catch(e){ return Promise.resolve(null); }
   }
 
+  /* ⚠️ L'ADRESSE RETIENT QU'UN DOCUMENT EST OUVERT — 03/09/2026, Helmy : « quand
+     j'appuie sur Documents et que je veux rafraîchir la page, je retombe sur
+     l'itinéraire et non sur la page des documents ».
+     C'est sa règle du 01/09 appliquée à un écran de plus : « quoi qu'il arrive, le
+     rafraîchissement d'une page doit rester sur la propre page ». L'album n'était
+     qu'un `display:block` en mémoire — un rechargement le perdait.
+     On l'écrit donc dans l'adresse, `&doc=1&style=…`, et on l'efface en sortant :
+     un paramètre qui traîne rouvrirait un document qu'on vient de fermer, ce qui
+     est exactement le défaut de `?choix=1` corrigé le 01/09. */
+  function marquerDocument(ouvert){
+    try{
+      var u = new URL(location.href);
+      if(ouvert){
+        u.searchParams.set('doc','1');
+        var st=(document.body.className.match(/tpl-([a-zé]+)/)||[])[1];
+        if(st) u.searchParams.set('style', st); else u.searchParams.delete('style');
+      } else {
+        u.searchParams.delete('doc'); u.searchParams.delete('style');
+      }
+      history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);
+    }catch(e){}
+  }
+  /* ⚠️ ON REVIENT SUR LE DOCUMENT, PAS SUR L'ITINÉRAIRE — 03/09/2026. Si l'adresse
+     porte `doc=1`, c'est qu'on rafraîchit une page où un document était ouvert : on
+     le rouvre, dans son style. On attend que l'itinéraire soit rendu — sans étape,
+     il n'y aurait rien à mettre dans le document. Le filet s'arrête au bout de six
+     secondes : mieux vaut l'itinéraire qu'une attente sans fin. */
+  (function reprendreLeDocument(){
+    var p; try{ p = new URLSearchParams(location.search); }catch(e){ return; }
+    if(p.get('doc') !== '1') return;
+    var style = p.get('style'), essais = 0;
+    (function attendre(){
+      if(++essais > 60) return;                                  // ~6 s
+      var res = document.getElementById('result');
+      if(!res || res.style.display !== 'block' || !document.querySelector('.stop')){
+        return setTimeout(attendre, 100);
+      }
+      try{ if(style && typeof albumTemplate !== 'undefined') albumTemplate = style; }catch(e){}
+      openAlbum();
+    })();
+  })();
+
   function openAlbum(){
     /* ⚠️ LA SAISIE D'ABORD, LE MASQUAGE ENSUITE. Une carte cachée mesure zéro :
        capturée après `display:none`, elle ne rendrait qu'une image vide. */
@@ -3014,6 +3029,7 @@
       document.getElementById('album').style.display='block';
       document.body.classList.add('doc-ouvert');
       renderAlbum();
+      marquerDocument(true);
       window.scrollTo({top:0,behavior:'smooth'});
     });
   }
@@ -3021,6 +3037,7 @@
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');
     document.getElementById('album').style.display='none';
     document.body.classList.remove('doc-ouvert');
+    marquerDocument(false);
     document.getElementById('result').style.display='block';
     window.scrollTo({top:0,behavior:'smooth'});
   }
@@ -3496,75 +3513,13 @@
   document.getElementById('albumbtn').onclick=openAlbum;
   document.getElementById('albumback').onclick=closeAlbum;
 
-  // ---------- Diaporama / Projection du carnet (multimédia) ----------
-  let PROJ=[], projIdx=0, projPlaying=true, projUrls=[], projGen=0, projAudio=null, projTimer=null;
-  function pesc(s){ return (s||'').replace(/[<&>]/g,c=>({'<':'&lt;','&':'&amp;','>':'&gt;'}[c])); }
-  function projClearUrls(){ projUrls.forEach(u=>{ try{URL.revokeObjectURL(u);}catch(e){} }); projUrls=[]; }
-  function projStopAudio(){ if(projAudio){ try{ projAudio.pause(); }catch(e){} projAudio=null; } }
-  async function buildProjItems(){
-    const items=[]; if(!LASTRES||!LASTRES.route) return items;
-    for(let i=0;i<LASTRES.route.length;i++){
-      const s=LASTRES.route[i], key=placeKey(s);
-      let phs=[]; try{ phs=await photosFor(key); }catch(e){}
-      phs.sort((a,b)=>a.ts-b.ts);
-      const note=(capLire(key,s)||'');
-      phs.forEach((ph,k)=>items.push({ stop:s.p.nom, sub:(s.p.gouvernorat||'')+(s.p.epoque?' · '+s.p.epoque:''),
-        blob:ph.blob, caption:ph.caption||'', audio:ph.audio||null, note:(k===0?note:'') }));
-    }
-    return items;
-  }
-  async function openProjection(){
-    PROJ=await buildProjItems();
-    if(!PROJ.length){ THEtoast(uiT('itineraire.votre.carnet.est.vide.pour')+'\n'+uiT('Ajoutez des photos, des notes ou des prises de son à vos étapes, puis revenez projeter.')); return; }
-    projIdx=0; projPlaying=true;
-    document.getElementById('projOv').style.display='block';
-    document.getElementById('projPlay').textContent='⏸';
-    try{ document.getElementById('projOv').requestFullscreen?.(); }catch(e){}
-    showProj(0);
-  }
-  function showProj(i){
-    const myGen=++projGen; clearTimeout(projTimer); projStopAudio();
-    const it=PROJ[i]; if(!it) return;
-    const stage=document.getElementById('projStage'); projClearUrls(); stage.innerHTML='';
-    const isVid=(it.blob.type||'').startsWith('video');
-    const url=URL.createObjectURL(it.blob); projUrls.push(url);
-    let media;
-    if(isVid){ media=document.createElement('video'); media.src=url; media.autoplay=true; media.playsInline=true; media.muted=!!it.audio; }
-    else { media=document.createElement('img'); media.src=url; }
-    media.className='proj-media'; stage.appendChild(media);
-    document.getElementById('projCount').textContent=(i+1)+' / '+PROJ.length;
-    document.getElementById('projCap').innerHTML=
-      '<div class="pc-stop">'+pesc(it.stop)+'</div>'+
-      (it.sub?'<div class="pc-sub">'+pesc(it.sub)+'</div>':'')+
-      (it.note?'<div class="pc-note2">'+pesc(it.note)+'</div>':'')+
-      (it.caption?'<div class="pc-cap2">« '+pesc(it.caption)+' »</div>':'');
-    const advance=()=>{ if(projPlaying && myGen===projGen) projNext(); };
-    // avance : à la fin de la voix (photo) ou de la vidéo, +1 s ; photo seule = 6 s
-    if(it.audio){ const aurl=URL.createObjectURL(it.audio); projUrls.push(aurl); projAudio=new Audio(aurl);
-      projAudio.play().catch(()=>{});
-      if(!isVid) projAudio.onended=()=>{ if(myGen===projGen) projTimer=setTimeout(advance,1000); }; }
-    if(isVid){ media.onended=()=>{ if(myGen===projGen) projTimer=setTimeout(advance,800); }; }
-    else if(!it.audio){ projTimer=setTimeout(advance,6000); }
-  }
-  function projNext(){ projStopAudio(); projIdx=(projIdx+1)%PROJ.length; showProj(projIdx); }
-  function projPrev(){ projStopAudio(); projIdx=(projIdx-1+PROJ.length)%PROJ.length; showProj(projIdx); }
-  function projTogglePlay(){ projPlaying=!projPlaying; document.getElementById('projPlay').textContent=projPlaying?'⏸':'▶';
-    if(projPlaying){ showProj(projIdx); }
-    else { clearTimeout(projTimer); projStopAudio(); const v=document.querySelector('#projStage video'); if(v){ try{v.pause();}catch(e){} } } }
-  function closeProj(){ ++projGen; clearTimeout(projTimer); projStopAudio(); projClearUrls();
-    document.getElementById('projStage').innerHTML='';
-    document.getElementById('projOv').style.display='none';
-    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){} }
-  document.getElementById('albumproject').onclick=openProjection;
-  document.getElementById('projPrev').onclick=projPrev;
-  document.getElementById('projNext').onclick=projNext;
-  document.getElementById('projPlay').onclick=projTogglePlay;
-  document.getElementById('projClose').onclick=closeProj;
-  document.getElementById('projFs').onclick=()=>{ const o=document.getElementById('projOv');
-    try{ if(!document.fullscreenElement) o.requestFullscreen?.(); else document.exitFullscreen?.(); }catch(e){} };
-  document.addEventListener('keydown',e=>{ if(document.getElementById('projOv').style.display!=='block') return;
-    if(e.key==='Escape') closeProj(); else if(e.key==='ArrowRight') projNext(); else if(e.key==='ArrowLeft') projPrev();
-    else if(e.key===' '){ e.preventDefault(); projTogglePlay(); } });
+    /* 🖥️ LE DIAPORAMA EST SORTI D'ICI — 03/09/2026, premier bloc du découpage
+       demandé par Helmy : « il vous est impossible de garder la structure du code
+       entière ni séparer ». Son écran, ses styles et son code vivaient à TROIS
+       endroits différents de ce fichier — l'écran l. 901, les styles l. 387, le
+       code l. 3543. Ils sont réunis dans `the-diaporama.js`, qui ne demande rien
+       à la page : il lit les `.stop` du DOM et `THECarnet.lire`. Il se retire en
+       effaçant sa ligne. Voir son en-tête. */
 
   document.getElementById('albumprint').onclick=()=>setTimeout(()=>window.print(),150);
   document.getElementById('albumshare').onclick=()=>{
@@ -3624,6 +3579,7 @@
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');
     document.getElementById('album').style.display='none';
     document.body.classList.remove('doc-ouvert');
+    marquerDocument(false);
     document.getElementById('result').style.display='none';
     document.getElementById('builder').style.display='block';    // garde tous les choix saisis
     window.scrollTo({top:0,behavior:'smooth'});
@@ -3678,6 +3634,9 @@
   <!-- 🔲 La planche-contact en IMAGE : photos nues, en grille, pour un éditeur
        photo. Bloc autoporté — voir l'en-tête de the-planche.js. -->
   <script src="the-planche.js" defer></script>
+  <!-- 🖥️ Le diaporama : écran, styles et code réunis. Bloc autoporté —
+       il se retire en effaçant cette ligne. Voir l'en-tête de the-diaporama.js. -->
+  <script src="the-diaporama.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
 

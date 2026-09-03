@@ -302,11 +302,20 @@ function nomDeFichier(txt, repli){
 
         var blob = new Blob([html], {type:'text/html;charset=utf-8'});
         var url  = URL.createObjectURL(blob), a = document.createElement('a');
-        a.href = url; a.download = nomDeFichier(titre,'voyage')+'-souvenir.html';
+        /* ⚠️ UN NOM QU'ON RETROUVE — 03/09/2026, Helmy : « mon itinéraire souvenir,
+           je ne le vois nulle part ». Le fichier s'appelait « 🧭-Mon-itineraire-
+           souvenir.html » : un nom qui COMMENCE par un pictogramme se range en
+           tête ou en queue de liste selon l'appareil, jamais à sa lettre. On
+           retire donc tout ce qui n'est pas une lettre en tête, et on date le
+           fichier — deux souvenirs du même voyage ne s'écrasent plus l'un l'autre
+           et se rangent dans l'ordre. */
+        var jour = new Date().toISOString().slice(0,10);
+        var base = nomDeFichier(titre,'itineraire').replace(/^[^A-Za-zÀ-ÿ0-9]+/, '') || 'itineraire';
+        a.href = url; a.download = base+'-'+jour+'.html';
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(function(){ URL.revokeObjectURL(url); }, 8000);
         btn.textContent = old; btn.disabled = false;
-        try{ if(window.THEtoast) THEtoast(T('Site souvenir enregistré — il est à vous, hors-ligne.')); }catch(e){}
+        try{ if(window.THEtoast) THEtoast(T('souvenir.enregistre')+' '+a.download); }catch(e){}
         if(typeof fini==='function') fini();
       })
       .catch(function(){
@@ -320,7 +329,9 @@ function nomDeFichier(txt, repli){
     if(!bar || document.getElementById('albumsite')) return;
     var b=document.createElement('button');
     b.className='ab'; b.id='albumsite'; b.type='button';
-    b.textContent='🌐 '+T('Enregistrer en site');
+    /* « Enregistrer en site » ne disait pas qu'un FICHIER se télécharge — d'où
+       « je ne le vois nulle part ». Le bouton dit maintenant ce qu'il fait. */
+    b.textContent=T('souvenir.bouton');
     b.onclick=function(){ buildSite(b); };
     var back=document.getElementById('albumback');
     bar.insertBefore(b, back || null);
