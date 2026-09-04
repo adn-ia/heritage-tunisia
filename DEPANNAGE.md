@@ -643,3 +643,50 @@ de 7 ; fond `218,231,213` — de la vraie terre, plus de gris ; l'itinéraire
 retrouve exactement sa vue (zoom 7, 682 × 328). Le fichier produit pèse 279 Ko,
 porte 6 boutons d'étape, 1 repère ⌂ (une boucle n'a pas de 🏁 distinct) et son
 tracé. Clic sur le 3 → « 3 · Le Kef (kasbah et médina) · Le Kef ».
+
+---
+
+## 04/09/2026 — `window.LASTRES` rend TOUJOURS `undefined`
+
+**Symptôme (Helmy).** « Là je compose un voyage libre. Ajouter une étape ne
+fonctionne pas ou aléatoirement. Le "ajouter dans l'itinéraire" ne fonctionne
+pas. Le "ajouter entre deux étapes" ne fonctionne pas. Vérifier si c'est le cas
+sur les autres façons. »
+
+**Constaté à l'écran.** Sur un itinéraire de 6 étapes, la liste « Insérer dans
+l'itinéraire » ne proposait qu'**une seule entrée : « À la fin »**.
+
+**Cause, une seule, dans deux fichiers.** `itineraire.html` déclare
+`let LASTRES` au premier niveau d'un `<script>` (l. 1259). **Une déclaration
+`let` de premier niveau crée une liaison globale LEXICALE** : `LASTRES` tout
+court se lit depuis n'importe quel fichier, mais ce n'est **pas** une propriété
+de `window`. Donc `window.LASTRES` vaut toujours `undefined` — sans erreur, sans
+le moindre signe.
+
+`roadtrip-plan.js` s'en servait à deux endroits :
+
+| ligne | ce que ça donnait |
+|---|---|
+| 551 · `var route=(window.LASTRES && LASTRES.route) || []` | liste TOUJOURS vide → une seule entrée, « à la fin » ; et la position demandée dans `apres` ne trouvait pas son option, donc retombait sur la fin **en silence**. On appuyait entre deux étapes, la nouvelle apparaissait au bout : de l'extérieur, « ça ne marche pas, ou au hasard ». |
+| 133 · `if(!window.LASTRES \|\| ...) return;` | `setHeure` rendait toujours la main : **l'heure d'une étape ne s'enregistrait jamais**. Défaut trouvé en chemin, jamais signalé par personne. |
+
+Le reste du fichier faisait juste depuis toujours : `haveRoute()` l. 31 teste
+`typeof LASTRES !== "undefined"`. Deux lignes avaient pris le `window.` de trop.
+
+**Réparé.** Les deux passent par `haveRoute()`. On lit par `THEvoyage()` quand on
+lit, par `LASTRES` quand on écrit, et **jamais** par `window.`.
+
+**Contrôle n° 8 — la même erreur ne repassera plus.** `controle.sh` refuse
+désormais toute lecture `window.LASTRES` / `window.LASTORIGIN` / `window.mapObj`.
+C'est le troisième défaut de la journée né de ce même piège : les bornes ne se
+dessinaient pas, l'export ne trouvait pas le voyage, et l'ajout d'étape ne
+trouvait pas la liste. Trois symptômes sans rapport apparent, une seule cause.
+
+**Vérifié à l'écran, en local, les trois placements et deux façons de partir.**
+Itinéraire repris de 16 étapes : liste de 17 entrées, le bouton « ＋ ici » du 4ᵉ
+rang présélectionne « Après *Agbia (Ain Hedja)* », et l'étape atterrit **rang 4**.
+« Au début » → rang 1. « À la fin » → rang 19. Voyage libre neuf : trois haltes,
+la troisième demandée **entre les deux** arrive bien en 2ᵉ position.
+
+**Les autres éditions ne sont pas touchées** : `roadtrip-plan.js` n'existe que
+dans la Tunisie — vérifié sur les dix dossiers du registre.

@@ -130,7 +130,16 @@
     rerender();
   }
   function setHeure(i, val){
-    if(!window.LASTRES || !LASTRES.route || !LASTRES.route[i]) return;
+    /* ⚠️ `window.LASTRES` EST TOUJOURS `undefined` — 04/09/2026, Helmy : « ajouter
+       une étape ne fonctionne pas ou aléatoirement ». La page déclare
+       `let LASTRES` au premier niveau d'un `<script>` (`itineraire.html` l. 1259).
+       Une déclaration `let` de premier niveau crée une liaison globale LEXICALE :
+       `LASTRES` tout court se lit depuis n'importe quel fichier, mais elle n'est
+       PAS une propriété de `window`. Le garde ci-dessous rendait donc toujours la
+       main, et l'heure d'une étape ne s'enregistrait jamais — sans une erreur,
+       sans un signe. Le reste de ce fichier fait juste : `haveRoute()` l. 31 teste
+       `typeof LASTRES !== "undefined"`. */
+    if(!haveRoute() || !LASTRES.route[i]) return;
     metaPatch(LASTRES.route[i], {heure: val||""});
   }
 
@@ -548,7 +557,15 @@
       return;
     }
     window.__rtpMetaEnAttente = meta || null;
-    var route=(window.LASTRES && LASTRES.route) || [];
+    /* ⚠️ MÊME PIÈGE, ET C'EST LUI QUE HELMY A VU — 04/09/2026 : « ajouter dans
+       l'itinéraire ne fonctionne pas, ajouter entre deux étapes ne fonctionne
+       pas ». `window.LASTRES` valant toujours `undefined`, cette liste était
+       TOUJOURS VIDE. La brique n'avait donc qu'une seule entrée à proposer, « à
+       la fin » ; et la position demandée, passée dans `apres`, ne trouvait pas
+       son option — elle retombait sur la fin, en silence. On appuyait entre deux
+       étapes, la nouvelle apparaissait au bout : de l'extérieur, « ça ne marche
+       pas, ou au hasard ». */
+    var route=(haveRoute() ? LASTRES.route : []);
     THEetape.ouvrir({ premiere:false, apres:apres,
       etapes: route.map(function(s){ return {nom:s.p.nom}; }) });
   }

@@ -199,9 +199,28 @@ PY7
 if [ -z "$R" ]; then ok "la clé de rangement des photos ne peut pas bouger"
 else ko "la clé peut bouger — album/passeport/PDF perdront photos et notes :"; echo "$R" | sed 's/^/      /'; fi
 
+# ── 8. `window.LASTRES` & co — une lecture qui rend TOUJOURS undefined ───────
+# Né le 04/09/2026, Helmy : « ajouter une étape ne fonctionne pas ou
+# aléatoirement, ajouter dans l'itinéraire ne fonctionne pas, ajouter entre deux
+# étapes ne fonctionne pas ». Cause unique, trouvée dans DEUX fichiers :
+# `itineraire.html` déclare `let LASTRES` au premier niveau d'un `<script>`. Une
+# déclaration `let` de premier niveau crée une liaison globale LEXICALE :
+# `LASTRES` tout court se lit de partout, mais ce n'est PAS une propriété de
+# `window`. Donc `window.LASTRES` vaut toujours `undefined` — sans erreur, sans
+# le moindre signe. La liste d'insertion restait vide, la position choisie était
+# perdue, l'heure d'une étape ne s'enregistrait jamais.
+# On se lit par `THEvoyage()` quand on lit, par `LASTRES` quand on écrit, et
+# jamais par `window.`.
+R=$(grep -rn 'window\.\(LASTRES\|LASTORIGIN\|mapObj\)' --include='*.js' --include='*.html' . 2>/dev/null \
+    | grep -v '^\./\.git' | grep -v '^\./DEPANNAGE.md' \
+    | grep -v '^\s*\*' | grep -v '⚠️' | grep -v '^[^:]*:[0-9]*: *//' \
+    | grep -v "valant toujours" | grep -v "EST TOUJOURS" | grep -v "vaut donc")
+if [ -z "$R" ]; then ok "aucune lecture par window.LASTRES — elle rendrait toujours undefined"
+else ko "lecture par window. d'une liaison lexicale : elle rend TOUJOURS undefined :"; echo "$R" | sed 's/^/      /'; fi
+
 printf "\n"
 if [ "$ECHECS" -eq 0 ]; then
-  printf "${VERT}═══ les 9 contrôles passent ═══${FIN}\n"
+  printf "${VERT}═══ les 10 contrôles passent ═══${FIN}\n"
   printf "${JAUNE}Il reste le seul qui compte : ouvrir l'application et s'en servir.${FIN}\n"
   printf "  Composer un itinéraire · ouvrir une étape · l'album · changer de langue.\n\n"
   exit 0
