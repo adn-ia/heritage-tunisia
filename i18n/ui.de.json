@@ -1029,7 +1029,7 @@
   "Partagé avec vous — vous pouvez l'éditer et l'enregistrer": "Mit Ihnen geteilt – Sie können sie bearbeiten und speichern",
   "Partagé avec vous — vous pouvez l\\'éditer et l\\'enregistrer": "Mit dir geteilt – du kannst es bearbeiten und speichern",
   "Pas de QR lu — marquez le lieu manuellement :": "QR-Code nicht gelesen – Ort manuell markieren:",
-  "Pas de photo ici — ajoutez-en depuis l'itinéraire.": "Hier gibt es kein Foto – füge eines über die Route hinzu.",
+  "Pas de photo ici — ajoutez-en depuis l'itinéraire.": "Hier gibt es kein Foto – fügen Sie eines aus der Route hinzu.",
   "Pas de photo ici — revenez à l'itinéraire pour en ajouter.": "Hier gibt es kein Foto – kehre zur Route zurück, um eines hinzuzufügen.",
   "Pas de plan : avancez à votre rythme. Marquez une": "Kein Plan: Geht in eurem eigenen Tempo voran. Markiert einen",
   "Pas sur votre itinéraire — l’ajouter ?": "Nicht auf Ihrer Route – hinzufügen?",
@@ -3295,12 +3295,15 @@
   "🧭 Itinéraire en construction": "🧭 Route in Bearbeitung",
   "🧭 Itinéraire libre": "🧭 Freie Route",
   "🧭 Itinéraires sur mesure & durées": "🧭 Maßgeschneiderte Routen & Dauer",
-  "🧭 Mon itinéraire": "🧭 Meine Route",
+  "🧭 Mon itinéraire": "🧭 Meine Reiseroute",
   "🧭 Mon voyage": "🧭 Meine Reise",
   "🧭 Naviguer (GPS)": "🧭 Navigieren (GPS)",
   "🧭 Ouvrir l'itinéraire dans…": "🧭 Route öffnen in…",
   "🧭 Résultat = l'itinéraire": "🧭 Ergebnis = die Route",
   "🧭 Votre itinéraire — ": "🧭 Ihre Route —",
   "🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 „Navigieren“ öffnet Ihre Route in der App Ihrer Wahl (Google Maps, OpenStreetMap, Apple Karten, Waze) oder in",
-  "itin.arrivee": "Ankunft"
+  "itin.arrivee": "Ankunft",
+  "Pas de photo ici": "Hier gibt es kein Foto",
+  "photo prise à": "Foto aufgenommen in",
+  "Visité": "Besucht"
 }

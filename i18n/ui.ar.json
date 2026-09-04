@@ -301,7 +301,7 @@
   "CarlesVA on ca.wikipedia or eo.wikipedia": "CarlesVA على ca.wikipedia أو eo.wikipedia",
   "Carnet": "دفتر",
   "Carnet de l’étape": "مفكرة المرحلة",
-  "Carnet de route — dépliez le trajet →": "دفتر الرحلة — افتح المسار →",
+  "Carnet de route — dépliez le trajet →": "سجل الرحلة — اعرض مسار الرحلة →",
   "Carnet indisponible sur ce navigateur.": "سجل الرحلة غير متاح على هذا المتصفح.",
   "Carnet photo le long du parcours : vos photos restent sur votre appareil — rien n'est envoyé.": "ألبوم الصور على طول المسار: تظل صورك على جهازك — لا يتم إرسال أي شيء.",
   "Carte du patrimoine": "خريطة التراث",
@@ -3295,12 +3295,15 @@
   "🧭 Itinéraire en construction": "🧭 مسار قيد الإنشاء",
   "🧭 Itinéraire libre": "🧭 مسار حر",
   "🧭 Itinéraires sur mesure & durées": "🧭 مسارات مخصصة ومدد زمنية",
-  "🧭 Mon itinéraire": "🧭 مساري",
+  "🧭 Mon itinéraire": "🧭 مسار رحلتي",
   "🧭 Mon voyage": "🧭 رحلتي",
   "🧭 Naviguer (GPS)": "🧭 التنقل (GPS)",
   "🧭 Ouvrir l'itinéraire dans…": "🧭 فتح المسار في…",
   "🧭 Résultat = l'itinéraire": "🧭 النتيجة = مسار الرحلة",
   "🧭 Votre itinéraire — ": "🧭 مسارك —",
   "🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 تفتح ميزة «التنقل» مسارك في التطبيق الذي تختاره (Google Maps، OpenStreetMap، Apple Maps، Waze) أو في",
-  "itin.arrivee": "الوصول"
+  "itin.arrivee": "الوصول",
+  "Pas de photo ici": "لا توجد صورة هنا",
+  "photo prise à": "صورة التقطت في",
+  "Visité": "تمت زيارته"
 }

@@ -301,7 +301,7 @@
   "CarlesVA on ca.wikipedia or eo.wikipedia": "CarlesVA su ca.wikipedia o eo.wikipedia",
   "Carnet": "Diario",
   "Carnet de l’étape": "Diario di viaggio",
-  "Carnet de route — dépliez le trajet →": "Diario di viaggio — espandi il percorso →",
+  "Carnet de route — dépliez le trajet →": "Diario di viaggio — visualizza il percorso →",
   "Carnet indisponible sur ce navigateur.": "Il diario di viaggio non è disponibile su questo browser.",
   "Carnet photo le long du parcours : vos photos restent sur votre appareil — rien n'est envoyé.": "Album fotografico lungo il percorso: le tue foto rimangono sul tuo dispositivo — nulla viene inviato.",
   "Carte du patrimoine": "Mappa del patrimonio",
@@ -1029,7 +1029,7 @@
   "Partagé avec vous — vous pouvez l'éditer et l'enregistrer": "Condiviso con voi — potete modificarlo e salvarlo",
   "Partagé avec vous — vous pouvez l\\'éditer et l\\'enregistrer": "Condiviso con te — puoi modificarlo e salvarlo",
   "Pas de QR lu — marquez le lieu manuellement :": "QR code non letto — contrassegna manualmente il luogo:",
-  "Pas de photo ici — ajoutez-en depuis l'itinéraire.": "Nessuna foto qui — aggiungine una dall'itinerario.",
+  "Pas de photo ici — ajoutez-en depuis l'itinéraire.": "Qui non ci sono foto — aggiungetene alcune dall'itinerario.",
   "Pas de photo ici — revenez à l'itinéraire pour en ajouter.": "Nessuna foto qui — torna all'itinerario per aggiungerne una.",
   "Pas de plan : avancez à votre rythme. Marquez une": "Nessuna mappa: procedete al vostro ritmo. Segnate una",
   "Pas sur votre itinéraire — l’ajouter ?": "Non è sul tuo percorso — vuoi aggiungerlo?",
@@ -3302,5 +3302,8 @@
   "🧭 Résultat = l'itinéraire": "🧭 Risultato = l'itinerario",
   "🧭 Votre itinéraire — ": "🧭 Il tuo itinerario —",
   "🧭 « Naviguer » ouvre votre itinéraire dans l'app de votre choix (Google Maps, OpenStreetMap, Apple Plans, Waze) ou en": "🧭 «Naviga» apre il tuo itinerario nell'app che preferisci (Google Maps, OpenStreetMap, Mappe Apple, Waze) o in",
-  "itin.arrivee": "Arrivo"
+  "itin.arrivee": "Arrivo",
+  "Pas de photo ici": "Qui non c'è nessuna foto",
+  "photo prise à": "foto scattata a",
+  "Visité": "Visitato"
 }

@@ -725,3 +725,56 @@ masquer `#result`, montrer `#builder`. `cacher()` la fait maintenant aussi.
 
 **Vérifié à l'écran, en local.** Le même geste, avant : page à 942 px, zéro carte.
 Après : `#builder block h=254`, **5 cartes visibles**, page à 998 px.
+
+---
+
+## 04/09/2026 — finir le rendu de l'album
+
+**Demande de Helmy : « finir le rendu de l'album », puis « rien en dur ».**
+
+**Ce qui n'allait pas, constaté à l'écran sur les trois styles.**
+
+| Défaut | Mesure |
+|---|---|
+| La couverture affichait le THÈME, ou « Mon itinéraire » | Un circuit nommé « Sur les pas de Rome en Afrique » sortait en album, en PDF et dans le fichier partagé sous un titre qui n'était pas le sien |
+| Le tampon du passeport se posait SUR le nom du lieu | **288 px de large sur une page de 328**, recouvrement de **301 px** — « Amphithéâtre d'El Jem (Thysdrus) » illisible |
+| Sept textes en dur dans le rendu | Album français dans une application allemande |
+
+**① Le titre.** On reprend, mot pour mot, ce que fait déjà l'en-tête de
+l'itinéraire (l. 2515) : le nom que le voyageur a donné d'abord, le thème
+ensuite, un défaut traduit en dernier. Le fichier partagé lit la couverture : il
+est corrigé du même coup.
+
+**② Le tampon.** Sa règle CSS le voulait en bas à droite, mais quelque chose la
+contrariait — mesuré `position:relative` alors qu'aucune règle concurrente n'est
+apparue à l'inspection. **On ne se bat pas avec la cascade** : on écrit le tampon
+à la FIN de la page. Là, qu'il soit absolu ou dans le flux, il est en bas. Et
+c'est là qu'un douanier tamponne : sur la page, jamais sur ce qui y est écrit.
+Une largeur maximale de 46 % lui rend sa taille de tampon — mesuré 288 → **141 px**,
+plus aucun recouvrement sur les trois pages.
+
+**③ Les sept textes en dur, relevés un par un et traduits par DeepL.**
+
+- `🧭 Mon itinéraire` — le titre par défaut de la couverture
+- `Carnet de route — dépliez le trajet →` — l'invite du dépliant
+- `Pas de photo ici` (dépliant) et **DEUX formulations différentes** pour la même
+  chose ailleurs — « ajoutez-en depuis l'itinéraire » et « revenez à l'itinéraire
+  pour en ajouter ». Unifiées en une seule.
+- `photo de …` — l'alternative textuelle des photos, celle que lit une personne
+  aveugle. DeepL rendait « photo by » : une attribution, pas un sujet. Reformulé
+  en « photo prise à … », qui ne s'équivoque pas.
+- `✦ Visité ✦` et le `le ` de la date du tampon. Le « le » disparaît : un tampon
+  ne fait pas de phrase, il porte un mot, un lieu, une date.
+- `Ma position` (l. 2980) — **en dur alors que la clé existe et sert déjà l. 2957.**
+  Ce libellé se lit dans l'en-tête, sur la borne de départ et sur la couverture.
+
+**Vérifié à l'écran, en local, en français et en allemand.** Titre : « ✨ Mon
+voyage libre » au lieu de « 🧭 Mon itinéraire ». Tampon : sous le nom sur les
+trois pages, `recouvre:false`. En allemand : **✦ BESUCHT ✦**, « Hier gibt es kein
+Foto – fügen Sie eines aus der Route hinzu. »
+
+**Signalé, non fait — la dette du fichier.** Un balayage de `itineraire.html`
+entier relève encore **30 littéraux** destinés à l'œil, hors album : l'aide des
+questions, « Vos lieux choisis : », « Tapez au moins 3 lettres. », « Comment
+voulez-vous le composer ? », « Où voulez-vous aller ? », « Étape nuit — », etc.
+C'est la dette ancienne, hors du périmètre de l'album. Elle attend un ordre.

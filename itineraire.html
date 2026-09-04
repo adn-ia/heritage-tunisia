@@ -350,7 +350,15 @@
     .pp-sub{font-size:11px;color:#7a6a44;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;}
     .pp-photo{display:block;width:100%;max-height:260px;height:auto;object-fit:contain;background:#f1ece0;border:5px solid #fff;box-shadow:0 3px 11px rgba(0,0,0,.28);margin-bottom:8px;}
     .pp-photo2{width:48%;max-height:130px;height:auto;object-fit:contain;background:#f1ece0;border:4px solid #fff;box-shadow:0 2px 7px rgba(0,0,0,.22);}
-    .pp-stamp{position:absolute;top:16px;right:16px;border:2.5px solid #9a5042;color:#9a5042;border-radius:8px;
+    /* ⚠️ UN TAMPON QUI COUVRE LE NOM DU LIEU N'EST PLUS UN TAMPON — 04/09/2026.
+       Mesuré : 288 px de large sur une page de 328. Sans largeur maximale, il
+       s'étirait à la longueur du nom du gouvernorat et de la date, traversait la
+       page et se posait EN PLEIN SUR le titre de l'étape — « Amphithéâtre d'El
+       Jem (Thysdrus) » devenait illisible. Recouvrement mesuré : 301 px.
+       Deux corrections, et l'esprit est gardé : une largeur de vrai tampon, et
+       le coin BAS de la page. C'est d'ailleurs là qu'un douanier tamponne — sur
+       la page, jamais sur ce qui y est écrit. */
+    .pp-stamp{position:absolute;bottom:34px;right:16px;max-width:46%;border:2.5px solid #9a5042;color:#9a5042;border-radius:8px;
       padding:7px 10px;font-size:9.5px;line-height:1.3;text-align:center;text-transform:uppercase;letter-spacing:1px;
       transform:rotate(-11deg);opacity:.8;font-weight:700;}
     .pp-stamp .pp-st-big{font-size:12px;display:block;letter-spacing:2px;margin-bottom:1px;}
@@ -1282,7 +1290,7 @@
       const url=URL.createObjectURL(ph.blob); PHOTO_URLS.push(url);
       const isVid=(ph.blob.type||'').startsWith('video');
       const media=isVid?'<video src="'+url+'" controls playsinline></video>'
-                       :'<img src="'+url+'" alt="souvenir de '+phEl.dataset.name.replace(/"/g,'')+'">';
+                       :'<img src="'+url+'" alt="'+uiT('photo prise à')+' '+phEl.dataset.name.replace(/"/g,'')+'">';
       const card=document.createElement('div'); card.className='ph-card';
       card.innerHTML='<div class="pc-top">'+media+
         '<button class="ph-del" type="button" title="Supprimer ce souvenir">×</button></div>'+
@@ -2969,7 +2977,11 @@
     showGuide(uiT('itin.voyage.libre.lance.deplacez.vous'), 9000);
     // on cale l'origine sur la position réelle si dispo (pour ordonner les haltes autour de soi)
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
-      p=>{ if(LASTRES&&LASTRES.mode==='libre') LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:'Ma position'}; },()=>{},
+      /* ⚠️ « Ma position » était EN DUR ici alors que la clé existe et sert déjà
+         l. 2957. Ce libellé se lit dans l'en-tête de l'itinéraire, sur la borne
+         de départ et sur la couverture de l'album : en allemand, il disait
+         « Ma position ». */
+      p=>{ if(LASTRES&&LASTRES.mode==='libre') LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:uiT('itin.ma.position')}; },()=>{},
       {enableHighAccuracy:true,timeout:8000,maximumAge:120000});
   }
   document.getElementById('mLibre').onclick=()=>requirePass(uiT('itin.feature.libre'), startLibre);
@@ -2986,14 +2998,23 @@
     document.body.classList.remove('tpl-baroudeur','tpl-passeport','tpl-depliant');
     document.body.classList.add('tpl-'+albumTemplate);
     [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>c.classList.toggle('on',c.dataset.tpl===albumTemplate));
-    const {route,theme}=LASTRES;
+    const {route,theme,tour}=LASTRES;
     const isDep = albumTemplate==='depliant';
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
     const dateStr=new Date().toLocaleDateString(localeDate(),{day:'numeric',month:'long',year:'numeric'});
     const coverHtml='<div class="album-cover"><div class="ac-brand">'+(((window.HConf&&HConf.marque)||'Heritage Experience').toUpperCase())+'</div>'+
-      '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
+      /* ⚠️ L'ALBUM PORTE LE NOM QUE LE VOYAGEUR A DONNÉ — 04/09/2026.
+         La couverture affichait le THÈME, ou à défaut « Mon itinéraire » : un
+         circuit nommé « Sur les pas de Rome en Afrique » sortait donc en album,
+         en PDF et dans le fichier partagé sous un titre qui n'était pas le sien.
+         On reprend, mot pour mot, ce que fait déjà l'en-tête de l'itinéraire
+         (l. 2515) : le nom d'abord, le thème ensuite, un défaut en dernier.
+         ⚠️ ET CE DÉFAUT PASSE PAR `uiT` : il était en dur, donc en français dans
+         un album allemand. Le texte français EST la clé, c'est l'usage ici. */
+      '<h2>'+(tour&&tour.titre ? '✨ '+tour.titre
+                               : (theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Mon itinéraire')))+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
-      (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+
+      (isDep?'<div class="dep-hint">'+uiT('Carnet de route — dépliez le trajet →')+'</div>':'')+
       ((window.THEdocument ? THEdocument.carte() : null)
         ? '<img class="ac-carte" src="'+(window.THEdocument ? THEdocument.carte() : null)+'" alt="">'
         : '<div class="ac-carte" id="acCarte"></div>')+'</div>';
@@ -3070,7 +3091,7 @@
             '<div class="dep-nm">'+p.nom+'</div>'+
             '<div class="dep-sub">'+(p.gouvernorat||'')+(trCat(p.epoque)?' · '+trCat(p.epoque):'')+'</div>'+
             (when?'<div class="dep-when">📅 '+when+(hasSnd?' · 🔊':'')+'</div>':'')+
-            (thumbs?'<div class="dep-photos">'+thumbs+'</div>':'<div class="album-empty">Pas de photo ici</div>')+
+            (thumbs?'<div class="dep-photos">'+thumbs+'</div>':'<div class="album-empty">'+uiT('Pas de photo ici')+'</div>')+
             '<textarea class="album-cap dep-cap" placeholder="Un mot sur cette étape…">'+cap+'</textarea>'+
           '</div>';
       } else if(albumTemplate==='passeport'){
@@ -3086,20 +3107,32 @@
         el=document.createElement('div'); el.className='pp-page';
         el.innerHTML=
           '<div class="pp-wm">'+PP_WM[i%PP_WM.length]+'</div>'+
-          '<div class="pp-stamp"><span class="pp-st-big">✦ Visité ✦</span>'+place+'<br>le '+vdate+'</div>'+
+          /* ⚠️ LE TAMPON EST ÉCRIT EN DERNIER — 04/09/2026. Il ouvrait la page, et
+             se posait donc EN PLEIN SUR le nom du lieu : mesuré 288 px de large
+             sur une page de 328, recouvrement de 301 px, « Amphithéâtre d'El Jem
+             (Thysdrus) » illisible. La règle CSS le voulait absolu en bas à
+             droite, mais quelque chose la contrariait et il retombait dans le
+             flux, en tête de page. On ne se bat pas avec la cascade : on l'écrit
+             à sa place, à la FIN. Là, qu'il soit absolu ou dans le flux, il est
+             en bas — et c'est là qu'un douanier tamponne : sur la page, jamais
+             sur ce qui y est écrit. */
           '<p class="pp-nm">'+p.nom+'</p>'+
           '<div class="pp-sub">'+place+(trCat(p.epoque)?' · '+trCat(p.epoque):'')+'</div>'+
-          (mainTag||'<div class="album-empty">Pas de photo ici — ajoutez-en depuis l\'itinéraire.</div>')+
+          (mainTag||'<div class="album-empty">'+uiT('Pas de photo ici — ajoutez-en depuis l\'itinéraire.')+'</div>')+
           (extraTags?'<div class="pp-media">'+extraTags+'</div>':'')+
           (audioTags?'<div class="pp-media">'+audioTags+'</div>':'')+
           '<textarea class="pp-note album-cap" placeholder="Un mot, un souvenir…">'+cap+'</textarea>'+
+          /* ⚠️ « Visité » et le « le » de la date étaient EN DUR — un tampon français
+             dans un passeport allemand. Le « le » disparaît : un tampon ne fait pas
+             de phrase, il porte un mot, un lieu, une date. */
+          '<div class="pp-stamp"><span class="pp-st-big">✦ '+uiT('Visité')+' ✦</span>'+place+'<br>'+vdate+'</div>'+
           '<div class="pp-no">'+uiT('itin.pays.maj')+' · '+String(i+1).padStart(2,'0')+'</div>';
       } else {
         let pics='';
         photos.forEach(ph=>{ const url=URL.createObjectURL(ph.blob); ALBUM_URLS.push(url);
           let inner=(ph.blob.type||'').startsWith('video')
             ?'<video src="'+url+'" controls playsinline></video>'
-            :'<img src="'+url+'" alt="photo de '+p.nom.replace(/"/g,'')+'">';
+            :'<img src="'+url+'" alt="'+uiT('photo prise à')+' '+p.nom.replace(/"/g,'')+'">';
           if(ph.caption) inner+='<div class="pic-cap">'+ph.caption.replace(/</g,'&lt;')+'</div>';
           if(ph.audio){ const aurl=URL.createObjectURL(ph.audio); ALBUM_URLS.push(aurl); inner+='<audio controls src="'+aurl+'"></audio>'; }
           pics+='<div class="pic">'+inner+'</div>'; });
@@ -3108,7 +3141,7 @@
           '<p class="pg-nm">'+(i+1)+'. '+p.nom+'</p>'+
           '<div class="pg-sub">'+(p.gouvernorat||'')+(trCat(p.epoque)?' · '+trCat(p.epoque):'')+'</div>'+
           '<textarea class="album-cap" placeholder="Écrivez un mot sur ce lieu (souvenir, anecdote)…">'+cap+'</textarea>'+
-          (pics?'<div class="album-ph">'+pics+'</div>':'<div class="album-empty">Pas de photo ici — revenez à l\'itinéraire pour en ajouter.</div>');
+          (pics?'<div class="album-ph">'+pics+'</div>':'<div class="album-empty">'+uiT('Pas de photo ici — ajoutez-en depuis l\'itinéraire.')+'</div>');
       }
       container.appendChild(el);
       const ta=el.querySelector('.album-cap');
