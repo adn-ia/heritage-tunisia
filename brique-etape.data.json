@@ -39,7 +39,10 @@
     "position.lente": "La localisation ne répond pas. Réessayez, ou cherchez une adresse ci-dessus.",
     "manque.nom": "Donnez un nom à cette étape.",
     "titre.edit": "✏️ Modifier l'étape",
-    "valider.edit": "Enregistrer"
+    "valider.edit": "Enregistrer",
+    "titre.depart": "📍 Votre point de départ",
+    "titre.arrivee": "🏁 Votre point d'arrivée",
+    "valider.borne": "Valider ce point"
   },
   "en": {
     "titre": "➕ Add a stop",
@@ -75,7 +78,10 @@
     "position.lente": "The location is not responding. Please try again, or search for an address from the list above.",
     "manque.nom": "Give this step a name.",
     "titre.edit": "✏️ Edit this waypoint",
-    "valider.edit": "Save"
+    "valider.edit": "Save",
+    "titre.depart": "📍 Your starting point",
+    "titre.arrivee": "🏁 Your destination",
+    "valider.borne": "Confirm this point"
   },
   "ar": {
     "titre": "➕ إضافة محطة",
@@ -111,7 +117,10 @@
     "position.lente": "الموقع لا يستجيب. يرجى إعادة المحاولة، أو البحث عن عنوان من العناوين المذكورة أعلاه.",
     "manque.nom": "أعطِ هذه الخطوة اسمًا.",
     "titre.edit": "✏️ تعديل المرحلة",
-    "valider.edit": "حفظ"
+    "valider.edit": "حفظ",
+    "titre.depart": "📍 نقطة انطلاقك",
+    "titre.arrivee": "🏁 نقطة وصولك",
+    "valider.borne": "التحقق من صحة هذه النقطة"
   },
   "de": {
     "titre": "➕ Zwischenstopp hinzufügen",
@@ -147,7 +156,10 @@
     "position.lente": "Der Standort reagiert nicht. Versuchen Sie es erneut oder suchen Sie oben nach einer Adresse.",
     "manque.nom": "Geben Sie diesem Schritt einen Namen.",
     "titre.edit": "✏️ Etappe bearbeiten",
-    "valider.edit": "Speichern"
+    "valider.edit": "Speichern",
+    "titre.depart": "📍 Ihr Ausgangspunkt",
+    "titre.arrivee": "🏁 Ihr Zielort",
+    "valider.borne": "Diesen Punkt bestätigen"
   },
   "it": {
     "titre": "➕ Aggiungi una tappa",
@@ -183,6 +195,9 @@
     "position.lente": "La sede non risponde. Riprovare oppure cercare un indirizzo tra quelli sopra indicati.",
     "manque.nom": "Assegnate un nome a questa fase.",
     "titre.edit": "✏️ Modifica la tappa",
-    "valider.edit": "Salva"
+    "valider.edit": "Salva",
+    "titre.depart": "📍 Il tuo punto di partenza",
+    "titre.arrivee": "🏁 Il vostro punto di arrivo",
+    "valider.borne": "Conferma questo punto"
   }
 }

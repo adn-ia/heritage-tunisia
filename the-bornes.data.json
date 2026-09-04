@@ -1,0 +1,53 @@
+{
+  "_lisezmoi": "Textes de la brique « bornes » (départ et arrivée). Traduits par DeepL Pro le 04/09/2026, source_lang=FR forcé, bijection par index. Aucun repli en dur : une clé absente rend une chaîne vide, pas du français.",
+  "fr": {
+    "depart": "Départ",
+    "arrivee": "Arrivée",
+    "changer": "Changer",
+    "definir": "Définir",
+    "depart.aucun": "Point de départ à définir",
+    "arrivee.retour": "Retour au point de départ",
+    "arrivee.retour.note": "C'est votre point de départ : changez-le en haut, l'arrivée suivra.",
+    "arrivee.aucune": "Aller simple — dites où le voyage se termine"
+  },
+  "en": {
+    "depart": "Start",
+    "arrivee": "Arrival",
+    "changer": "Change",
+    "definir": "Define",
+    "depart.aucun": "Starting point to be determined",
+    "arrivee.retour": "Back to the starting point",
+    "arrivee.retour.note": "That's your starting point: change it up, and the rest will follow.",
+    "arrivee.aucune": "One-way — tell us where the trip ends"
+  },
+  "de": {
+    "depart": "Start",
+    "arrivee": "Ankunft",
+    "changer": "Ändern",
+    "definir": "Definieren",
+    "depart.aucun": "Ausgangspunkt noch festzulegen",
+    "arrivee.retour": "Zurück zum Ausgangspunkt",
+    "arrivee.retour.note": "Das ist Ihr Ausgangspunkt: Ändern Sie ihn am Anfang, dann ergibt sich der Rest von selbst.",
+    "arrivee.aucune": "Einfache Fahrt – geben Sie an, wo die Reise endet"
+  },
+  "it": {
+    "depart": "Partenza",
+    "arrivee": "Arrivo",
+    "changer": "Cambia",
+    "definir": "Definire",
+    "depart.aucun": "Punto di partenza da definire",
+    "arrivee.retour": "Ritorno al punto di partenza",
+    "arrivee.retour.note": "Questo è il vostro punto di partenza: cambiatelo all’inizio e il resto verrà da sé.",
+    "arrivee.aucune": "Biglietto di sola andata — indicare dove termina il viaggio"
+  },
+  "ar": {
+    "depart": "الانطلاق",
+    "arrivee": "الوصول",
+    "changer": "تغيير",
+    "definir": "تعريف",
+    "depart.aucun": "نقطة البداية التي يتعين تحديدها",
+    "arrivee.retour": "العودة إلى نقطة البداية",
+    "arrivee.retour.note": "هذه هي نقطة انطلاقك: غيّرها في البداية، وستتبعها النتيجة.",
+    "arrivee.aucune": "تذكرة ذهاب فقط — حدد وجهة الرحلة"
+  }
+}

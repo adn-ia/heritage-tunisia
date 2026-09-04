@@ -44,7 +44,7 @@ const CORE_ASSETS = [
   // Le rendu du fond de carte. SANS LUI, la carte ne se peint pas hors-ligne :
   // les tuiles seraient en cache et personne pour les dessiner. `tuile.php`, lui,
   // n'est PAS précaché — c'est voulu : ce sont les TUILES qui se gardent, une à une.
-  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
+  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'the-bornes.js', 'the-bornes.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
   'sites.geojson', 'sites-nature.geojson', 'tours.json', 'mer-antique.geojson', 'photos.json', 
   'musee/index.html', 'webar/index.html'
 ];

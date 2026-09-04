@@ -1081,6 +1081,11 @@
         titre:   t.titre || '',
         theme:   LASTRES.theme ? { ic:LASTRES.theme.ic, label:LASTRES.theme.label } : null,
         forme:   LASTRES.forme || 'oneway',
+      /* La borne d'arrivée voyage avec la forme : sans elle, un lecteur ne peut
+         pas savoir où le voyage se termine en aller simple. Copie, comme tout
+         le reste ici — lire ne doit jamais devenir une porte pour écrire. */
+      arrivee: LASTRES.arrivee && LASTRES.arrivee.coord
+                 ? { coord:LASTRES.arrivee.coord.slice(), label:LASTRES.arrivee.label||'' } : null,
         mode:    LASTRES.mode || '',
         km:      Math.round(LASTRES.route.reduce(function(n,s){ return n+(s.fromPrev||0); },0)),
         origine: (typeof LASTORIGIN!=='undefined' && LASTORIGIN && LASTORIGIN.coord)
@@ -1819,7 +1824,7 @@
       var id  = (place>=0) ? arr[place].id : ((LASTRES && LASTRES._id) || 'it'+Date.now());
       if(LASTRES) LASTRES._id = id;
       var fiche = { id:id, cree:(place>=0 ? (arr[place].cree||Date.now()) : Date.now()),
-        title:nom, forme:LASTRES.forme||'oneway', mode:(place>=0 ? (arr[place].mode||origine||'compose') : (origine||'compose')),
+        title:nom, forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, mode:(place>=0 ? (arr[place].mode||origine||'compose') : (origine||'compose')),
         origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
         steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
           halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||''}; }) };
@@ -1981,7 +1986,7 @@
     /* on ne fabrique plus d'identifiant ici : celui du rendu fait foi, sinon les
        photos déjà rangées sous l'ancien seraient orphelines. */
     const fiche = { id: (place>=0 ? arr[place].id : (idExistant || 'it'+Date.now())),
-      cree: (place>=0 ? (arr[place].cree||Date.now()) : Date.now()), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', mode:LASTRES.mode||'',
+      cree: (place>=0 ? (arr[place].cree||Date.now()) : Date.now()), title:(name||def).slice(0,80), forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
@@ -2017,13 +2022,13 @@
     /* `_id` voyage DANS `res` : il doit être là avant que `render` n'écrive les
        `data-place`, sinon la page porte un identifiant neuf le temps d'un rendu. */
     render(_org, {_id:rec.id, route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||uiT('iti.repris.duree')},
-      per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:uiT('iti.repris.perimetre')}, forme:rec.forme||'oneway', pepites:[], mode:rec.mode||'',
+      per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:uiT('iti.repris.perimetre')}, forme:rec.forme||'oneway', arrivee:rec.arrivee||null, pepites:[], mode:rec.mode||'',
       tour:rec.tour||{titre:rec.title, soustitre:uiT('iti.repris.soustitre')}});
   }
   function resumeSaved(id){ const rec=readSaved().find(r=>r.id===id); renderRecord(rec, 'saved'); }
   // sérialise l'itinéraire courant (pour ne pas le perdre en quittant la page, ex. « Voir la grande carte »)
   function recordFromCurrent(){
-    return { title:(LASTRES.tour&&LASTRES.tour.titre)||'Dernier itinéraire', forme:LASTRES.forme||'oneway', entry:ENTRY, mode:LASTRES.mode||'',
+    return { title:(LASTRES.tour&&LASTRES.tour.titre)||'Dernier itinéraire', forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, entry:ENTRY, mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
@@ -2231,7 +2236,7 @@
           /* même règle : l'identité du rendu fait foi. */
           var fiche={ id:(place>=0?arr[place].id:(id || 'it'+Date.now())),
             cree:(place>=0?(arr[place].cree||Date.now()):Date.now()),
-            title:titre, forme:LASTRES.forme||'oneway', mode:(place>=0?arr[place].mode:(LASTRES.mode||'compose')),
+            title:titre, forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, mode:(place>=0?arr[place].mode:(LASTRES.mode||'compose')),
             origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
             steps:LASTRES.route.map(function(s){ return {nom:s.p.nom, c:s.c, genre:s.genre||'',
               halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
@@ -2421,7 +2426,20 @@
     L.marker(oLL,{icon:L.divIcon({className:'',html:'<div class="num-pin dep">⌂</div>',iconSize:[26,26],iconAnchor:[13,13]})})
       .addTo(mapObj).bindPopup('<b>Départ</b><br>'+origin.label);
     let line=[oLL].concat(latlngs);
-    if(forme==='boucle') line=line.concat([oLL]);
+    /* ⚠️ CE N'EST PAS « LA BOUCLE », C'EST « TOUT SAUF L'ALLER SIMPLE » — 04/09/2026,
+       Helmy : « si le voyage est une boucle OU un aller-retour, le point de départ et
+       le point d'arrivée clôture l'itinéraire ». Mesuré : l'aller-retour doublait bien
+       les kilomètres (l. 2372) mais ne rentrait jamais — le tracé s'arrêtait à la
+       dernière étape, comme un aller simple. Règle de Terralog, `blocs/20-itineraire.js`
+       l. 590, mot pour mot : `rtReturnsHome() = forme !== 'oneway'`.
+       En aller simple, si une arrivée a été définie, le tracé va jusqu'à elle. */
+    if(forme!=='oneway') line=line.concat([oLL]);
+    else if(res.arrivee && res.arrivee.coord){
+      var aLL=[res.arrivee.coord[1], res.arrivee.coord[0]];
+      line=line.concat([aLL]);
+      L.marker(aLL,{icon:L.divIcon({className:'',html:'<div class="num-pin dep">🏁</div>',iconSize:[26,26],iconAnchor:[13,13]})})
+        .addTo(mapObj).bindPopup('<b>'+uiT('itin.arrivee')+'</b><br>'+(res.arrivee.label||''));
+    }
     L.polyline(line,{color:'#a8884f',weight:3,opacity:.8,dashArray:'6,6'}).addTo(mapObj);
     /* ⚠️ ON NE CADRE PAS SUR UNE BOÎTE SANS SURFACE — 04/09/2026, Helmy : « composer
        un voyage libre ne fonctionne pas ». Mesuré : dans un voyage libre, le DÉPART
@@ -2556,6 +2574,9 @@
       
     });
     updateCarnetTotal();
+    /* Les bornes du voyage — départ en tête, arrivée en queue. Bloc auto-porté :
+       cette ligne est le seul lien, et le retirer retire la fonction. */
+    try{ if(window.THEbornes) THEbornes.dessiner(); }catch(err){}
     /* ON RESTE OÙ L'ON ÉTAIT — 01/09/2026, Helmy : « il y a aussi un souci de
        rester sur l'étape quand on l'édite, au lieu de scroller vers le haut ».
        Remonter en tête a du sens quand on vient de composer un itinéraire : on le
@@ -3966,6 +3987,7 @@
   <script src="brique-meteo.js" defer></script>
   <script src="brique-decouvrir-lieu.js" defer></script>
   <script src="brique-etape.js" defer></script>
+  <script src="the-bornes.js" defer></script>
   <script src="brique-partage-lieu.js" defer></script>
 
   <script>
@@ -4002,6 +4024,41 @@
           window.THElibreId=null;
           location.href='itineraire.html';                            // retour aux façons de partir
         }
+      }catch(err){}
+    });
+
+    /* ── LES BORNES : DÉPART ET ARRIVÉE ──────────────────────────────────────
+       04/09/2026, Helmy : « bien entendu on peut changer le point de départ […]
+       si on change on édite ». Une borne n'est pas une étape : elle n'entre pas
+       dans la liste, elle n'a pas de carnet, elle ne se numérote pas. Elle
+       remplace un point, et l'itinéraire se redessine autour.
+       ⚠️ CHANGER LE DÉPART CHANGE TOUTES LES DISTANCES. La chaîne se refait
+       d'origine en étape, comme à l'ajout d'une étape et comme `removeStep`
+       (l. 1582) le fait après une suppression. */
+    document.addEventListener('the:borne', function(e){
+      var x=e.detail; if(!x||!x.coord) return;
+      if(typeof LASTRES==='undefined' || !LASTRES) return;
+      var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
+      var origine;
+      if(x.quoi==='depart'){
+        origine={ coord:x.coord, label:x.nom||x.adresse||'' };
+      } else {
+        origine = LASTORIGIN && LASTORIGIN.coord ? LASTORIGIN : {coord:x.coord, label:x.nom};
+        base.arrivee={ coord:x.coord, label:x.nom||x.adresse||'' };
+      }
+      base.route=(LASTRES.route||[]).map(function(s){ var o={}; for(var j in s) o[j]=s[j]; return o; });
+      var prev = origine.coord;
+      base.route.forEach(function(s){ if(s&&s.c){ s.fromPrev=haversine(prev,s.c); prev=s.c; } });
+      window._resterSurPlace = true;      // on ne remonte pas en tête pour un changement de borne
+      render(origine, base);
+      try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(err){}
+      try{
+        var arr=readSaved(),
+            id=(LASTRES.mode==='libre' ? (window.THElibreId||LASTRES._id) : LASTRES._id);
+        for(var i=0;i<arr.length;i++){ if(arr[i].id===id){ var r=recordFromCurrent(); r.id=id;
+          r.mode=arr[i].mode||LASTRES.mode||''; r.title=arr[i].title||r.title;
+          r.cree=arr[i].cree||Date.now(); arr[i]=r; break; } }
+        writeSaved(arr); renderSaved();
       }catch(err){}
     });
 

@@ -448,3 +448,77 @@ exception Leaflet.
 **Ce que ça apprend.** Quand on retire un mécanisme parce qu'il fait une chose de
 trop, il faut regarder ce qu'il faisait **d'autre**. `nearestOrder` faisait deux
 métiers : ordonner, et mesurer. On n'en voulait plus qu'un — on a perdu les deux.
+
+---
+
+## 04/09/2026 — le départ et l'arrivée : les bornes du voyage
+
+**Demande (Helmy).** « Sur Terralog on définit un point de départ dès le début. Si
+le voyage est une boucle ou un aller-retour, le point de départ et le point
+d'arrivée clôture l'itinéraire — bien entendu on peut changer le point de départ.
+Sur un aller simple le point de départ est différent du point d'arrivée, donc on
+définit le point d'arrivée à la fin de l'itinéraire. Ou alors au début on définit
+le point de départ puis on définit le point d'arrivée, et on remplit entre. Si on
+change, on édite. »
+
+**Ce qui manquait, mesuré avant d'écrire.**
+
+| Attendu | État réel |
+|---|---|
+| Boucle → départ = arrivée, clôture l'itinéraire | La carte refermait le tracé, mais **aucune fiche d'arrivée** dans la liste |
+| Aller-retour → idem | **La carte ne refermait rien** : `allerretour` doublait les km (l. 2372) sans jamais rentrer |
+| On peut changer le point de départ | **Aucun moyen**, jamais |
+| Aller simple → point d'arrivée | **N'existait pas** |
+
+**Fait.**
+
+- `brique-etape.js` — l'écran d'étape prend un **mode borne**. Le mot du carnet,
+  les dates, l'heure et la place dans la liste tiennent dans un seul bloc qu'on
+  masque ; la validation sort par `the:borne` au lieu de `the:etape`.
+  ⚠️ **On ne duplique pas l'écran.** Terralog l'a fait et l'a payé
+  (`blocs/21-edition.js` l. 208) : « le même écran a été écrit deux fois, une fois
+  pour l'étape et une fois pour le départ, et la correction n'avait touché qu'une
+  copie ». Un écran, deux usages.
+- `the-bornes.js` (bloc auto-porté, 5 langues) — fiche **Départ** avant la liste,
+  fiche **Arrivée** après. Boucle et aller-retour : l'arrivée porte le nom du
+  départ, **sans bouton** — la changer là serait mentir, son lieu EST le départ
+  (Terralog l. 743). Aller simple : son propre lieu, à définir puis à changer.
+- `itineraire.html` l. 2424 — le tracé se referme sur **tout ce qui n'est pas un
+  aller simple**, règle de Terralog `blocs/20-itineraire.js` l. 590 mot pour mot :
+  `rtReturnsHome() = forme !== 'oneway'`. En aller simple, il va jusqu'à l'arrivée
+  si elle est définie, avec son repère 🏁.
+- L'arrivée voyage dans les 4 fabrications de fiche et se relit à la reprise.
+  Changer le départ **refait toute la chaîne des distances**, comme `removeStep`.
+
+**Trois pièges rencontrés, et ce qu'ils apprennent.**
+
+1. **`LASTRES` n'est pas sur `window`.** La page le déclare en `let` dans sa propre
+   portée (l. 1259). Le bloc lisait `window.LASTRES` : `undefined`, et il ne
+   dessinait rien **sans lever la moindre erreur**. L'API publique de lecture,
+   c'est `THEvoyage()` — faite pour ça, et qui rend une copie.
+2. **Une borne n'est pas une étape : elle ne va pas dans `#stops`.** Première
+   écriture, j'y insérais les deux fiches. Mesuré : `dessiner()` appelée
+   **8 513 fois** en un rendu. `the-etape.js` l. 271 observe `#stops` ; toute
+   insertion le réveille, le rendu repart, et me rappelle. La correction est aussi
+   la bonne conception : le départ et l'arrivée ont leurs propres boîtes, l'une
+   avant la liste, l'autre après. Le conteneur observé n'est plus touché.
+3. **Un bloc `defer` n'existe pas au premier rendu.** Le crochet de l'hôte teste
+   `window.THEbornes` et saute en silence. La page se dessine pendant son analyse ;
+   les bornes n'apparaissaient donc qu'au **deuxième** rendu — donc jamais si l'on
+   ne touchait à rien. Le bloc se dessine une fois tout seul à l'arrivée, idiome
+   repris de Terralog `blocs/roadtrip-plan.js` l. 570.
+
+**Et un quatrième, purement visuel :** fond transparent + encre `--ink`, le nom du
+départ était **invisible**. Les bornes sont hors des panneaux clairs, sur le fond
+sombre de la page. Une fiche d'étape le savait déjà : `.stop` porte
+`background:var(--paper)` (l. 127). Même papier, trait pointillé conservé — une
+borne n'est pas une étape, et ça doit se voir d'un coup d'œil.
+
+**Vérifié à l'écran, en local, les quatre formes.** Aller simple : arrivée
+« Kelibia, le fort » posée par GPS, repère 🏁 sur la carte, 10 repères. Départ
+changé pour « Sousse, la médina » : 12 km → **130 km**, première branche 118,6 km.
+Boucle : arrivée « Sousse, la médina — Retour au point de départ », **sans bouton**.
+Aller-retour : **~261 km**, le double, et le tracé rentre enfin au départ.
+
+**Signalé, non fait :** un voyage libre ne propose nulle part de choisir sa forme —
+il est toujours `oneway`. Le choix n'existe que dans « Composer », question 6.

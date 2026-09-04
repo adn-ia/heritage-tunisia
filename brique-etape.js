@@ -84,7 +84,7 @@
     return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
   }
 
-  function construire(premiere, _edit) {
+  function construire(premiere, _edit, borne) {
     styles();
     var m = document.getElementById("betModal");
     if (m) m.remove();
@@ -97,7 +97,8 @@
            cette fenêtre, et elle annonçait « Ajouter une étape » alors qu'elle en
            corrige une. Le geste était juste, le titre mentait. Une correction
            arrive avec un `index` : c'est à ça qu'on la reconnaît. */
-        '<h3>' + ech(L(premiere ? "titre.premiere" : (_edit ? "titre.edit" : "titre"))) + '</h3>' +
+        '<h3>' + ech(L(borne ? ("titre." + borne)
+                     : (premiere ? "titre.premiere" : (_edit ? "titre.edit" : "titre")))) + '</h3>' +
         '<input id="bet-nom" type="text" placeholder="' + ech(L("nom.exemple")) + '" aria-label="' + ech(L("nom")) + '">' +
         '<div class="bet-l">' + ech(L("chercher")) + '</div>' +
         '<div class="bet-row">' +
@@ -107,6 +108,17 @@
         '<div class="bet-res" id="bet-res"></div>' +
         '<div class="bet-row" style="margin-top:8px"><button type="button" class="bet-s" id="bet-gps" style="flex:1">' + ech(L("gps")) + '</button></div>' +
         '<div class="bet-pos" id="bet-pos">' + ech(L("position.aucune")) + '</div>' +
+        /* ⚠️ UN SEUL ÉCRAN POUR L'ÉTAPE ET POUR LA BORNE — 04/09/2026, Helmy :
+           « on définit un point de départ dès le début […] si on change, on édite ».
+           Un départ et une arrivée se saisissent exactement comme une étape : un nom,
+           une recherche d'adresse, un GPS. Ce qui ne les concerne PAS — le mot du
+           carnet, les dates, l'heure, la place dans la liste — tient dans ce seul
+           bloc, qu'on masque.
+           ⚠️ ON NE DUPLIQUE PAS L'ÉCRAN. Terralog l'a fait et l'a payé
+           (`blocs/21-edition.js` l. 208) : « le même écran a été écrit deux fois,
+           une fois pour l'étape et une fois pour le départ, et la correction
+           n'avait touché qu'une copie ». Un écran, deux usages. */
+        '<div id="bet-etape-seule"' + (borne ? ' style="display:none"' : '') + '>' +
         '<div class="bet-l">' + ech(L("note")) + '</div>' +
         '<textarea id="bet-note"></textarea>' +
         '<div class="bet-l">' + ech(L("quand")) + '</div>' +
@@ -123,7 +135,9 @@
         '<input id="bet-dep" type="date">' +
         '<div class="bet-l">' + ech(L("inserer")) + '</div>' +
         '<select id="bet-ou"></select>' +
-        '<button type="button" class="bet-go" id="bet-ok">' + ech(L(_edit ? "valider.edit" : "valider")) + '</button>' +
+        '</div>' +
+        '<button type="button" class="bet-go" id="bet-ok">' +
+          ech(L(borne ? "valider.borne" : (_edit ? "valider.edit" : "valider"))) + '</button>' +
         '<button type="button" class="bet-no" id="bet-non">' + ech(L("annuler")) + '</button>' +
         '<div class="bet-pos" style="text-align:center;margin-top:10px">' + ech(L("auto")) + '</div>' +
       '</div>';
@@ -229,7 +243,7 @@
     return load().then(function () {
       POS = v && v.coord ? v.coord : null;
       ADRESSE = (v && v.adresse) || "";
-      var m = construire(!!opts.premiere, !!(v && v.index != null));
+      var m = construire(!!opts.premiere, !!(v && v.index != null), opts.borne || null);
       if (v) {
         var q = function (id) { return document.getElementById(id); };
         if (v.nom) q("bet-nom").value = v.nom;
@@ -254,7 +268,7 @@
          Pas de `navigator.permissions.query` : Terralog ne demande jamais la
          permission de demander. gps() dit déjà « recherche », puis « refusée » —
          c'est exactement la forme de là-bas. */
-      if (opts.premiere && !POS) { try { gps(); } catch (e) {} }
+      if (opts.premiere && !opts.borne && !POS) { try { gps(); } catch (e) {} }
       function fermer(annule) {
         m.style.display = "none"; m.remove();
         /* On PRÉVIENT l'hôte d'un renoncement. Renoncer à la toute première
@@ -321,6 +335,16 @@
           depart: document.getElementById("bet-dep").value || "",
           heure: document.getElementById("bet-h").value || ""
         };
+        /* Une BORNE — départ ou arrivée — n'est pas une étape : elle n'a ni place
+           dans la liste, ni carnet, ni dates. Elle sort par son propre événement,
+           que l'hôte traite autrement. Même écran, même saisie, autre sortie. */
+        if (opts.borne) {
+          fermer();
+          document.dispatchEvent(new CustomEvent("the:borne", { detail: {
+            quoi: opts.borne, nom: detail.nom, coord: detail.coord, adresse: detail.adresse
+          } }));
+          return;
+        }
         detail.apres = parseInt((document.getElementById("bet-ou") || {}).value, 10);
         if (isNaN(detail.apres)) detail.apres = -1;
         if (v && v.index != null) detail.index = v.index;   // correction d'une étape existante
