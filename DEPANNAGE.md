@@ -905,3 +905,44 @@ c'est le piège qui a coûté trois défauts dans la même journée.
 écran ». Ouverture : 684×330 → **1792×942**, zoom **7 → 9**, 40 canevas, tuiles
 couvrant `-54 → 1994` — tout le cadre. Retour par la ✕ : 684×330, croix retirée.
 Retour par **Échap** : idem.
+
+---
+
+## 04/09/2026 — point 45 : « 1 étapes », et le même mot deux fois
+
+**Deux fautes dans une seule ligne, l'une d'accord, l'autre de fond.**
+
+**① L'accord.** `route.length + ' ' + uiT('étapes')` donnait « 1 étapes ». Les
+deux clés `étape` et `étapes` existaient **déjà** dans les quatre autres langues :
+ce n'est pas la traduction qui manquait, c'est le choix entre elles. Posées aussi
+en français, où la clé est le texte.
+
+**② La répétition.** La ligne enfilait quatre libellés sans jamais regarder s'ils
+disaient la même chose :
+· un voyage libre sortait « **libre · libre** » — `dur.lib` et `per.lib` valent
+  tous deux « libre » ;
+· un itinéraire repris sortait « **itinéraire enregistré · enregistré** ».
+
+On ne rustine pas ces deux cas-là : **on écarte tout libellé déjà dit par un
+autre**, et tout libellé vide. Le défaut ne pourra pas revenir par une autre
+porte.
+
+⚠️ **DEUX MESURES, PARCE QUE MA PREMIÈRE RÈGLE ÉTAIT TROP ÉTROITE.** J'avais
+d'abord comparé les libellés à l'identique : « libre · libre » disparaissait,
+« itinéraire enregistré · enregistré » restait. Ce n'est pas un doublon exact —
+**l'un CONTIENT l'autre**. La règle compare donc l'inclusion, et garde le plus
+complet.
+
+⚠️ La comparaison se fait sur le **texte affiché**, pas sur la clé : deux clés
+différentes peuvent rendre le même mot, et c'est exactement ce qui se passait.
+
+**Et un texte en dur trouvé dans la même ligne** : « durées indicatives », caché
+dans un long littéral HTML — mon balayage du matin l'avait manqué parce que le
+littéral contenait `class=`, un motif que j'excluais. Il passe par `uiT` ; la
+traduction existait déjà dans les quatre langues.
+
+**Vérifié à l'écran, en local, sur les trois cas.**
+· Voyage libre, 1 étape : « **1 étape** · libre · aller simple · ~0 km »
+· Voyage libre, 2 étapes : « **2 étapes** · libre · aller simple · ~58 km »
+· Itinéraire repris : « 2 étapes · **itinéraire enregistré** · aller simple » —
+  le « · enregistré » redondant a disparu.

@@ -2613,8 +2613,49 @@
     const hasNature=route.some(s=>s.genre==='nature');
     rsum.innerHTML=(res.notice||'')+'<h2>'+(tour?'✨ '+tour.titre:(theme?theme.ic+' '+uiT(theme.label):uiT('🧭 Itinéraire libre')))+'</h2>'+
       (tour&&tour.soustitre?'<div style="font-style:italic;color:var(--stone);margin:-2px 0 6px;font-size:14px">'+tour.soustitre+'</div>':'')+
-      '<div class="meta"><b>'+route.length+' '+uiT('étapes')+'</b> · '+durLabel+' · '+uiT(per.lib)+
-      ' · '+uiT(formeLbl)+' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label+'.<span class="tag-ind">durées indicatives</span><span id="carnet-total"></span></div>'+
+      /* ⚠️ POINT 45 — « 1 étapes », et le même mot deux fois. 04/09/2026.
+         Deux fautes dans une seule ligne, l'une d'accord, l'autre de fond.
+
+         ① L'ACCORD. `route.length + ' ' + uiT('étapes')` donnait « 1 étapes ».
+            Les deux clés existaient déjà dans les quatre autres langues ; c'est
+            le choix entre elles qui manquait.
+
+         ② LA RÉPÉTITION. La ligne enfilait quatre libellés sans jamais regarder
+            s'ils disaient la même chose. Un voyage libre sortait
+            « libre · libre » : `dur.lib` et `per.lib` valent tous deux « libre ».
+            Un itinéraire repris sortait « itinéraire enregistré · enregistré ».
+            On ne rustine pas ces deux cas-là : on écarte **tout doublon**, quel
+            qu'il soit, et tout libellé vide. Le défaut ne pourra pas revenir par
+            une autre porte.
+         ⚠️ La comparaison se fait sur le texte AFFICHÉ, pas sur la clé : deux
+            clés différentes peuvent rendre le même mot, et c'est précisément ce
+            qui se passait. */
+      (function(){
+        var nb = route.length;
+        var parts = [durLabel, uiT(per.lib), uiT(formeLbl)]
+          .map(function(t){ return (t==null ? '' : String(t)).trim(); })
+          .filter(Boolean);
+        /* ⚠️ « ITINÉRAIRE ENREGISTRÉ · ENREGISTRÉ » N'EST PAS UN DOUBLON EXACT —
+           mesuré à l'écran le 04/09 après une première correction trop étroite.
+           Le voyage libre disait « libre · libre », deux fois le même mot : une
+           comparaison stricte suffisait. Un itinéraire repris dit « itinéraire
+           enregistré » puis « enregistré » — l'un CONTIENT l'autre. On écarte
+           donc tout libellé déjà dit par un autre, et on garde le plus complet. */
+        var gardes = parts.filter(function(t, i){
+          var a = t.toLowerCase();
+          return !parts.some(function(u, j){
+            if(i === j) return false;
+            var b = u.toLowerCase();
+            if(a === b) return j < i;          // doublon exact : on garde le premier
+            return b.indexOf(a) >= 0;          // déjà dit par un libellé plus complet
+          });
+        });
+        return '<div class="meta"><b>'+nb+' '+uiT(nb>1 ? 'étapes' : 'étape')+'</b>'
+             + (gardes.length ? ' · '+gardes.join(' · ') : '')
+             + ' · ~<b>'+km+' '+uiT('km')+'</b> '+uiT('depuis')+' '+origin.label
+             + '.<span class="tag-ind">'+uiT('durées indicatives')+'</span>'
+             + '<span id="carnet-total"></span></div>';
+      })()+
       (res.island?'<div class="advis">🏝️ <b>'+uiT('Exploration limitée à')+' '+res.island+'</b> — '+uiT('île : pas de route vers le continent. Ajoutez une étape à la main pour un trajet en ferry ou en avion.')+'</div>':'')+
       (tour&&tour.note?'<div class="advis">🗓️ <b>Rythme conseillé :</b> '+tour.note+'</div>':'')+
       (hasNature?'<div class="advis">⚠️ <b>Balades nature :</b> renseignez-vous (météo, état du terrain, balisage) et partez de préférence avec un <b>groupe ou un guide local</b> plutôt que seul à l\'aventure. Selon les sites (parcs, réserves, zones du Sud), l\'accès peut exiger une <b>autorisation</b> (Eaux &amp; Forêts, patrimoine, parfois l\'armée).</div>':'')+
