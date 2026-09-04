@@ -1,0 +1,23 @@
+{
+  "_lisezmoi": "Textes de la brique « carte en plein écran ». Traduits par DeepL Pro le 04/09/2026, source_lang=FR forcé, bijection par index. Aucun repli en dur : une clé absente rend une chaîne vide, pas du français.",
+  "fr": {
+    "plein": "Carte en plein écran",
+    "quitter": "Quitter le plein écran"
+  },
+  "en": {
+    "plein": "Full-screen map",
+    "quitter": "Exit full-screen mode"
+  },
+  "de": {
+    "plein": "Karte im Vollbildmodus",
+    "quitter": "Vollbildmodus beenden"
+  },
+  "it": {
+    "plein": "Mappa a schermo intero",
+    "quitter": "Esci dalla modalità a schermo intero"
+  },
+  "ar": {
+    "plein": "خريطة بوضع ملء الشاشة",
+    "quitter": "الخروج من وضع ملء الشاشة"
+  }
+}

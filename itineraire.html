@@ -782,7 +782,15 @@
                scanner : le bouton ouvrait la caméra sur une fonction sans emploi.
                Le lecteur (`openScan`) reste dans le code, prêt si la fonction est
                un jour définie ; c'est seulement son entrée qui disparaît. -->
-          <button id="mapbtn" type="button" data-i18n="iti.voir.sur.la.grande.carte">🗺️ Voir sur la grande carte</button>
+          <!-- 🚫 « 🗺️ VOIR SUR LA GRANDE CARTE » RETIRÉ — point 29, 04/09/2026.
+               Il faisait doublon avec la carte que la page a déjà sous les yeux,
+               et pour la voir « en grand » il QUITTAIT l'itinéraire pour
+               `index.html?route=…` — d'où tout un mécanisme de restauration au
+               retour (`sessionStorage 'the_return'`, l. 1509). À sa place, la
+               carte de l'itinéraire s'agrandit sur elle-même : `the-carte-plein.js`,
+               bouton ⛶ sur la carte, croix pour revenir.
+               `openOnMap` reste dans le code, comme le lecteur de QR : c'est son
+               entrée qui part, pas la fonction. -->
         </div>
       </div>
       <div class="exp-group">
@@ -1174,6 +1182,25 @@
        `load` avant de photographier — sinon on saisit un fond gris.
 
      Rend une promesse sur une fonction : l'appeler rend sa vue à la carte. */
+  /* ⚠️ REPEINDRE LE FOND, SUR DEMANDE — 04/09/2026, point 29.
+     Agrandir la carte en plein écran change sa taille mais pas sa vue : Leaflet
+     se remesure sur `resize`, la couche vectorielle, elle, **ne peint que sur un
+     vrai mouvement** — leçon de Terralog, `blocs/40-carte.js` l. 71 : « reposer
+     la vue qu'on a déjà n'est pas un mouvement ». Sans ce geste, le plein écran
+     montre l'ancien rectangle de tuiles au milieu d'un grand vide.
+     ⚠️ On n'expose PAS `mapObj` — c'est un `let` de cette portée, le piège qui a
+     coûté trois défauts aujourd'hui. On expose le GESTE, pas l'objet. */
+  window.THEcarteRepeindre = function(){
+    try{
+      if(typeof mapObj==='undefined' || !mapObj) return false;
+      mapObj.invalidateSize(false);
+      mapObj.eachLayer(function(c){
+        if(c && typeof c.redraw==='function' && typeof c.rerenderTiles==='function') c.redraw();
+      });
+      return true;
+    }catch(e){ return false; }
+  };
+
   window.THEcarteDocument = function(){
     return new Promise(function(res){
       try{
@@ -3239,7 +3266,9 @@
     const names=LASTRES.route.filter(s=>s.genre!=='perso').map(s=>encodeURIComponent(s.p.nom));
     location.href = names.length ? 'index.html?route='+names.join('|') : 'index.html';
   }
-  document.getElementById('mapbtn').onclick=openOnMap;
+  /* Le bouton n'existe plus à l'écran (point 29) ; la fonction, si. Sans ce
+     garde, la ligne levait sur `null` et tuait tout le script qui suit. */
+  (function(){ var b=document.getElementById('mapbtn'); if(b) b.onclick=openOnMap; })();
 
     /* 🧭 LES SORTIES DE CARTE SONT SORTIES D'ICI — 04/09/2026, quatrième bloc.
        Google Maps, OpenStreetMap, Plans, Waze et le fichier GPX vivent dans
@@ -4253,6 +4282,7 @@
   <script src="brique-decouvrir-lieu.js" defer></script>
   <script src="brique-etape.js" defer></script>
   <script src="the-bornes.js" defer></script>
+  <script src="the-carte-plein.js" defer></script>
   <script src="brique-partage-lieu.js" defer></script>
 
   <script>
