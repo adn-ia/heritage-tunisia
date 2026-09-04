@@ -2423,7 +2423,27 @@
     let line=[oLL].concat(latlngs);
     if(forme==='boucle') line=line.concat([oLL]);
     L.polyline(line,{color:'#a8884f',weight:3,opacity:.8,dashArray:'6,6'}).addTo(mapObj);
-    mapObj.fitBounds(L.latLngBounds(line).pad(0.18));
+    /* ⚠️ ON NE CADRE PAS SUR UNE BOÎTE SANS SURFACE — 04/09/2026, Helmy : « composer
+       un voyage libre ne fonctionne pas ». Mesuré : dans un voyage libre, le DÉPART
+       et la PREMIÈRE ÉTAPE sont le même point — on nomme le voyage là où on se
+       trouve, et on y pose sa première halte. `line` porte donc deux fois la même
+       coordonnée : la boîte a une surface nulle, `fitBounds` cherche un zoom infini,
+       et Leaflet lève « Invalid LatLng object: (NaN, NaN) ». L'exception coupe
+       `render()` NET, ici, à la ligne du cadrage — donc AVANT le dessin des étapes
+       (l. 2430 et suivantes). D'où l'écran vu par Helmy : un en-tête, une carte
+       vide, et pas une seule étape. Rien n'était perdu : rien n'était dessiné.
+
+       ⚠️ LEÇON DÉJÀ ÉCRITE CHEZ TERRALOG, `blocs/40-carte.js` l. 32 : « ON NE CADRE
+       PAS SUR UN POINT UNIQUE. fitBounds sur une boîte sans surface fait plonger
+       Leaflet au zoom maximum » — réparé là-bas le 27/08. Là-bas la garde compte
+       les points (l. 141-142) ; ici il en faut deux, mais confondus. On mesure donc
+       la SURFACE, pas le nombre : c'est la même règle, dite pour notre cas. */
+    var _b = L.latLngBounds(line);
+    if (_b.getNorth() === _b.getSouth() && _b.getEast() === _b.getWest()) {
+      mapObj.setView(_b.getCenter(), 12);        // le zoom de Terralog, l. 142
+    } else {
+      mapObj.fitBounds(_b.pad(0.18));
+    }
     setTimeout(()=>mapObj.invalidateSize(),200);
 
     // étapes (avec « à voir en chemin » sur chaque tronçon)
@@ -4044,6 +4064,33 @@
          de proposer un ordre. Il ne s'invite plus quand c'est le voyageur qui pose
          une étape à la main. */
       base.route = items;
+      /* ⚠️ LA DISTANCE DEPUIS L'ÉTAPE PRÉCÉDENTE SE RECALCULE ICI — 04/09/2026,
+         Helmy : « composer un voyage libre ne fonctionne pas ». Mesuré : la
+         première étape d'un voyage libre arrivait SANS `fromPrev`. Le total
+         `route.reduce((t,s)=>t+s.fromPrev,0)` (l. 2368) devenait NaN, Leaflet
+         mourait sur « Invalid LatLng object: (NaN, NaN) », et `render()`
+         s'arrêtait là : pas de carte, pas une seule étape affichée. Vu de
+         l'écran : on ajoute une étape, et rien n'apparaît.
+
+         ⚠️ CE N'EST PAS UN RETOUR DE BUG, C'EST UN ANGLE MORT DU 30/08. Ce
+         jour-là on a retiré `nearestOrder()` du chemin d'ajout manuel — à
+         juste titre, il réordonnait le voyage derrière le voyageur. Mais
+         c'est LUI qui posait `fromPrev` (l. 1462). En le retirant on a retiré
+         l'ordre imposé ET le calcul de distance, sans s'en apercevoir : les
+         itinéraires composés, eux, passent toujours par `nearestOrder` et
+         n'ont jamais montré le défaut.
+
+         La chaîne se refait donc d'origine en étape, exactement comme
+         `removeStep` le fait après une suppression (l. 1582). C'est un
+         recalcul d'une valeur DÉRIVÉE : il ne déplace aucune étape et ne
+         touche pas à l'ordre choisi par le voyageur. */
+      (function(){
+        var prev = origine && origine.coord ? origine.coord : null;
+        items.forEach(function(s){
+          if(prev && s && s.c) { s.fromPrev = haversine(prev, s.c); prev = s.c; }
+          else if(s) { s.fromPrev = s.fromPrev || 0; }
+        });
+      })();
       render(origine, base);
       try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(err){}
       /* la fiche enregistrée suit, sans bouton : c'est un voyage qui se remplit */

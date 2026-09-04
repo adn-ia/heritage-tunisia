@@ -388,3 +388,63 @@ fautif : il l'attrape ; sur le code corrigé : il se tait.
 **La leçon.** Un module qui ÉCRIT du code doit voir son écriture contrôlée, pas
 seulement sa propre syntaxe. Sans cela, le vert du contrôle ne dit rien de ce qui
 est livré.
+
+---
+
+## 04/09/2026 — « composer un voyage libre ne fonctionne pas »
+
+**Symptôme (Helmy, à l'écran).** On choisit *Voyage libre*, on nomme le voyage, on
+remplit la première étape, on appuie sur **Ajouter cette étape** — et rien
+n'apparaît : un en-tête, une carte vide, pas une seule étape. Le compteur disait
+`~NaN km`.
+
+**Ce n'était pas un retour de bug : c'était un angle mort du 30/08.** Ce jour-là on
+a retiré `nearestOrder()` du chemin d'ajout manuel, à juste titre — il réordonnait
+le voyage derrière le voyageur. Mais c'est LUI qui posait `fromPrev` sur chaque
+étape (`itineraire.html:1462`). En retirant l'ordre imposé, on a retiré le calcul de
+distance avec, sans s'en apercevoir : les itinéraires **composés** passent toujours
+par `nearestOrder` et n'ont jamais montré le défaut. Seul le voyage libre, qui pose
+ses étapes à la main, était touché.
+
+**Deux causes en chaîne, mesurées.**
+
+1. `itineraire.html:4046` — `base.route = items; render(...)` livrait l'étape sans
+   `fromPrev`. Le total `route.reduce((t,s)=>t+s.fromPrev,0)` (l. 2368) devenait
+   `NaN`.
+2. `itineraire.html:2426` — dans un voyage libre, le **départ et la première étape
+   sont le même point** : on nomme le voyage là où on se trouve, on y pose sa
+   première halte. `L.latLngBounds(line)` avait donc une **surface nulle**,
+   `fitBounds` cherchait un zoom infini, Leaflet levait
+   `Invalid LatLng object: (NaN, NaN)`. L'exception coupait `render()` **net, à la
+   ligne du cadrage** — donc AVANT le dessin des étapes (l. 2430 et suivantes).
+   Rien n'était perdu : rien n'était dessiné.
+
+**Réparé.**
+
+- `itineraire.html:4046` — la chaîne des distances se refait d'origine en étape à
+  chaque ajout, exactement comme `removeStep` le fait après une suppression
+  (l. 1582). C'est un recalcul d'une valeur **dérivée** : il ne déplace aucune étape
+  et ne touche pas à l'ordre choisi par le voyageur.
+- `itineraire.html:2426` — on mesure la surface des bornes avant de cadrer ; nulle,
+  on fait `setView(centre, 12)`. **Leçon déjà écrite chez Terralog**,
+  `blocs/40-carte.js` l. 32 : « ON NE CADRE PAS SUR UN POINT UNIQUE. fitBounds sur
+  une boîte sans surface fait plonger Leaflet au zoom maximum » — réparé là-bas le
+  27/08. Là-bas la garde compte les points (l. 141-142) ; ici il en faut deux, mais
+  confondus : on mesure donc la surface, pas le nombre.
+- `brique-etape.js:243` — la position se prend **d'elle-même** à l'ouverture de la
+  première étape d'un voyage libre. Un voyage libre se fait sur place : la position,
+  on l'a. Sans cela le refus « Il manque la position » s'affichait **397 px
+  au-dessus** du bouton pressé — hors écran sur un téléphone, d'où « rien ne se
+  passe ». **Manière de Terralog** (`blocs/40-carte.js` l. 433,
+  `blocs/90-live.js` l. 163) : on APPELLE la position, on annonce l'attente, on
+  retombe en silence. Pas de `navigator.permissions.query` — Terralog ne demande
+  jamais la permission de demander.
+
+**Vérifié à l'écran, en local.** Voyage libre neuf → position prise seule
+(📍 36.8702, 10.3417) → une étape : carte, repère, fiche. Deuxième étape à Carthage :
+2 étapes · ~5 km, distances 2,5 + 2,5, deux fiches, trois repères, plus une seule
+exception Leaflet.
+
+**Ce que ça apprend.** Quand on retire un mécanisme parce qu'il fait une chose de
+trop, il faut regarder ce qu'il faisait **d'autre**. `nearestOrder` faisait deux
+métiers : ordonner, et mesurer. On n'en voulait plus qu'un — on a perdu les deux.

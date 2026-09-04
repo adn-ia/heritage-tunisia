@@ -240,6 +240,21 @@
         if (POS) q("bet-pos").textContent = "📍 " + (ADRESSE || (POS[1].toFixed(4) + ", " + POS[0].toFixed(4)));
       }
       m.style.display = "flex";
+
+      /* ⚠️ UN VOYAGE LIBRE SE FAIT SUR PLACE — 04/09/2026, Helmy : « composer un
+         voyage libre ne fonctionne pas », puis « prenez exemple sur Terralog ».
+         Mesuré : la position est le SEUL champ obligatoire, et c'est celui qu'on
+         ne pense pas à remplir quand on note une halte au débotté. On tape un nom,
+         on appuie, l'ajout est refusé — et le refus s'affiche 397 px plus haut,
+         hors de l'écran d'un téléphone. Vu d'en bas : « rien ne se passe ».
+         Or dans un voyage libre la position, on l'A : on est dessus.
+         ⚠️ MANIÈRE DE TERRALOG, et pas une autre : on APPELLE la position, on
+         annonce l'attente, on retombe en silence si elle est refusée
+         (`blocs/40-carte.js` l.433 `navFromHere`, `blocs/90-live.js` l.163).
+         Pas de `navigator.permissions.query` : Terralog ne demande jamais la
+         permission de demander. gps() dit déjà « recherche », puis « refusée » —
+         c'est exactement la forme de là-bas. */
+      if (opts.premiere && !POS) { try { gps(); } catch (e) {} }
       function fermer(annule) {
         m.style.display = "none"; m.remove();
         /* On PRÉVIENT l'hôte d'un renoncement. Renoncer à la toute première
@@ -286,7 +301,15 @@
            l'écran s'y déplace. La DATE, elle, n'a jamais été obligatoire — seule
            la position l'est, sans elle il n'y a rien à poser sur la carte. */
         var _pos = document.getElementById("bet-pos");
-        if (!POS) { _pos.textContent = L("manque.position"); erreur(_pos, true); return; }
+        if (!POS) {
+          _pos.textContent = L("manque.position");
+          erreur(_pos, true);
+          /* ⚠️ On ne toaste pas : Terralog écrit dans sa ligne d'état et rien
+             d'autre (`blocs/21-edition.js` l.183). Avec la position prise d'office
+             à l'ouverture, ce refus ne se rencontre plus qu'après un vrai refus
+             système — et gps() l'a déjà dit à cet endroit-là. */
+          return;
+        }
         erreur(_pos, false);
         var nom = (document.getElementById("bet-nom").value || "").trim() || ADRESSE.split(",")[0] || L("nom");
         var detail = {
