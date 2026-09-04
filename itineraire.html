@@ -1108,6 +1108,39 @@
       };
     }catch(e){ return null; }
   };
+
+  /* ── L'ÉTAT DE PROJECTION DE LA CARTE ────────────────────────────────────────
+     04/09/2026, Helmy : « la carte est toute désorganisée en export sur les
+     documents. Vous tentez d'en créer une alors qu'il faut reprojeter juste celle
+     qui est sur l'itinéraire. Elle doit être reprojetée entièrement, en
+     auto-porté fonctionnel — si la personne exporte un fichier, elle clique sur
+     les points étapes, non ? »
+
+     Constaté à l'écran dans le fichier produit : le TRACÉ était à gauche et les
+     PASTILLES à droite. Deux géométries recollées côte à côte — la ligne
+     photographiée depuis le SVG de Leaflet, qui porte son propre repère interne
+     et son propre décalage, les pastilles mesurées au `getBoundingClientRect`.
+     Rien ne garantissait qu'elles tombent au même endroit, et elles n'y
+     tombaient pas.
+
+     Un export ne doit pas RECOLLER des morceaux : il doit REPROJETER. Pour cela
+     il lui faut ce que la carte sait d'elle-même — son centre, son zoom, sa
+     taille. Avec ces trois valeurs, n'importe quelle latitude-longitude se
+     retrouve au pixel près par la projection de Mercator, la même que celle des
+     tuiles. Le fond, le tracé et les étapes partagent alors UNE seule géométrie.
+
+     ⚠️ `mapObj` est un `let` de cette portée — il n'est pas sur `window`, comme
+     `LASTRES` (l. 1259). On n'expose donc pas l'objet : on rend une COPIE de son
+     état. Lire ne doit jamais devenir une porte pour écrire. */
+  window.THEcarteVue = function(){
+    try{
+      if(typeof mapObj==='undefined' || !mapObj) return null;
+      var c = mapObj.getCenter(), t = mapObj.getSize();
+      if(!c || !t || !t.x || !t.y) return null;
+      return { lat:c.lat, lng:c.lng, zoom:mapObj.getZoom(), largeur:t.x, hauteur:t.y };
+    }catch(e){ return null; }
+  };
+
   /* LA NOTE SE LIT OÙ ELLE EST ÉCRITE — 01/09/2026, Helmy : « aucune note » dans
      l'album. Deux clés existaient pour la même chose : le carnet écrit sous
      `the-note-<lieu>` (`the-carnet.js` l.87), l'album relisait `the-cap:<lieu>`.

@@ -33,7 +33,59 @@ function nomDeFichier(txt, repli){
      l'écran — les tuiles, puis le tracé, puis les points numérotés — et le fichier
      reçoit une image plate, qui n'a plus besoin de Leaflet pour exister. C'est
      aussi ce qui la rend consultable hors ligne, des années plus tard. */
-  function aplatirCarte(cadre){
+  /* ⚠️ DEUX BESOINS, UNE SEULE SAISIE — 04/09/2026.
+     · L'IMPRESSION veut une image COMPLÈTE : tuiles, tracé, pastilles, tout cuit
+       dedans. Une feuille de papier ne se clique pas.
+     · L'EXPORT CLIQUABLE veut une image NUE : les tuiles et rien d'autre. Le
+       tracé et les étapes y sont REPROJETÉS, pas photographiés — c'est la seule
+       façon qu'ils tombent au même endroit que le fond.
+     `opts.nu` fait la différence. Sans lui, rien ne change pour `the-print.js`. */
+  /* ── LA PROJECTION, EN HUIT LIGNES ──────────────────────────────────────────
+     C'est la Mercator sphérique (EPSG:3857), celle des tuiles web, avec des
+     tuiles de 256 px — exactement ce que Leaflet emploie pour poser le fond. On
+     la refait ici plutôt que d'en demander une : le fichier produit doit vivre
+     seul, sans Leaflet, sans réseau, ouvert dans dix ans sur n'importe quoi.
+     Huit lignes qu'on peut lire valent mieux qu'une dépendance qu'on subit.
+
+     Rendu en POURCENTAGES de l'image, pas en pixels : un pourcentage suit
+     l'image quand elle est redimensionnée, un pixel non — la leçon du 03/09,
+     qu'on garde. */
+  function projeter(vue, lng, lat){
+    var s = 256 * Math.pow(2, vue.zoom);
+    function px(lo, la){
+      var y = Math.sin(la * Math.PI / 180);
+      y = Math.max(-0.9999, Math.min(0.9999, y));
+      return [ (lo + 180) / 360 * s,
+               (0.5 - Math.log((1 + y) / (1 - y)) / (4 * Math.PI)) * s ];
+    }
+    var c = px(vue.lng, vue.lat), p = px(lng, lat);
+    return { x: ((p[0] - c[0]) + vue.largeur  / 2) / vue.largeur  * 100,
+             y: ((p[1] - c[1]) + vue.hauteur / 2) / vue.hauteur * 100 };
+  }
+
+  /* ── LES JALONS DU VOYAGE, DANS L'ORDRE OÙ ON LES PARCOURT ──────────────────
+     Le départ, les étapes numérotées, puis la fin : le retour au départ si le
+     voyage n'est pas un aller simple — règle de Terralog, `blocs/20-itineraire.js`
+     l. 590 — ou le point d'arrivée s'il en a un. C'est la MÊME suite que celle
+     que la carte de l'itinéraire trace : on ne compose pas un autre parcours,
+     on redit celui-là. */
+  function jalons(v){
+    var out = [];
+    if(v.origine && v.origine.coord) out.push({ r:'depart', n:'⌂', coord:v.origine.coord });
+    v.etapes.forEach(function(e){ if(e.coord) out.push({ r:'etape', n:String(e.n), coord:e.coord }); });
+    if(v.forme !== 'oneway'){
+      /* Le retour au départ : le tracé s'y referme, mais on n'y repose PAS de
+         repère — ce serait le même lieu marqué deux fois. Terralog l. 743 : son
+         lieu EST le départ. */
+      if(v.origine && v.origine.coord) out.push({ r:'retour', n:'', coord:v.origine.coord });
+    } else if(v.arrivee && v.arrivee.coord){
+      out.push({ r:'arrivee', n:'🏁', coord:v.arrivee.coord });
+    }
+    return out;
+  }
+
+  function aplatirCarte(cadre, opts){
+    opts = opts || {};
     try{
       var r0 = cadre.getBoundingClientRect();
       if(!r0.width || !r0.height) return Promise.resolve(null);
@@ -53,8 +105,45 @@ function nomDeFichier(txt, repli){
         }catch(e){}
       });
 
-      /* ② le tracé, porté par le SVG de Leaflet */
+      /* ⚠️ ON RETIENT CE QUE LA CARTE SAIT D'ELLE-MÊME, À L'INSTANT DE LA SAISIE
+         — son centre, son zoom, sa taille. C'est tout ce qu'il faut pour
+         reprojeter n'importe quel lieu sur cette image-là, par Mercator, la
+         même projection que les tuiles. Saisi ICI et pas plus tard : la carte
+         est masquée dès que l'album s'ouvre, et une carte masquée mesure zéro. */
+      try{ window.THEcarteEtat = (window.THEcarteVue && window.THEcarteVue()) || null; }
+      catch(e){ window.THEcarteEtat = null; }
+
+      /* ② LE TRACÉ — PROJETÉ, PLUS PHOTOGRAPHIÉ.
+         04/09/2026 : c'est ici que naissait le désordre vu par Helmy. On clonait
+         le SVG de Leaflet et on le rasterisait à la taille du CADRE — or ce SVG
+         porte son propre repère interne et son propre décalage, très différents
+         de ceux du cadre. La ligne atterrissait donc à gauche pendant que les
+         pastilles, mesurées au `getBoundingClientRect`, tombaient à droite. Deux
+         géométries pour un seul dessin.
+         On trace maintenant depuis les vraies coordonnées, par la même
+         projection que les tuiles : fond, tracé et pastilles partagent enfin UNE
+         géométrie, dans l'image comme dans le fichier cliquable.
+         ⚠️ Sans l'état de la carte, on retombe sur l'ancienne photographie —
+         imparfaite, mais mieux qu'une carte sans tracé. */
+      var _vue = window.THEcarteEtat, _voy = null;
+      try{ _voy = (window.THEvoyage && window.THEvoyage()) || null; }catch(e){}
+      var _proj = (_vue && _voy) ? jalons(_voy).map(function(j){
+            var q = projeter(_vue, j.coord[0], j.coord[1]);
+            return { r:j.r, n:j.n, x:q.x/100*r0.width, y:q.y/100*r0.height };
+          }) : null;
+
       var suite = Promise.resolve();
+      if(_proj){
+        if(_proj.length > 1 && !opts.nu){
+          g.save();
+          g.strokeStyle = '#a8884f'; g.lineWidth = 2.5; g.globalAlpha = .85;
+          g.lineJoin = 'round'; g.lineCap = 'round';
+          if(g.setLineDash) g.setLineDash([6, 6]);
+          g.beginPath(); g.moveTo(_proj[0].x, _proj[0].y);
+          for(var _i = 1; _i < _proj.length; _i++) g.lineTo(_proj[_i].x, _proj[_i].y);
+          g.stroke(); g.restore();
+        }
+      } else if(!opts.nu)
       [].forEach.call(cadre.querySelectorAll('svg'), function(sv){
         suite = suite.then(function(){
           return new Promise(function(res){
@@ -84,23 +173,39 @@ function nomDeFichier(txt, repli){
          redimensionnée, un pixel non. */
       var places = [];
       return suite.then(function(){
-        [].forEach.call(cadre.querySelectorAll('.leaflet-marker-icon'), function(m){
-          try{
-            var r = m.getBoundingClientRect();
-            var x = r.left - r0.left + r.width / 2, y = r.top - r0.top + r.height / 2;
-            var n = (m.textContent || '').trim();
-            if(n) places.push({ n:n, x:(x / r0.width) * 100, y:(y / r0.height) * 100 });
-            var ray = Math.max(11, Math.min(r.width, r.height) / 2);
-            g.beginPath(); g.arc(x, y, ray, 0, 6.2832);
-            g.fillStyle = '#a8884f'; g.fill();
-            g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
-            if(n){
-              g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
-              g.font = '700 ' + Math.round(ray * 1.05) + 'px Georgia, serif';
-              g.fillText(n, x, y + 1);
-            }
-          }catch(e){}
-        });
+        function rond(x, y, n, ray, fond){
+          g.beginPath(); g.arc(x, y, ray, 0, 6.2832);
+          g.fillStyle = fond; g.fill();
+          g.strokeStyle = '#fff'; g.lineWidth = 2; g.stroke();
+          if(n){
+            g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle';
+            g.font = '700 ' + Math.round(ray * 1.05) + 'px Georgia, serif';
+            g.fillText(n, x, y + 1);
+          }
+        }
+        if(_proj){
+          /* Les pastilles viennent de la MÊME projection que le tracé et que les
+             tuiles. Plus de mesure du DOM : c'est elle qui faisait diverger les
+             deux dessins. */
+          _proj.forEach(function(q){
+            if(q.r === 'retour') return;          // le retour ne se marque pas deux fois
+            places.push({ n:q.n, r:q.r, x:(q.x / r0.width) * 100, y:(q.y / r0.height) * 100 });
+            if(opts.nu) return;                   // rien de cuit : tout sera reprojeté
+            rond(q.x, q.y, q.n, q.r === 'etape' ? 13 : 11,
+                 q.r === 'etape' ? '#a8884f' : '#2b2318');
+          });
+        } else {
+          [].forEach.call(cadre.querySelectorAll('.leaflet-marker-icon'), function(m){
+            try{
+              var r = m.getBoundingClientRect();
+              var x = r.left - r0.left + r.width / 2, y = r.top - r0.top + r.height / 2;
+              var n = (m.textContent || '').trim();
+              if(n) places.push({ n:n, r:'etape', x:(x / r0.width) * 100, y:(y / r0.height) * 100 });
+              if(opts.nu) return;
+              rond(x, y, n, Math.max(11, Math.min(r.width, r.height) / 2), '#a8884f');
+            }catch(e){}
+          });
+        }
         var url = c.toDataURL('image/jpeg', 0.9);
         /* deux appelants, deux besoins : `the-print.js` veut l'image, le fichier
            souvenir veut aussi les points. On rend l'image, et on dépose les points
@@ -183,11 +288,38 @@ function nomDeFichier(txt, repli){
     var meta  = ((document.querySelector('.album-cover .ac-meta')||{}).textContent||'').trim();
     var marque= (window.HConf && HConf.marque) || '';
 
-    var carteURL = null, points = [];
+    /* ── LA CARTE SE REPROJETTE, ELLE NE SE RECOLLE PAS ─────────────────────
+       04/09/2026, Helmy : « la carte est toute désorganisée en export sur les
+       documents. Vous tentez d'en créer une alors qu'il faut reprojeter juste
+       celle qui est sur l'itinéraire. Elle doit être reprojetée entièrement, en
+       auto-porté fonctionnel — si la personne exporte un fichier, elle clique
+       sur les points étapes, non ? »
+
+       Constaté dans le fichier produit, à l'écran : le TRACÉ tombait à gauche et
+       les PASTILLES à droite. Deux géométries recollées côte à côte — la ligne
+       photographiée depuis le SVG de Leaflet, qui porte son propre repère
+       interne et son propre décalage, les pastilles mesurées au
+       `getBoundingClientRect`. Rien ne les obligeait à coïncider, et elles ne
+       coïncidaient pas.
+
+       Désormais : le fond est l'image NUE — les tuiles seules — et le tracé
+       comme les étapes sont REPROJETÉS depuis leurs vraies coordonnées, par la
+       projection de Mercator, avec le centre et le zoom que la carte avait au
+       moment de la saisie. Une seule géométrie pour les trois. Le tracé devient
+       un SVG en pourcentages : il suit l'image à toute largeur et reste net là
+       où une photographie baverait.
+
+       ⚠️ SANS L'ÉTAT DE LA CARTE, ON NE REPROJETTE RIEN — on retombe alors sur
+       l'image complète et les points mesurés, l'ancien comportement. Ce n'est
+       pas un repli de traduction : c'est un document déjà fabriqué qu'on rend
+       tel qu'on sait le rendre, plutôt qu'une page blanche. */
+    var carteURL = null, points = [], vue = null, voyage = null;
     Promise.resolve()
       .then(function(){
-        /* la carte de l'itinéraire est DÉJÀ une image dans la couverture ; sinon
-           on la prend sur `#map`. Dans les deux cas, ses points viennent avec. */
+        try{ voyage = (window.THEvoyage && window.THEvoyage()) || null; }catch(e){}
+        vue = window.THEcarteEtat || null;
+        if(vue && voyage && window.THEcarteNue){ carteURL = window.THEcarteNue; return; }
+        vue = null;
         if(cadre.tagName === 'IMG'){
           carteURL = cadre.getAttribute('src');
           points = (window.THEcartePoints||[]).slice();
@@ -199,8 +331,33 @@ function nomDeFichier(txt, repli){
       })
       .then(lireLesEtapes)
       .then(function(etapes){
+        var trace = '';
+        if(vue && voyage){
+          var suite = jalons(voyage);
+          points = suite.filter(function(j){ return j.n; }).map(function(j){
+            var q = projeter(vue, j.coord[0], j.coord[1]);
+            return { n:j.n, r:j.r, x:q.x, y:q.y };
+          });
+          if(suite.length > 1){
+            var d = suite.map(function(j){
+              var q = projeter(vue, j.coord[0], j.coord[1]);
+              return q.x.toFixed(3)+','+q.y.toFixed(3);
+            }).join(' ');
+            trace = '<svg class="tr" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'
+                  + '<polyline points="'+d+'"/></svg>';
+          }
+        }
+        /* ⚠️ SEULE UNE ÉTAPE SE CLIQUE. Le départ et l'arrivée n'ont ni photos ni
+           note : en faire des boutons promettait une fenêtre qui ne s'ouvrait
+           jamais. Ils restent visibles — on doit voir d'où l'on part et où l'on
+           finit — mais en repère, pas en bouton. */
         var pastilles = points.map(function(p){
-          return '<button class="pt" style="left:'+p.x.toFixed(2)+'%;top:'+p.y.toFixed(2)+'%" '
+          var pos = 'left:'+p.x.toFixed(2)+'%;top:'+p.y.toFixed(2)+'%';
+          if(p.r !== 'etape'){
+            return '<span class="pt borne" style="'+pos+'" aria-hidden="true">'
+                 + echapper(p.n)+'</span>';
+          }
+          return '<button class="pt" style="'+pos+'" '
                + 'data-n="'+echapper(p.n)+'" aria-label="'+T('Étape')+' '+echapper(p.n)+'">'
                + echapper(p.n)+'</button>';
         }).join('');
@@ -228,11 +385,22 @@ function nomDeFichier(txt, repli){
         + '.carte{position:relative;margin:0 auto;border-radius:12px;overflow:hidden;'
         + 'box-shadow:0 8px 30px rgba(0,0,0,.18);background:#e9e4d6}'
         + '.carte>img{display:block;width:100%;height:auto}'
+        /* Le tracé est un SVG en pourcentages, étiré sur l'image : x suit la
+           largeur, y suit la hauteur, indépendamment. `non-scaling-stroke`
+           garde le trait à la même épaisseur quelle que soit la taille —
+           sans lui, l'étirement l'écraserait dans un sens et l'épaissirait
+           dans l'autre. */
+        + '.carte>.tr{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}'
+        + '.carte>.tr polyline{fill:none;stroke:var(--or);stroke-width:2.5;'
+        + 'stroke-dasharray:6 6;stroke-linejoin:round;stroke-linecap:round;'
+        + 'opacity:.85;vector-effect:non-scaling-stroke}'
         + '.pt{position:absolute;transform:translate(-50%,-50%);width:34px;height:34px;'
         + 'border-radius:50%;background:var(--or);color:#fff;border:2.5px solid #fff;'
         + 'font:700 14px/1 Georgia,serif;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);'
         + 'display:flex;align-items:center;justify-content:center;padding:0}'
         + '.pt:hover,.pt:focus{background:#2e6a4d;outline:none;transform:translate(-50%,-50%) scale(1.15)}'
+        + '.pt.borne{background:var(--encre,#2b2318);cursor:default;width:28px;height:28px;font-size:13px}'
+        + '.pt.borne:hover{background:var(--encre,#2b2318);transform:translate(-50%,-50%)}'
         + '.aide{text-align:center;color:var(--pierre);font-size:13.5px;font-style:italic;margin:12px 0 0}'
         /* la liste sert de repli : sans script, sans souris, à l'impression */
         + '.liste{margin:26px 0 0}'
@@ -284,7 +452,7 @@ function nomDeFichier(txt, repli){
           + '<h1>'+echapper(titre)+'</h1>'
           + (meta?'<div class="meta">'+echapper(meta)+'</div>':'')+'</header>'
           + (carteURL
-              ? '<div class="carte"><img src="'+carteURL+'" alt="">'+pastilles+'</div>'
+              ? '<div class="carte"><img src="'+carteURL+'" alt="">'+trace+pastilles+'</div>'
                 + '<p class="aide">'+T('souvenir.aide.carte')+'</p>'
               : '')
           + '<div class="liste">'+fiches+'</div>'

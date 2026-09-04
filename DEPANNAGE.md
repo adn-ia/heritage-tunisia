@@ -528,3 +528,73 @@ montrait : on lui demandait « dites où le voyage se termine » alors que par n
 il ne le sait pas — c'est sa définition même. **Un voyage libre n'affiche que son
 départ** ; la liste finit sur la dernière étape posée, comme le voyage lui-même.
 La forme reste demandée dans « Composer » seulement, question 6.
+
+---
+
+## 04/09/2026 — la carte des documents : reprojetée, plus recollée
+
+**Symptôme (Helmy).** « On revient au problème de la carte qui est toute
+désorganisée en export sur les documents. Vous tentez d'en créer une alors qu'il
+faut reprojeter juste celle qui est sur l'itinéraire. Elle doit être reprojetée
+entièrement, en auto-porté fonctionnel — si la personne exporte un fichier, elle
+clique sur les points étapes, non ? »
+
+**Constaté à l'écran, dans le fichier produit.** Le TRACÉ tombait à gauche du
+cadre, les PASTILLES au milieu à droite. Ils ne décrivaient pas le même parcours.
+
+**Cause, mesurée.** `aplatirCarte` fabriquait son image en recollant deux dessins
+issus de deux géométries différentes :
+
+1. le tracé était **photographié** — on clonait le `<svg>` de Leaflet et on le
+   rasterisait à la taille du CADRE (`the-souvenir.js`, ancien ② ). Or ce SVG
+   porte son propre repère interne et son propre décalage : le rendre à la taille
+   du cadre le déplace ;
+2. les pastilles étaient **mesurées** au `getBoundingClientRect` de chaque
+   `.leaflet-marker-icon`.
+
+Rien n'obligeait ces deux-là à coïncider, et elles ne coïncidaient pas. Le
+fichier cliquable ajoutait par-dessus un troisième jeu de pastilles en
+pourcentages, superposé à celles déjà cuites dans l'image.
+
+**Ce qui remplace ça : une seule géométrie, la vraie.**
+
+- `itineraire.html` — `window.THEcarteVue()` rend ce que la carte sait d'elle-même
+  au moment de la saisie : centre, zoom, taille. Une **copie** ; `mapObj` est un
+  `let` de la page, comme `LASTRES`, et lire ne doit jamais devenir une porte pour
+  écrire.
+- `the-souvenir.js` — `projeter()`, huit lignes de Mercator sphérique (EPSG:3857,
+  tuiles de 256 px), exactement la projection des tuiles. Écrite ici plutôt
+  qu'empruntée : **le fichier produit doit vivre seul**, sans Leaflet, sans
+  réseau, ouvert dans dix ans sur n'importe quoi. Huit lignes qu'on peut lire
+  valent mieux qu'une dépendance qu'on subit.
+- `jalons()` — la suite des points telle que la carte la trace : départ, étapes,
+  puis retour au départ si le voyage n'est pas un aller simple (règle de Terralog,
+  `blocs/20-itineraire.js` l. 590), ou le point d'arrivée s'il y en a un. On ne
+  compose pas un autre parcours : on redit celui-là.
+- L'image de l'album et de l'impression : tracé et pastilles **projetés** sur le
+  canevas, plus photographiés ni mesurés.
+- Le fichier cliquable : fond = image **NUE** (les tuiles seules), tracé en SVG de
+  pourcentages, étapes en boutons — tous placés par la même projection. Plus de
+  double jeu de pastilles.
+- `the-document.js` — les deux images se prennent au même instant, tant que `#map`
+  est encore visible : dès que l'album s'ouvre la carte est masquée et ne mesure
+  plus rien.
+
+**Ce qui se clique, et ce qui ne se clique pas.** Seule une étape porte des photos
+et une note : elle seule est un bouton. Le départ et l'arrivée restent visibles —
+on doit voir d'où l'on part et où l'on finit — mais en repère sombre, pas en
+bouton : en faire un promettait une fenêtre qui ne s'ouvrait jamais.
+
+**Vérifié à l'écran, en local.** Fichier de 16 Ko (43 avant : l'image nue pèse
+8 Ko contre 36). Sommet n° 2 du tracé = `50.759, 39.494` ; pastille n° 1 =
+`50.76, 39.49` — même point. 17 sommets, 16 étapes cliquables. Clic sur la
+pastille 16 → « 16 · Musée d'Enfida · Sousse ». Sur l'image de l'album, le tracé
+égaré à gauche a disparu.
+
+**Signalé, non fait — le CADRAGE.** Les seize étapes restent tassées au centre
+d'un cadre très large, et se recouvrent. Ce n'est pas un défaut de l'export : la
+carte de l'itinéraire a exactement le même aspect, l'export lui est fidèle. La
+cause est que Leaflet choisit un zoom ENTIER : ce parcours demanderait 6,6, il
+reçoit 6, et n'occupe plus que 40 % du cadre. Sur l'itinéraire on peut zoomer ;
+dans un document, non. Le corriger suppose de recadrer brièvement la carte sur le
+parcours avant la saisie, puis de lui rendre sa vue — décision de Helmy.

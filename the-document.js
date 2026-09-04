@@ -40,8 +40,19 @@
     try {
       var m = document.getElementById("map");
       if (!m || !m.offsetParent || !window.THEcartePlate) return Promise.resolve(null);
+      /* ⚠️ DEUX IMAGES, PRISES AU MÊME INSTANT — 04/09/2026.
+         L'album et l'impression veulent la carte COMPLÈTE, tracé et pastilles
+         cuits dedans. Le fichier cliquable veut la carte NUE, où tout sera
+         REPROJETÉ. Les deux se prennent ICI, tant que `#map` est encore visible :
+         dès que l'album s'ouvre, la carte est masquée et ne mesure plus rien —
+         c'est la leçon du 03/09, déjà écrite plus bas (`buildSite`, l. 169). */
       return window.THEcartePlate(m)
-        .then(function (u) { CARTE = u || null; return CARTE; })
+        .then(function (u) {
+          CARTE = u || null;
+          return window.THEcartePlate(m, { nu: true })
+            .then(function (n) { window.THEcarteNue = n || null; return CARTE; })
+            .catch(function () { window.THEcarteNue = null; return CARTE; });
+        })
         .catch(function () { return null; });
     } catch (e) { return Promise.resolve(null); }
   }
