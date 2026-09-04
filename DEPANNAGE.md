@@ -520,5 +520,11 @@ changé pour « Sousse, la médina » : 12 km → **130 km**, première branche 
 Boucle : arrivée « Sousse, la médina — Retour au point de départ », **sans bouton**.
 Aller-retour : **~261 km**, le double, et le tracé rentre enfin au départ.
 
-**Signalé, non fait :** un voyage libre ne propose nulle part de choisir sa forme —
-il est toujours `oneway`. Le choix n'existe que dans « Composer », question 6.
+**Ce que j'avais mal lu.** J'avais signalé comme un manque qu'un voyage libre ne
+propose pas de choisir sa forme. Helmy, le même jour : « le voyage libre n'a pas
+besoin de forme. Il se définit de jour en jour, étape par étape. Il a besoin d'un
+point de départ, c'est tout. » Ce n'était donc pas un manque, et l'écran le
+montrait : on lui demandait « dites où le voyage se termine » alors que par nature
+il ne le sait pas — c'est sa définition même. **Un voyage libre n'affiche que son
+départ** ; la liste finit sur la dernière étape posée, comme le voyage lui-même.
+La forme reste demandée dans « Composer » seulement, question 6.

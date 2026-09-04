@@ -175,6 +175,16 @@
       haut.appendChild(fiche("depart", "⌂", L("depart"),
         (o && o.label) || L("depart.aucun"), "", L("changer"), !(o && o.coord)));
 
+      /* ⚠️ UN VOYAGE LIBRE N'A PAS D'ARRIVÉE — 04/09/2026, Helmy : « le voyage
+         libre n'a pas besoin de forme. Il se définit de jour en jour, étape par
+         étape. Il a besoin d'un point de départ, c'est tout. »
+         C'est exact, et ça se voyait : on lui demandait « dites où le voyage se
+         termine » alors que par nature il ne le sait pas — c'est même sa
+         définition. On ne pose donc que le départ, et la liste finit sur la
+         dernière étape posée, comme le voyage lui-même. La forme, elle, n'est
+         demandée que dans « Composer » (question 6) : il n'y a rien à y ajouter. */
+      if (j.mode === "libre") return;
+
       /* ── L'ARRIVÉE, APRÈS LA LISTE ───────────────────────────────────────
          Boucle et aller-retour : c'est le départ, en lecture seule — le
          changer ici serait mentir, son lieu EST le départ (Terralog l. 743).
