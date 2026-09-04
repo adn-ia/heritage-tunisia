@@ -86,6 +86,12 @@
            (Terralog, `blocs/40-carte.js` l. 71). L'hôte publie le geste ;
            on le lui demande. */
         try { if (window.THEcarteRepeindre) window.THEcarteRepeindre(); } catch (e) {}
+        /* ⚠️ ET UN VRAI MOUVEMENT — mesuré en ligne le 04/09 : remesurer et
+           redessiner ne suffisent pas, les tuiles du nouvel espace ne sont pas
+           allées se chercher. Seul un CADRAGE les fait venir. Terralog,
+           `blocs/40-carte.js` l. 71-73. En prime, c'est ce qu'on veut voir en
+           plein écran : le voyage entier. */
+        try { if (window.THEcarteRecadrer) window.THEcarteRecadrer(); } catch (e) {}
       }, d);
     });
   }

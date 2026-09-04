@@ -1190,6 +1190,32 @@
      montre l'ancien rectangle de tuiles au milieu d'un grand vide.
      ⚠️ On n'expose PAS `mapObj` — c'est un `let` de cette portée, le piège qui a
      coûté trois défauts aujourd'hui. On expose le GESTE, pas l'objet. */
+  /* ⚠️ RECADRER EST LE SEUL VRAI MOUVEMENT — 04/09/2026, point 29.
+     Vu à l'écran, EN LIGNE : la carte passée en plein écran remplissait bien la
+     fenêtre, mais les tuiles ne couvraient qu'un rectangle décalé. `invalidateSize`
+     apprend à Leaflet sa nouvelle taille ; il ne va pas CHERCHER les tuiles du
+     nouvel espace. Terralog l'avait écrit, `blocs/40-carte.js` l. 71-73 :
+     « reposer la vue qu'on a déjà n'est pas un mouvement. Ce qu'il faut, c'est un
+     vrai changement de vue — c'est-à-dire le cadrage lui-même. »
+     On recadre donc sur le parcours. C'est aussi ce qu'on veut voir en ouvrant
+     le plein écran : le voyage entier, pas le morceau qu'on regardait. */
+  window.THEcarteRecadrer = function(){
+    try{
+      if(typeof mapObj==='undefined' || !mapObj) return false;
+      if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return false;
+      var pts=[];
+      if(LASTORIGIN && LASTORIGIN.coord) pts.push([LASTORIGIN.coord[1], LASTORIGIN.coord[0]]);
+      LASTRES.route.forEach(function(s){ if(s && s.c) pts.push([s.c[1], s.c[0]]); });
+      if(LASTRES.arrivee && LASTRES.arrivee.coord) pts.push([LASTRES.arrivee.coord[1], LASTRES.arrivee.coord[0]]);
+      if(!pts.length) return false;
+      mapObj.invalidateSize(false);
+      var b=L.latLngBounds(pts);
+      if(b.getNorth()===b.getSouth() && b.getEast()===b.getWest()) mapObj.setView(b.getCenter(), 12, {animate:false});
+      else mapObj.fitBounds(b.pad(0.12), {animate:false});
+      return true;
+    }catch(e){ return false; }
+  };
+
   window.THEcarteRepeindre = function(){
     try{
       if(typeof mapObj==='undefined' || !mapObj) return false;
