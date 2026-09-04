@@ -106,8 +106,14 @@ PY3B
 if [ -z "$R" ]; then ok "aucune clé JavaScript ne rendra « undefined »"
 else ko "clé appelée en JS et absente — affichera « undefined » :"; echo "$R" | sed 's/^/      /'; fi
 
-# ── 4. Replis en dur T('cle','texte') — règle en granit, zéro repli ──────────
-R=$(grep -ohE "T\(\s*'[^']+'\s*,\s*'[^']{3,}'\s*\)" ./*.js ./*.html 2>/dev/null | head -5)
+# ── 4. Replis en dur : une clé SUIVIE de son texte — zéro repli ──────────────
+# ⚠️ ÉLARGI LE 04/09/2026. Le motif ne cherchait que `T(`. Or `itineraire.html`
+# se servait d'un helper nommé `T2(` — même forme, même faute : 23 appels avec
+# leur texte français en second argument, invisibles à ce contrôle depuis
+# toujours. On accepte donc T, T2, T3… et n'importe quel nom d'une lettre suivi
+# de chiffres. Un repli ne répare rien : il MASQUE la clé absente, et
+# l'application parle français dans une autre langue sans que rien ne le dise.
+R=$(grep -ohE "(^|[^A-Za-z0-9_])(T[0-9]*|uiT|LBL)\(\s*'[a-zA-Z][^']*'\s*,\s*'[^']{3,}'\s*\)" ./*.js ./*.html 2>/dev/null | head -5)
 if [ -z "$R" ]; then ok "aucun repli en dur"
 else ko "replis en dur — masquent une traduction manquante :"; echo "$R" | sed 's/^/      /'; fi
 

@@ -778,3 +778,58 @@ entier relève encore **30 littéraux** destinés à l'œil, hors album : l'aide
 questions, « Vos lieux choisis : », « Tapez au moins 3 lettres. », « Comment
 voulez-vous le composer ? », « Où voulez-vous aller ? », « Étape nuit — », etc.
 C'est la dette ancienne, hors du périmètre de l'album. Elle attend un ordre.
+
+---
+
+## 04/09/2026 — « rien en dur » : la dette d'itineraire.html
+
+**Ordre de Helmy : « oui les 30 ».**
+
+**Ce que le relevé a vraiment donné.** 22 littéraux, dont 9 n'étaient que des
+fragments HTML sans un mot. Mais le balayage en a révélé **bien plus grave que
+les 30 annoncés**, en trois familles.
+
+### ① 23 replis en dur invisibles au contrôle
+
+`itineraire.html` se servait d'un helper `T2(clé, texte-français)` — même forme,
+même faute que le repli que la règle en granit interdit. **Le contrôle n°4 ne
+cherchait que `T(`** : ces 23 appels lui échappaient depuis toujours.
+
+Les **21 clés ont été vérifiées présentes dans les 5 langues** avant tout retrait :
+aucune n'était manquante. Les replis étaient donc du poids mort — et pire, ils
+garantissaient qu'une clé perdue ne se verrait JAMAIS. Les 7 définitions de `T2`
+rendent maintenant du VIDE quand la clé manque : ça se voit, donc ça se répare.
+
+**Contrôle n°4 élargi** : il accepte désormais `T`, `T2`, `T3`, `uiT`, `LBL`.
+Éprouvé — on réintroduit un repli, il crie ; on le retire, il se tait.
+
+### ② 11 textes d'interface en dur, traduits par DeepL
+
+`Combien de temps voulez-vous passer sur place ?` (l'infobulle du temps de
+visite) · `📡 Localisation en cours…` · `Renseignez-vous auprès des autorités
+compétentes…` · `Départ` (la bulle du repère de départ sur la carte) ·
+`détour ≈` · `Étape nuit —` · `Nuit sur place conseillée` · `Voir des
+hébergements…` · `Tapez au moins 3 lettres.` · `Ouvrir le contenu officiel ↗` ·
+`Touchez un lieu pour voir ce qu'il y a à découvrir…` · `Dernier itinéraire` ·
+`épinglé` · `belle vue` · `Détails ›`.
+
+### ③ Deux fautes qui n'étaient pas des textes en dur
+
+**Un libellé calculé une seule fois.** « ‹ Les cinq façons de partir » s'affichait
+**en français au milieu d'une page entièrement allemande**, alors que la clé
+existe dans les cinq langues. La cause n'était pas la traduction, c'était le
+MOMENT : ce bouton se construit pendant l'analyse de la page, avant que l'i18n ne
+soit chargée. La lecture rendait du vide, le repli prenait la main, et plus rien
+ne repassait — ni au chargement, ni au changement de langue. On ne lit plus la
+traduction : on la **déclare** en `data-i18n`, et le moteur la remplit à chaque
+fois.
+
+**Une traduction qui existait et qu'on ne demandait pas.** Les descriptions des
+pépites « à voir en chemin » venaient droit des données, sans passer par
+`THEi18n.site()` — alors que la fiche d'étape le fait depuis toujours (l. 2499).
+Résultat : des paragraphes français au milieu de l'allemand.
+
+**Vérifié à l'écran, en local, par un canari.** Application entière en allemand,
+un itinéraire de 4 étapes composé par « Überrasche mich » : on cherche tout mot
+français encore visible → **aucun**. Avant la passe, le même canari en trouvait
+neuf, dont « ‹ Les cinq façons de partir » et quatre descriptions de lieux.

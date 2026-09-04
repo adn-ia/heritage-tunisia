@@ -361,7 +361,7 @@
   "Code ou clé invalide.": "Codice o chiave non valida.",
   "Colin Hepburn from Sale, UK": "Colin Hepburn di Sale, Regno Unito",
   "Colonial & XXe s.": "Colonialismo e XX secolo",
-  "Combien de temps voulez-vous passer sur place ? (✓ = recommandé)": "Quanto tempo vuoi trascorrere sul posto? (✓ = consigliato)",
+  "Combien de temps voulez-vous passer sur place ? (✓ = recommandé)": "Quanto tempo volete trascorrere sul posto? (✓ = consigliato)",
   "Comment vous déplacez-vous ?": "Come vi spostate?",
   "Composer": "Crea",
   "Composer mon itinéraire": "Crea il mio itinerario",
@@ -1356,7 +1356,7 @@
   "Visité le": "Visitato il",
   "Vivaystn": "Vivaystn",
   "Voici votre position.": "Ecco la tua posizione.",
-  "Voir des hébergements (chambres d'hôte / hôtels) — vous choisissez ↗": "Visualizza gli alloggi (bed & breakfast / hotel) — scegli tu ↗",
+  "Voir des hébergements (chambres d'hôte / hôtels) — vous choisissez ↗": "Visualizza le strutture ricettive (bed & breakfast / hotel) — scegli tu ↗",
   "Voir toute la carte": "Visualizza l'intera mappa",
   "Vos données, votre voyage": "I vostri dati, il vostro viaggio",
   "Vos itinéraires et votre carnet (photos, notes, voix) sont enregistrés": "I tuoi itinerari e il tuo diario (foto, appunti, registrazioni vocali) vengono salvati",
@@ -3305,5 +3305,12 @@
   "itin.arrivee": "Arrivo",
   "Pas de photo ici": "Qui non c'è nessuna foto",
   "photo prise à": "foto scattata a",
-  "Visité": "Visitato"
+  "Visité": "Visitato",
+  "📡 Localisation en cours…": "📡 Localizzazione in corso…",
+  "Renseignez-vous auprès des autorités compétentes (Eaux &amp; Forêts, patrimoine, parfois l'armée).": "Informatevi presso le autorità competenti (Acque e Foreste, Beni culturali, talvolta l’esercito).",
+  "détour ≈": "deviazione ≈",
+  "Tapez au moins 3 lettres.": "Digita almeno 3 lettere.",
+  "Touchez un lieu pour voir ce qu'il y a à découvrir, puis l'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d'oiseau, indicatif).": "Tocca una località per scoprire cosa c'è da vedere, quindi aggiungila o scartala. Nelle vicinanze del tuo percorso (distanze in linea d'aria, indicative).",
+  "Dernier itinéraire": "Ultimo itinerario",
+  "belle vue": "bella vista"
 }

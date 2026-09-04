@@ -1696,7 +1696,7 @@
        qu'on a le droit de choisir, au lieu de croire que c'est décidé. */
     let opts='<option value="" disabled'+(curB?'':' selected')+'>—</option>';
     VIS_BUCKETS.forEach(b=>{ opts+='<option value="'+b+'"'+(b===curB?' selected':'')+'>'+fmtDur(b)+(b===recoB?' ✓':'')+'</option>'; });
-    return '<select class="vis-select" data-nom="'+norm(s.p.nom).replace(/"/g,'&quot;')+'" title="Combien de temps voulez-vous passer sur place ? (✓ = recommandé)">'+opts+'</select>';
+    return '<select class="vis-select" data-nom="'+norm(s.p.nom).replace(/"/g,'&quot;')+'" title="'+uiT('Combien de temps voulez-vous passer sur place ? (✓ = recommandé)')+'">'+opts+'</select>';
   }
   function planDays(route, walking){
     const speed=walking?4.5:45, roadf=walking?1.2:1.3, budget=walking?300:420; // min utiles/jour
@@ -1771,7 +1771,7 @@
   document.getElementById('halteGo').onclick=()=>{
     const msg=document.getElementById('halteMsg');
     if(!navigator.geolocation){ msg.textContent=uiT('⚠️ GPS non disponible sur cet appareil.'); return; }
-    msg.textContent='📡 Localisation en cours…';
+    msg.textContent=uiT('📡 Localisation en cours…');
     navigator.geolocation.getCurrentPosition(
       p=>{ addHalte(p.coords.longitude, p.coords.latitude); },
       ()=>{ msg.textContent=uiT('⚠️ Position indisponible/refusée. Activez la localisation, ou ajoutez le lieu par son nom (champ « Ajouter un lieu » ci-dessus).'); },
@@ -1828,8 +1828,17 @@
        remaniait, on quittait la page, tout était perdu. Il passe désormais par le
        même chemin que Composer : on le nomme, on règle départ et durée, il
        s'enregistre, et il porte toutes les fonctions d'une étape. */
-    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
-    var defaut = t.titre || T2('itin.nom.compose','Mon itinéraire');
+    var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
+    var defaut = t.titre || T2('itin.nom.compose');
     function tracer(nom){
       reglagesApresChoix(route, origin, false, {
         nom: nom,
@@ -1848,7 +1857,7 @@
     var ajout=false; try{ ajout=new URLSearchParams(location.search).get('add')==='1'; }catch(e){}
     if(ajout && window.THEchoisirCible){
       THEchoisirCible(function(rec){
-        if(!rec){ if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut, tracer); else tracer(defaut); return; }
+        if(!rec){ if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande'), defaut, tracer); else tracer(defaut); return; }
         var byName=new Map(SITES.map(s=>[norm(s.p.nom), s]));
         var dejaLa=new Set(route.map(s=>norm(s.p.nom)));
         var avant=[], _sansCoord=[];   // une halte sans point ne se place pas — mais on le DIT
@@ -1868,7 +1877,7 @@
            on la nomme, pour que le voyageur puisse la ressaisir lui-même. On
            n'invente pas ses coordonnées à sa place. */
         if(_sansCoord.length && window.THEtoast)
-          THEtoast(T2('itin.halte.sans.point','Halte sans point sur la carte, à ressaisir : ')+_sansCoord.join(', '));
+          THEtoast(T2('itin.halte.sans.point')+_sansCoord.join(', '));
         reglagesApresChoix(fusion, origin, true, {
           nom: rec.title, mode: rec.mode||'', idCible: rec.id,
           tour: rec.tour || {titre: rec.title, soustitre: ''},
@@ -1877,7 +1886,7 @@
       });
       return;
     }
-    if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'), defaut, tracer);
+    if(window.THEdemanderNom) THEdemanderNom(T2('itin.nom.demande'), defaut, tracer);
     else tracer(defaut);
   }
 
@@ -1976,7 +1985,16 @@
      même que pour une sélection — un seul écran de réglages dans l'app. */
   function reglagesApresChoix(chosen, originAuto, addMode, opts){
     opts = opts || {};
-    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
     var boite=document.getElementById('picksReglages');
     if(!boite){
       boite=document.createElement('div'); boite.id='picksReglages'; boite.className='exp-group';
@@ -2002,7 +2020,7 @@
     var nomVoulu=window.THEnomEnAttente;
     if(!nomVoulu){ try{ nomVoulu=sessionStorage.getItem('the_nom_attente')||''; }catch(e){} }
     var nb=document.getElementById('picksNb');
-    if(nb) nb.textContent=T2('itin.picks.nb','Vos lieux choisis :')+' '+chosen.length;
+    if(nb) nb.textContent=T2('itin.picks.nb')+' '+chosen.length;
     ['savedBox','critStart'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
     var modes=document.querySelector('.modes'); if(modes) modes.style.display='none';
     /* Tant que « #builder » porte trois-seules, une règle masque TOUT sauf les
@@ -2045,8 +2063,8 @@
           per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'},
           forme:selF.value||opts.forme||'oneway', pepites:opts.pepites||[], manualOrder:true,
           mode:opts.mode||'compose',
-          tour: opts.tour || {titre: nomVoulu || (addMode?T2('itin.picks.enrichi','Mon itinéraire enrichi'):T2('itin.picks.defaut','Ma sélection')),
-                soustitre:T2('itin.picks.sous','Les lieux que vous avez choisis')}});
+          tour: opts.tour || {titre: nomVoulu || (addMode?T2('itin.picks.enrichi'):T2('itin.picks.defaut')),
+                soustitre:T2('itin.picks.sous')}});
         enregistrerCompose(_titre, opts.mode||'compose', opts.idCible);
         window.__cibleAjout=null;
       });
@@ -2163,7 +2181,7 @@
   function resumeSaved(id){ const rec=readSaved().find(r=>r.id===id); renderRecord(rec, 'saved'); }
   // sérialise l'itinéraire courant (pour ne pas le perdre en quittant la page, ex. « Voir la grande carte »)
   function recordFromCurrent(){
-    return { title:(LASTRES.tour&&LASTRES.tour.titre)||'Dernier itinéraire', forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, entry:ENTRY, mode:LASTRES.mode||'',
+    return { title:(LASTRES.tour&&LASTRES.tour.titre)||uiT('Dernier itinéraire'), forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, entry:ENTRY, mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
@@ -2282,7 +2300,16 @@
      ne doit pas pouvoir couper une fonction de l'application : on demande le nom
      dans une fenêtre à nous. */
   window.THEdemanderNom = function(titre, defaut, ok){
-    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
     var vieux=document.getElementById('nomModal'); if(vieux) vieux.remove();
     var f=document.createElement('div'); f.id='nomModal';
     f.style.cssText='position:fixed;inset:0;z-index:10001;background:rgba(20,15,10,.55);'
@@ -2297,8 +2324,8 @@
     document.body.appendChild(f);
     f.querySelector('#nomT').textContent=titre;
     var champ=f.querySelector('#nomI'); champ.value=defaut||'';
-    f.querySelector('#nomOk').textContent=T2('itin.nom.valider','Continuer');
-    f.querySelector('#nomNon').textContent=T2('itin.nom.annuler','Annuler');
+    f.querySelector('#nomOk').textContent=T2('itin.nom.valider');
+    f.querySelector('#nomNon').textContent=T2('itin.nom.annuler');
     function fermer(){ f.remove(); }
     function valider(){ var v=(champ.value||'').trim().slice(0,80) || (defaut||''); fermer(); ok(v); }
     f.querySelector('#nomOk').onclick=valider;
@@ -2415,7 +2442,7 @@
     if(/parc|reserve|national/.test(t)) parts.push('parc/réserve : entrée réglementée — autorisation & horaires auprès de l\'administration des forêts (Eaux &amp; Forêts / DGF)');
     if(/desert|saharien|frontaliere/.test(t) || sud) parts.push('secteurs du Sud ou proches des frontières parfois sous contrôle militaire — autorisation possible');
     if(!parts.length) return null;
-    return parts.join(' ; ')+'. Renseignez-vous auprès des autorités compétentes (Eaux &amp; Forêts, patrimoine, parfois l\'armée).';
+    return parts.join(' ; ')+'. '+uiT('Renseignez-vous auprès des autorités compétentes (Eaux &amp; Forêts, patrimoine, parfois l\'armée).');
   }
   // lien de recherche d'hébergements (chambres d'hôte / hôtels) — l'utilisateur choisit
   function lodgingURL(s){ const c=(s.p&&s.p.acces_gps)?s.p.acces_gps:s.c; const term=s.ville||s.p.gouvernorat||''; // recherche d'hébergement CENTRÉE sur la coordonnée GPS de l'étape (pas sur un nom)
@@ -2559,7 +2586,7 @@
     // marqueur de départ + tracé partant du départ ; boucle = on referme sur le départ
     const oLL=[origin.coord[1], origin.coord[0]];
     L.marker(oLL,{icon:L.divIcon({className:'',html:'<div class="num-pin dep">⌂</div>',iconSize:[26,26],iconAnchor:[13,13]})})
-      .addTo(mapObj).bindPopup('<b>Départ</b><br>'+origin.label);
+      .addTo(mapObj).bindPopup('<b>'+uiT('Départ')+'</b><br>'+origin.label);
     let line=[oLL].concat(latlngs);
     /* ⚠️ CE N'EST PAS « LA BOUCLE », C'EST « TOUT SAUF L'ALLER SIMPLE » — 04/09/2026,
        Helmy : « si le voyage est une boucle OU un aller-retour, le point de départ et
@@ -2633,12 +2660,19 @@
         ec.innerHTML='<div class="ec-h">🛣️ '+uiT('À voir en chemin vers')+' '+s.p.nom+'</div>'+
           items.map((it,k)=>{ const ip=it.s.p;
             return '<div class="ec-item" data-k="'+k+'" role="button" tabindex="0"><div class="ec-main">'+
-              '<div class="ec-nm">'+ip.nom+(it.pin?'<span class="ec-pin">épinglé</span>':'')+(isViewpoint(ip)?'<span class="ec-vp">📷 belle vue</span>':'')+'</div>'+
-              '<div class="ec-meta">'+[ip.gouvernorat,trCat(ip.type),trCat(ip.epoque)].filter(Boolean).join(' · ')+' · détour ≈ '+detMin(it.detour)+' min</div>'+
-              (it.note?'<div class="ec-note">'+it.note+'</div>':(ip.a_voir?'<div class="ec-note">'+ip.a_voir+'</div>':''))+
-              '</div><span class="ec-go">Détails ›</span></div>';
+              '<div class="ec-nm">'+ip.nom+(it.pin?'<span class="ec-pin">'+uiT('épinglé')+'</span>':'')+(isViewpoint(ip)?'<span class="ec-vp">📷 '+uiT('belle vue')+'</span>':'')+'</div>'+
+              '<div class="ec-meta">'+[ip.gouvernorat,trCat(ip.type),trCat(ip.epoque)].filter(Boolean).join(' · ')+' · '+uiT('détour ≈')+' '+detMin(it.detour)+' min</div>'+
+              /* ⚠️ UNE PÉPITE PARLAIT FRANÇAIS DANS UNE PAGE ALLEMANDE — 04/09/2026.
+                 Sa description venait droit des données, sans passer par
+                 `THEi18n.site()` — alors que la fiche d'étape, elle, le fait depuis
+                 toujours (l. 2499). Ce n'était pas un texte en dur : c'était une
+                 traduction qui existait et qu'on ne demandait pas. */
+              (function(){ var _t=(window.THEi18n && !THEi18n.isFr()) ? THEi18n.site(ip.nom) : null;
+                var _d = it.note || (_t&&_t.a) || (_t&&_t.d) || ip.a_voir || '';
+                return _d ? '<div class="ec-note">'+_d+'</div>' : ''; })()+
+              '</div><span class="ec-go">'+uiT('Détails ›')+'</span></div>';
           }).join('')+
-          '<div class="ec-foot">Touchez un lieu pour voir ce qu\'il y a à découvrir, puis l\'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d\'oiseau, indicatif).'+(moreAuto>0?' <b>+'+moreAuto+'</b> '+uiT('lieu(x) près de ce tronçon')+'.':'')+'</div>';
+          '<div class="ec-foot">'+uiT('Touchez un lieu pour voir ce qu\'il y a à découvrir, puis l\'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d\'oiseau, indicatif).')+(moreAuto>0?' <b>+'+moreAuto+'</b> '+uiT('lieu(x) près de ce tronçon')+'.':'')+'</div>';
         ec.querySelectorAll('.ec-item').forEach(b=>{
           const it=items[+b.dataset.k];
           const payload={ s:it.s, detourMin:detMin(it.detour), note:it.note||'', pin:!!it.pin, vp:isViewpoint(it.s.p), ctx:s.p.nom };
@@ -2657,7 +2691,7 @@
       const tag = s.halte ? '📍 Halte · '+halteLabel(s.htype) : (s.genre==='perso' ? 'ajouté par vous' : (trCat(p.epoque) || [p.categorie,trCat(p.type)].filter(Boolean).join(' · ')));
       const sleeps = s.nuit || s._sleep;
       const nightHtml = sleeps
-        ? '<div class="nuit">🛏 <b>'+(s.nuit&&s.sejour?'Étape nuit — '+s.sejour:'Nuit sur place conseillée')+'</b>'+((s.nuit&&s.tnote)?'<div class="nuit-note">'+s.tnote+'</div>':'')+'<a class="lodging" target="_blank" rel="noopener" href="'+lodgingURL(s)+'">Voir des hébergements (chambres d\'hôte / hôtels) — vous choisissez ↗</a></div>'
+        ? '<div class="nuit">🛏 <b>'+(s.nuit&&s.sejour?uiT('Étape nuit —')+' '+s.sejour:uiT('Nuit sur place conseillée'))+'</b>'+((s.nuit&&s.tnote)?'<div class="nuit-note">'+s.tnote+'</div>':'')+'<a class="lodging" target="_blank" rel="noopener" href="'+lodgingURL(s)+'">'+uiT('Voir des hébergements (chambres d\'hôte / hôtels) — vous choisissez ↗')+'</a></div>'
         : (s.tnote?'<div class="tnote">📝 '+s.tnote+'</div>':'');
       const el=document.createElement('div'); el.className='stop'+(nat?' nat':'')+(s.genre==='perso'?' perso':'')+(s.halte?' halte':'');
       el.innerHTML=
@@ -2811,7 +2845,7 @@
     const inp=document.getElementById('addinput'), msg=document.getElementById('addmsg');
     const q=(inp.value||'').trim();
     if(!LASTRES) return;
-    if(q.length<3){ msg.textContent='Tapez au moins 3 lettres.'; return; }
+    if(q.length<3){ msg.textContent=uiT('Tapez au moins 3 lettres.'); return; }
     if(LASTRES.route.some(s=>norm(s.p.nom)===norm(q))){ msg.textContent=uiT('Ce lieu est déjà dans le parcours.'); return; }
     msg.textContent='Recherche…';
     const nq=norm(q);
@@ -2859,7 +2893,16 @@
        quitté — sert ici : on règle ce qu'on veut, on laisse le reste vide, et
        c'est le bouton qui déclenche le tirage sur ces bases. */
     var lancer=function(){
-      var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+      var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
       var bld=document.getElementById('builder');
       var crit=document.getElementById('critStart');
       var gen=document.getElementById('generate');
@@ -2880,10 +2923,10 @@
         aide.style.cssText='margin:0 0 10px;color:#a8884f';
         crit.parentNode.insertBefore(aide, crit);
       }
-      aide.textContent=T2('itin.surprise.reglages','🎲 Réglez ce qui compte pour vous — le reste sera tiré au sort.');
+      aide.textContent=T2('itin.surprise.reglages');
       aide.style.display='';
       /* le bouton du bas déclenche LE TIRAGE, pas la composition */
-      gen.innerHTML=T2('itin.surprise.bouton','🎲 Surprenez-moi');
+      gen.innerHTML=T2('itin.surprise.bouton');
       gen.onclick=function(){ requirePass(uiT('itin.feature.composer'), function(){ showGuide('🎲 '+uiT('On vous compose un itinéraire')+' <b>'+uiT('surprise')+'</b>…'); run(true); }); };
       try{ crit.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){}
     };
@@ -2902,11 +2945,20 @@
      puisse l'appeler : deux gestionnaires sur le même bouton, le second écrasait
      le premier et les portes ne s'ouvraient jamais. */
   window.THEcomposerPortes = function(){
-    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
     var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
         titre=document.getElementById('itiTitre');
     if(!mod||!liste){ var c=document.getElementById('critStart'); if(c) c.scrollIntoView({behavior:'smooth',block:'start'}); return; }
-    titre.textContent=T2('itin.compose.porte.titre','Comment voulez-vous le composer ?');
+    titre.textContent=T2('itin.compose.porte.titre');
     liste.innerHTML='';
     function porte(txt, sous, ic, url){
       var b=document.createElement('button'); b.type='button';
@@ -2917,12 +2969,12 @@
       b.onclick=function(){ mod.style.display='none'; location.href=url; };
       liste.appendChild(b);
     }
-    var aide=T2('itin.compose.porte.aide','Filtrez, choisissez les lieux qui vous parlent, et votre itinéraire se trace à partir d\'eux.');
+    var aide=T2('itin.compose.porte.aide');
     /* Le libellé traduit porte déjà son emoji : le répéter en icône donnait
        « 🗺️🗺️ Choisir sur la carte ». On retire celui du texte. */
     var sansIcone=function(t){ return String(t||'').replace(/^[^A-Za-zÀ-ÿ0-9]+/,''); };
-    porte(sansIcone(T2('itin.compose.porte.carte','🗺️ Choisir sur la carte')), aide, '🗺️', 'index.html?depuis=composer');
-    porte(sansIcone(T2('itin.compose.porte.liste','📋 Choisir dans la liste')), aide, '📋', 'liste.html?depuis=composer');
+    porte(sansIcone(T2('itin.compose.porte.carte')), aide, '🗺️', 'index.html?depuis=composer');
+    porte(sansIcone(T2('itin.compose.porte.liste')), aide, '📋', 'liste.html?depuis=composer');
     mod.style.display='flex';
   };
   document.getElementById('mGo').onclick=window.THEcomposerPortes;   // repli si la porte de choix manque
@@ -3472,7 +3524,7 @@
     const isURL=/^https?:\/\//i.test(data||'');
     const opts=LASTRES.route.map((s,i)=>'<option value="'+i+'">'+(i+1)+'. '+(s.p.nom||'').replace(/</g,'&lt;')+'</option>').join('');
     box.innerHTML=
-      (data?('<div class="sr-link">QR&nbsp;: '+(data.replace(/</g,'&lt;')).slice(0,160)+'</div>'+(isURL?'<a class="sr-open" href="'+data+'" target="_blank" rel="noopener">Ouvrir le contenu officiel ↗</a>':'')):'<div class="sr-link">Pas de QR lu — marquez le lieu manuellement&nbsp;:</div>')+
+      (data?('<div class="sr-link">QR&nbsp;: '+(data.replace(/</g,'&lt;')).slice(0,160)+'</div>'+(isURL?'<a class="sr-open" href="'+data+'" target="_blank" rel="noopener">'+uiT('Ouvrir le contenu officiel ↗')+'</a>':'')):'<div class="sr-link">Pas de QR lu — marquez le lieu manuellement&nbsp;:</div>')+
       '<select id="scanStep">'+opts+'</select>'+
       '<button class="sr-go" id="scanGo" data-i18n="iti.marquer.ce.lieu.comme.visite">✓ Marquer ce lieu comme visité</button>';
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(pos=>{
@@ -3498,7 +3550,7 @@
   function openDetour(p){
     CUR_DETOUR=p; const ip=p.s.p;
     const meta=[ip.gouvernorat,trCat(ip.type),trCat(ip.epoque)].filter(Boolean).join(' · ');
-    const tags=(p.pin?'<span class="ec-pin">épinglé</span>':'')+(p.vp?'<span class="ec-vp">📷 belle vue</span>':'');
+    const tags=(p.pin?'<span class="ec-pin">'+uiT('épinglé')+'</span>':'')+(p.vp?'<span class="ec-vp">📷 '+uiT('belle vue')+'</span>':'');
     const desc=(ip.description||'').trim();
     document.getElementById('detourBody').innerHTML=
       '<div class="md-kick">🛣️ '+uiT('À voir en chemin vers')+' '+p.ctx+'</div>'+
@@ -3545,11 +3597,20 @@
      itinéraire fini, les deux sorties sensées sont le menu principal et les
      façons de partir. On les propose, au lieu de deviner. */
   function sortirVersMenu(){
-    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
     var mod=document.getElementById('itiModal'), liste=document.getElementById('itiListe'),
         titre=document.getElementById('itiTitre');
     if(!mod||!liste){ location.href='decouvrir.html'; return; }
-    titre.textContent=T2('itin.sortie.titre','Où voulez-vous aller ?');
+    titre.textContent=T2('itin.sortie.titre');
     liste.innerHTML='';
     function ligne(txt, sous, ic, cb){
       var b=document.createElement('button'); b.type='button';
@@ -3560,13 +3621,13 @@
       b.onclick=function(){ mod.style.display='none'; cb(); };
       liste.appendChild(b);
     }
-    ligne(T2('itin.sortie.menu','Le menu principal'),
-          T2('itin.sortie.menu.sous','Découvrir, la carte, la liste, tout le reste.'), '🏛️',
+    ligne(T2('itin.sortie.menu'),
+          T2('itin.sortie.menu.sous'), '🏛️',
           function(){ location.href='decouvrir.html'; });
-    ligne(T2('itin.sortie.options','Les façons de partir'),
-          T2('itin.sortie.options.sous','Voyage libre, composer, surprise, circuits, enregistrés.'), '🧭',
+    ligne(T2('itin.sortie.options'),
+          T2('itin.sortie.options.sous'), '🧭',
           function(){ location.href='itineraire.html?choix=1'; });
-    ligne(T2('itin.sortie.rester','Rester sur cet itinéraire'), '', '↩', function(){});
+    ligne(T2('itin.sortie.rester'), '', '↩', function(){});
     mod.style.display='flex';
   }
 
@@ -3665,8 +3726,17 @@
     retour.type='button'; retour.id='retourModes'; retour.className='backlink';
     retour.style.cssText='display:block;margin:2px 0 14px;background:none;border:none;'
       + 'color:var(--stone,#8a7c66);font:inherit;font-size:15px;cursor:pointer;padding:6px 0';
-    retour.textContent='‹ ' + (function(){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui('itin.retour.trois'));
-      return (v&&v!=='itin.retour.trois')?v:'Les cinq façons de partir'; })();
+    /* ⚠️ UN LIBELLÉ CALCULÉ UNE FOIS EST UN LIBELLÉ FAUX — 04/09/2026, vu à
+       l'écran : « ‹ Les cinq façons de partir » EN FRANÇAIS au milieu d'une page
+       entièrement allemande. La clé existe pourtant dans les cinq langues.
+       La cause n'est pas la traduction, c'est le MOMENT : ce bouton se
+       construit pendant l'analyse de la page, avant que l'i18n ne soit chargée.
+       `THEi18n.ui()` rendait donc du vide, le repli en dur prenait la main — et
+       plus rien ne repassait, ni au chargement, ni au changement de langue.
+       On ne lit plus la traduction : on la DÉCLARE. `data-i18n` est rempli par
+       le moteur quand il arrive, et à chaque changement de langue. Le chevron
+       reste dehors : c'est un signe, pas un mot. */
+    retour.innerHTML='‹ <span data-i18n="itin.retour.trois"></span>';
     modes.parentNode.insertBefore(retour, modes.nextSibling);
     suite.unshift(retour);
 
@@ -3723,7 +3793,16 @@
        ne se terminait pas, et le clic SUIVANT était avalé : Composer ne
        faisait rien. On appelle maintenant la suite directement. */
     var go=document.getElementById('mGo');
-    var T2=function(k,d){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k)); return (v&&v!==k)?v:d; };
+    var T2=function(k){ var v=(window.THEi18n&&THEi18n.ui&&THEi18n.ui(k));
+      /* ⚠️ ZÉRO REPLI — 04/09/2026, Helmy : « rien en dur ». Cette fonction
+         prenait un second argument, le texte français, et le rendait quand la
+         clé manquait : c'est exactement le repli en dur — une clé SUIVIE de son
+         texte — que la règle en granit interdit. Un repli ne répare rien, il MASQUE — la clé absente
+         ne se voyait jamais, et l'application parlait français en allemand.
+         Les 21 clés ont été vérifiées présentes dans les 5 langues avant le
+         retrait. Désormais une clé manquante rend du VIDE : ça se voit, donc
+         ça se répare. */
+      return (v && v!==k) ? v : ''; };
     function composerOuvrir(){
       /* la suite de Composer, c'est CHOISIR SES LIEUX — carte ou liste */
       if(window.THEcomposerPortes){ THEcomposerPortes(); return; }
@@ -3734,8 +3813,8 @@
     function composerNouveau(){
       if(window.THEnomEnAttente){ composerOuvrir(); return; }
       if(!window.THEdemanderNom){ composerOuvrir(); return; }
-      THEdemanderNom(T2('itin.nom.demande','Quel nom donnez-vous à cet itinéraire ?'),
-                     T2('itin.nom.compose','Mon itinéraire'),
+      THEdemanderNom(T2('itin.nom.demande'),
+                     T2('itin.nom.compose'),
                      function(nom){ window.THEnomEnAttente=nom;
                        try{ sessionStorage.setItem('the_nom_attente', nom); }catch(e){}
                        composerOuvrir(); });
