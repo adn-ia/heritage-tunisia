@@ -3643,6 +3643,21 @@
         e.style.display='none';
       });
       modes.style.display='';
+      /* ⚠️ MONTRER LES CINQ FAÇONS, C'EST AUSSI MONTRER LA BOÎTE QUI LES PORTE —
+         04/09/2026. Cette fonction rendait `.modes` visible et masquait le
+         résultat, mais laissait `#builder` tel qu'il était. Appelée alors qu'un
+         itinéraire était affiché — donc `#builder` à `none` (l. 2442) — elle
+         masquait le résultat sans rien remettre à sa place : **page entièrement
+         vide**, en-tête et pied de page seuls. Mesuré : `#builder none h=0`,
+         `#result none h=0`, page à 942 px.
+         ⚠️ AUCUN VOYAGEUR NE POUVAIT Y ARRIVER : le bouton « ‹ Les cinq façons de
+         partir » vit DANS `#builder`, donc invisible dans cet état. C'est mon
+         propre script d'essai qui l'a cliqué à travers. Mais une fonction qui
+         annonce un écran doit le rendre visible, quel que soit l'état d'où on
+         l'appelle — sinon le jour où un chemin l'appellera, l'application
+         s'effacera sans une erreur. `backToBuilder` (l. 3547) fait la paire
+         depuis toujours ; on la fait ici aussi. */
+      builder.style.display='block';
       builder.classList.add('trois-seules');
     }
     function ouvrir(){

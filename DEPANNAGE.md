@@ -690,3 +690,38 @@ la troisième demandée **entre les deux** arrive bien en 2ᵉ position.
 
 **Les autres éditions ne sont pas touchées** : `roadtrip-plan.js` n'existe que
 dans la Tunisie — vérifié sur les dix dossiers du registre.
+
+---
+
+## 04/09/2026 — l'écran vide de « ‹ Les cinq façons de partir »
+
+**Signalé par moi, cherché sur ordre de Helmy : « bien, trouver le pb ».**
+
+**Symptôme.** En revenant sur « ‹ Les cinq façons de partir » depuis un itinéraire
+ouvert : page entièrement vide — l'en-tête, le pied de page, et rien entre les
+deux. Un rechargement la remettait.
+
+**Reproduit et mesuré.** Avant : `#builder none h=0`, `#result block h=9483`.
+Après le clic : `#builder none h=0`, `#result none h=0`, page à **942 px**.
+
+**Cause.** `cacher()` (l. 3640) rendait `.modes` visible et masquait `#result`,
+mais laissait `#builder` tel qu'il était. Or quand un itinéraire est affiché,
+`#builder` est à `none` (l. 2442). Appelée dans cet état, la fonction masquait le
+résultat **sans rien remettre à sa place** : les deux boîtes cachées, page vide,
+sans une erreur.
+
+**⚠️ CE N'ÉTAIT PAS ATTEIGNABLE PAR UN VOYAGEUR, ET C'EST MOI QUI L'AI PROVOQUÉ.**
+Le bouton « ‹ Les cinq façons de partir » vit DANS `#builder` : quand l'itinéraire
+est affiché il est invisible, donc inatteignable au doigt. C'est mon script
+d'essai qui l'a trouvé par son texte et cliqué à travers — `element.click()`
+fonctionne sur un élément masqué. Je le dis parce que le contraire serait plus
+flatteur et faux.
+
+**Réparé quand même, et pourquoi.** Une fonction qui annonce un écran doit le
+rendre visible **quel que soit l'état d'où on l'appelle**. `THEmodes.cacher()` est
+une API publique : le jour où un chemin l'appelle depuis un résultat, l'application
+s'efface en silence. `backToBuilder` (l. 3547) fait la paire depuis toujours —
+masquer `#result`, montrer `#builder`. `cacher()` la fait maintenant aussi.
+
+**Vérifié à l'écran, en local.** Le même geste, avant : page à 942 px, zéro carte.
+Après : `#builder block h=254`, **5 cartes visibles**, page à 998 px.
