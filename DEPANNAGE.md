@@ -858,3 +858,50 @@ neuf, dont « ‹ Les cinq façons de partir » et quatre descriptions de lieux.
    français et une table de traductions en dur. Il traduit correctement, donc
    rien ne se voit à l'écran ; mais ces textes devraient vivre dans `i18n/`
    comme les autres. C'est un remaniement, pas un défaut.
+
+---
+
+## 04/09/2026 — point 29 : la carte en plein écran
+
+**Le point le plus vieux encore ouvert — en file depuis le 31/08.** Helmy :
+« "🗺️ Voir sur la grande carte" fait doublon avec le bouton de la carte. Le
+supprimer ; à la place, plein écran sur la carte + une croix pour revenir. »
+
+**Ce que faisait l'ancien bouton.** Il QUITTAIT l'itinéraire pour
+`index.html?route=…`, puis il fallait restaurer le voyage au retour
+(`sessionStorage 'the_return'`, l. 1509) — tout ça pour revoir une carte que la
+page avait déjà sous les yeux. L'entrée disparaît ; `openOnMap` reste dans le
+code, comme le lecteur de QR au point 41 : c'est l'entrée qui part, pas la
+fonction. ⚠️ Le branchement `getElementById('mapbtn').onclick=` a été mis sous
+garde — sans elle il levait sur `null` et **tuait tout le script qui suit**.
+
+**`the-carte-plein.js`**, bloc auto-porté, 5 langues : un ⛶ sur la carte, une ✕
+pour revenir, Échap aussi.
+
+⚠️ **PAS `requestFullscreen`.** iOS Safari ne l'accorde qu'à une vidéo : sur un
+iPhone l'appel échoue **en silence** et le bouton ne fait rien. La Tunisie est en
+production sur l'App Store. On agrandit par le style — `position:fixed; inset:0` —
+ce qui marche partout et échappe à tout `overflow:hidden` d'un ancêtre.
+
+**Deux mesures, deux leçons, la même source.**
+
+1. **Se remesurer ne suffit pas à se repeindre.** Premier essai : la carte
+   remplissait la fenêtre, mais les tuiles restaient à l'ancien format. La couche
+   vectorielle ne peint que sur un vrai mouvement. `THEcarteRepeindre()` publié.
+2. **Redessiner ne suffit pas non plus.** Deuxième essai, mesuré EN LIGNE : les
+   tuiles couvraient un rectangle décalé, `-237 → 1811` sur une fenêtre de 1792,
+   et une bande blanche restait à gauche. `invalidateSize` apprend à Leaflet sa
+   nouvelle taille ; **il ne va pas CHERCHER les tuiles du nouvel espace**.
+   Terralog l'avait écrit, `blocs/40-carte.js` l. 71-73 : « reposer la vue qu'on
+   a déjà n'est pas un mouvement. Ce qu'il faut, c'est un vrai changement de vue
+   — c'est-à-dire le cadrage lui-même. » `THEcarteRecadrer()` publié : on recadre
+   sur le parcours. C'est aussi ce qu'on veut voir en plein écran — le voyage
+   entier, pas le morceau qu'on regardait.
+
+⚠️ **On expose le GESTE, jamais l'objet.** `mapObj` reste un `let` de la page :
+c'est le piège qui a coûté trois défauts dans la même journée.
+
+**Vérifié EN LIGNE.** Ancien bouton absent. ⛶ présent, libellé « Carte en plein
+écran ». Ouverture : 684×330 → **1792×942**, zoom **7 → 9**, 40 canevas, tuiles
+couvrant `-54 → 1994` — tout le cadre. Retour par la ✕ : 684×330, croix retirée.
+Retour par **Échap** : idem.
