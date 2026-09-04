@@ -600,9 +600,29 @@ n'occupait plus que 40 % du cadre. Sur l'itinéraire on rattrape ça du doigt ;
 dans un document, ce qui est mal cadré le reste pour toujours.
 
 `itineraire.html` — `THEcarteDocument()` cadre la carte sur le parcours le temps
-de la saisie, avec `zoomSnap` à 0 pour un ajustement **exact**, attend que le
-fond soit peint, et rend une fonction qui lui rend sa vue. Ce n'est pas une autre
-carte : c'est la même, regardée comme il faut.
+de la saisie, attend que le fond soit peint, et rend une fonction qui lui rend sa
+vue. Ce n'est pas une autre carte : c'est la même, regardée comme il faut.
+
+🔴 **MA PREMIÈRE RÉPONSE ÉTAIT FAUSSE, ET ELLE A ÉTÉ MISE EN LIGNE.** J'avais mis
+`zoomSnap` à 0 pour un ajustement exact. Le document sortait au zoom 7,88 et le
+fond restait **GRIS** — mesuré au pixel central de l'image produite :
+`204,204,204` tout de suite, `204,204,204` après 2 s, `204,204,204` après 5 s.
+**`protomaps-leaflet` ne peint qu'aux crans entiers** ; entre deux, il ne rend
+rien, et il ne rendra jamais rien. Les tuiles n'étaient pas en cause :
+`tuile.php` répond 33 Ko en z7, 40 Ko en z8, 1,3 Ko en z9.
+
+⚠️ **LE LEVIER N'EST PAS LE ZOOM, C'EST LA FORME DU CADRE.** Sur l'itinéraire la
+carte est une fente de 682 × 328 : `fitBounds` doit y faire tenir la HAUTEUR du
+parcours, et retombe d'un cran entier — d'où le voyage tassé au milieu d'un cadre
+vide. Le temps de la saisie, on lui donne une hauteur de document (620 px) : le
+même parcours gagne un cran entier **sans quitter les crans que la couche sait
+peindre**. La hauteur est rendue ensuite, comme la vue.
+
+⚠️ **CE QUE ÇA APPREND.** Le local ne pouvait pas le montrer : mon banc d'essai
+n'a pas PHP, donc pas de tuiles, donc un fond gris de toute façon. C'est en ligne,
+et seulement en ligne, que le défaut se voyait — exactement ce que dit la règle
+« les défauts se constatent en ligne ». J'ai déployé une réponse fausse ; je l'ai
+vue à l'écran, mesurée, et remplacée dans la même séance.
 
 ⚠️ **Deux leçons de Terralog reprises**, `blocs/40-carte.js` :
 · l. 43-48 — on y cadrait pendant que la carte n'avait pas encore sa taille, et
@@ -617,8 +637,9 @@ carte : c'est la même, regardée comme il faut.
 ⚠️ **La vue est rendue quoi qu'il arrive**, réussite comme échec : laisser
 l'itinéraire cadré autrement serait pire que le défaut qu'on corrige.
 
-**Mesuré :** saisie au zoom **7,106** au lieu de 6 ; l'itinéraire retrouve
-ensuite exactement sa vue (zoom 6, même centre). Dans le fichier, le parcours
-s'étend sur 83 % de la hauteur au lieu de 38. Les seize numéros sont lisibles,
-séparés, reliés par le tracé. Clic sur le 9 → « 9 · Haidra (Ammaedara) ·
-Kasserine ».
+**Mesuré EN LIGNE**, circuit « Sur les pas de Rome en Afrique », 6 étapes,
+423 km, en boucle depuis Sousse : saisie en cadre 682 × 618 au zoom **8** au lieu
+de 7 ; fond `218,231,213` — de la vraie terre, plus de gris ; l'itinéraire
+retrouve exactement sa vue (zoom 7, 682 × 328). Le fichier produit pèse 279 Ko,
+porte 6 boutons d'étape, 1 repère ⌂ (une boucle n'a pas de 🏁 distinct) et son
+tracé. Clic sur le 3 → « 3 · Le Kef (kasbah et médina) · Le Kef ».
