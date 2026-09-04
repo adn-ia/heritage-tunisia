@@ -46,14 +46,26 @@
          REPROJETÉ. Les deux se prennent ICI, tant que `#map` est encore visible :
          dès que l'album s'ouvre, la carte est masquée et ne mesure plus rien —
          c'est la leçon du 03/09, déjà écrite plus bas (`buildSite`, l. 169). */
-      return window.THEcartePlate(m)
+      /* ⚠️ ON CADRE SUR LE PARCOURS AVANT DE PHOTOGRAPHIER, PUIS ON REND SA VUE.
+         Sur l'itinéraire, un cadrage moyen se rattrape du doigt ; dans un
+         document, ce qui est mal cadré le reste. `THEcarteDocument()` ajuste la
+         carte exactement sur le voyage, attend que le fond soit peint, et rend
+         une fonction qui lui rend sa vue — appelée quoi qu'il arrive, réussite
+         comme échec : laisser l'itinéraire cadré autrement serait pire que le
+         défaut qu'on corrige. */
+      var rendreLaVue = null;
+      return (window.THEcarteDocument ? window.THEcarteDocument() : Promise.resolve(null))
+        .then(function (r) { rendreLaVue = r; return window.THEcartePlate(m); })
         .then(function (u) {
           CARTE = u || null;
-          return window.THEcartePlate(m, { nu: true })
-            .then(function (n) { window.THEcarteNue = n || null; return CARTE; })
-            .catch(function () { window.THEcarteNue = null; return CARTE; });
+          return window.THEcartePlate(m, { nu: true });
         })
-        .catch(function () { return null; });
+        .then(function (n) { window.THEcarteNue = n || null; })
+        .catch(function () { window.THEcarteNue = null; })
+        .then(function () {
+          if (rendreLaVue) { try { rendreLaVue(); } catch (e) {} }
+          return CARTE;
+        });
     } catch (e) { return Promise.resolve(null); }
   }
 

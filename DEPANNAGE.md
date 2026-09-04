@@ -591,10 +591,34 @@ bouton : en faire un promettait une fenêtre qui ne s'ouvrait jamais.
 pastille 16 → « 16 · Musée d'Enfida · Sousse ». Sur l'image de l'album, le tracé
 égaré à gauche a disparu.
 
-**Signalé, non fait — le CADRAGE.** Les seize étapes restent tassées au centre
-d'un cadre très large, et se recouvrent. Ce n'est pas un défaut de l'export : la
-carte de l'itinéraire a exactement le même aspect, l'export lui est fidèle. La
-cause est que Leaflet choisit un zoom ENTIER : ce parcours demanderait 6,6, il
-reçoit 6, et n'occupe plus que 40 % du cadre. Sur l'itinéraire on peut zoomer ;
-dans un document, non. Le corriger suppose de recadrer brièvement la carte sur le
-parcours avant la saisie, puis de lui rendre sa vue — décision de Helmy.
+**Et le CADRAGE, dans la foulée — « oui » de Helmy le même jour.** Les seize
+étapes restaient tassées au centre d'un cadre presque vide, et se recouvraient.
+Ce n'était pas un défaut de l'export : la carte de l'itinéraire avait exactement
+le même aspect. **La cause est un zoom ENTIER** — Leaflet ne s'arrête que sur des
+crans entiers (`zoomSnap` = 1) : ce parcours demandait 7,1, il recevait 6, et
+n'occupait plus que 40 % du cadre. Sur l'itinéraire on rattrape ça du doigt ;
+dans un document, ce qui est mal cadré le reste pour toujours.
+
+`itineraire.html` — `THEcarteDocument()` cadre la carte sur le parcours le temps
+de la saisie, avec `zoomSnap` à 0 pour un ajustement **exact**, attend que le
+fond soit peint, et rend une fonction qui lui rend sa vue. Ce n'est pas une autre
+carte : c'est la même, regardée comme il faut.
+
+⚠️ **Deux leçons de Terralog reprises**, `blocs/40-carte.js` :
+· l. 43-48 — on y cadrait pendant que la carte n'avait pas encore sa taille, et
+  `fitBounds` calculait sur une boîte fausse. D'où `invalidateSize` avant,
+  toujours.
+· l. 71-73 — « reposer la vue qu'on a déjà n'est pas un mouvement » : la couche
+  vectorielle ne peint que sur un vrai déplacement. On la redessine donc
+  explicitement à l'aller comme au retour, et on attend son signal `load` avant
+  de photographier — sinon on saisit un fond gris. Un filet de 1,2 s empêche une
+  couche muette de bloquer l'album.
+
+⚠️ **La vue est rendue quoi qu'il arrive**, réussite comme échec : laisser
+l'itinéraire cadré autrement serait pire que le défaut qu'on corrige.
+
+**Mesuré :** saisie au zoom **7,106** au lieu de 6 ; l'itinéraire retrouve
+ensuite exactement sa vue (zoom 6, même centre). Dans le fichier, le parcours
+s'étend sur 83 % de la hauteur au lieu de 38. Les seize numéros sont lisibles,
+séparés, reliés par le tracé. Clic sur le 9 → « 9 · Haidra (Ammaedara) ·
+Kasserine ».

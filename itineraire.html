@@ -1141,6 +1141,73 @@
     }catch(e){ return null; }
   };
 
+  /* ── CADRER LA CARTE POUR UN DOCUMENT, PUIS LUI RENDRE SA VUE ────────────────
+     04/09/2026, Helmy : « elle doit être reprojetée entièrement ». Le tracé et
+     les pastilles étaient réparés, mais les seize étapes restaient tassées au
+     centre d'un cadre presque vide.
+
+     ⚠️ LA CAUSE EST UN ZOOM ENTIER. Leaflet ne s'arrête que sur des zooms
+     entiers (`zoomSnap` vaut 1) : ce parcours demandait 6,6, il recevait 6, et
+     n'occupait plus que 40 % du cadre. Sur l'itinéraire ce n'est pas grave — on
+     zoome du doigt. Dans un document, on ne peut rien faire : ce qui est mal
+     cadré le reste pour toujours.
+
+     On cadre donc la carte SUR LE PARCOURS le temps de la saisie, avec
+     `zoomSnap` à 0 pour un ajustement exact, puis on lui rend sa vue. Ce n'est
+     pas une autre carte : c'est la même, regardée comme il faut.
+
+     ⚠️ DEUX LEÇONS DE TERRALOG, `blocs/40-carte.js` :
+     · l. 43-48 — on cadrait pendant que la carte n'avait pas encore sa taille,
+       et `fitBounds` calculait sur une boîte fausse. D'où `invalidateSize`
+       avant, toujours.
+     · l. 71-73 — « reposer la vue qu'on a déjà n'est pas un mouvement » : la
+       couche vectorielle ne peint que sur un vrai déplacement. On la redessine
+       donc explicitement, à l'aller comme au retour, et on attend son signal
+       `load` avant de photographier — sinon on saisit un fond gris.
+
+     Rend une promesse sur une fonction : l'appeler rend sa vue à la carte. */
+  window.THEcarteDocument = function(){
+    return new Promise(function(res){
+      try{
+        if(typeof mapObj==='undefined' || !mapObj) return res(null);
+        if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return res(null);
+        var pts=[];
+        if(LASTORIGIN && LASTORIGIN.coord) pts.push([LASTORIGIN.coord[1], LASTORIGIN.coord[0]]);
+        LASTRES.route.forEach(function(s){ if(s && s.c) pts.push([s.c[1], s.c[0]]); });
+        if(LASTRES.forme!=='oneway'){ if(LASTORIGIN && LASTORIGIN.coord) pts.push([LASTORIGIN.coord[1], LASTORIGIN.coord[0]]); }
+        else if(LASTRES.arrivee && LASTRES.arrivee.coord) pts.push([LASTRES.arrivee.coord[1], LASTRES.arrivee.coord[0]]);
+        if(!pts.length) return res(null);
+
+        function repeindre(){
+          try{ mapObj.eachLayer(function(c){
+            if(c && typeof c.redraw==='function' && typeof c.rerenderTiles==='function') c.redraw();
+          }); }catch(e){}
+        }
+        var avant = { c:mapObj.getCenter(), z:mapObj.getZoom(), snap:mapObj.options.zoomSnap };
+        mapObj.options.zoomSnap = 0;                 // ajustement exact, pas un cran entier
+        try{ mapObj.invalidateSize(false); }catch(e){}
+        var b = L.latLngBounds(pts);
+        if(b.getNorth()===b.getSouth() && b.getEast()===b.getWest()) mapObj.setView(b.getCenter(), 12, {animate:false});
+        else mapObj.fitBounds(b.pad(0.10), {animate:false});
+        repeindre();
+
+        var fini=false;
+        function pret(){
+          if(fini) return; fini=true;
+          res(function(){
+            try{
+              mapObj.options.zoomSnap = avant.snap;
+              mapObj.setView(avant.c, avant.z, {animate:false});
+              repeindre();
+            }catch(e){}
+          });
+        }
+        try{ mapObj.eachLayer(function(c){ if(c && typeof c.once==='function') c.once('load', pret); }); }catch(e){}
+        setTimeout(pret, 1200);   // filet : une couche muette ne doit pas bloquer l'album
+      }catch(e){ res(null); }
+    });
+  };
+
   /* LA NOTE SE LIT OÙ ELLE EST ÉCRITE — 01/09/2026, Helmy : « aucune note » dans
      l'album. Deux clés existaient pour la même chose : le carnet écrit sous
      `the-note-<lieu>` (`the-carnet.js` l.87), l'album relisait `the-cap:<lieu>`.
