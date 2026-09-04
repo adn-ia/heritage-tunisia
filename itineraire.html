@@ -1171,6 +1171,8 @@
       try{
         if(typeof mapObj==='undefined' || !mapObj) return res(null);
         if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route || !LASTRES.route.length) return res(null);
+        var el = document.getElementById('map');
+        if(!el) return res(null);
         var pts=[];
         if(LASTORIGIN && LASTORIGIN.coord) pts.push([LASTORIGIN.coord[1], LASTORIGIN.coord[0]]);
         LASTRES.route.forEach(function(s){ if(s && s.c) pts.push([s.c[1], s.c[0]]); });
@@ -1183,36 +1185,49 @@
             if(c && typeof c.redraw==='function' && typeof c.rerenderTiles==='function') c.redraw();
           }); }catch(e){}
         }
-        var avant = { c:mapObj.getCenter(), z:mapObj.getZoom(), snap:mapObj.options.zoomSnap };
-        mapObj.options.zoomSnap = 0;                 // ajustement exact, pas un cran entier
+
+        /* ⚠️ ON GARDE UN ZOOM ENTIER — MESURÉ EN LIGNE LE 04/09/2026.
+           J'avais d'abord mis `zoomSnap` à 0 pour un ajustement exact : le
+           document sortait au zoom 7,88 et le fond restait GRIS, pour toujours —
+           mesuré à 0 s, +2 s et +5 s, toujours `204,204,204`. `protomaps-leaflet`
+           ne peint qu'aux crans entiers ; entre deux, il ne rend rien. Les tuiles
+           n'étaient pas en cause : `tuile.php` répond 33 Ko en z7, 40 Ko en z8.
+           Le levier n'est donc pas le zoom, c'est LA FORME DU CADRE. */
+        var hAvant = el.style.height;
+        var avant = { c:mapObj.getCenter(), z:mapObj.getZoom() };
+
+        /* ⚠️ UN DOCUMENT N'EST PAS UNE BANDE. Sur l'itinéraire la carte est une
+           fente de 682 × 328 : `fitBounds` doit y faire tenir la hauteur du
+           parcours, et retombe d'un cran entier — d'où le voyage tassé au milieu
+           d'un cadre vide. On lui donne, le temps de la saisie, une hauteur de
+           document : le même parcours y gagne un cran entier, sans quitter les
+           crans que la couche sait peindre. La hauteur est rendue ensuite. */
+        el.style.height = '620px';
         try{ mapObj.invalidateSize(false); }catch(e){}
         var b = L.latLngBounds(pts);
         if(b.getNorth()===b.getSouth() && b.getEast()===b.getWest()) mapObj.setView(b.getCenter(), 12, {animate:false});
-        else mapObj.fitBounds(b.pad(0.10), {animate:false});
+        else mapObj.fitBounds(b.pad(0.06), {animate:false});
         repeindre();
 
-        /* ⚠️ ON NE PHOTOGRAPHIE PAS AU SIGNAL, ON PHOTOGRAPHIE APRÈS — 04/09/2026.
-           Première écriture : je rendais la main dès le `load` de la couche. Vu à
-           l'écran, EN LIGNE : le document sortait avec un fond GRIS, tracé et
-           pastilles dessinés par-dessus rien. `load` dit que les tuiles sont
-           ARRIVÉES, pas qu'elles sont PEINTES : la couche vectorielle les rend
-           ensuite, sur son propre tour.
-           Terralog l'avait déjà écrit — `blocs/40-carte.js` l. 121-124 : sur
-           `load`, il redessine encore, 60 ms plus tard. On fait pareil, avec une
-           marge honnête avant la photo. */
+        function rendreLaVue(){
+          try{
+            el.style.height = hAvant;
+            mapObj.invalidateSize(false);
+            mapObj.setView(avant.c, avant.z, {animate:false});
+            repeindre();
+          }catch(e){}
+        }
+
+        /* ⚠️ ON NE PHOTOGRAPHIE PAS AU SIGNAL, ON PHOTOGRAPHIE APRÈS. `load` dit
+           que les tuiles sont ARRIVÉES, pas qu'elles sont PEINTES : la couche les
+           rend ensuite, sur son propre tour. Terralog l'a écrit avant moi —
+           `blocs/40-carte.js` l. 121-124 : sur `load`, il redessine encore,
+           60 ms plus tard. */
         var fini=false;
         function pret(){
           if(fini) return; fini=true;
-          repeindre();                       // un dernier passage, une fois les tuiles arrivées
-          setTimeout(function(){
-            res(function(){
-              try{
-                mapObj.options.zoomSnap = avant.snap;
-                mapObj.setView(avant.c, avant.z, {animate:false});
-                repeindre();
-              }catch(e){}
-            });
-          }, 400);                           // le temps que la couche peigne pour de bon
+          repeindre();
+          setTimeout(function(){ res(rendreLaVue); }, 500);
         }
         try{ mapObj.eachLayer(function(c){ if(c && typeof c.once==='function') c.once('load', pret); }); }catch(e){}
         setTimeout(pret, 2500);   // filet : une couche muette ne doit pas bloquer l'album
