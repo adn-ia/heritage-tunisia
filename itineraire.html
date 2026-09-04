@@ -1191,19 +1191,31 @@
         else mapObj.fitBounds(b.pad(0.10), {animate:false});
         repeindre();
 
+        /* ⚠️ ON NE PHOTOGRAPHIE PAS AU SIGNAL, ON PHOTOGRAPHIE APRÈS — 04/09/2026.
+           Première écriture : je rendais la main dès le `load` de la couche. Vu à
+           l'écran, EN LIGNE : le document sortait avec un fond GRIS, tracé et
+           pastilles dessinés par-dessus rien. `load` dit que les tuiles sont
+           ARRIVÉES, pas qu'elles sont PEINTES : la couche vectorielle les rend
+           ensuite, sur son propre tour.
+           Terralog l'avait déjà écrit — `blocs/40-carte.js` l. 121-124 : sur
+           `load`, il redessine encore, 60 ms plus tard. On fait pareil, avec une
+           marge honnête avant la photo. */
         var fini=false;
         function pret(){
           if(fini) return; fini=true;
-          res(function(){
-            try{
-              mapObj.options.zoomSnap = avant.snap;
-              mapObj.setView(avant.c, avant.z, {animate:false});
-              repeindre();
-            }catch(e){}
-          });
+          repeindre();                       // un dernier passage, une fois les tuiles arrivées
+          setTimeout(function(){
+            res(function(){
+              try{
+                mapObj.options.zoomSnap = avant.snap;
+                mapObj.setView(avant.c, avant.z, {animate:false});
+                repeindre();
+              }catch(e){}
+            });
+          }, 400);                           // le temps que la couche peigne pour de bon
         }
         try{ mapObj.eachLayer(function(c){ if(c && typeof c.once==='function') c.once('load', pret); }); }catch(e){}
-        setTimeout(pret, 1200);   // filet : une couche muette ne doit pas bloquer l'album
+        setTimeout(pret, 2500);   // filet : une couche muette ne doit pas bloquer l'album
       }catch(e){ res(null); }
     });
   };
