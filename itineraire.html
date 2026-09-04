@@ -902,15 +902,6 @@
            tout le document. On appuyait, l'écran ne bougeait pas. Un panneau qui
            s'ouvre doit s'ouvrir là où l'on a cliqué : il se place donc juste sous la
            barre, AVANT le document. Aucun code n'a changé, seulement sa place. -->
-      <div class="share-panel" id="sharepanel" style="display:none">
-        <div class="sp-row">
-          <button id="shwhatsapp" type="button" data-i18n="iti.whatsapp">🟢 WhatsApp</button>
-          <button id="shemail" type="button" data-i18n="iti.e.mail">✉️ E-mail</button>
-          <button id="shnative" type="button" data-i18n="iti.partager.photos">📱 Partager (photos)</button>
-          <button id="shpublish" type="button" data-i18n="iti.publier.sur.le.site">🌍 Publier sur le site</button>
-        </div>
-        <div class="share-note">🔒 WhatsApp et e-mail partagent le <b>texte</b> de l'itinéraire. « Partager (photos) » utilise le partage de votre téléphone. « Publier sur le site » n'enverra vos photos <b>que sur votre accord explicite</b> — par défaut, tout reste sur votre appareil.</div>
-      </div>
       <div class="album-doc" id="albumdoc"></div>
     </div>
 
@@ -2210,56 +2201,12 @@
   })();
 
 
-  /* SAUVEGARDER / RESTAURER SON CARNET — la fonction existait depuis longtemps
-     (the-backup.js) mais ne se trouvait que sur la page hors-ligne, où personne
-     ne va la chercher. Elle est ici parce que c'est ici qu'on finit un voyage.
-     Tout reste chez l'utilisateur : le fichier ne part nulle part. */
-  (function(){
-    var ex=document.getElementById('bkExportIti'), im=document.getElementById('bkImportIti'),
-        fi=document.getElementById('bkFileIti'), st=document.getElementById('bkStatusIti');
-    if(!ex||!im||!fi||!st) return;
-    var repos=st.textContent;
-    var _bkResultat=0;   // quand un résultat a été affiché — voir le pageshow, plus bas
-    ex.onclick=function(){
-      if(!window.THEBackup){ st.textContent='\u26a0\ufe0f '+uiT('itin.carnet.echec'); return; }
-      st.textContent=uiT('itin.carnet.preparation');
-      /* ── DIRE OÙ EST LE FICHIER, ET NE PAS EFFACER LA RÉPONSE ─────────────────
-         Helmy, 30/08/2026 : « sauvegarder, on ne sait pas où c'est sauvegardé et ça
-         clignote, il faut chercher, ce n'est pas évident. »
-         Deux défauts, pas un :
-         ① le message ne nommait PAS le fichier — or son nom est la seule prise pour
-            le retrouver dans les téléchargements de l'appareil ;
-         ② le `pageshow` plus bas remet l'explication de repos DÈS le retour sur la
-            page. Or le téléchargement en déclenche un : la confirmation était
-            remplacée aussitôt qu'affichée. C'est ça qui « clignote ».
-         Le nom vient de `THEBackup.download()`, qui le rend désormais. Aucun texte
-         n'est écrit ici : le message reste la clé i18n, le nom est une donnée. */
-      THEBackup.download().then(function(r){
-                                  _bkResultat=Date.now();
-                                  st.textContent=uiT('itin.carnet.faite')+((r&&r.fichier)?('  📄 '+r.fichier):'');
-                                },
-                                function(e){ _bkResultat=Date.now(); st.textContent='\u26a0\ufe0f '+((e&&e.message)||uiT('itin.carnet.echec')); });
-    };
-    /* Restaurer un carnet CRÉE des itinéraires : même règle que les créer à la
-       main. Sans cette garde, un essai fini pouvait remplir son carnet par
-       fichier — DeepSeek l'avait signalé, mesuré en ligne le 19/08/2026. */
-    im.onclick=function(){ if(!isPremium()){ premAsk(''); return; } fi.click(); };
-    fi.onchange=function(e){
-      var f=e.target.files[0]; if(!f) return;
-      if(!confirm(uiT('itin.carnet.confirmer'))){ e.target.value=''; return; }
-      st.textContent=uiT('itin.carnet.restauration');
-      THEBackup.importFile(f).then(function(){ _bkResultat=Date.now(); st.textContent=uiT('itin.carnet.restaure'); renderSaved(); },
-                                   function(err){ _bkResultat=Date.now(); st.textContent='\u26a0\ufe0f '+((err&&err.message)||uiT('itin.carnet.echec')); });
-      e.target.value='';
-    };
-    /* ⚠️ On ne remet l'explication QUE si aucun résultat n'a été montré dans les
-       trente dernières secondes. Sans cette garde, le retour sur la page effaçait
-       la confirmation de sauvegarde à l'instant même où elle s'affichait. */
-    window.addEventListener('pageshow', function(){
-      if(Date.now()-_bkResultat < 30000) return;
-      st.textContent=repos;
-    });
-  })();
+    /* 💾 LA SAUVEGARDE EST SORTIE D'ICI — 04/09/2026, troisième bloc du
+       découpage. Elle est dans `the-sauvegarde.js`, avec les trois leçons qu'elle
+       porte : nommer le fichier, ne pas effacer la confirmation, et traiter une
+       restauration comme une création. Elle ne demande rien à la page — le premium
+       se lit dans `THEPass`, l'abri dans `THEBackup`. Voir son en-tête. */
+
    // gratuit : enregistrer/reprendre ses itinéraires
 
   // ---------- rendu ----------
@@ -2813,13 +2760,6 @@
   let albumTemplate='baroudeur';
   const slug = s => norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
-  function shareText(){
-    if(!LASTRES) return '';
-    const {route,theme}=LASTRES;
-    const head=(theme?theme.ic+' '+uiT(theme.label):uiT('itin.mon.itineraire'))+' — '+uiT('itin.pays.nom');
-    const lines=route.map((s,i)=>(i+1)+'. '+s.p.nom+(s.p.gouvernorat?' ('+s.p.gouvernorat+')':''));
-    return head+'\n'+lines.join('\n')+'\n\nComposé avec THE · '+((window.HConf&&HConf.marqueCourte)||'Heritage');
-  }
 
   async function renderAlbum(){
     ALBUM_URLS.forEach(u=>URL.revokeObjectURL(u)); ALBUM_URLS=[];
@@ -3025,7 +2965,9 @@
        capturée après `display:none`, elle ne rendrait qu'une image vide. */
     saisirLaCarte().then(function(){
       document.getElementById('result').style.display='none';
-      document.getElementById('sharepanel').style.display='none';
+        /* le panneau de partage vit maintenant dans `the-partage.js` : on le
+           referme s'il est ouvert, sans supposer qu'il existe. */
+        var _pt=document.getElementById('pt-panneau'); if(_pt) _pt.classList.remove('on');
       document.getElementById('album').style.display='block';
       document.body.classList.add('doc-ouvert');
       renderAlbum();
@@ -3042,28 +2984,11 @@
     window.scrollTo({top:0,behavior:'smooth'});
   }
 
-  // ---------- partage (au choix de l'utilisateur, local-first) ----------
-  function shareWhatsApp(){ window.open('https://wa.me/?text='+encodeURIComponent(shareText()),'_blank'); }
-  function shareEmail(){ location.href='mailto:?subject='+encodeURIComponent(uiT('itin.mail.sujet'))+'&body='+encodeURIComponent(shareText()); }
-  let SHARE_FILES=[];
-  function buildShareFiles(){            // pré-charge les photos AVANT le clic (le geste iOS doit rester intact au moment du partage)
-    SHARE_FILES=[];
-    if(!navigator.canShare || !LASTRES) return;
-    LASTRES.route.forEach(s=>{
-      photosFor(placeKey(s)).then(ph=>{
-        ph.forEach((x,k)=>SHARE_FILES.push(new File([x.blob],'the-'+slug(s.p.nom)+'-'+(k+1)+'.jpg',{type:x.blob.type||'image/jpeg'})));
-      }).catch(()=>{});
-    });
-  }
-  function shareNative(){                // SYNCHRONE : navigator.share appelé dans le geste utilisateur (sinon iOS refuse)
-    if(!navigator.share){ THEtoast(uiT('Le partage direct n\'est pas disponible ici. Utilisez WhatsApp, e-mail, ou l\'export PDF.')); return; }
-    const data={title:'Mon itinéraire THE', text:shareText()};
-    if(SHARE_FILES.length && navigator.canShare && navigator.canShare({files:SHARE_FILES})) data.files=SHARE_FILES;
-    navigator.share(data).catch(()=>{});
-  }
-  function publishOptin(){
-    THEtoast(uiT('Publier sur le site THE — fonctionnalité à venir.\n\nCe sera toujours sur votre accord explicite : c\'est le seul cas où vos photos quitteraient votre appareil. Par défaut, tout reste chez vous.'));
-  }
+    /* ↗️ LE PARTAGE EST SORTI D'ICI — 04/09/2026, deuxième bloc du découpage.
+       Son panneau (l. 905), son texte (l. 2816), ses quatre sorties (l. 3045) et
+       leur branchement (l. 3525) vivaient en QUATRE endroits pour un seul geste.
+       Réunis dans `the-partage.js`, qui lit les étapes dans le DOM et
+       `THECarnet.lire` pour les photos. Voir son en-tête. */
 
   /* le bouton a quitté le menu le 02/09 : le branchement survit à son absence */
   var _pb=document.getElementById('printbtn');
@@ -3522,25 +3447,9 @@
        effaçant sa ligne. Voir son en-tête. */
 
   document.getElementById('albumprint').onclick=()=>setTimeout(()=>window.print(),150);
-  document.getElementById('albumshare').onclick=()=>{
-    const sp=document.getElementById('sharepanel');
-    const opening = sp.style.display==='none';
-    sp.style.display = opening ? 'block' : 'none';
-    if(opening){
-      buildShareFiles();
-      /* On a pu descendre dans le document avant d'appuyer : le panneau serait
-         alors ouvert au-dessus de l'écran, et le geste paraîtrait sans effet —
-         le défaut qu'on vient de corriger, sous une autre forme. */
-      try{ sp.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){}
-    }
-  };
   [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>{
     c.onclick=()=>{ albumTemplate=c.dataset.tpl; renderAlbum(); };
   });
-  document.getElementById('shwhatsapp').onclick=shareWhatsApp;
-  document.getElementById('shemail').onclick=shareEmail;
-  document.getElementById('shnative').onclick=shareNative;
-  document.getElementById('shpublish').onclick=publishOptin;
   document.getElementById('addbtn').onclick=addPlace;
   document.getElementById('addinput').addEventListener('keydown',e=>{ if(e.key==='Enter') addPlace(); });
   /* SORTIR D'UN ITINÉRAIRE, C'EST UN CHOIX — PAS UN RETOUR EN ARRIÈRE
@@ -3637,6 +3546,12 @@
   <!-- 🖥️ Le diaporama : écran, styles et code réunis. Bloc autoporté —
        il se retire en effaçant cette ligne. Voir l'en-tête de the-diaporama.js. -->
   <script src="the-diaporama.js" defer></script>
+  <!-- ↗️ Le partage : panneau, textes et sorties réunis. Bloc autoporté —
+       il se retire en effaçant cette ligne. Voir l'en-tête de the-partage.js. -->
+  <script src="the-partage.js" defer></script>
+  <!-- 💾 La sauvegarde et la restauration. Bloc autoporté — il se retire en
+       effaçant cette ligne. Voir l'en-tête de the-sauvegarde.js. -->
+  <script src="the-sauvegarde.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
 

@@ -27,7 +27,7 @@ const CORE_ASSETS = [
      les dictionnaires de leurs briques : sans eux la brique se charge et n'a rien à
      dire. Ce n'était pas visible en ligne — le réseau les servait à chaque fois. */
   'heritage.config.js',
-  'the-carnet.js', 'the-prise.js', 'the-planche.js', 'the-diaporama.js', 'the-etape.js', 'the-message.js', 'the-postcard.js', 'the-fiche-audio.js',
+  'the-carnet.js', 'the-prise.js', 'the-planche.js', 'the-diaporama.js', 'the-partage.js', 'the-sauvegarde.js', 'the-etape.js', 'the-message.js', 'the-postcard.js', 'the-fiche-audio.js',
   /* LES TRADUCTIONS, PRÉCACHÉES — 01/09/2026, Helmy. Elles n'y étaient pas du
      tout : hors réseau, l'application n'avait aucune garantie d'avoir ses textes,
      et le cœur multilingue tenait à une connexion. Les treize fichiers y sont —
