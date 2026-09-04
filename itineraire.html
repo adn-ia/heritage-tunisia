@@ -1053,6 +1053,56 @@
     return itiRef()+'#'+(i>=0 ? (i+1) : 0);
   };
   const placeKeyAncien = s => { const id=itiId(); return id ? (id+'#'+placeBase(s)) : placeBase(s); };
+
+  /* ── LA SOURCE UNIQUE DU VOYAGE ──────────────────────────────────────────────
+     Posée le 04/09/2026, pour que le découpage puisse continuer.
+
+     Les blocs déjà sortis — diaporama, partage, sauvegarde — lisent tout ce qu'il
+     leur faut dans le DOM : un nom, une ville, une clé de rangement. L'album et la
+     carte, eux, ont besoin des DONNÉES : les coordonnées de chaque étape, la forme
+     du trajet, les distances. Le DOM ne les porte pas toutes, et les lui faire
+     deviner serait fragile.
+
+     Plutôt que de laisser chaque bloc fouiller dans `LASTRES` — la variable
+     interne, qui change de forme au gré des rendus — la page publie ici CE QU'ELLE
+     SAIT, sous une forme stable. C'est ce que fait Terralog avec `getStage(n)`
+     (`blocs/20-itineraire.js` l. 26) : un seul endroit qui dit la vérité, et des
+     blocs qui la lisent sans y toucher.
+
+     ⚠️ ELLE REND UNE COPIE. Un bloc qui modifierait l'objet reçu ne toucherait pas
+     l'itinéraire réel — c'est voulu : la lecture ne doit jamais devenir une porte
+     d'écriture dérobée. */
+  window.THEvoyage = function(){
+    try{
+      if(typeof LASTRES==='undefined' || !LASTRES || !LASTRES.route) return null;
+      var t = LASTRES.tour || {};
+      return {
+        id:      LASTRES._id || '',
+        titre:   t.titre || '',
+        theme:   LASTRES.theme ? { ic:LASTRES.theme.ic, label:LASTRES.theme.label } : null,
+        forme:   LASTRES.forme || 'oneway',
+        mode:    LASTRES.mode || '',
+        km:      Math.round(LASTRES.route.reduce(function(n,s){ return n+(s.fromPrev||0); },0)),
+        origine: (typeof LASTORIGIN!=='undefined' && LASTORIGIN && LASTORIGIN.coord)
+                   ? { coord:LASTORIGIN.coord.slice(), label:LASTORIGIN.label||'' } : null,
+        etapes:  LASTRES.route.map(function(s,i){
+          var p = s.p || {};
+          return { n:i+1,
+                   nom:      p.nom || '',
+                   ville:    p.gouvernorat || '',
+                   epoque:   p.epoque || '',
+                   genre:    s.genre || '',
+                   coord:    s.c ? s.c.slice() : null,      // [lon, lat]
+                   place:    placeKey(s),                   // la clé de rangement des photos
+                   note:     capLire(placeKey(s), s) || '',
+                   /* le point d'accès en voiture quand il est connu : un site peut
+                      se visiter à pied depuis un parking qui n'est pas dessus. */
+                   acces:    (p.acces_gps || s.c || null),
+                   depuis:   s.fromPrev || 0 };
+        })
+      };
+    }catch(e){ return null; }
+  };
   /* LA NOTE SE LIT OÙ ELLE EST ÉCRITE — 01/09/2026, Helmy : « aucune note » dans
      l'album. Deux clés existaient pour la même chose : le carnet écrit sous
      `the-note-<lieu>` (`the-carnet.js` l.87), l'album relisait `the-cap:<lieu>`.
@@ -3007,95 +3057,11 @@
   }
   document.getElementById('mapbtn').onclick=openOnMap;
 
-  // ---------- Export Google Maps (navigation GPS pas-à-pas) ----------
-  // Pour les lieux sourcés on passe le NOM (Google route vers son point officiel = entrée/parking),
-  // pas la coordonnée brute (souvent au centre des ruines). Coordonnée seulement pour la position GPS
-  // et les ajouts perso (qui n'ont qu'une coordonnée).
-  function openInGoogleMaps(){
-    if(!LASTRES || !LASTRES.route.length) return;
-    const coordLL = c => c[1]+','+c[0];                       // [lon,lat] interne -> "lat,lng" Google
-    // TOUJOURS des coordonnées GPS (Google retrouve certains lieux par leur nom, mais pas tous).
-    // On privilégie le point d'accès voiture quand il est connu, sinon la position du site.
-    const token = s => coordLL((s.p && s.p.acces_gps) ? s.p.acces_gps : s.c);
-    const stops = LASTRES.route.slice();
-    const forme = LASTRES.forme || 'oneway';
-    const origin = (LASTORIGIN && LASTORIGIN.coord) ? coordLL(LASTORIGIN.coord) : token(stops[0]);
-    let dest, mids;
-    if(forme==='boucle' && LASTORIGIN && LASTORIGIN.coord){ dest = origin; mids = stops.map(token); }  // retour au départ
-    else { dest = token(stops[stops.length-1]); mids = stops.slice(0,-1).map(token); }                 // dernière étape = destination
-    const LIMIT = 9;                                          // Google Maps : ~9 points intermédiaires via URL
-    let capped = false;
-    if(mids.length > LIMIT){ mids = mids.slice(0, LIMIT); capped = true; }
-    const url = 'https://www.google.com/maps/dir/?api=1'
-      + '&origin=' + encodeURIComponent(origin)
-      + '&destination=' + encodeURIComponent(dest)
-      + (mids.length ? '&waypoints=' + encodeURIComponent(mids.join('|')) : '')
-      + '&travelmode=driving';
-    if(capped) THEtoast(uiT('Google Maps limite un trajet à une dizaine d’arrêts. On ouvre les ')+(LIMIT+1)+uiT(' premiers ; pour un long circuit, exportez jour par jour (retirez les étapes des autres journées avant d’exporter).'));
-    window.open(url, '_blank', 'noopener');
-  }
-  // données communes de navigation (coordonnées dans l'ordre du parcours)
-  function navData(){
-    if(!LASTRES || !LASTRES.route.length) return null;
-    const coordLL = c => c[1]+','+c[0];                          // [lon,lat] -> "lat,lng"
-    const accessOf = s => (s.p && s.p.acces_gps) ? s.p.acces_gps : s.c;  // point d'accès voiture si connu
-    const origin = (LASTORIGIN && LASTORIGIN.coord) ? LASTORIGIN.coord : accessOf(LASTRES.route[0]);
-    const stops = LASTRES.route.map(accessOf);
-    return { coordLL, origin, stops, forme: LASTRES.forme||'oneway' };
-  }
-  function openInOSM(){
-    const d=navData(); if(!d) return;
-    const pts=[d.origin, ...d.stops]; if(d.forme==='boucle') pts.push(d.origin);
-    const route=pts.map(d.coordLL).join(';');
-    window.open('https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route='+encodeURIComponent(route), '_blank', 'noopener');
-  }
-  function openInApple(){
-    const d=navData(); if(!d) return;
-    const dest=[...d.stops]; if(d.forme==='boucle') dest.push(d.origin);
-    const daddr=dest.map(d.coordLL).join(' to:');                // chaînage multi-arrêts d'Apple Plans
-    window.open('https://maps.apple.com/?saddr='+encodeURIComponent(d.coordLL(d.origin))+'&daddr='+encodeURIComponent(daddr)+'&dirflg=d', '_blank', 'noopener');
-  }
-  function openInWaze(){
-    const d=navData(); if(!d) return;
-    const first=d.stops[0]||d.origin;                            // Waze = une seule destination
-    window.open('https://waze.com/ul?ll='+encodeURIComponent(d.coordLL(first))+'&navigate=yes', '_blank', 'noopener');
-  }
-  function downloadGPX(){
-    if(!LASTRES || !LASTRES.route.length) return;
-    const xe=s=>(s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const name=(LASTRES.tour&&LASTRES.tour.titre)?LASTRES.tour.titre:'Itinéraire THE';
-    const wpts=LASTRES.route.map(s=>{ const p=s.p, [lon,lat]=s.c;
-      return '  <wpt lat="'+lat+'" lon="'+lon+'"><name>'+xe(p.nom)+'</name>'+(p.gouvernorat||p.type?'<desc>'+xe([p.gouvernorat,p.type,p.epoque].filter(Boolean).join(' · '))+'</desc>':'')+'</wpt>'; }).join('\n');
-    const rtepts=LASTRES.route.map(s=>{ const [lon,lat]=s.c; return '    <rtept lat="'+lat+'" lon="'+lon+'"><name>'+xe(s.p.nom)+'</name></rtept>'; }).join('\n');
-    const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="'+((window.HConf&&HConf.marque)||"Heritage Experience")+'" xmlns="http://www.topografix.com/GPX/1/1">\n  <metadata><name>'+xe(name)+'</name></metadata>\n'+wpts+'\n  <rte><name>'+xe(name)+'</name>\n'+rtepts+'\n  </rte>\n</gpx>\n';
-    const blob=new Blob([gpx],{type:'application/gpx+xml'});
-    const url=URL.createObjectURL(blob), a=document.createElement('a');
-    /* Même correction que pour le site souvenir : on translittère au lieu de hacher.
-       « Marchés » donnait « March-s ». Écrit ici plutôt qu'appelé ailleurs : ce
-       fichier ne charge pas the-souvenir.js. */
-    var _nomF=(function(t){ var x=String(t||'').trim();
-      try{ x=x.normalize('NFD').replace(/[\u0300-\u036f]/g,''); }catch(e){}
-      return x.replace(/[\/\\?%*:|"<>&,;]/g,' ').replace(/\s+/g,'-').replace(/-{2,}/g,'-').replace(/^-+|-+$/g,'') || 'itineraire';
-    })(name);
-    a.href=url; a.download=_nomF+'.gpx';
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),2000);
-  }
-  // bouton « Naviguer » → menu de choix
-  function openNav(){ if(!LASTRES || !LASTRES.route.length) return; document.getElementById('navModal').style.display='flex'; }
-  function closeNav(){ document.getElementById('navModal').style.display='none'; }
-  /* Le bouton a rejoint la carte ; on ne câble que s'il est encore là — une
-     ligne qui cherche un élément absent tue tout le script qui la suit. */
-  const _gb=document.getElementById('gmapsbtn'); if(_gb) _gb.onclick=openNav;
-  document.getElementById('navX').onclick=closeNav;
-  document.getElementById('navModal').onclick=e=>{ if(e.target.id==='navModal') closeNav(); };
-  document.querySelectorAll('.nav-opt').forEach(b=>b.onclick=()=>{
-    const k=b.dataset.nav; closeNav();
-    if(k==='google') openInGoogleMaps();
-    else if(k==='osm') openInOSM();
-    else if(k==='apple') openInApple();
-    else if(k==='waze') openInWaze();
-    else if(k==='gpx') downloadGPX();
-  });
+    /* 🧭 LES SORTIES DE CARTE SONT SORTIES D'ICI — 04/09/2026, quatrième bloc.
+       Google Maps, OpenStreetMap, Plans, Waze et le fichier GPX vivent dans
+       `the-sorties-carte.js`. Il ne fouille pas la page : il lit `THEvoyage()`,
+       la source unique posée plus haut. Voir son en-tête. */
+
 
   /* ---------- Le bouton unique de la carte ----------
      Sept sorties, un seul point d'entrée, en haut à droite de la carte. On
@@ -3314,8 +3280,8 @@
           ndcT=document.getElementById('ndcTitre'), ndcX=document.getElementById('ndcTexte');
     let choix=null;
     const FAIRE={
-      google:()=>openInGoogleMaps(), osm:()=>openInOSM(), apple:()=>openInApple(),
-      waze:()=>openInWaze(),         gpx:()=>downloadGPX(),
+      google:()=>THEsortiesCarte.google(), osm:()=>THEsortiesCarte.osm(), apple:()=>THEsortiesCarte.apple(),
+      waze:()=>THEsortiesCarte.waze(),     gpx:()=>THEsortiesCarte.gpx(),
       kml:   ()=>{ if(window.THErt) THErt.kml(); },
       chunks:()=>{ if(window.THErt) THErt.chunks(); }
     };
@@ -3552,6 +3518,9 @@
   <!-- 💾 La sauvegarde et la restauration. Bloc autoporté — il se retire en
        effaçant cette ligne. Voir l'en-tête de the-sauvegarde.js. -->
   <script src="the-sauvegarde.js" defer></script>
+  <!-- 🧭 Les sorties de carte : Google, OSM, Plans, Waze, GPX. Bloc autoporté —
+       il lit THEvoyage(). Voir l'en-tête de the-sorties-carte.js. -->
+  <script src="the-sorties-carte.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
 
