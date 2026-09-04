@@ -2807,11 +2807,11 @@
   document.getElementById('mLibre').onclick=()=>requirePass(uiT('itin.feature.libre'), startLibre);
   // ---------- album souvenir (I6) ----------
   let ALBUM_URLS=[];           // object URLs de l'album, révoqués entre deux rendus
-  let albumTemplate='baroudeur';
+  var albumTemplate='baroudeur';   // le module `the-document.js` le relit au rafraîchissement
   const slug = s => norm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 
-  async function renderAlbum(){
+  window.renderAlbum = async function renderAlbum(){
     ALBUM_URLS.forEach(u=>URL.revokeObjectURL(u)); ALBUM_URLS=[];
     const doc=document.getElementById('albumdoc');
     if(!LASTRES || !LASTRES.route.length){ doc.innerHTML='<div class="album-cover"><h2>'+uiT('Aucun itinéraire')+'</h2></div>'; return; }
@@ -2826,8 +2826,8 @@
       '<h2>'+(theme?theme.ic+' '+uiT(theme.label):'🧭 Mon itinéraire')+'</h2>'+
       '<div class="ac-meta">'+route.length+' '+uiT('étapes')+' · ~'+km+' '+uiT('km')+' · '+dateStr+'</div>'+
       (isDep?'<div class="dep-hint">Carnet de route — dépliez le trajet →</div>':'')+
-      (CARTE_IMAGE
-        ? '<img class="ac-carte" src="'+CARTE_IMAGE+'" alt="">'
+      ((window.THEdocument ? THEdocument.carte() : null)
+        ? '<img class="ac-carte" src="'+(window.THEdocument ? THEdocument.carte() : null)+'" alt="">'
         : '<div class="ac-carte" id="acCarte"></div>')+'</div>';
     if(isDep){ doc.innerHTML='<div class="depliant-strip" id="depStrip">'+coverHtml+'</div>'; }
     else if(albumTemplate==='passeport'){ doc.innerHTML=coverHtml+'<div class="pp-book" id="ppBook"></div>'; }
@@ -2947,92 +2947,12 @@
       if(ta) ta.addEventListener('input',()=>localStorage.setItem('the-cap:'+key, ta.value));
     }
   }
-  /* L'IMAGE DE LA CARTE, PRISE SUR L'ITINÉRAIRE LUI-MÊME — 03/09/2026.
-     Helmy : « vous faites une capture d'écran de la carte dans l'itinéraire, avec
-     TOUT l'itinéraire, et vous la collez dans l'album — il ne faut pas
-     reconstruire la carte ».
-     Il avait raison. L'album fabriquait sa PROPRE carte : une seconde instance
-     Leaflet, dans un cadre court et large, qui se recadrait à sa façon. Sur un
-     parcours de 300 km elle n'en montrait qu'un morceau, le tracé sortant du cadre
-     et une bande grise à droite. La carte juste existe déjà — c'est celle de
-     l'itinéraire, cadrée sur le parcours entier. On la prend en image, telle
-     quelle, et on la colle. */
-  var CARTE_IMAGE = null;
+  /* 📔 L'OUVERTURE DU DOCUMENT EST SORTIE D'ICI — 04/09/2026, cinquième bloc.
+     La saisie de la carte, l'ouverture, la fermeture et la mémoire de l'état dans
+     l'adresse vivent dans `the-document.js`, avec les trois leçons qu'elles
+     portent. Le RENDU des trois habillages reste ici pour l'instant : c'est le
+     morceau le plus lourd et le plus souvent cassé, il sortira à part. */
 
-  function saisirLaCarte(){
-    try{
-      var m = document.getElementById('map');
-      if(!m || !m.offsetParent || !window.THEcartePlate) return Promise.resolve(null);
-      return window.THEcartePlate(m).then(function(u){ CARTE_IMAGE = u || null; return CARTE_IMAGE; })
-                                    .catch(function(){ return null; });
-    }catch(e){ return Promise.resolve(null); }
-  }
-
-  /* ⚠️ L'ADRESSE RETIENT QU'UN DOCUMENT EST OUVERT — 03/09/2026, Helmy : « quand
-     j'appuie sur Documents et que je veux rafraîchir la page, je retombe sur
-     l'itinéraire et non sur la page des documents ».
-     C'est sa règle du 01/09 appliquée à un écran de plus : « quoi qu'il arrive, le
-     rafraîchissement d'une page doit rester sur la propre page ». L'album n'était
-     qu'un `display:block` en mémoire — un rechargement le perdait.
-     On l'écrit donc dans l'adresse, `&doc=1&style=…`, et on l'efface en sortant :
-     un paramètre qui traîne rouvrirait un document qu'on vient de fermer, ce qui
-     est exactement le défaut de `?choix=1` corrigé le 01/09. */
-  function marquerDocument(ouvert){
-    try{
-      var u = new URL(location.href);
-      if(ouvert){
-        u.searchParams.set('doc','1');
-        var st=(document.body.className.match(/tpl-([a-zé]+)/)||[])[1];
-        if(st) u.searchParams.set('style', st); else u.searchParams.delete('style');
-      } else {
-        u.searchParams.delete('doc'); u.searchParams.delete('style');
-      }
-      history.replaceState(null,'',u.pathname+(u.search||'')+u.hash);
-    }catch(e){}
-  }
-  /* ⚠️ ON REVIENT SUR LE DOCUMENT, PAS SUR L'ITINÉRAIRE — 03/09/2026. Si l'adresse
-     porte `doc=1`, c'est qu'on rafraîchit une page où un document était ouvert : on
-     le rouvre, dans son style. On attend que l'itinéraire soit rendu — sans étape,
-     il n'y aurait rien à mettre dans le document. Le filet s'arrête au bout de six
-     secondes : mieux vaut l'itinéraire qu'une attente sans fin. */
-  (function reprendreLeDocument(){
-    var p; try{ p = new URLSearchParams(location.search); }catch(e){ return; }
-    if(p.get('doc') !== '1') return;
-    var style = p.get('style'), essais = 0;
-    (function attendre(){
-      if(++essais > 60) return;                                  // ~6 s
-      var res = document.getElementById('result');
-      if(!res || res.style.display !== 'block' || !document.querySelector('.stop')){
-        return setTimeout(attendre, 100);
-      }
-      try{ if(style && typeof albumTemplate !== 'undefined') albumTemplate = style; }catch(e){}
-      openAlbum();
-    })();
-  })();
-
-  function openAlbum(){
-    /* ⚠️ LA SAISIE D'ABORD, LE MASQUAGE ENSUITE. Une carte cachée mesure zéro :
-       capturée après `display:none`, elle ne rendrait qu'une image vide. */
-    saisirLaCarte().then(function(){
-      document.getElementById('result').style.display='none';
-        /* le panneau de partage vit maintenant dans `the-partage.js` : on le
-           referme s'il est ouvert, sans supposer qu'il existe. */
-        var _pt=document.getElementById('pt-panneau'); if(_pt) _pt.classList.remove('on');
-      document.getElementById('album').style.display='block';
-      document.body.classList.add('doc-ouvert');
-      renderAlbum();
-      marquerDocument(true);
-      window.scrollTo({top:0,behavior:'smooth'});
-    });
-  }
-  function closeAlbum(){
-    document.body.classList.remove('tpl-baroudeur','tpl-passeport');
-    document.getElementById('album').style.display='none';
-    document.body.classList.remove('doc-ouvert');
-    marquerDocument(false);
-    document.getElementById('result').style.display='block';
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
 
     /* ↗️ LE PARTAGE EST SORTI D'ICI — 04/09/2026, deuxième bloc du découpage.
        Son panneau (l. 905), son texte (l. 2816), ses quatre sorties (l. 3045) et
@@ -3401,8 +3321,8 @@
   });
   document.getElementById('detourAdd').onclick=()=>{ const p=CUR_DETOUR; closeDetour(); if(p) insertStop(p.s); };  // insertStop re-render
   document.getElementById('detourReject').onclick=()=>{ const p=CUR_DETOUR; closeDetour(); if(p){ REJECTED.add(norm(p.s.p.nom)); if(LASTRES) render(LASTORIGIN, LASTRES); } };
-  document.getElementById('albumbtn').onclick=openAlbum;
-  document.getElementById('albumback').onclick=closeAlbum;
+  /* l'ouverture et la fermeture sont branchées par `the-document.js` */
+
 
     /* 🖥️ LE DIAPORAMA EST SORTI D'ICI — 03/09/2026, premier bloc du découpage
        demandé par Helmy : « il vous est impossible de garder la structure du code
@@ -3414,7 +3334,7 @@
 
   document.getElementById('albumprint').onclick=()=>setTimeout(()=>window.print(),150);
   [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>{
-    c.onclick=()=>{ albumTemplate=c.dataset.tpl; renderAlbum(); };
+    c.onclick=()=>{ albumTemplate=c.dataset.tpl; window.albumTemplate=albumTemplate; renderAlbum(); };
   });
   document.getElementById('addbtn').onclick=addPlace;
   document.getElementById('addinput').addEventListener('keydown',e=>{ if(e.key==='Enter') addPlace(); });
@@ -3454,7 +3374,7 @@
     document.body.classList.remove('tpl-baroudeur','tpl-passeport');
     document.getElementById('album').style.display='none';
     document.body.classList.remove('doc-ouvert');
-    marquerDocument(false);
+    if(window.THEdocument) THEdocument.fermer(true);   // retour au formulaire
     document.getElementById('result').style.display='none';
     document.getElementById('builder').style.display='block';    // garde tous les choix saisis
     window.scrollTo({top:0,behavior:'smooth'});
@@ -3521,6 +3441,9 @@
   <!-- 🧭 Les sorties de carte : Google, OSM, Plans, Waze, GPX. Bloc autoporté —
        il lit THEvoyage(). Voir l'en-tête de the-sorties-carte.js. -->
   <script src="the-sorties-carte.js" defer></script>
+  <!-- 📔 L'ouverture du document : carte de couverture, état dans l'adresse,
+       ouverture et fermeture. Bloc autoporté. Voir l'en-tête de the-document.js. -->
+  <script src="the-document.js" defer></script>
 <script src="the-fiche-audio.js" defer></script>
 <script src="the-lightbox.js" defer></script>
 
