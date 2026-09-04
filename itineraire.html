@@ -2449,8 +2449,19 @@
     return 'https://www.google.com/maps/search/'+encodeURIComponent(("chambre d'hote hotel "+term).trim())+'/@'+c[1]+','+c[0]+',13z'; }
   function srcHtml(src){
     if(!src) return '';
+    /* ⚠️ UNE FICHE NE STOCKE PAS UNE PHRASE FRANÇAISE — 04/09/2026, Helmy :
+       « rien en dur ». Une étape posée à la main gardait dans ses données
+       « Position GPS relevée sur place » : la phrase suivait la fiche pour
+       toujours, et s'affichait telle quelle dans un itinéraire allemand.
+       On stocke maintenant un REPÈRE — `the:gps` ou `the:osm|<adresse>` — et on
+       le traduit ICI, au moment de l'afficher. Une fiche ancienne porte encore
+       sa phrase : elle passe telle quelle, on ne réécrit pas ce que le voyageur
+       a déjà enregistré. */
+    if(src === 'the:gps') src = uiT('Position GPS relevée sur place');
+    else if(src.indexOf('the:osm|') === 0) src = uiT('Position : OpenStreetMap —') + ' ' + src.slice(8);
+    else if(src === 'the:osm') src = uiT('Position : OpenStreetMap (lieu ajouté par vous, non vérifié).');
     const isUrl=/^https?:\/\//.test(src);
-    return '<div class="src">Source : '+(isUrl?'<a href="'+src+'" target="_blank" rel="noopener">'+src.replace(/^https?:\/\/(www\.)?/,'').slice(0,48)+'…</a>':src)+'</div>';
+    return '<div class="src">'+uiT('Source :')+' '+(isUrl?'<a href="'+src+'" target="_blank" rel="noopener">'+src.replace(/^https?:\/\/(www\.)?/,'').slice(0,48)+'…</a>':src)+'</div>';
   }
 
   // libellés de champs traduits (interface)
@@ -2862,7 +2873,7 @@
         const j=await r.json();
         if(!j.length){ msg.textContent=uiT('Lieu introuvable — vérifiez l\'orthographe.'); return; }
         stop={ c:[parseFloat(j[0].lon),parseFloat(j[0].lat)], layer:'perso', genre:'perso', cree:Date.now(),
-               p:{nom:q, type:'Ajout perso', gouvernorat:'', description:'', source:'Position : OpenStreetMap (lieu ajouté par vous, non vérifié).'} };
+               p:{nom:q, type:'Ajout perso', gouvernorat:'', description:'', source:'the:osm'} };
       }catch(e){ msg.textContent=uiT('Localisation impossible (vérifiez la connexion).'); return; }
     }
     if(LASTRES.route.some(s=>norm(s.p.nom)===norm(stop.p.nom))){ msg.textContent=uiT('Ce lieu est déjà dans le parcours.'); return; }
@@ -4324,7 +4335,7 @@
         /* quand l'étape a été POSÉE — sert à pré-remplir sa date sans rien inventer */
         cree:Date.now(),
         p:{ nom:x.nom, type:'Étape', gouvernorat:'', description:x.note||'',
-            source:x.adresse ? ('Position : OpenStreetMap — '+x.adresse) : 'Position GPS relevée sur place',
+            source:x.adresse ? ('the:osm|'+x.adresse) : 'the:gps',
             a_voir:'', conseil:'' } };
       /* Si l'étape naît comme VISITE d'une autre, le planificateur nous l'a dit
          avant d'ouvrir l'écran : on lui colle son rôle dès sa création, sinon

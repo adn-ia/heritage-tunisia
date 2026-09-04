@@ -1068,7 +1068,7 @@
   "Pont-aqueduc sur l'oued Cherchira": "Ponte-acquedotto sull’oued Cherchira",
   "Pont-barrage d'El Batan": "Ponte-diga di El Batan",
   "Ports puniques de Carthage": "Porti punici di Cartagine",
-  "Position : OpenStreetMap (lieu ajouté par vous, non vérifié).": "posizione: OpenStreetMap (luogo aggiunto da te, non verificato).",
+  "Position : OpenStreetMap (lieu ajouté par vous, non vérifié).": "Posizione: OpenStreetMap (luogo aggiunto dall'utente, non verificato).",
   "Position indisponible — saisissez un lieu": "Posizione non disponibile — inserisci un luogo",
   "Position refusée ou indisponible": "Posizione rifiutata o non disponibile",
   "Position refusée/indisponible — choisissez un point de départ.": "Posizione rifiutata/indisponibile — scegli un punto di partenza.",
@@ -3312,5 +3312,8 @@
   "Tapez au moins 3 lettres.": "Digita almeno 3 lettere.",
   "Touchez un lieu pour voir ce qu'il y a à découvrir, puis l'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d'oiseau, indicatif).": "Tocca una località per scoprire cosa c'è da vedere, quindi aggiungila o scartala. Nelle vicinanze del tuo percorso (distanze in linea d'aria, indicative).",
   "Dernier itinéraire": "Ultimo itinerario",
-  "belle vue": "bella vista"
+  "belle vue": "bella vista",
+  "Source :": "Fonte:",
+  "Position GPS relevée sur place": "Posizione GPS rilevata in loco",
+  "Position : OpenStreetMap —": "Posizione: OpenStreetMap —"
 }

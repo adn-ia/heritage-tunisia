@@ -829,7 +829,32 @@ pépites « à voir en chemin » venaient droit des données, sans passer par
 `THEi18n.site()` — alors que la fiche d'étape le fait depuis toujours (l. 2499).
 Résultat : des paragraphes français au milieu de l'allemand.
 
+### ④ Une phrase française STOCKÉE dans les données
+
+Le canari passé **en ligne** après le déploiement en a sorti une dernière :
+« Source : Position GPS relevée sur place ». Ce n'était pas un texte affiché en
+dur — c'était une phrase française **écrite dans la fiche de l'étape** au moment
+de sa création (l. 4327 et 2865). Elle suivait la fiche pour toujours et
+s'affichait telle quelle dans un itinéraire allemand. Et `srcHtml` ajoutait par
+dessus son propre `Source : ` en dur.
+
+La fiche stocke maintenant un **repère** — `the:gps`, `the:osm|<adresse>` — et
+`srcHtml` le traduit au moment de l'afficher. ⚠️ Une fiche ancienne porte encore
+sa phrase : elle passe telle quelle. **On ne réécrit pas ce que le voyageur a
+déjà enregistré.**
+
 **Vérifié à l'écran, en local, par un canari.** Application entière en allemand,
 un itinéraire de 4 étapes composé par « Überrasche mich » : on cherche tout mot
 français encore visible → **aucun**. Avant la passe, le même canari en trouvait
-neuf, dont « ‹ Les cinq façons de partir » et quatre descriptions de lieux.
+neuf, dont « ‹ Les cinq façons de partir » et quatre descriptions de lieux. Une
+étape neuve affiche « Quelle: Vor Ort erfasste GPS-Position ».
+
+**Signalé, non fait — deux trous qui ne sont pas du code.**
+1. **Les notes par étape des circuits** (`tnote`, `sejour`) restent en français
+   dans les autres langues. `i18n/tours.de.json` traduit le titre, le sous-titre,
+   la durée et la note générale du circuit — **pas** les notes de chaque étape.
+   C'est un trou de DONNÉES, à combler dans les fichiers de circuits.
+2. **`LBL()`** (l. 2457) porte son dictionnaire *dans le code* — un objet
+   français et une table de traductions en dur. Il traduit correctement, donc
+   rien ne se voit à l'écran ; mais ces textes devraient vivre dans `i18n/`
+   comme les autres. C'est un remaniement, pas un défaut.

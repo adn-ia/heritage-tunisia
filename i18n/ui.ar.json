@@ -1068,7 +1068,7 @@
   "Pont-aqueduc sur l'oued Cherchira": "جسر-قناة مائية فوق وادي شيرشيرا",
   "Pont-barrage d'El Batan": "جسر وسد الباتان",
   "Ports puniques de Carthage": "الموانئ البونية في قرطاج",
-  "Position : OpenStreetMap (lieu ajouté par vous, non vérifié).": "الموقع: OpenStreetMap (الموقع أضيف بواسطتكم، ولم يتم التحقق منه).",
+  "Position : OpenStreetMap (lieu ajouté par vous, non vérifié).": "الموقع: OpenStreetMap (موقع أضفته أنت، لم يتم التحقق منه).",
   "Position indisponible — saisissez un lieu": "الموقع غير متاح — أدخل موقعًا",
   "Position refusée ou indisponible": "المنصب مرفوض أو غير متاح",
   "Position refusée/indisponible — choisissez un point de départ.": "الموقع مرفوض/غير متاح — اختر نقطة انطلاق.",
@@ -3312,5 +3312,8 @@
   "Tapez au moins 3 lettres.": "أدخل 3 أحرف على الأقل.",
   "Touchez un lieu pour voir ce qu'il y a à découvrir, puis l'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d'oiseau, indicatif).": "اضغط على أحد الأماكن لترى ما يمكن اكتشافه فيه، ثم أضفه أو تجاهله. بالقرب من مسار رحلتك (المسافات خطّ مستقيم، تقريبية).",
   "Dernier itinéraire": "آخر مسار",
-  "belle vue": "منظر جميل"
+  "belle vue": "منظر جميل",
+  "Source :": "المصدر:",
+  "Position GPS relevée sur place": "إحداثيات GPS التي تم تسجيلها في الموقع",
+  "Position : OpenStreetMap —": "الموقع: OpenStreetMap —"
 }

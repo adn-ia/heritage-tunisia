@@ -1546,5 +1546,9 @@
   "Ouvrir le contenu officiel ↗": "Ouvrir le contenu officiel ↗",
   "Touchez un lieu pour voir ce qu'il y a à découvrir, puis l'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d'oiseau, indicatif).": "Touchez un lieu pour voir ce qu'il y a à découvrir, puis l'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d'oiseau, indicatif).",
   "Dernier itinéraire": "Dernier itinéraire",
-  "belle vue": "belle vue"
+  "belle vue": "belle vue",
+  "Source :": "Source :",
+  "Position GPS relevée sur place": "Position GPS relevée sur place",
+  "Position : OpenStreetMap —": "Position : OpenStreetMap —",
+  "Position : OpenStreetMap (lieu ajouté par vous, non vérifié).": "Position : OpenStreetMap (lieu ajouté par vous, non vérifié)."
 }
