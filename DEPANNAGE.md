@@ -1013,3 +1013,45 @@ détruisent rien.
 à qui du code ajoute ensuite un enfant est refusé. Éprouvé dans les deux sens —
 on remet la faute, il crie et nomme le fichier et la ligne ; on la retire, il se
 tait. **11 contrôles.**
+
+## 05/09/2026 — « les pépites se mettent toutes à la fin »
+
+**Symptôme.** Helmy : « quand on sélectionne plusieurs perles sur le parcours ou
+qu'on clique sur ce qu'il y a autour de moi sur l'étape […] si on dit rajouter à
+l'étape, elles se mettent tout à la fin ». Un lieu accepté depuis les suggestions
+d'une étape atterrissait en queue d'itinéraire, à des heures de route de l'endroit
+d'où on l'avait demandé.
+
+**Cause.** Les deux portes posaient sans jamais demander où : `insertStop`
+faisait `items.push(neuf)` (`itineraire.html` l. 1791) et l'ajout groupé
+`suite.push(o)` (l. 4360). Rien ne se souvenait de la provenance du lieu, alors
+qu'elle est la réponse : une pépite trouvée entre l'étape 3 et la 4 va entre les
+deux, une pépite trouvée autour de l'étape 3 va juste après elle.
+
+**Réparation.** Une brique autoportée, `the-placer.js` (+ son dictionnaire en 5
+langues), demande la place avant de poser, pré-réglée sur la provenance, et
+propose les deux natures : *en faire une étape de l'itinéraire* ou *à visiter au
+départ de cette étape*. La charge d'une pépite porte désormais `venant`/`vers`
+(l. 4197) ; `THEautour` retient l'étape d'où la demande part (l. 4372).
+
+### Deux défauts trouvés en chemin, et réparés parce que le geste neuf les déclenche
+
+**a) La visite se rattachait à elle-même.** `the_plan_meta` ne portait qu'une
+seule entrée pour deux lieux, `#0`. La clé d'un lieu est son NUMÉRO dans
+l'itinéraire courant (`placeKey`, l. 1066 : `LASTRES.route.indexOf(s)`). On
+rattachait avant le rendu, quand ni la base ni la visite n'étaient dans la liste
+posée : `indexOf` rendait −1 pour les deux. Le rattachement se fait maintenant
+APRÈS le rendu (`itineraire.html` l. 1804, l. 4370).
+
+**b) Insérer ailleurs qu'à la fin décalait toute la mémoire du plan.** Un lieu
+posé en tête, et les trois visites glissaient sur les trois lieux d'à côté —
+constaté à l'écran. Les numéros changent, la mémoire du plan ne suivait pas. Tant
+qu'on n'ajoutait qu'en queue, aucun numéro ne bougeait : le défaut dormait.
+`roadtrip-plan.js` publie maintenant `THEplanRenumeroter(paires)`, l'hôte lui
+donne la table de correspondance des clés (lui seul en connaît le format) et le
+plan déménage ses entrées, `baseKey` comprises.
+
+⚠️ **Reste ouvert, signalé, non touché** : `moveStep` et `dropStep`
+(`roadtrip-plan.js` l. 101 et 109) déplacent et retirent une étape sans
+renumérotation — dates, heures et visites y glissent de la même façon. Le geste
+existe désormais ; le brancher n'était pas demandé.
