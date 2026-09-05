@@ -474,8 +474,35 @@
       +'.cn-hp{width:66px;height:66px;border-radius:8px;background:#eee center/cover no-repeat;border:2px solid transparent;cursor:pointer}'
       +'.cn-hp.on{border-color:#b8860b}'
       +'.the-carnet .cn-note-priv{font-size:12px;color:#8a7c66;font-style:italic;margin-top:8px}'
-      +'#cn-modal{position:fixed;inset:0;z-index:1450;background:rgba(20,15,10,.78);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:18px}'
+      /* ⚠️ « LE BOUTON FERMER NE FONCTIONNE PAS, LA CROIX OUI » — 05/09/2026, Helmy,
+         après avoir ajouté une photo à une étape.
+         ⚠️ NON REPRODUIT SUR ORDINATEUR : dans Chrome, avec et sans photo, le bouton
+         ferme. Les deux boutons portent d'ailleurs le MÊME `onclick`. Le défaut est
+         donc lié à l'appareil, et la cause est ici, dans cette ligne.
+
+         `inset:0` sur un élément `position:fixed` décrit la fenêtre THÉORIQUE.
+         Sur iOS, la barre du bas de Safari est posée PAR-DESSUS : le bas de ce
+         rectangle vit derrière elle. Tant que la modale est courte, le bouton
+         « Fermer » reste au-dessus de la barre et tout va bien. Dès qu'on ajoute
+         une photo, la modale grandit — la vignette, sa légende, sa rangée de
+         gestes — et le bouton descend SOUS la barre du navigateur. Le doigt tape
+         sur Safari, pas sur le bouton. La croix, elle, est en haut : elle n'est
+         jamais concernée. Cela explique exactement les deux symptômes.
+
+         `100dvh` — *dynamic viewport height* — décrit la hauteur RÉELLEMENT
+         visible, barres comprises, et suit leur apparition. On garde `inset:0`
+         avant, comme repli pour les navigateurs qui ne connaissent pas `dvh`.
+         Et on ajoute la marge de sécurité du bas (`safe-area-inset-bottom`) pour
+         l'encoche et la barre d'accueil. */
+      +'#cn-modal{position:fixed;inset:0;height:100dvh;z-index:1450;background:rgba(20,15,10,.78);display:none;align-items:flex-start;justify-content:center;overflow:auto;-webkit-overflow-scrolling:touch;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}'
       +'#cn-modal.on{display:flex}#cn-modal .cn-box{background:#fffdf8;border-radius:14px;padding:16px;max-width:440px;width:100%;position:relative;box-shadow:0 10px 40px rgba(0,0,0,.5)}'
+      /* ⚠️ ET LE BOUTON RESTE DANS L'ÉCRAN. La liste des médias plafonne à 50vh,
+         mais tout ce qui l'entoure — titre, légende, gestes, cinq icônes, mention
+         de confidentialité — s'ajoute par-dessus : la boîte peut dépasser la
+         fenêtre. On la plafonne à la hauteur visible et c'est ELLE qui défile,
+         donc « Fermer » est toujours atteignable en bas de son propre défilement,
+         jamais rejeté hors de l'écran. */
+      +'#cn-modal .cn-box{max-height:calc(100dvh - 36px - env(safe-area-inset-bottom,0px));overflow:auto}'
       +'#cn-modal .cn-x{position:absolute;top:8px;right:10px;background:none;border:none;font-size:22px;cursor:pointer;color:#666}'
       +'#cn-modal h3{font-family:Georgia,serif;margin:0 0 10px}.cn-list{display:flex;flex-direction:column;gap:12px;max-height:50vh;overflow:auto}'
       +'.cn-item{border:1px solid #eee;border-radius:8px;padding:8px}.cn-ctr{display:flex;gap:6px;margin-top:6px}.cn-ctr button{border:1px solid #ccc;border-radius:6px;background:#fff;padding:6px 9px;cursor:pointer;font:inherit}.cn-ctr .cn-rm{margin-left:auto;color:#a3402a;border-color:#e0b8ac}'
