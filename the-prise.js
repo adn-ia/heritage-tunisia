@@ -105,13 +105,31 @@
   function bouton(cleIcone, cleNom, accept, capture, estVideo) {
     var lab = document.createElement("label");
     lab.className = "bd-ic";
-    lab.setAttribute("data-i18n", cleIcone);
+    /* ⚠️ `data-i18n` NE DOIT JAMAIS ÊTRE POSÉ SUR UN ÉLÉMENT QUI A DES ENFANTS —
+       05/09/2026, Helmy : « l'appareil photo et la vidéo tout en haut de
+       l'itinéraire ne fonctionnent pas, ce sont des icônes vides ».
+       Il avait le mot juste : VIDES. Le moteur applique une langue en écrivant
+       `el.textContent = UI[cle]` (`the-i18n.js` l. 166) — et écrire `textContent`
+       **efface tous les enfants**. L'entrée fichier accrochée à ce label était donc
+       détruite à chaque application de langue : au chargement, puis à chaque
+       changement de langue. Il restait un label avec un emoji dedans et plus rien
+       derrière. Mesuré à l'écran : entrée présente avant, ABSENTE après.
+       ⚠️ Le geste ne pouvait même pas échouer bruyamment : un label sans entrée
+       ne fait rien, sans erreur, sans trace.
+       L'icône vit donc maintenant dans un `<span>` à elle : le moteur peut réécrire
+       ce span autant qu'il veut, l'entrée est ailleurs dans le label. Le nom reste
+       sur le label, où `data-i18n-title` et `-aria` n'écrivent que des ATTRIBUTS —
+       eux ne détruisent rien. */
     lab.setAttribute("data-i18n-title", cleNom);
     lab.setAttribute("data-i18n-aria", cleNom);
     lab.style.cursor = "pointer";
-    lab.textContent = T(cleIcone);
     lab.title = T(cleNom);
     lab.setAttribute("aria-label", T(cleNom));
+
+    var ic = document.createElement("span");
+    ic.setAttribute("data-i18n", cleIcone);
+    ic.textContent = T(cleIcone);
+    lab.appendChild(ic);
 
     var inp = document.createElement("input");
     inp.type = "file";

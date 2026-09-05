@@ -946,3 +946,70 @@ traduction existait déjà dans les quatre langues.
 · Voyage libre, 2 étapes : « **2 étapes** · libre · aller simple · ~58 km »
 · Itinéraire repris : « 2 étapes · **itinéraire enregistré** · aller simple » —
   le « · enregistré » redondant a disparu.
+
+---
+
+## 05/09/2026 — deux gestes morts : le bouton Fermer, et l'appareil photo
+
+### ① « Le bouton Fermer ne fonctionne pas, la croix oui »
+
+**Non reproduit sur ordinateur** — dans Chrome, avec ou sans photo, le bouton
+ferme. Et les deux boutons portaient le **même** `onclick`.
+
+**La règle que Helmy a posée, et qui vaut mieux que mon premier diagnostic :**
+« le bouton Fermer et la croix doivent suivre le même chemin ; si la croix
+fonctionne, le bouton doit fonctionner aussi. » Il y avait **trois** chemins : la
+croix avec son `onclick` écrit sur elle, le bouton avec le sien, et un écouteur
+sur le fond. Trois câblages pour un seul geste, donc trois façons de tomber en
+panne séparément.
+
+⚠️ **Et le point décisif** : `modal()` remplace tout le contenu de la boîte à
+chaque rendu. Après l'ajout d'une photo, **les deux boutons sont détruits et
+reconstruits** — vérifié à l'écran, le nœud n'est plus le même. Un câblage porté
+par le bouton meurt avec lui et doit renaître intact à chaque fois. L'écouteur
+vit désormais **une seule fois** sur la modale, qui n'est jamais recréée : il
+survit à tous les re-rendus, par construction.
+
+Les boutons ne portent plus de code, ils se **déclarent** par `data-cn-close`.
+⚠️ On vise cet attribut et non la classe `.cn-close-b` : le bouton « ⏹ Arrêter »
+de l'enregistreur la porte aussi (l. 446) et doit arrêter le son, pas fermer.
+
+**Fait aussi, sur la géométrie** : l'overlay utilisait `inset:0`, qui décrit la
+fenêtre THÉORIQUE — sur iOS la barre du bas de Safari est posée par-dessus. Il
+suit maintenant `100dvh`, la hauteur réellement visible, plus la marge de
+sécurité du bas ; et la boîte est plafonnée à cette hauteur et défile, donc
+« Fermer » ne peut plus être repoussé hors de l'écran.
+
+### ② « L'appareil photo et la vidéo en haut de l'itinéraire ne fonctionnent pas, ce sont des icônes vides »
+
+**Le mot était juste : VIDES.**
+
+`the-prise.js` construisait chaque bouton ainsi :
+
+```
+lab.setAttribute("data-i18n", cleIcone);   // le label est marqué pour traduction
+lab.textContent = T(cleIcone);
+lab.appendChild(inp);                      // ...puis on lui met l'entrée fichier
+```
+
+Le moteur applique une langue par `el.textContent = UI[cle]` (`the-i18n.js`
+l. 166) — **et écrire `textContent` efface tous les enfants**. L'entrée fichier
+était donc **détruite à chaque application de langue** : au chargement, puis à
+chaque changement. Il restait un label avec un emoji et **plus aucun geste**.
+
+⚠️ **Ce défaut ne pouvait pas échouer bruyamment** : un label sans entrée ne fait
+rien — pas d'erreur, pas de trace, rien dans la console. C'est la pire espèce.
+
+**Mesuré à l'écran avant de corriger** : entrée `présente` → application de la
+langue → entrée `ABSENTE`. Après correction : `présente` avant et après, et le
+nom se traduit (« Ein Foto machen »).
+
+**Réparé** : l'icône vit dans un `<span>` à elle, que le moteur peut réécrire
+autant qu'il veut ; l'entrée est ailleurs dans le label. Le nom reste sur le
+label, où `data-i18n-title` et `-aria` n'écrivent que des ATTRIBUTS — eux ne
+détruisent rien.
+
+**Contrôle n° 9** (`.controle-i18n-enfants.py`) : tout élément marqué `data-i18n`
+à qui du code ajoute ensuite un enfant est refusé. Éprouvé dans les deux sens —
+on remet la faute, il crie et nomme le fichier et la ligne ; on la retire, il se
+tait. **11 contrôles.**

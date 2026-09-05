@@ -224,9 +224,19 @@ R=$(grep -rn 'window\.\(LASTRES\|LASTORIGIN\|mapObj\)' --include='*.js' --includ
 if [ -z "$R" ]; then ok "aucune lecture par window.LASTRES — elle rendrait toujours undefined"
 else ko "lecture par window. d'une liaison lexicale : elle rend TOUJOURS undefined :"; echo "$R" | sed 's/^/      /'; fi
 
+# ── 9. `data-i18n` sur un élément QUI PORTE DES ENFANTS ──────────────────
+# Né le 05/09/2026 : « l'appareil photo et la vidéo … ce sont des icônes vides ».
+# `the-i18n.js` l. 166 applique une langue par `el.textContent = UI[cle]`, ce qui
+# EFFACE TOUS LES ENFANTS. Un label marqué `data-i18n` perdait son `input file`
+# à chaque application — il restait un emoji et plus aucun geste, sans erreur.
+# Le détail et la mesure vivent dans le script.
+R=$(python3 .controle-i18n-enfants.py 2>/dev/null)
+if [ -z "$R" ]; then ok "aucun data-i18n sur un élément qui porte des enfants"
+else ko "data-i18n sur un porteur d'enfants — ils seront effacés à chaque langue :"; echo "$R" | sed 's/^/      /'; fi
+
 printf "\n"
 if [ "$ECHECS" -eq 0 ]; then
-  printf "${VERT}═══ les 10 contrôles passent ═══${FIN}\n"
+  printf "${VERT}═══ les 11 contrôles passent ═══${FIN}\n"
   printf "${JAUNE}Il reste le seul qui compte : ouvrir l'application et s'en servir.${FIN}\n"
   printf "  Composer un itinéraire · ouvrir une étape · l'album · changer de langue.\n\n"
   exit 0
