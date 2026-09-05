@@ -2300,7 +2300,20 @@
       boite.style.display='none';
       resolveOrigin(false).then(function(orig){
         var dep = orig || originAuto;                        // sans position : on garde le départ calculé
-        var r = nearestOrder(dep.coord, chosen.map(function(x){ var o={}; for(var k in x) o[k]=x[k]; return o; }), null);
+        var copie = chosen.map(function(x){ var o={}; for(var k in x) o[k]=x[k]; return o; });
+        /* ⚠️ UN CIRCUIT GARDE SON ORDRE — 05/09/2026, vu à l'écran : on change le
+           départ de « Carthage la punique » et les quatre étapes se remettent
+           dans un autre ordre, Tophet avant Byrsa. Un circuit n'est pas un tas de
+           lieux : son ordre vient de celui qui l'a tracé — office de tourisme,
+           guide, itinéraire éprouvé — et le règle en granit le dit : « un
+           itinéraire se trouve, il ne se compose pas par regroupement ».
+           `nearestOrder` a toute sa place quand le voyageur COMPOSE ; il n'en a
+           aucune sur un parcours déjà tracé. Les distances, elles, se refont :
+           c'est une valeur dérivée du départ, pas un choix. */
+        var r = (opts.mode === 'circuit')
+                  ? copie
+                  : nearestOrder(dep.coord, copie, null);
+        if(opts.mode === 'circuit') rechainerDistances(r, dep);
         try{ sessionStorage.removeItem('the_nom_attente'); }catch(e){}
         window.THEnomEnAttente=null;
         if(bld) bld.classList.remove('reglages-picks');     // l'itinéraire reprend toute la page
