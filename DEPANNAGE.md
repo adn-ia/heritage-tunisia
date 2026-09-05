@@ -1055,3 +1055,48 @@ plan déménage ses entrées, `baseKey` comprises.
 (`roadtrip-plan.js` l. 101 et 109) déplacent et retirent une étape sans
 renumérotation — dates, heures et visites y glissent de la même façon. Le geste
 existe désormais ; le brancher n'était pas demandé.
+
+## 05/09/2026 — la barre du document, et « ~NaN km » après une insertion
+
+**Symptôme (barre).** Helmy : « le style devrait conduire à un menu déroulant et
+le choix reste visible, même ligne : imprimer / PDF ; deuxième ligne : projeter
+diaporama, qui n'a rien à voir avec l'impression, même ligne planche-contact ;
+le partager et enregistrer le fichier : faudrait savoir ce qu'il partage et ce
+qu'il enregistre, c'est pas clair. »
+
+**Cause.** Trois vignettes prenaient toute la première ligne pour un seul choix,
+et le diaporama, posé juste après, se lisait comme un quatrième style. Les
+libellés « ↗ Partager » et « ⬇️ Enregistrer le fichier » ne disaient pas quoi.
+
+**Réparation.** Le style se choisit dans `#albumStyle`, un menu déroulant qui
+montre le choix fait ; les gestes se rangent par nature. Les libellés disent ce
+qu'ils font : *Partager le récit et les photos*, *Enregistrer l'album sur
+l'appareil*. Les trois noms de style et « Style : » étaient en dur, en français
+pour toutes les langues : ils sont traduits (le contrôle des clés absentes l'a
+attrapé).
+
+⚠️ **La barre reste PLATE.** Deux briques y posent leur bouton en se repérant à
+un voisin — `the-planche.js` l. 188 après `#albumprint`, `the-souvenir.js`
+l. 506 avant `#albumback` — et `insertBefore` sur un enfant qui n'est plus le
+sien lève une erreur. Les lignes sont donc faites par `order` et des sauts CSS
+(`itineraire.html` l. 296), jamais par des sous-`div`.
+
+⚠️ **DeepL a lu « album » comme un album de musique** : « Save the album for
+offline **listening** ». La source française a été reformulée pour forcer le sens
+(« sur l'appareil » au lieu de « hors ligne »), comme pour « étape » le 04/09.
+On ne garde pas une traduction qui dérive.
+
+### « ~NaN km », trouvé en vérifiant le reste
+
+**Symptôme.** Juste après avoir intercalé un lieu, l'en-tête affichait
+« 6 étapes · ~NaN km », et l'album « ~NaN km » aussi.
+
+**Cause.** `fromPrev` dit « à combien du PRÉCÉDENT ». Le lieu posé arrivait sans
+cette valeur (`null`, mesuré), et tous ceux qui le suivent gardaient la distance
+de leur ANCIEN voisin. Tant qu'on n'ajoutait qu'en queue, un seul lieu était
+faux ; en intercalant, toute la suite l'était.
+
+**Réparation.** `rechainerDistances(items, origine)` (`itineraire.html` l. 1785),
+un seul endroit pour les trois chemins d'insertion — la pépite, « autour de moi »
+et l'ajout d'étape à la main, qui portait déjà ce calcul recopié en clair
+(l. 4655). C'est une valeur dérivée : l'ordre choisi par le voyageur ne bouge pas.

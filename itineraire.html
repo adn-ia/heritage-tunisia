@@ -1825,6 +1825,21 @@
      3 → 4 ; un lieu trouvé autour de la 4 appartient à la 4.
      `placer` porte ce choix : `{apres, role, base}`. Sans lui, on garde l'ancien
      comportement — à la fin — pour ne casser aucun appelant. */
+  /* ⚠️ LA CHAÎNE DES DISTANCES SE REFAIT APRÈS TOUTE INSERTION — 05/09/2026.
+     `fromPrev` dit « à combien du PRÉCÉDENT ». Intercaler un lieu donne un
+     nouveau précédent à tous ceux qui suivent, et le lieu posé n'en a aucun :
+     mesuré à l'écran, `fromPrev` valait `null` et le total affichait « ~NaN km ».
+     Le calcul existait déjà, écrit le 04/09 pour l'ajout d'étape à la main
+     (l. 4655) ; il est ici, en un seul endroit, et les trois chemins l'appellent.
+     C'est une valeur DÉRIVÉE : rien ne bouge dans l'ordre choisi. */
+  function rechainerDistances(items, origine){
+    var prev = (origine && origine.coord) ? origine.coord : null;
+    (items||[]).forEach(function(s){
+      if(prev && s && s.c){ s.fromPrev = haversine(prev, s.c); prev = s.c; }
+      else if(s){ s.fromPrev = s.fromPrev || 0; }
+    });
+  }
+
   /* La table de correspondance des clés, d'un ordre à l'autre. On la relève
      AVANT le rendu (les numéros sont encore les anciens) et on la referme APRÈS
      (ils sont les nouveaux). L'appariement se fait par le nom : les listes sont
@@ -1866,6 +1881,7 @@
        se posait ici, puis `nearestOrder` la déplaçait ailleurs dans la liste : on
        ne retrouvait pas ce qu'on venait d'accepter. La place choisie prime. */
     const avantCles = clesAvant();
+    rechainerDistances(items, LASTORIGIN);
     window._resterSurPlace = true;
     render(LASTORIGIN, {...LASTRES, route:items, manualOrder:true});
     renumeroter(avantCles);
@@ -4422,6 +4438,7 @@
         var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
         base.route=suite; base.manualOrder=true;      // l'ordre choisi est respecté
         var avantCles = clesAvant();
+        rechainerDistances(suite, LASTORIGIN);
         window._resterSurPlace = true;
         render(LASTORIGIN, base);
         renumeroter(avantCles);
@@ -4653,13 +4670,7 @@
          `removeStep` le fait après une suppression (l. 1582). C'est un
          recalcul d'une valeur DÉRIVÉE : il ne déplace aucune étape et ne
          touche pas à l'ordre choisi par le voyageur. */
-      (function(){
-        var prev = origine && origine.coord ? origine.coord : null;
-        items.forEach(function(s){
-          if(prev && s && s.c) { s.fromPrev = haversine(prev, s.c); prev = s.c; }
-          else if(s) { s.fromPrev = s.fromPrev || 0; }
-        });
-      })();
+      rechainerDistances(items, origine);
       render(origine, base);
       try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(err){}
       /* la fiche enregistrée suit, sans bouton : c'est un voyage qui se remplit */
