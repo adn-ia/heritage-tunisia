@@ -1168,6 +1168,30 @@
     }catch(e){ return null; }
   };
 
+  /* ⚠️ `navData()` REVIENT — 05/09/2026, Helmy : « pourquoi la carte affiche des
+     vols d'oiseau alors qu'on a réglé ça il y a quatre mois ? »
+
+     C'est ma faute, et elle date d'hier. Le 04/09, en posant `THEvoyage()` et en
+     sortant les liens de carte dans leur brique (commit 5f0c9ae), j'ai supprimé
+     `navData()` — sans voir que `roadtrip-plus.js` s'en sert aussi, et pour tout
+     autre chose : le VRAI tracé routier par OSRM (l. 72-73). Sa première ligne
+     est `if (typeof navData !== "function") return;` : il abandonnait donc en
+     silence, à chaque rendu, et il ne restait que la ligne droite pointillée.
+     Un module qui renonce sans rien dire ne se signale jamais tout seul.
+
+     Elle est reconstruite sur `THEvoyage()` — une seule vérité, deux formes :
+     celle-ci garde exactement la forme que le routeur attend, pour n'avoir pas
+     à toucher un fichier qui tournait. */
+  window.navData = function(){
+    var v = THEvoyage();
+    if(!v || !v.etapes || !v.etapes.length) return null;
+    var coordLL = function(c){ return c[1]+','+c[0]; };          // [lon,lat] → "lat,lng"
+    var stops = v.etapes.map(function(e){ return e.acces || e.coord; }).filter(Boolean);
+    if(!stops.length) return null;
+    var origin = (v.origine && v.origine.coord) ? v.origine.coord : stops[0];
+    return { coordLL: coordLL, origin: origin, stops: stops, forme: v.forme || 'oneway' };
+  };
+
   /* ── L'ÉTAT DE PROJECTION DE LA CARTE ────────────────────────────────────────
      04/09/2026, Helmy : « la carte est toute désorganisée en export sur les
      documents. Vous tentez d'en créer une alors qu'il faut reprojeter juste celle

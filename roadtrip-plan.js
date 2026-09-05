@@ -294,10 +294,27 @@
       // rôle : classes + badge
       card.classList.toggle("rtp-base", r==="base");
       card.classList.toggle("rtp-visit", r==="visite");
+      /* ⚠️ L'ÉCUSSON SE POSE SUR LE TITRE, OÙ QU'IL SOIT — 05/09/2026, Helmy :
+         « elle est censée y être, donc pourquoi ne pas la régler ». Elle n'y
+         était jamais : on cherchait `.nm`, et la carte de la Tunisie n'a pas cet
+         élément — son titre est le `h3` du ruban d'en-tête. Le style et les deux
+         textes étaient là depuis le début ; rien ne les portait.
+         Le RoadTrip écrit la nature DANS le ruban, contre le titre
+         (`blocs/20-itineraire.js` l. 485-487 : le `badge-type` à côté du `h3`,
+         et 📍 pour une visite, 🏕️ pour une étape). On fait pareil, et on
+         cherche le titre au lieu de parier sur un seul nom de classe. */
       if(!card.querySelector(".rtp-role")){
-        var nm=card.querySelector(".nm");
-        if(nm && r){ var badge=document.createElement("span"); badge.className="rtp-role "+(r==="base"?"base":"visit");
-          badge.textContent = r==="base" ? T("plan.base.badge") : T("plan.visite.badge"); nm.appendChild(badge); }
+        var nm = card.querySelector(".nm")
+              || card.querySelector(".ribbon h3, .ribbon h4")
+              || card.querySelector("h3, h4");
+        if(nm && r){
+          var badge=document.createElement("span");
+          badge.className="rtp-role "+(r==="base"?"base":"visit");
+          var cle = r==="base" ? "plan.base.badge" : "plan.visite.badge";
+          badge.setAttribute("data-i18n", cle);   // il suit le changement de langue
+          badge.textContent = T(cle);
+          nm.appendChild(badge);
+        }
       }
 
       /* 1) UNE SEULE RANGÉE D'ACTIONS, comme dans le RoadTrip

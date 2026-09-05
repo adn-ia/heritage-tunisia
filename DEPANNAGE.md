@@ -1130,3 +1130,45 @@ appartiennent : elles restent.
 ⚠️ **Signalé, non touché** : l'écusson « base » / « visite » ne s'affiche jamais.
 `roadtrip-plan.js` l. 298 l'accroche à `.nm` dans la carte, et les cartes de la
 Tunisie n'ont pas cet élément. L'indentation, elle, fonctionne.
+
+## 05/09/2026 — l'écusson « Base / Visite », et le vrai tracé routier
+
+### L'écusson ne s'est jamais affiché
+
+**Symptôme.** Helmy : « c'est quoi le problème écusson ? c'est pas réglé ? »
+
+**Cause.** `roadtrip-plan.js` l. 298 accrochait l'étiquette à `card.querySelector(".nm")`.
+La carte de la Tunisie n'a pas cet élément : son titre est le `h3` du ruban
+d'en-tête. Le style (`.rtp-role`) et les deux textes existaient depuis le début ;
+rien ne les portait. Un `querySelector` qui rend `null` ne se plaint pas.
+
+**Réparation.** On cherche le titre au lieu de parier sur un nom de classe :
+`.nm`, puis le `h3`/`h4` du ruban, puis n'importe quel titre de la carte. Le
+RoadTrip fait pareil — il écrit la nature DANS le ruban, contre le titre
+(`blocs/20-itineraire.js` l. 485-487). L'étiquette porte maintenant son
+`data-i18n` : elle suit le changement de langue.
+⚠️ L'allemand disait « Grundlage » — le fondement, pas le camp de base. La source
+a été reformulée pour forcer le sens : « Basislager », « Base camp », « Campo base ».
+
+### Le vrai tracé routier était mort depuis la veille — ma faute
+
+**Symptôme.** Helmy : « pourquoi la carte affiche des vols d'oiseau alors qu'on a
+réglé ça il y a quatre mois ? »
+
+**Cause.** Le 04/09, en posant `THEvoyage()` et en sortant les liens de carte dans
+leur brique (commit `5f0c9ae`), j'ai supprimé `navData()` de `itineraire.html`.
+Je n'ai pas vu que `roadtrip-plus.js` s'en sert AUSSI, et pour tout autre chose :
+le vrai routage par OSRM (l. 72-73). Sa première ligne est
+`if (typeof navData !== "function") return;` — il abandonnait donc en silence, à
+chaque rendu, et il ne restait que la ligne droite pointillée. Quatre mois de
+travail éteints par une suppression de la veille.
+
+**Réparation.** `navData()` est reconstruite sur `THEvoyage()`
+(`itineraire.html` l. 1171) : une seule vérité, deux formes — celle-ci garde
+exactement la forme que le routeur attend, pour n'avoir pas à toucher un fichier
+qui tournait. Vérifié à l'écran : 2 616 points, ligne pleine, et
+« 🛣️ Par la route (réel) : 117 km · 2 h 55 ».
+
+⚠️ **La leçon, à retenir** : un module qui renonce sur `typeof X !== "function"`
+ne se signale jamais. Avant de retirer une fonction de la page, on cherche qui
+l'appelle — y compris dans les fichiers qu'on ne touche pas.
