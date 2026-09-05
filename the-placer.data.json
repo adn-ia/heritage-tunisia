@@ -1,0 +1,53 @@
+{
+  "_lisezmoi": "Textes de la brique « placer un lieu ». Traduits par DeepL Pro le 05/09/2026, source_lang=FR forcé, bijection par index. Les libellés d'insertion (« Au début », « Après « {n} » », « Annuler ») sont REPRIS de brique-etape.data.json : le même geste doit se dire avec les mêmes mots. Aucun repli en dur.",
+  "fr": {
+    "titre.un": "Où placer ce lieu ?",
+    "titre.n": "Où placer ces lieux ?",
+    "comme.etape": "En faire une étape de l'itinéraire",
+    "comme.visite": "À visiter au départ de cette étape de l'itinéraire",
+    "inserer": "Insérer dans l'itinéraire :",
+    "inserer.debut": "Au début",
+    "inserer.apres": "Après « {n} »",
+    "annuler": "Annuler"
+  },
+  "en": {
+    "titre.un": "Where should this place be located?",
+    "titre.n": "Where should these places be located?",
+    "comme.etape": "Make it a stop on the itinerary",
+    "comme.visite": "Places to visit starting from this leg of the itinerary",
+    "inserer": "Place it in the route:",
+    "inserer.debut": "At the beginning",
+    "inserer.apres": "After « {n} »",
+    "annuler": "Cancel"
+  },
+  "de": {
+    "titre.un": "Wo soll dieser Ort liegen?",
+    "titre.n": "Wo sollen diese Orte liegen?",
+    "comme.etape": "Dies zu einer Etappe der Route machen",
+    "comme.visite": "Sehenswürdigkeiten, die man von dieser Etappe der Reiseroute aus besuchen kann",
+    "inserer": "In die Reiseroute einfügen:",
+    "inserer.debut": "Zu Beginn",
+    "inserer.apres": "Nach „{n}“",
+    "annuler": "Abbrechen"
+  },
+  "it": {
+    "titre.un": "Dove collocare questo luogo?",
+    "titre.n": "Dove collocare questi luoghi?",
+    "comme.etape": "Inserirlo come tappa dell'itinerario",
+    "comme.visite": "Da visitare partendo da questa tappa dell'itinerario",
+    "inserer": "Inserisci nell'itinerario:",
+    "inserer.debut": "All'inizio",
+    "inserer.apres": "Dopo «{n}»",
+    "annuler": "Annulla"
+  },
+  "ar": {
+    "titre.un": "أين يمكن تحديد موقع هذا المكان؟",
+    "titre.n": "أين نضع هذه الأماكن؟",
+    "comme.etape": "إدراجها كمحطة في مسار الرحلة",
+    "comme.visite": "أماكن تستحق الزيارة انطلاقاً من هذه المحطة من المسار",
+    "inserer": "إدراج في مسار الرحلة:",
+    "inserer.debut": "في البداية",
+    "inserer.apres": "بعد «{n}»",
+    "annuler": "إلغاء"
+  }
+}

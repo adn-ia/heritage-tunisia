@@ -1775,14 +1775,62 @@
     let prev=LASTORIGIN.coord; LASTRES.route.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
     render(LASTORIGIN, LASTRES);
   }
-  function insertStop(stop){
+  /* ⚠️ UN LIEU ACCEPTÉ NE TOMBE PLUS AU BOUT DU VOYAGE — 05/09/2026, Helmy :
+     « si on dit rajouter à l'étape, elles se mettent toutes à la fin ». On peut
+     réorganiser après, mais c'est un travail qu'on impose alors que la place
+     était connue AVANT : un lieu vu « en chemin vers la 4 » appartient au trajet
+     3 → 4 ; un lieu trouvé autour de la 4 appartient à la 4.
+     `placer` porte ce choix : `{apres, role, base}`. Sans lui, on garde l'ancien
+     comportement — à la fin — pour ne casser aucun appelant. */
+  /* La table de correspondance des clés, d'un ordre à l'autre. On la relève
+     AVANT le rendu (les numéros sont encore les anciens) et on la referme APRÈS
+     (ils sont les nouveaux). L'appariement se fait par le nom : les listes sont
+     des copies, l'identité des objets ne survit pas au rendu. */
+  function clesAvant(){
+    try{ return (LASTRES && LASTRES.route || []).map(s => ({ nom: norm(s.p.nom), cle: placeKey(s) })); }
+    catch(e){ return []; }
+  }
+  function renumeroter(avant){
+    try{
+      if(!avant || !avant.length || !window.THEplanRenumeroter) return;
+      const apres = (LASTRES && LASTRES.route || []);
+      THEplanRenumeroter(avant.map(a => {
+        const s = apres.find(x => norm(x.p.nom) === a.nom);
+        return [a.cle, s ? placeKey(s) : ''];
+      }));
+    }catch(e){}
+  }
+
+  function insertStop(stop, placer){
     if(!LASTRES) return;
     if(LASTRES.route.some(s=>norm(s.p.nom)===norm(stop.p.nom))) return;
-    const items=LASTRES.route.concat([{...stop}]).map(s=>({...s}));
-    /* À LA FIN, SANS RE-TRI — voir la note de l'écouteur « the:etape ». Une pépite
-       acceptée en chemin se posait ici, puis `nearestOrder` la déplaçait ailleurs
-       dans la liste : on ne retrouvait pas ce qu'on venait d'accepter. */
-    render(LASTORIGIN, {...LASTRES, route:items});
+    const items=LASTRES.route.map(s=>({...s}));
+    const neuf={...stop};
+    if(placer && placer.apres!=null && placer.apres>=-1 && placer.apres<items.length) items.splice(placer.apres+1, 0, neuf);
+    else items.push(neuf);
+    /* ⚠️ La visite se rattache à SON étape de base, pas à une position : si on
+       l'a glissée avant elle, la base a bougé d'un rang. On la reprend dans la
+       liste finale, par identité, jamais par indice.
+       ET APRÈS LE RENDU, JAMAIS AVANT — 05/09/2026. La clé d'un lieu, c'est son
+       NUMÉRO dans l'itinéraire courant (`placeKey`, l. 1066 : indexOf dans
+       LASTRES.route). Tant que la liste neuve n'est pas posée, ni la base ni la
+       visite n'y sont : les deux rendaient « #0 », la visite écrasait la base et
+       finissait par se désigner elle-même. Constaté à l'écran : `the_plan_meta`
+       ne portait qu'une seule entrée pour deux lieux. */
+    const aRattacher = (placer && placer.role==='visite' && window.THEplanRattacherVisite)
+                       ? LASTRES.route[placer.base] : null;
+    /* SANS RE-TRI — voir la note de l'écouteur « the:etape ». Une pépite acceptée
+       se posait ici, puis `nearestOrder` la déplaçait ailleurs dans la liste : on
+       ne retrouvait pas ce qu'on venait d'accepter. La place choisie prime. */
+    const avantCles = clesAvant();
+    window._resterSurPlace = true;
+    render(LASTORIGIN, {...LASTRES, route:items, manualOrder:true});
+    renumeroter(avantCles);
+    if(aRattacher){
+      const base = items.find(x=>x!==neuf && norm(x.p.nom)===norm(aRattacher.p.nom));
+      if(base) THEplanRattacherVisite(base, neuf);
+    }
+    try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
   }
 
   // ---------- Halte / Capture : un moment non planifié, à la position GPS ----------
@@ -2780,7 +2828,11 @@
           '<div class="ec-foot">'+uiT('Touchez un lieu pour voir ce qu\'il y a à découvrir, puis l\'ajouter ou le rejeter. À proximité de votre trajet (distances à vol d\'oiseau, indicatif).')+(moreAuto>0?' <b>+'+moreAuto+'</b> '+uiT('lieu(x) près de ce tronçon')+'.':'')+'</div>';
         ec.querySelectorAll('.ec-item').forEach(b=>{
           const it=items[+b.dataset.k];
-          const payload={ s:it.s, detourMin:detMin(it.detour), note:it.note||'', pin:!!it.pin, vp:isViewpoint(it.s.p), ctx:s.p.nom };
+          /* ⚠️ LA PÉPITE EMPORTE SA PROVENANCE — 05/09/2026. Elle est proposée
+             « en chemin vers » l'étape `i` : elle appartient au trajet i-1 → i.
+             Sa place naturelle est donc APRÈS l'étape i-1, pas au bout du voyage.
+             `venant` est l'étape d'où l'on part, `vers` celle qu'on rejoint. */
+          const payload={ s:it.s, detourMin:detMin(it.detour), note:it.note||'', pin:!!it.pin, vp:isViewpoint(it.s.p), ctx:s.p.nom, venant:i-1, vers:i };
           const go=()=>openDetour(payload);
           b.onclick=go;
           b.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } };
@@ -3679,7 +3731,17 @@
     if(document.getElementById('detourModal').style.display==='flex') closeDetour();
     if(document.getElementById('navModal').style.display==='flex') closeNav();
   });
-  document.getElementById('detourAdd').onclick=()=>{ const p=CUR_DETOUR; closeDetour(); if(p) insertStop(p.s); };  // insertStop re-render
+  /* ⚠️ ON DEMANDE OÙ, AVANT DE POSER — 05/09/2026, Helmy : « avant chaque ajout on
+     peut demander où l'intercaler ». Le défaut vient de la provenance : ce lieu se
+     voit en chemin vers l'étape `vers`, donc on propose « après l'étape vers-1 ».
+     Et deux natures : une étape à part entière, ou une visite au départ de cette
+     étape-là. Si la brique n'est pas là, on garde l'ancien geste plutôt que rien. */
+  document.getElementById('detourAdd').onclick=()=>{
+    const p=CUR_DETOUR; closeDetour(); if(!p) return;
+    if(!window.THEplacer || !THEplacer.ouvrir){ insertStop(p.s); return; }
+    THEplacer.ouvrir({ nb:1, apres: (p.venant!=null ? p.venant : null), base: (p.vers!=null ? p.vers : null) })
+      .then(function(choix){ if(choix) insertStop(p.s, choix); });
+  };
   document.getElementById('detourReject').onclick=()=>{ const p=CUR_DETOUR; closeDetour(); if(p){ REJECTED.add(norm(p.s.p.nom)); if(LASTRES) render(LASTORIGIN, LASTRES); } };
   /* l'ouverture et la fermeture sont branchées par `the-document.js` */
 
@@ -4212,6 +4274,7 @@
     var RAYONS=[2,5,10,25,50];
     var mod=document.getElementById('autourModal'); if(!mod) return;
     var CHOISIS=[];        // lieux cochés, ajoutés en une fois
+    var DEPUIS=-1;         // l'étape d'où la demande est partie (-1 : inconnue)
     var liste=document.getElementById('autourListe'), rayons=document.getElementById('autourRayons'),
         deQui=document.getElementById('autourDe');
     var centre=null, label='', rayon=10;
@@ -4291,22 +4354,59 @@
 
     (function(){
       var go=document.getElementById('autourGo'); if(!go) return;
-      go.onclick=function(){
-        if(!CHOISIS.length || typeof LASTRES==='undefined' || !LASTRES) return;
+      /* ⚠️ ON DEMANDE OÙ, AVANT DE POSER — 05/09/2026, Helmy : « elles se mettent
+         toutes à la fin, alors qu'avant chaque ajout on peut demander où
+         l'intercaler ». Ces lieux viennent de « autour de l'étape DEPUIS » : on
+         propose donc juste après elle, et au choix comme étapes ou comme visites
+         au départ d'elle. Le lot part ensemble et dans l'ordre coché.
+         Si la brique n'est pas là, on garde l'ancien geste plutôt que rien. */
+      function poser(choix){
         var suite=(LASTRES.route||[]).map(function(y){ var o={}; for(var k in y) o[k]=y[k]; return o; });
-        CHOISIS.forEach(function(s){ var o={}; for(var k in s) o[k]=s[k]; suite.push(o); });
+        var neufs=CHOISIS.map(function(s){ var o={}; for(var k in s) o[k]=s[k]; return o; });
+        var baseStop = (choix && choix.role==='visite' && window.THEplanRattacherVisite)
+                       ? (LASTRES.route||[])[choix.base] : null;
+        if(choix && choix.apres!=null && choix.apres>=-1 && choix.apres<suite.length)
+          suite.splice.apply(suite, [choix.apres+1, 0].concat(neufs));
+        else suite = suite.concat(neufs);
         CHOISIS=[];
         fermer();
         var base={}; for(var k in LASTRES) base[k]=LASTRES[k];
         base.route=suite; base.manualOrder=true;      // l'ordre choisi est respecté
+        var avantCles = clesAvant();
+        window._resterSurPlace = true;
         render(LASTORIGIN, base);
+        renumeroter(avantCles);
+        /* après le rendu, jamais avant : voir insertStop, l. 1792, même raison */
+        if(baseStop){
+          var b = suite.find(function(x){ return neufs.indexOf(x)<0 && norm(x.p.nom)===norm(baseStop.p.nom); });
+          if(b) neufs.forEach(function(n){ THEplanRattacherVisite(b, n); });
+        }
         try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
         if(typeof showGuide==='function') showGuide(T('autour.ajoutes'), 8000);
+      }
+      go.onclick=function(){
+        if(!CHOISIS.length || typeof LASTRES==='undefined' || !LASTRES) return;
+        if(!window.THEplacer || !THEplacer.ouvrir){ poser(null); return; }
+        THEplacer.ouvrir({ nb:CHOISIS.length, apres: (DEPUIS>=0 ? DEPUIS : null), base: (DEPUIS>=0 ? DEPUIS : null) })
+          .then(function(choix){ if(choix) poser(choix); });
       };
     })();
 
     window.THEautour=function(coord, nom){
       CHOISIS=[];        // une nouvelle recherche repart d'une sélection vide
+      /* ⚠️ ON RETIENT D'OÙ VIENT LA DEMANDE — 05/09/2026. « Ce qu'il y a autour »
+         se demande DEPUIS une étape : les lieux trouvés lui appartiennent, et
+         leur place naturelle est juste après elle. On repère cette étape par son
+         nom, celui-là même que le geste nous passe ; à défaut, par la position.
+         Sans ce repère, tout retombait à la fin du voyage — le défaut signalé. */
+      DEPUIS = -1;
+      try{
+        var r = (typeof LASTRES!=='undefined' && LASTRES && LASTRES.route) || [];
+        for(var i=0;i<r.length;i++){
+          if(nom && r[i].p && norm(r[i].p.nom)===norm(nom)){ DEPUIS=i; break; }
+          if(!nom && coord && r[i].c && Math.abs(r[i].c[0]-coord[0])<1e-6 && Math.abs(r[i].c[1]-coord[1])<1e-6){ DEPUIS=i; break; }
+        }
+      }catch(e){}
       centre=coord||(LASTORIGIN&&LASTORIGIN.coord); label=nom||'';
       deQui.textContent=label ? ('📍 '+label) : '';
       if(!centre){ return; }
@@ -4350,6 +4450,7 @@
   <script src="brique-etape.js" defer></script>
   <script src="the-bornes.js" defer></script>
   <script src="the-carte-plein.js" defer></script>
+  <script src="the-placer.js" defer></script>
   <script src="brique-partage-lieu.js" defer></script>
 
   <script>

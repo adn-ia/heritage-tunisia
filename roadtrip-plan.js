@@ -569,6 +569,57 @@
     THEetape.ouvrir({ premiere:false, apres:apres,
       etapes: route.map(function(s){ return {nom:s.p.nom}; }) });
   }
+  /* ⚠️ RATTACHER UNE VISITE, PUBLIÉ POUR L'HÔTE — 05/09/2026.
+     Le geste existait déjà ici (l. 512-514) mais n'était atteignable que par le
+     bouton « ➕ ajouter une visite » de la carte. L'hôte en a besoin pour les
+     pépites : « à visiter au départ de cette étape ». On expose donc le GESTE,
+     pas le modèle de données — `metaPatch` et `pkey` restent à nous. Réinventer
+     un second rattachement ailleurs aurait fait deux vérités pour une idée. */
+  window.THEplanRattacherVisite = function(baseStop, visiteStop){
+    try{
+      if(!baseStop || !visiteStop) return false;
+      if(role(baseStop)!=="base") metaPatch(baseStop, {kind:"base", baseKey:""});
+      metaPatch(visiteStop, {kind:"visite", baseKey:pkey(baseStop)});
+      rerender();     /* comme toggleBase (l. 152) : marquer, puis montrer */
+      return true;
+    }catch(e){ return false; }
+  };
+
+  /* ⚠️ RENUMÉROTER LA MÉMOIRE DU PLAN — 05/09/2026.
+     Notre mémoire est rangée sous la clé de l'hôte, et cette clé est le NUMÉRO
+     du lieu dans l'itinéraire (`placeKey`, itineraire.html l. 1066). Tant qu'on
+     n'ajoutait qu'à la fin, aucun numéro ne bougeait. Dès qu'on intercale, tous
+     les suivants se décalent d'un rang : dates, heures et rattachements
+     désignent alors le voisin. Constaté à l'écran — un lieu posé en tête, et
+     les trois visites glissaient sur les trois lieux d'à côté.
+     L'hôte, seul propriétaire du format de clé, nous donne la table de
+     correspondance ; nous ne faisons que déménager les entrées, y compris les
+     `baseKey`, qui sont elles aussi des clés. Une clé sans destination est un
+     lieu retiré : sa mémoire s'en va avec lui. */
+  window.THEplanRenumeroter = function(paires){
+    try{
+      if(!Array.isArray(paires) || !paires.length) return false;
+      var trad={}, bouge=false;
+      paires.forEach(function(x){
+        if(!x || !x[0]) return;
+        trad[x[0]] = x[1] || "";
+        if(x[0] !== x[1]) bouge = true;
+      });
+      if(!bouge) return false;
+      var m=metaAll(), neuf={};
+      Object.keys(m).forEach(function(k){
+        var nk = (k in trad) ? trad[k] : k;
+        if(!nk) return;                                  // le lieu n'est plus là
+        var v = m[k], b = v && v.baseKey;
+        if(b && (b in trad)) v = Object.assign({}, v, {baseKey: trad[b]});
+        neuf[nk] = v;
+      });
+      metaSave(neuf);
+      rerender();
+      return true;
+    }catch(e){ return false; }
+  };
+
   /* L'hôte insère l'étape, puis nous demande d'y coller son rôle. */
   window.__planAppliquerMetaEnAttente = function(stop){
     var m=window.__rtpMetaEnAttente; window.__rtpMetaEnAttente=null;
