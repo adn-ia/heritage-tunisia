@@ -1196,3 +1196,36 @@ table donne SEPT JOURS à `router.project-osrm.org` (l. 28). La réponse est don
 gardée sept jours, les huit derniers tracés au plus. Mesuré : premier affichage
 1,5 s, affichages suivants **0,9 s sans rappeler le serveur** — et le tracé tient
 hors réseau, comme les tuiles.
+
+## 05/09/2026 — le point de départ ne se choisissait pas
+
+**Symptôme.** Helmy : « sur voyage libre on définit tout, ici la position de
+départ est prédéfinie, je n'ai pas le choix… ce n'est pas ce qui est convenu,
+Terralog ne fait pas ça », puis « dans voyage libre on doit définir nous-mêmes
+l'endroit de départ, il n'est jamais défini automatiquement », et « même chose
+pour n'importe quelle option d'ailleurs ».
+
+**Cause, en deux endroits.**
+1. **Composer.** `resolveOrigin` sait traiter un départ saisi à la main depuis
+   toujours (`itineraire.html` l. 1671, branche `adr`) — mais **rien ne
+   l'offrait**. La liste ne contenait que « Ma position (GPS) » et les
+   gouvernorats. Le chemin existait, sans porte.
+2. **Voyage libre.** `startLibreAvecNom` posait le départ tout seul : le centre
+   de la carte du pays (`departParDefaut()`), affiché « Ma position », puis
+   **écrasé en douce** par un relevé GPS quelques secondes plus tard. On
+   demandait la première ÉTAPE, jamais le départ.
+
+**Réparation.**
+- La liste porte enfin « 📍 Un autre point de départ — à choisir sur la carte ».
+  Elle ouvre la MÊME brique que le bouton « Changer » de la carte Départ : un
+  seul chemin pour choisir un lieu, jamais deux. Le choix reste affiché dans la
+  liste (« 📍 Sidi Bou Saïd »).
+- Le voyage libre demande son départ D'ABORD, la première étape ensuite. Si l'on
+  renonce, la première étape est proposée quand même au bout de trente secondes :
+  on n'enferme personne.
+- Le relevé GPS ne remplace plus que le départ resté « Ma position ». Un départ
+  désigné ne bouge plus.
+
+**Vérifié à l'écran** : Composer → « 📍 Votre point de départ » → Sidi Bou Saïd
+retenu et utilisé pour composer ; voyage libre → départ « Hôtel à Hammamet »,
+puis « 📍 Votre première étape », et le départ tient quinze secondes plus tard.

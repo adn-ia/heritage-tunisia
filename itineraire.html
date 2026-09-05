@@ -1514,6 +1514,7 @@
 
   let SITES=[];            // [{p, c:[lon,lat], layer, genre}]
   let GOUV={};             // gouvernorat -> centroïde [lon,lat]
+  let DEPART_CHOISI=null;  // le lieu de départ désigné à la main, quand il y en a un
   let selectedThemes=new Set();   // plusieurs thèmes cumulables (mix)
   let mapObj=null;
   let LASTORIGIN=null, LASTRES=null;   // dernier itinéraire (pour ajout de lieu)
@@ -1574,6 +1575,30 @@
         const cs=acc[g];
         GOUV[g]=[ cs.reduce((t,c)=>t+c[0],0)/cs.length, cs.reduce((t,c)=>t+c[1],0)/cs.length ];
         const o=document.createElement('option'); o.value='g:'+g; o.textContent=uiT('Depuis')+' '+g; sel.appendChild(o);
+      });
+      /* ⚠️ « UN AUTRE LIEU » N'ÉTAIT JAMAIS PROPOSÉ — 05/09/2026, Helmy : « ici la
+         position de départ est prédéfinie, je n'ai pas le choix… ce n'est pas ce
+         qui est convenu, Terralog ne fait pas ça », puis « le point de départ, on
+         doit le définir nous-mêmes, il n'est jamais défini automatiquement, et
+         c'est pareil pour n'importe quelle option ».
+         `resolveOrigin` sait depuis toujours traiter le choix `adr` (l. 1671) —
+         mais rien ne l'offrait : la liste ne contenait que « Ma position » et les
+         gouvernorats. On ajoute donc l'entrée qui manquait, et elle ouvre la MÊME
+         brique que le bouton « Changer » de la carte Départ : un seul chemin pour
+         choisir un lieu, jamais deux. */
+      var oAutre=document.createElement('option');
+      oAutre.value='lieu'; oAutre.setAttribute('data-i18n','iti.depart.autre.lieu');
+      oAutre.textContent=uiT('iti.depart.autre.lieu'); sel.appendChild(oAutre);
+      sel.addEventListener('change', function(){
+        if(sel.value!=='lieu' || !window.THEetape) return;
+        var une=function(ev){
+          document.removeEventListener('the:borne', une);
+          var x=ev.detail; if(!x||!x.coord){ sel.value='gps'; return; }
+          DEPART_CHOISI={ coord:x.coord, label:x.nom||x.adresse||'' };
+          oAutre.textContent='📍 '+DEPART_CHOISI.label;   // le choix reste sous les yeux
+        };
+        document.addEventListener('the:borne', une);
+        THEetape.ouvrir({borne:'depart'});
       });
       initPresets();
       renderSaved();   // affiche « Mes itinéraires enregistrés » s'il y en a
@@ -1667,6 +1692,7 @@
   function resolveOrigin(silent){
     const sel=document.getElementById('origin');
     const v=sel.value;
+    if(v==='lieu' && DEPART_CHOISI) return Promise.resolve({coord:DEPART_CHOISI.coord, label:DEPART_CHOISI.label});
     if(v.startsWith('g:')) return Promise.resolve({coord:GOUV[v.slice(2)], label:v.slice(2)});
     if(v==='adr' && window.THEadresseDepart) return THEadresseDepart();   // départ saisi à la main
     function echec(cle){
@@ -3262,8 +3288,24 @@
     render({coord:departParDefaut(), label:uiT('itin.ma.position')},
       { route:[], theme:{ic:'🎒',label:'Voyage libre'}, dur:{max:99,lib:'libre'}, per:{radius:99999,lib:'libre'},
         forme:'oneway', pepites:[], mode:'libre', tour:{titre:_nomLibre, soustitre:uiT('itin.libre.soustitre')} });
-    /* la première étape se demande MAINTENANT : le voyage existe, elle a où aller */
-    setTimeout(function(){ if(window.THEetape) THEetape.ouvrir({premiere:true}); }, 350);
+    /* ⚠️ LE DÉPART SE DEMANDE, IL NE SE DEVINE PAS — 05/09/2026, Helmy : « dans
+       voyage libre, on doit définir nous-mêmes l'endroit de départ, il n'est
+       jamais défini automatiquement ». On demandait la première ÉTAPE et on
+       posait le départ tout seul — le centre de la carte du pays, affiché
+       « Ma position », puis écrasé en douce par le GPS quelques secondes plus
+       tard. Le voyageur n'avait jamais la main dessus.
+       On demande donc le départ d'abord, avec la même brique que le bouton
+       « Changer » de la carte Départ ; la première étape vient ensuite. */
+    setTimeout(function(){
+      if(!window.THEetape){ return; }
+      var suite=function(){ setTimeout(function(){ THEetape.ouvrir({premiere:true}); }, 250); };
+      var une=function(){ document.removeEventListener('the:borne', une); suite(); };
+      document.addEventListener('the:borne', une);
+      THEetape.ouvrir({borne:'depart'});
+      /* si l'on renonce à désigner un départ, on n'enferme personne : la première
+         étape est proposée quand même, au bout de quelques secondes. */
+      setTimeout(function(){ if(LASTRES && !(LASTRES.route||[]).length){ document.removeEventListener('the:borne', une); suite(); } }, 30000);
+    }, 350);
     /* enregistré tout de suite : il apparaît dans le menu, on peut y revenir */
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
     (function(){ var arr=readSaved();
@@ -3280,13 +3322,19 @@
           étape ajoutée met à jour CETTE fiche, au lieu d'en laisser une vide. */
        window.THElibreId=_idLibre; })();
     showGuide(uiT('itin.voyage.libre.lance.deplacez.vous'), 9000);
-    // on cale l'origine sur la position réelle si dispo (pour ordonner les haltes autour de soi)
+    /* ⚠️ PLUS D'ÉCRASEMENT SILENCIEUX — 05/09/2026. Ce relevé GPS remplaçait le
+       point de départ sans rien demander, quelques secondes après l'ouverture :
+       on venait d'en désigner un, il disparaissait. On ne cale donc la position
+       que si AUCUN départ n'a été choisi — le libellé « Ma position » est alors
+       encore là, et c'est lui qu'on précise. */
     if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
       /* ⚠️ « Ma position » était EN DUR ici alors que la clé existe et sert déjà
          l. 2957. Ce libellé se lit dans l'en-tête de l'itinéraire, sur la borne
          de départ et sur la couverture de l'album : en allemand, il disait
          « Ma position ». */
-      p=>{ if(LASTRES&&LASTRES.mode==='libre') LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:uiT('itin.ma.position')}; },()=>{},
+      p=>{ if(LASTRES&&LASTRES.mode==='libre'
+              && LASTORIGIN && LASTORIGIN.label===uiT('itin.ma.position'))
+             LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:uiT('itin.ma.position')}; },()=>{},
       {enableHighAccuracy:true,timeout:8000,maximumAge:120000});
   }
   document.getElementById('mLibre').onclick=()=>requirePass(uiT('itin.feature.libre'), startLibre);
