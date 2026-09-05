@@ -345,7 +345,7 @@
           '<button data-dl="'+m.id+'" title="'+esc(T('Enregistrer dans mes photos'))+'">⬇️ '+T('Enregistrer')+'</button>'+
           '<button class="cn-rm" data-del="'+m.id+'">🗑️ '+T('carnet.supprimer')+'</button></div></div>'; }).join('')
         : '<div class="cn-empty">'+T('carnet.aucun.media.pour.linstant.ajoutez')+'</div>';
-      modal('<button class="cn-x" onclick="THECarnet.close()">×</button>'+
+      modal('<button class="cn-x" data-cn-close aria-label="'+esc(T('index.fermer'))+'">×</button>'+
         '<h3>🖼️ '+T('carnet.carnet')+' — '+esc(nom)+'</h3>'+
         '<div class="cn-list">'+list+'</div>'+
         (arr.length>1?'<div style="text-align:center;margin:6px 0 0"><button class="cn-btn cn-delsel" disabled>🗑️ '+T('carnet.supprimer')+' (0)</button></div>':'')+
@@ -368,7 +368,7 @@
           '<label class="cn-btn cn-ic" title="'+esc(T('carnet.fichiers'))+'" aria-label="'+esc(T('carnet.fichiers'))+'">📁<input type="file" accept="image/*,video/*,audio/*,.mov,.mp4,.m4v,.m4a,.mp3,.wav,.aac,.ogg" multiple hidden data-add=""></label>'+
           '<button class="cn-btn cn-ic cn-rec" title="'+esc(T('carnet.son'))+'" aria-label="'+esc(T('carnet.son'))+'">🎙️</button></div>'+
         '<p class="cn-tip">🔒 '+T('carnet.vos.medias.restent.sur.votre')+'</p>'+
-        '<button class="cn-close-b" onclick="THECarnet.close()">'+T('index.fermer')+'</button>');
+        '<button class="cn-close-b" data-cn-close>'+T('index.fermer')+'</button>');
       purgeM();
       var w=document.getElementById('cn-modal');
       /* ⚠️ C'EST `.cn-list` QUI DÉFILE (max-height:50vh; overflow:auto), pas la page.
@@ -513,7 +513,27 @@
       +'.cn-close-b{width:100%;margin-top:12px;padding:11px;border:none;border-radius:8px;background:#a8884f;color:#fff;font:inherit;font-weight:700;cursor:pointer}';
     var st=document.createElement('style'); st.textContent=css; document.head.appendChild(st);
     if(!document.getElementById('cn-modal')){ var w=document.createElement('div'); w.id='cn-modal'; w.innerHTML='<div class="cn-box"></div>'; document.body.appendChild(w);
-      w.addEventListener('click',function(e){ if(e.target===w) closeModal(); }); }
+      /* ⚠️ UN SEUL CHEMIN POUR FERMER — 05/09/2026, Helmy : « le bouton Fermer et
+         la croix doivent suivre le même chemin ; si la croix fonctionne, le bouton
+         doit fonctionner aussi. »
+         Il y en avait TROIS : la croix avec son `onclick` écrit sur elle, le bouton
+         « Fermer » avec le sien, et cet écouteur pour le fond. Trois câblages pour
+         un seul geste — donc trois façons de tomber en panne séparément.
+         ⚠️ ET SURTOUT : `modal()` remplace tout le contenu de la boîte à chaque
+         rendu. Après l'ajout d'une photo, les deux boutons sont DÉTRUITS et
+         reconstruits. Un câblage porté par le bouton meurt avec lui et doit
+         renaître intact à chaque fois ; cet écouteur-ci est posé UNE FOIS sur la
+         modale, qui n'est jamais recréée (voir le garde juste au-dessus) — il
+         survit à tous les re-rendus, par construction.
+         Les boutons ne portent plus de code : ils se DÉCLARENT par `data-cn-close`.
+         ⚠️ On vise cet attribut et non la classe `.cn-close-b` : le bouton
+         « ⏹ Arrêter » de l'enregistreur la porte aussi (l. 446), et il doit
+         arrêter le son, pas fermer la fenêtre. */
+      w.addEventListener('click', function(e){
+        if(e.target===w){ closeModal(); return; }
+        var t = e.target && e.target.closest ? e.target.closest('[data-cn-close]') : null;
+        if(t){ e.preventDefault(); closeModal(); }
+      }); }
     document.querySelectorAll('.the-carnet').forEach(renderSection);
   }
   // re-rendu quand l'itinéraire (re)génère ses étapes
@@ -538,7 +558,7 @@
       var h = imgs.filter(function(m){ return m.hero; })[0];
       var vign = imgs.map(function(m){
         return '<div class="cn-hp'+(m.hero?' on':'')+'" data-hp="'+m.id+'" style="background-image:url(\''+lien(m.blob,'entete')+'\')"></div>'; }).join('');
-      modal('<button class="cn-x" onclick="THECarnet.close()">×</button>'+
+      modal('<button class="cn-x" data-cn-close aria-label="'+esc(T('index.fermer'))+'">×</button>'+
         '<h3>📷 '+T('carnet.photo.en.tete')+' — '+esc(nom)+'</h3>'+
         '<div class="cn-hprev"'+(h?' style="background-image:url(\''+lien(h.blob,'entete')+'\')"':'')+'></div>'+
         '<div class="cn-row" style="margin-top:10px">'+
@@ -546,7 +566,7 @@
           '<label class="cn-btn">📷 '+T('carnet.photo')+'<input type="file" accept="image/*" capture="environment" hidden class="cn-hpick"></label>'+
           (h?'<button class="cn-btn cn-hclr">✕ '+T('carnet.supprimer')+'</button>':'')+'</div>'+
         (vign?'<div class="cn-hpgrid">'+vign+'</div>':'')+
-        '<button class="cn-close-b" onclick="THECarnet.close()">'+T('index.fermer')+'</button>');
+        '<button class="cn-close-b" data-cn-close>'+T('index.fermer')+'</button>');
       purgeE();
       var w=document.getElementById('cn-modal');
       w.querySelectorAll('.cn-hpick').forEach(function(inp){ inp.onchange=function(){
