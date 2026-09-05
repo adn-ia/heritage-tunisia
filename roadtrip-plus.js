@@ -67,6 +67,26 @@
     setTimeout(function(){ if (document.body.contains(ov)) ov.remove(); }, 15000); // auto-ferme (conduite)
   }
 
+  /* ⚠️ ON ATTEND LA CARTE, ON N'ABANDONNE PAS — 05/09/2026, Helmy : « pourquoi la
+     carte affiche des vols d'oiseau ? ». Deux causes, l'une derrière l'autre.
+     La première : `navData` avait disparu de la page la veille (voir le
+     dépannage du 05/09). La seconde, mesurée une fois la première réparée : au
+     TOUT PREMIER rendu, `mapObj` n'existe pas encore — la carte se construit
+     pendant ce rendu. Les 300 ms d'attente suffisaient en local, pas en ligne.
+     La fonction rendait la main et personne ne la rappelait : la ligne droite
+     pointillée restait pour toute la visite. On réessaie donc, jusqu'à six
+     secondes, au lieu de renoncer une fois pour toutes. */
+  function quandLaCarteEstLa(faire) {
+    var essais = 0;
+    (function attendre() {
+      var prete = false;
+      try { prete = (typeof mapObj !== "undefined") && !!mapObj; } catch (e) { prete = false; }
+      if (prete) return faire();
+      if (++essais > 30) return;                       // ~6 s, puis on renonce
+      setTimeout(attendre, 200);
+    })();
+  }
+
   /* --- 1) VRAI ROUTAGE OSRM --- */
   function drawRealRoute() {
     if (typeof mapObj === "undefined" || !mapObj || typeof navData !== "function") return;
@@ -393,7 +413,10 @@
     var _render = render;
     render = function (o, r) {
       _render(o, r);
-      setTimeout(function () { injectButtons(); if (r && r.route && r.route.length) drawRealRoute(); }, 300);
+      setTimeout(function () {
+        injectButtons();
+        if (r && r.route && r.route.length) quandLaCarteEstLa(drawRealRoute);
+      }, 300);
     };
   }
   /* Les trois sorties « road trip » sont désormais offertes par le bouton unique
