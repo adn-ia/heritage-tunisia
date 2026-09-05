@@ -1812,11 +1812,19 @@
   }
 
   // insérer un lieu connu (objet SITES) dans le parcours, replacé par proximité
+  /* ⚠️ RETIRER UNE ÉTAPE RENUMÉROTE AUSSI — 05/09/2026. Même défaut que
+     l'insertion, dans l'autre sens : la mémoire du plan est rangée sous le
+     NUMÉRO du lieu, et retirer le troisième fait glisser tous les suivants d'un
+     rang. Dates, heures et visites passaient au voisin, sans un signe.
+     Ici la liste est déjà à jour dès le `splice` : on renumérote sans attendre
+     le rendu (l'insertion, elle, doit l'attendre — sa liste neuve n'entre en
+     place qu'au rendu). */
   function removeStep(i){
     if(!LASTRES || LASTRES.route.length<=1){ THEtoast(uiT('Gardez au moins une étape — ou revenez modifier vos choix.')); return; }
+    const avantCles = clesAvant();
     LASTRES.route.splice(i,1);
-    let prev=LASTORIGIN.coord; LASTRES.route.forEach(s=>{ s.fromPrev=haversine(prev,s.c); prev=s.c; });
-    render(LASTORIGIN, LASTRES);
+    rechainerDistances(LASTRES.route, LASTORIGIN);
+    if(!renumeroter(avantCles)) render(LASTORIGIN, LASTRES);
   }
   /* ⚠️ UN LIEU ACCEPTÉ NE TOMBE PLUS AU BOUT DU VOYAGE — 05/09/2026, Helmy :
      « si on dit rajouter à l'étape, elles se mettent toutes à la fin ». On peut
@@ -1845,18 +1853,23 @@
      (ils sont les nouveaux). L'appariement se fait par le nom : les listes sont
      des copies, l'identité des objets ne survit pas au rendu. */
   function clesAvant(){
-    try{ return (LASTRES && LASTRES.route || []).map(s => ({ nom: norm(s.p.nom), cle: placeKey(s) })); }
+    try{ return (LASTRES && LASTRES.route || []).map(s => ({ s:s, nom: norm(s.p.nom), cle: placeKey(s) })); }
     catch(e){ return []; }
   }
+  /* On apparie d'abord par IDENTITÉ : un retrait et un déplacement gardent les
+     mêmes objets, et l'identité ne se trompe jamais, même sur deux lieux de même
+     nom. L'insertion, elle, travaille sur des copies : le nom prend le relais.
+     Un lieu qu'on ne retrouve pas est un lieu retiré — sa clé n'a plus de
+     destination, et sa mémoire s'en va avec lui. */
   function renumeroter(avant){
     try{
-      if(!avant || !avant.length || !window.THEplanRenumeroter) return;
+      if(!avant || !avant.length || !window.THEplanRenumeroter) return false;
       const apres = (LASTRES && LASTRES.route || []);
-      THEplanRenumeroter(avant.map(a => {
-        const s = apres.find(x => norm(x.p.nom) === a.nom);
+      return THEplanRenumeroter(avant.map(a => {
+        const s = apres.indexOf(a.s) >= 0 ? a.s : apres.find(x => norm(x.p.nom) === a.nom);
         return [a.cle, s ? placeKey(s) : ''];
       }));
-    }catch(e){}
+    }catch(e){ return false; }
   }
 
   function insertStop(stop, placer){

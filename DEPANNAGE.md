@@ -1100,3 +1100,33 @@ faux ; en intercalant, toute la suite l'était.
 un seul endroit pour les trois chemins d'insertion — la pépite, « autour de moi »
 et l'ajout d'étape à la main, qui portait déjà ce calcul recopié en clair
 (l. 4655). C'est une valeur dérivée : l'ordre choisi par le voyageur ne bouge pas.
+
+## 05/09/2026 — déplacer ou retirer une étape décalait la mémoire du plan
+
+**Symptôme.** Signalé le matin même en réparant l'insertion, et confirmé à
+l'écran : on retire la première étape, et la visite rattachée à la quatrième se
+retrouve sur la troisième. Idem en montant ou descendant une étape. Dates et
+heures glissaient de la même façon.
+
+**Cause.** La même que pour l'insertion : la mémoire du plan est rangée sous le
+NUMÉRO du lieu dans l'itinéraire (`placeKey`, `itineraire.html` l. 1066). Tout ce
+qui change l'ordre change les numéros ; rien ne suivait.
+
+**Réparation.** `THEplanRenumeroter` existait depuis le matin, il n'était branché
+que sur l'insertion. Il l'est maintenant sur les quatre chemins :
+`removeStep` (`itineraire.html` l. 1815), `moveStep`, `dropStep` et `insertAt`
+(`roadtrip-plan.js` l. 108, 122, 130). Les clés se relèvent AVANT de toucher à la
+liste et se referment APRÈS ; l'appariement se fait par identité — ce sont les
+mêmes objets — le nom ne sert de secours que pour l'insertion, qui travaille sur
+des copies. `removeStep` reprend au passage `rechainerDistances` au lieu de
+recopier le calcul en clair.
+
+**Un défaut trouvé en le vérifiant.** On retire l'étape de base : sa visite
+restait décalée vers la droite, avec son trait doré, rattachée à un lieu absent.
+Une visite ne survit pas à sa base — elle redevient une étape ordinaire
+(`roadtrip-plan.js`, dans `THEplanRenumeroter`). Sa date et son heure lui
+appartiennent : elles restent.
+
+⚠️ **Signalé, non touché** : l'écusson « base » / « visite » ne s'affiche jamais.
+`roadtrip-plan.js` l. 298 l'accroche à `.nm` dans la carte, et les cartes de la
+Tunisie n'ont pas cet élément. L'indentation, elle, fonctionne.

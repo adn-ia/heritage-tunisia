@@ -98,28 +98,55 @@
   }
   function rerender(){ if(typeof render==="function") render(LASTORIGIN, LASTRES); }
 
+  /* ⚠️ TOUT CE QUI CHANGE L'ORDRE RENUMÉROTE — 05/09/2026. Notre mémoire est
+     rangée sous le NUMÉRO du lieu (voir THEplanRenumeroter). Monter une étape,
+     en retirer une, en intercaler une : chaque fois des numéros changent, et
+     sans renumérotation la date, l'heure et les visites d'un lieu passent au
+     voisin. On relève les clés AVANT de toucher à la liste, on les referme
+     APRÈS — l'appariement se fait par identité, ce sont les mêmes objets. */
+  function clesActuelles(){
+    if(!haveRoute()) return [];
+    return LASTRES.route.map(function(s){ return { s:s, cle:pkey(s) }; });
+  }
+  function renumeroterDepuis(avant){
+    if(!avant || !avant.length) return false;
+    var apres = haveRoute() ? (LASTRES.route||[]) : [];
+    return window.THEplanRenumeroter(avant.map(function(a){
+      return [a.cle, apres.indexOf(a.s)>=0 ? pkey(a.s) : ""];
+    }));
+  }
+
   function moveStep(i, dir){
     if(!haveRoute()) return;
     var r=LASTRES.route, j=i+dir;
     if(j<0||j>=r.length) return;
+    var avant=clesActuelles();
     var t=r[i]; r[i]=r[j]; r[j]=t;
     LASTRES.manualOrder=true;
-    recompute(); rerender();
+    recompute();
+    if(!renumeroterDepuis(avant)) rerender();
   }
   function dropStep(i){
     if(!haveRoute()) return;
     if(typeof removeStep==="function"){ removeStep(i); return; }   // garde-fous + i18n du moteur
     if(LASTRES.route.length<=1){ alert(T("plan.gardez.une.etape")); return; }
-    LASTRES.route.splice(i,1); recompute(); rerender();
+    var avant=clesActuelles();
+    LASTRES.route.splice(i,1); recompute();
+    if(!renumeroterDepuis(avant)) rerender();
   }
   function insertAt(idx, stop, meta){
     if(!haveRoute() && !(typeof LASTRES!=="undefined"&&LASTRES)) return;
     if(!LASTRES.route) LASTRES.route=[];
     idx=Math.max(0, Math.min(idx, LASTRES.route.length));
+    var avant=clesActuelles();
     LASTRES.route.splice(idx, 0, stop);
+    /* la renumérotation d'abord, le rôle du lieu posé ensuite : sinon on écrirait
+       sa marque sous un numéro que la renumérotation viendrait déménager. */
+    var bouge=renumeroterDepuis(avant);
     if(meta) metaPatch(stop, meta);
     LASTRES.manualOrder=true;
-    recompute(); rerender();
+    recompute();
+    if(!bouge || meta) rerender();
   }
   window.__planMove=moveStep; window.__planDrop=dropStep; window.__planInsertAt=insertAt;
 
@@ -611,7 +638,15 @@
         var nk = (k in trad) ? trad[k] : k;
         if(!nk) return;                                  // le lieu n'est plus là
         var v = m[k], b = v && v.baseKey;
-        if(b && (b in trad)) v = Object.assign({}, v, {baseKey: trad[b]});
+        if(b && (b in trad)){
+          /* ⚠️ UNE VISITE NE SURVIT PAS À SA BASE — 05/09/2026, vu à l'écran :
+             on retire l'étape de base, et sa visite restait décalée vers la
+             droite, avec son trait doré et son écusson « visite », rattachée à
+             un lieu qui n'était plus là. Elle redevient une étape ordinaire ;
+             sa date et son heure, elles, lui appartiennent et restent. */
+          v = (trad[b] === "") ? Object.assign({}, v, {kind:"", baseKey:""})
+                               : Object.assign({}, v, {baseKey: trad[b]});
+        }
         neuf[nk] = v;
       });
       metaSave(neuf);
