@@ -3921,9 +3921,15 @@
   function closeDetour(){ document.getElementById('detourModal').style.display='none'; CUR_DETOUR=null; }
   document.getElementById('detourX').onclick=closeDetour;
   document.getElementById('detourModal').onclick=e=>{ if(e.target.id==='detourModal') closeDetour(); };
+  /* ⚠️ UN APPEL RESTÉ SEUL APRÈS LE DÉCOUPAGE — 05/09/2026. Les sorties de carte
+     sont parties dans `the-sorties-carte.js` le 04/09, emportant `openNav` et
+     `closeNav`. Cette ligne-ci est restée : à CHAQUE appui sur Échap, elle
+     appelait une fonction qui n'existe plus et levait une erreur. Le seul
+     `navModal` encore dans la page (l. 855) n'est plus ouvert par personne.
+     Même classe de défaut que `navData` : on retire une fonction, on oublie qui
+     l'appelle. C'est ce qu'une comparaison avant/après découpage a trouvé. */
   document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
     if(document.getElementById('detourModal').style.display==='flex') closeDetour();
-    if(document.getElementById('navModal').style.display==='flex') closeNav();
   });
   /* ⚠️ ON DEMANDE OÙ, AVANT DE POSER — 05/09/2026, Helmy : « avant chaque ajout on
      peut demander où l'intercaler ». Le défaut vient de la provenance : ce lieu se

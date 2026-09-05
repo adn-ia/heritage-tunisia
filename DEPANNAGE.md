@@ -1272,3 +1272,38 @@ retrouvée et affichée sur la carte de l'étape.
   trois « Mon voyage libre · 0 étape » après trois essais.
 - **Recharger avec `?tour=…` dans l'adresse recommence le circuit de zéro**
   (« Quel nom donnez-vous à cet itinéraire ? ») au lieu de rouvrir celui en cours.
+
+## 05/09/2026 — audit des liens rompus après le découpage
+
+Helmy : « tout ce qui fonctionnait doit fonctionner […] on a vu les parcours un
+à un et ils fonctionnaient tous, on a amélioré après ça et puis rien ne
+fonctionne ».
+
+**Méthode.** Le tracé routier est mort d'une fonction retirée mais toujours
+appelée (`navData`, 04/09). C'est une CLASSE de défaut, donc elle se cherche
+mécaniquement : comparer les fonctions publiées par `itineraire.html` avant le
+découpage du 03/09 (`74ff0d9^`) à celles de tout l'arbre aujourd'hui, puis
+chercher, dans l'arbre entier, tout appel sans définition.
+
+⚠️ Deux mesures fausses avant la bonne, dites ici pour qu'on ne les refasse pas :
+- couper les chaînes AVANT les commentaires : une apostrophe française
+  (« l'itinéraire ») ouvrait une fausse chaîne et avalait des pans de fichier ;
+- comparer deux listes avec `comm` : il trie selon la locale, pas comme Python.
+La bonne mesure ne lit que le contenu des `<script>`, retire les commentaires
+d'abord, et fait la différence en un seul passage.
+
+**Résultat.** 28 fonctions ont quitté `itineraire.html` avec le découpage ; 27
+sont parties dans leurs briques et ne sont plus appelées — normal. **Une seule
+était encore appelée sans exister : `closeNav`.** Les sorties de carte sont
+parties dans `the-sorties-carte.js` en emportant `openNav`/`closeNav`, et la
+ligne d'Échap est restée : chaque appui sur Échap levait une erreur. Le
+`navModal` de la l. 855 n'est plus ouvert par personne.
+
+Sur l'arbre entier, plus aucun appel sans définition : les onze restants sont
+des fonctions du navigateur (`URLSearchParams`, `MediaRecorder`, `FileReader`…)
+et la bibliothèque `jsQR`.
+
+⚠️ **Signalé** : `THEadresseDepart` (`resolveOrigin`, branche `adr`) n'existe
+nulle part. Elle est protégée par un garde, donc inoffensive — mais c'est une
+promesse de fonction qui n'a jamais été tenue. Le choix libre du départ passe
+désormais par l'entrée « 📍 Un autre point de départ ».
