@@ -1229,3 +1229,46 @@ pour n'importe quelle option d'ailleurs ».
 **Vérifié à l'écran** : Composer → « 📍 Votre point de départ » → Sidi Bou Saïd
 retenu et utilisé pour composer ; voyage libre → départ « Hôtel à Hammamet »,
 puis « 📍 Votre première étape », et le départ tient quinze secondes plus tard.
+
+## 05/09/2026 — parcours complet en ligne, comme un couple qui découvre l'app
+
+Helmy : « mettez-vous à la place d'un couple de touristes qui visite la Tunisie
+pour la première fois et utilise cette application ». Parcours mené en ligne, sur
+le site réel, du premier écran jusqu'aux exports. Quatre défauts trouvés, quatre
+réparés.
+
+### 1. Le départ choisi n'arrivait pas jusqu'au tracé
+Sur un circuit, on choisit « un autre point de départ », la liste l'affiche, et
+l'itinéraire part quand même du départ du circuit. La boîte « Vos réglages » ne
+montre pas `#origin` : elle en fait une COPIE, `#pkOrigin` (l. 2241). Une copie
+hérite des entrées, jamais des gestes. Le choix était offert et sans effet —
+pire qu'absent, car il laissait croire qu'on avait choisi. Le geste est
+maintenant posé sur chaque menu de départ.
+
+### 2. Un circuit perdait l'ordre de son auteur
+On change le départ de « Carthage la punique » : Tophet passait avant Byrsa.
+`nearestOrder` réordonnait autour du nouveau départ. Un circuit n'est pas un tas
+de lieux — son ordre vient de celui qui l'a tracé. `nearestOrder` ne s'applique
+plus qu'à ce que le voyageur COMPOSE ; les distances, elles, se refont.
+
+### 3. 🔴 Les photos étaient perdues à chaque rechargement
+Le plus grave. On ajoute une photo à une étape, on recharge : l'itinéraire
+revient entier, la photo a disparu. Elle était toujours sur l'appareil, rangée
+sous `it1788640970239#1` ; la page rouverte s'appelait `it1788641174307#1`.
+`recordFromCurrent()` — la fiche écrite dans `the_current` à chaque rendu — ne
+portait pas `id`. `renderRecord` passait donc `_id: undefined` et `render`
+(l. 2745) frappait un identifiant neuf. La clé de rangement des photos commence
+par cet identifiant : TOUT le carnet devenait orphelin. **Une ligne manquait.**
+C'est le défaut derrière « les images n'apparaissent qu'après un rafraîchissement ».
+Vérifié en ligne après correction : photo ajoutée, page rechargée, photo
+retrouvée et affichée sur la carte de l'étape.
+
+### 4. L'écusson « Base / Visite » (voir plus haut)
+
+### Signalé, non touché
+- **Aucune confirmation avant de supprimer une étape** — un doigt qui glisse et
+  l'étape est perdue, sans retour possible.
+- **Un départ abandonné laisse un voyage vide** dans « Itinéraires sauvegardés » :
+  trois « Mon voyage libre · 0 étape » après trois essais.
+- **Recharger avec `?tour=…` dans l'adresse recommence le circuit de zéro**
+  (« Quel nom donnez-vous à cet itinéraire ? ») au lieu de rouvrir celui en cours.
