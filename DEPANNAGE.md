@@ -1172,3 +1172,27 @@ qui tournait. Vérifié à l'écran : 2 616 points, ligne pleine, et
 ⚠️ **La leçon, à retenir** : un module qui renonce sur `typeof X !== "function"`
 ne se signale jamais. Avant de retirer une fonction de la page, on cherche qui
 l'appelle — y compris dans les fichiers qu'on ne touche pas.
+
+### Suite du même défaut : il ne partait jamais, et il coûtait 6 à 9 secondes
+
+**Mesuré, pas supposé.** Relevé réseau au premier chargement en ligne : 76
+requêtes, **pas une seule vers le routeur**. Un second rendu, lui, traçait.
+
+**Deux causes de plus.**
+1. `injectButtons()` et `drawRealRoute()` étaient dans la MÊME phrase
+   (`setTimeout(function(){ injectButtons(); if(...) drawRealRoute(); }, 300)`).
+   Une erreur de la première emportait la seconde, sans un mot. Chacune a
+   maintenant son sort.
+2. Tout reposait sur l'enveloppement de `render`. C'est un fil ténu : il suffit
+   qu'un autre module l'enveloppe à son tour, ou qu'une erreur passe avant. On
+   veille désormais sur le VOYAGE lui-même — dès que ses points changent, on
+   trace — comme les autres briques veillent sur le DOM.
+
+**Et le temps d'attente.** Helmy : « il met 6 à 9 secondes à répondre, ce n'est
+pas ce qui a été convenu », et « l'application embarque les tuiles Tunisie sur le
+téléphone pour un hors-ligne optimal ». La règle du RoadTrip est en tête de
+`blocs/11-memoire.js` : « le réseau sert à préparer, pas à fonctionner », et sa
+table donne SEPT JOURS à `router.project-osrm.org` (l. 28). La réponse est donc
+gardée sept jours, les huit derniers tracés au plus. Mesuré : premier affichage
+1,5 s, affichages suivants **0,9 s sans rappeler le serveur** — et le tracé tient
+hors réseau, comme les tuiles.

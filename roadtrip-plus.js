@@ -87,6 +87,43 @@
     })();
   }
 
+  /* ⚠️ LA ROUTE SE GARDE — 05/09/2026, Helmy : « il met 6 à 9 secondes à répondre,
+     ce n'est pas ce qui a été convenu », et « l'application embarque les tuiles
+     Tunisie sur le téléphone pour un hors-ligne optimal ».
+     La règle est celle du RoadTrip, écrite dans `blocs/11-memoire.js` en tête :
+     « le réseau sert à préparer, pas à fonctionner » — et sa table donne SEPT
+     JOURS à `router.project-osrm.org` (l. 28 : « une route peut fermer »).
+     On garde donc la réponse. Au deuxième affichage le tracé est instantané, et
+     hors réseau il est encore là : c'est ce qui manquait pour que la carte tienne
+     debout sans réseau, comme les tuiles. On ne garde que les huit derniers
+     tracés — un itinéraire pèse une centaine de milliers de caractères. */
+  var MEM_CLE = "the_routes_osrm", MEM_DUREE = 7 * 86400000, MEM_MAX = 8;
+  function memLire(url) {
+    try {
+      var m = JSON.parse(localStorage.getItem(MEM_CLE) || "{}"), e = m[url];
+      if (!e || (Date.now() - e.quand) > MEM_DUREE) return null;
+      return e.corps;
+    } catch (e) { return null; }
+  }
+  function memEcrire(url, corps) {
+    try {
+      var m = JSON.parse(localStorage.getItem(MEM_CLE) || "{}");
+      m[url] = { corps: corps, quand: Date.now() };
+      var cles = Object.keys(m).sort(function (a, b) { return m[a].quand - m[b].quand; });
+      while (cles.length > MEM_MAX) delete m[cles.shift()];
+      localStorage.setItem(MEM_CLE, JSON.stringify(m));
+    } catch (e) {}          // mémoire pleine : on se passe de garder, jamais on n'échoue
+  }
+  function demanderLaRoute(url) {
+    var garde = memLire(url);
+    if (garde) { try { return Promise.resolve(JSON.parse(garde)); } catch (e) {} }
+    return fetch(url).then(function (r) { return r.text(); }).then(function (txt) {
+      var j = JSON.parse(txt);
+      if (j && j.routes && j.routes.length) memEcrire(url, txt);
+      return j;
+    });
+  }
+
   /* --- 1) VRAI ROUTAGE OSRM --- */
   function drawRealRoute() {
     if (typeof mapObj === "undefined" || !mapObj || typeof navData !== "function") return;
@@ -94,7 +131,7 @@
     var pts = [d.origin].concat(d.stops); if (d.forme === "boucle") pts.push(d.origin);
     if (pts.length < 2) return;
     var coords = pts.map(function (p) { return p[0] + "," + p[1]; }).join(";");
-    fetch(OSRM + coords + "?overview=full&geometries=geojson").then(function (r) { return r.json(); }).then(function (j) {
+    demanderLaRoute(OSRM + coords + "?overview=full&geometries=geojson").then(function (j) {
       if (!j.routes || !j.routes.length || !mapObj) return;
       var rt = j.routes[0];
       try { if (realLayer) mapObj.removeLayer(realLayer); } catch (e) {}
@@ -414,7 +451,10 @@
     render = function (o, r) {
       _render(o, r);
       setTimeout(function () {
-        injectButtons();
+        /* chacun son sort : si la pose des boutons échoue, le tracé part quand même.
+           Les deux étaient dans la même phrase, et une erreur de la première
+           emportait la seconde en silence. */
+        try { injectButtons(); } catch (e) {}
         if (r && r.route && r.route.length) quandLaCarteEstLa(drawRealRoute);
       }, 300);
     };
@@ -422,6 +462,29 @@
   /* Les trois sorties « road trip » sont désormais offertes par le bouton unique
      posé sur la carte (itineraire.html). Elles vivaient dans cette clôture ; on
      les publie telles quelles, sans rien changer à leur comportement. */
+  /* ⚠️ ON NE DÉPEND PAS D'UN SEUL DÉCLENCHEUR — 05/09/2026. Mesuré à l'écran :
+     au premier chargement, PAS UNE SEULE requête de routage ne partait (relevé
+     réseau, 76 requêtes, aucune vers le routeur), et la carte gardait sa ligne
+     droite pour toute la visite ; un second rendu, lui, traçait. Envelopper
+     `render` est un fil ténu — il suffit qu'un autre module l'enveloppe à son
+     tour, ou qu'une erreur passe avant, pour que tout tombe sans un mot.
+     On veille donc aussi sur le voyage lui-même, comme les autres briques
+     veillent sur le DOM : dès qu'il change, on trace. La mémoire ci-dessus fait
+     que cette veille ne coûte rien — un itinéraire déjà tracé ne redemande rien. */
+  (function veiller() {
+    var dernier = "";
+    setInterval(function () {
+      try {
+        var d = (typeof navData === "function") ? navData() : null;
+        if (!d || !d.stops || !d.stops.length) return;
+        var signe = JSON.stringify([d.origin, d.stops, d.forme]);
+        if (signe === dernier) return;
+        dernier = signe;
+        quandLaCarteEstLa(drawRealRoute);
+      } catch (e) {}
+    }, 1200);
+  })();
+
   window.THErt = { chunks: exportGmapsChunks, kml: downloadKML };
 
   document.addEventListener("DOMContentLoaded", injectButtons);
