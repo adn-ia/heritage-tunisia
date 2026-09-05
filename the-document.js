@@ -122,15 +122,17 @@
      l'épreuve : on passait au Passeport, on rafraîchissait, et l'album revenait en
      Baroudeur. L'adresse n'était écrite qu'à l'OUVERTURE, elle gardait donc
      l'habillage d'alors. On la remet à jour à chaque changement. */
+  /* ⚠️ LE STYLE SE CHOISIT DANS UN MENU — 05/09/2026. Les trois vignettes
+     `.tpl` ont laissé la place à `#albumStyle` (itineraire.html l. 903) : ce
+     n'est plus un clic qu'on écoute, mais un changement. Le reste est intact. */
   function suivreLHabillage() {
-    [].forEach.call(document.querySelectorAll(".album-bar .tpl"), function (c) {
-      if (c._dcStyle) return;
-      c._dcStyle = 1;
-      c.addEventListener("click", function () {
-        setTimeout(function () {
-          if (document.body.classList.contains("doc-ouvert")) marquer(true);
-        }, 60);
-      });
+    var sel = document.getElementById("albumStyle");
+    if (!sel || sel._dcStyle) return;
+    sel._dcStyle = 1;
+    sel.addEventListener("change", function () {
+      setTimeout(function () {
+        if (document.body.classList.contains("doc-ouvert")) marquer(true);
+      }, 60);
     });
   }
 

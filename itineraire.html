@@ -296,8 +296,25 @@
     .album-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;
       background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:12px;margin-bottom:14px;
       box-shadow:0 8px 26px rgba(0,0,0,.22);}
-    .album-bar .tpl{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 14px;cursor:pointer;font-size:14px;color:var(--ink);}
-    .album-bar .tpl.on{background:var(--ink);color:var(--ivory);border-color:var(--ink);}
+    /* LE RANGEMENT DES GESTES, PAR NATURE — voir la note de l'écran, l. 903.
+       L'ordre du DOM ne décide de rien ici : `order` place chaque geste, les
+       `.ab-saut` cassent la ligne. Une brique qui poserait un bouton sans être
+       nommée ici tombe en tête, visible, jamais perdue. */
+    .album-bar .ab-saut{flex-basis:100%;height:0;margin:0;padding:0;border:0;}
+    .album-bar .ab-style{order:1}
+    .album-bar #albumprint{order:2}
+    .album-bar .ab-saut[data-saut="1"]{order:3}
+    .album-bar #albumproject{order:4}
+    .album-bar [data-planche]{order:5}
+    .album-bar .ab-saut[data-saut="2"]{order:6}
+    .album-bar #albumshare{order:7}
+    .album-bar #albumsite{order:8}
+    .album-bar .ab-saut[data-saut="3"]{order:9}
+    .album-bar #albumback{order:10}
+    /* Le style se choisit, et le choix reste lisible sans rien déplier. */
+    .album-bar .ab-style{display:inline-flex;align-items:center;gap:7px;font-size:14px;color:var(--stone);white-space:nowrap;}
+    .album-bar .ab-style select{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:15px;
+      color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:6px;padding:8px 10px;cursor:pointer;}
     .album-bar .ab{border:none;border-radius:6px;padding:9px 14px;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:15px;cursor:pointer;background:#f1e7d5;color:var(--ink);}
     /* ⚠️ IL AVAIT L'AIR SÉLECTIONNÉ — 03/09/2026, Helmy : « je ne sais pas pourquoi
        le diaporama est en noir en permanence ». Il portait `background:var(--ink)`,
@@ -902,15 +919,41 @@
 
     <!-- ALBUM SOUVENIR (I6) -->
     <div id="album">
+      <!-- ⚠️ LA BARRE RESTE PLATE, LES LIGNES SONT FAITES EN CSS — 05/09/2026,
+           Helmy : « le style devrait conduire à un menu déroulant et le choix
+           reste visible ; même ligne : imprimer / PDF. Deuxième ligne : projeter
+           diaporama, qui n'a rien à voir avec l'impression, même ligne
+           planche-contact. »
+
+           Trois vignettes occupaient toute la première ligne pour un seul choix,
+           et le diaporama s'était retrouvé collé au bout, comme s'il en était un
+           quatrième. Le style se choisit maintenant dans un menu déroulant, qui
+           montre le choix fait ; les gestes se rangent par nature : imprimer,
+           puis regarder, puis emporter.
+
+           ⚠️ ON NE CRÉE PAS DE SOUS-LIGNES DANS LE DOM. Deux briques posent leur
+           bouton ici et se repèrent à des voisins : `the-planche.js` l. 188 se
+           glisse après `#albumprint`, `the-souvenir.js` l. 506 avant
+           `#albumback` — et `insertBefore` sur un enfant qui n'est plus le sien
+           lève une erreur. La barre garde donc UN seul niveau : les lignes sont
+           faites par `order` et des sauts de ligne CSS (l. 296). Les briques
+           continuent d'insérer où elles veulent, la mise en page les range. -->
       <div class="album-bar">
-        <span style="font-size:14px;color:var(--stone)">Style :</span>
-        <div class="tpl" data-tpl="baroudeur">🧭 Baroudeur</div>
-        <div class="tpl" data-tpl="passeport">🛂 Passeport</div>
-        <div class="tpl" data-tpl="depliant">📜 Dépliant</div>
-        <button class="ab go" id="albumproject" type="button" data-i18n="iti.projeter.diaporama">🖥️ Projeter (diaporama)</button>
-        <button class="ab" id="albumprint" type="button" data-i18n="iti.pdf.imprimer">🖨️ PDF / Imprimer</button>
-        <button class="ab" id="albumshare" type="button" data-i18n="iti.partager">↗ Partager</button>
-        <button class="ab" id="albumback" type="button" data-i18n="iti.itineraire">← Itinéraire</button>
+        <label class="ab-style" for="albumStyle">
+          <span data-i18n="itineraire.style"></span>
+          <select id="albumStyle">
+            <option value="baroudeur" data-i18n="album.style.baroudeur"></option>
+            <option value="passeport" data-i18n="album.style.passeport"></option>
+            <option value="depliant"  data-i18n="album.style.depliant"></option>
+          </select>
+        </label>
+        <button class="ab" id="albumprint" type="button" data-i18n="iti.pdf.imprimer"></button>
+        <i class="ab-saut" data-saut="1"></i>
+        <button class="ab go" id="albumproject" type="button" data-i18n="iti.projeter.diaporama"></button>
+        <i class="ab-saut" data-saut="2"></i>
+        <button class="ab" id="albumshare" type="button" data-i18n="iti.partager"></button>
+        <i class="ab-saut" data-saut="3"></i>
+        <button class="ab" id="albumback" type="button" data-i18n="iti.itineraire"></button>
       </div>
       <!-- ⚠️ LE PANNEAU DE PARTAGE REMONTE — 02/09/2026, Helmy : « dans le menu,
            après avoir appuyé sur document, le bouton partager ne mène nulle part ».
@@ -3206,7 +3249,8 @@
     if(!LASTRES || !LASTRES.route.length){ doc.innerHTML='<div class="album-cover"><h2>'+uiT('Aucun itinéraire')+'</h2></div>'; return; }
     document.body.classList.remove('tpl-baroudeur','tpl-passeport','tpl-depliant');
     document.body.classList.add('tpl-'+albumTemplate);
-    [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>c.classList.toggle('on',c.dataset.tpl===albumTemplate));
+    const selStyle=document.getElementById('albumStyle');
+    if(selStyle && selStyle.value!==albumTemplate) selStyle.value=albumTemplate;
     const {route,theme,tour}=LASTRES;
     const isDep = albumTemplate==='depliant';
     const km=Math.round(route.reduce((t,s)=>t+s.fromPrev,0));
@@ -3755,9 +3799,14 @@
        effaçant sa ligne. Voir son en-tête. */
 
   document.getElementById('albumprint').onclick=()=>setTimeout(()=>window.print(),150);
-  [...document.querySelectorAll('.album-bar .tpl')].forEach(c=>{
-    c.onclick=()=>{ albumTemplate=c.dataset.tpl; window.albumTemplate=albumTemplate; renderAlbum(); };
-  });
+  /* Un seul chemin pour changer d'habillage : celui du menu. `the-document.js`
+     l. 126 écoutait les anciennes vignettes pour tenir l'adresse à jour ; il
+     écoute maintenant le menu (voir sa note). */
+  (function(){
+    var sel=document.getElementById('albumStyle'); if(!sel) return;
+    sel.value=albumTemplate;
+    sel.onchange=function(){ albumTemplate=sel.value; window.albumTemplate=albumTemplate; renderAlbum(); };
+  })();
   document.getElementById('addbtn').onclick=addPlace;
   document.getElementById('addinput').addEventListener('keydown',e=>{ if(e.key==='Enter') addPlace(); });
   /* SORTIR D'UN ITINÉRAIRE, C'EST UN CHOIX — PAS UN RETOUR EN ARRIÈRE
