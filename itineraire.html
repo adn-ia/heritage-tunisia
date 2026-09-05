@@ -2440,8 +2440,20 @@
   }
   function resumeSaved(id){ const rec=readSaved().find(r=>r.id===id); renderRecord(rec, 'saved'); }
   // sérialise l'itinéraire courant (pour ne pas le perdre en quittant la page, ex. « Voir la grande carte »)
+  /* ⚠️ L'IDENTIFIANT VOYAGE AVEC L'ITINÉRAIRE EN COURS — 05/09/2026, mesuré en
+     ligne au cours d'un parcours complet : on ajoute une photo à une étape, on
+     recharge la page, l'itinéraire revient entier… et la photo a disparu.
+     Elle était toujours là, sous `it1788640970239#1` ; la page rouverte
+     s'appelait `it1788641174307#1`.
+     La cause : cette fiche-ci, écrite à chaque rendu dans `the_current`, ne
+     portait PAS `id`. En la relisant, `renderRecord` passait `_id: undefined`, et
+     `render` (l. 2745) frappait un identifiant neuf. La clé de rangement des
+     photos commence par cet identifiant : tout le carnet devenait orphelin, à
+     CHAQUE rechargement. C'est le défaut derrière « les images n'apparaissent
+     qu'après un rafraîchissement ». Une ligne manquait. */
   function recordFromCurrent(){
-    return { title:(LASTRES.tour&&LASTRES.tour.titre)||uiT('Dernier itinéraire'), forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, entry:ENTRY, mode:LASTRES.mode||'',
+    return { id:(LASTRES && LASTRES._id)||'',
+      title:(LASTRES.tour&&LASTRES.tour.titre)||uiT('Dernier itinéraire'), forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, entry:ENTRY, mode:LASTRES.mode||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
