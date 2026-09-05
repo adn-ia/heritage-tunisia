@@ -1589,17 +1589,7 @@
       var oAutre=document.createElement('option');
       oAutre.value='lieu'; oAutre.setAttribute('data-i18n','iti.depart.autre.lieu');
       oAutre.textContent=uiT('iti.depart.autre.lieu'); sel.appendChild(oAutre);
-      sel.addEventListener('change', function(){
-        if(sel.value!=='lieu' || !window.THEetape) return;
-        var une=function(ev){
-          document.removeEventListener('the:borne', une);
-          var x=ev.detail; if(!x||!x.coord){ sel.value='gps'; return; }
-          DEPART_CHOISI={ coord:x.coord, label:x.nom||x.adresse||'' };
-          oAutre.textContent='📍 '+DEPART_CHOISI.label;   // le choix reste sous les yeux
-        };
-        document.addEventListener('the:borne', une);
-        THEetape.ouvrir({borne:'depart'});
-      });
+      brancherDepartLibre(sel);
       initPresets();
       renderSaved();   // affiche « Mes itinéraires enregistrés » s'il y en a
       // autocomplétion du champ « ajouter un lieu » : suggestions sur tous les lieux sourcés
@@ -1689,6 +1679,39 @@
        « Composer », rien ne se passait, et il croyait l'application cassée.
      Maintenant : retour visuel immédiat, message dans le bandeau de la page (qui, lui,
      s'affiche partout), et on ramène le point de départ à portée de main. */
+  /* ⚠️ LE GESTE SUIT LE MENU, PAS L'INVERSE — 05/09/2026, mesuré à l'écran sur un
+     circuit : on choisit « un autre point de départ », la liste l'affiche, et
+     l'itinéraire part quand même du départ du circuit.
+     La boîte « Vos réglages » ne montre PAS `#origin` : elle en fait une COPIE,
+     `#pkOrigin` (l. 2241, `cloner`). La copie hérite des entrées, jamais des
+     gestes. Le choix était donc offert et sans effet — pire qu'absent, car il
+     laissait croire qu'on avait choisi.
+     On pose donc le même geste sur chaque menu de départ, celui d'origine comme
+     sa copie. `resolveOrigin` lit `#origin`, que « Tracer » recopie depuis la
+     copie (l. 2271) : le départ désigné arrive intact jusqu'au tracé. */
+  function brancherDepartLibre(sel){
+    if(!sel || sel._departLibre) return;
+    sel._departLibre = 1;
+    sel.addEventListener('change', function(){
+      if(sel.value!=='lieu' || !window.THEetape) return;
+      var une=function(ev){
+        document.removeEventListener('the:borne', une);
+        var x=ev.detail;
+        if(!x||!x.coord){ sel.value='gps'; return; }
+        DEPART_CHOISI={ coord:x.coord, label:x.nom||x.adresse||'' };
+        /* le choix reste sous les yeux, sur TOUS les menus de départ */
+        ['origin','pkOrigin'].forEach(function(id){
+          var m=document.getElementById(id); if(!m) return;
+          var o=[].filter.call(m.options, function(x){ return x.value==='lieu'; })[0];
+          if(o){ o.removeAttribute('data-i18n'); o.textContent='📍 '+DEPART_CHOISI.label; }
+          m.value='lieu';
+        });
+      };
+      document.addEventListener('the:borne', une);
+      THEetape.ouvrir({borne:'depart'});
+    });
+  }
+
   function resolveOrigin(silent){
     const sel=document.getElementById('origin');
     const v=sel.value;
@@ -2239,6 +2262,7 @@
       b.value=a.value;
     }
     cloner('origin','pkOrigin'); cloner('duree','pkDuree'); cloner('forme','pkForme');
+    brancherDepartLibre(document.getElementById('pkOrigin'));
     /* on retrouve le nom donné avant d'aller choisir ses lieux */
     var nomVoulu=window.THEnomEnAttente;
     if(!nomVoulu){ try{ nomVoulu=sessionStorage.getItem('the_nom_attente')||''; }catch(e){} }
