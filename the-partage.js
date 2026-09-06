@@ -2,7 +2,7 @@
    Sorti d'`itineraire.html` le 04/09/2026, deuxième bloc du découpage.
 
    CE QU'IL PORTE. Le panneau qui se déplie sous la barre du document, ses quatre
-   sorties — WhatsApp, e-mail, le partage du téléphone, publier — et le texte que
+   sorties — WhatsApp, e-mail, le partage du téléphone — et le texte que
    toutes envoient. Son écran vivait ligne 905, son code lignes 2816 et 3046, son
    branchement ligne 3525 : trois endroits pour un seul geste.
 
@@ -96,7 +96,11 @@
     if (FICHIERS.length && navigator.canShare && navigator.canShare({ files: FICHIERS })) d.files = FICHIERS;
     navigator.share(d).catch(function () {});
   }
-  function publier() { dire(T("partage.publier.a.venir")); }
+  /* ⚠️ « 🌍 PUBLIER SUR LE SITE » A ÉTÉ RETIRÉ — 06/09/2026, sur ordre de Helmy.
+     Le bouton existait, il était traduit en cinq langues, et il répondait
+     « à venir ». Un bouton qui promet sans tenir, offert au voyageur à côté de
+     trois sorties qui, elles, fonctionnent. On ne le remplace pas par un
+     message : on le retire. La fonction part avec lui. */
 
   /* ── le panneau, posé sous la barre du document ───────────────────────────── */
   function panneau() {
@@ -125,7 +129,6 @@
         '<button id="pt-wa" type="button" data-i18n="iti.whatsapp"></button>' +
         '<button id="pt-mail" type="button" data-i18n="iti.e.mail"></button>' +
         '<button id="pt-tel" type="button" data-i18n="iti.partager.photos"></button>' +
-        '<button id="pt-pub" type="button" data-i18n="iti.publier.sur.le.site"></button>' +
       "</div>" +
       '<div class="pt-note" data-i18n="partage.note"></div>';
     barre.parentNode.insertBefore(p, barre.nextSibling);
@@ -133,11 +136,10 @@
     p.querySelector("#pt-wa").onclick   = versWhatsApp;
     p.querySelector("#pt-mail").onclick = versEmail;
     p.querySelector("#pt-tel").onclick  = versTelephone;
-    p.querySelector("#pt-pub").onclick  = publier;
     /* les libellés viennent de l'i18n ; on les pose tout de suite pour le cas où
        le balayage général est déjà passé. */
     [["pt-wa","iti.whatsapp"],["pt-mail","iti.e.mail"],["pt-tel","iti.partager.photos"],
-     ["pt-pub","iti.publier.sur.le.site"],[null,"partage.note"]].forEach(function (c) {
+     [null,"partage.note"]].forEach(function (c) {
       var el = c[0] ? p.querySelector("#" + c[0]) : p.querySelector(".pt-note");
       var v = T(c[1]); if (el && v) el.textContent = v;
     });

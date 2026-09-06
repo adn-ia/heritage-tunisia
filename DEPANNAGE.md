@@ -1534,3 +1534,21 @@ placeur à 10050, la planche à 1600.
 `#plc-modal` 10050 · visite guidée 99990 · loupe 100000 · bandeau 100002.
 Les niveaux bas ne sont un défaut que pour une fenêtre qui s'ouvre DEPUIS une
 autre : c'était le cas du seul placeur.
+
+## 06/09/2026 — B1 et B2 : deux promesses non tenues, retirées
+
+**B1 — « 🌍 Publier sur le site ».** Le bouton existait, traduit en cinq langues,
+et répondait « à venir ». Un bouton qui promet sans tenir, offert au voyageur à
+côté de trois sorties qui, elles, fonctionnent. **Retiré**, pas remplacé par un
+message : le balisage, le câblage et la fonction `publier()` partent ensemble.
+L'en-tête de la brique, qui l'annonçait encore, est à jour.
+
+**B2 — la branche `adr` de `resolveOrigin`.** Elle appelait `THEadresseDepart()`,
+une fonction qui **n'a jamais existé nulle part**. Un garde la protégeait, donc
+elle ne cassait rien — mais c'était une porte annoncée qui n'ouvrait sur rien, et
+la liste ne proposait même pas ce choix. Retirée avec ses deux champs de
+balisage, `#originAdr` et `#originAdrMsg`, vérifiés inutilisés. Le départ libre
+passe par « 📍 Un autre point de départ », qui, lui, existe.
+
+**Vérifié à l'écran** : trois sorties de partage, aucun bouton « publier »,
+aucun champ mort, et le choix libre du départ toujours proposé.
