@@ -1588,3 +1588,35 @@ Après suppression, la racine ne contient plus que `. .. .enrichissement
 
 ⚠️ **Périmètre** : Tunisie SEULE. Les sept autres webroots cités par la fiche du
 19/08 n'ont pas été touchés et ne l'ont pas été vérifiés.
+
+## 06/09/2026 — B5 : le canari répond, et Helmy avait raison
+
+**Sa remarque :** « B5, il me semble qu'on l'a déjà fait il y a un moment. »
+
+**La seule mesure qui vaut**, celle qui est écrite en mémoire : ouvrir
+l'application dans une autre langue et regarder ce qui reste en français à
+l'écran. Un `grep` ne prouve rien ici — il compte du contenu éditorial, des
+commentaires et du texte déjà traduit par un parent.
+
+**Fait en ligne, application en allemand** (`the_lang=de`, `<html lang="de">`,
+`THEi18n.lang()` = `de`) :
+
+| Écran | Restes français |
+|---|:--:|
+| Les cinq façons de partir | 0 — « Individuelle Reise », « Route erstellen », « Überraschen Sie mich », « Rundreisen », « Gespeicherte Routen » |
+| Itinéraire complet (circuit à 4 étapes) | **0** |
+| Album souvenir | **0** |
+| « Autour de moi » | **0** |
+| Écran de placement | **0** — « Wo soll dieser Ort liegen? » |
+| Confirmation de retrait | **0** — « Diese Etappe entfernen? · Ja, entfernen · Nein, behalten » |
+| `decouvrir.html` (page de récit) | **0** — « Tunesien, Kreuzung der Zivilisationen », « 🔊 Anhören », « Weiter » |
+
+**Conclusion : B5 était déjà réglé.** Je l'avais listé comme ouvert **sans
+l'avoir mesuré** — je reprenais une ligne d'un ancien relevé au lieu de vérifier.
+C'est exactement ce que la règle 5 interdit : « le déploiement se vérifie, il ne
+se suppose pas », étendu à tout.
+
+⚠️ **Une fausse alerte de ma part, en cours de route** : j'ai vu `decouvrir.html`
+en français et j'ai failli le signaler. La page avait simplement été chargée
+AVANT que le changement de langue prenne effet — j'avais vidé le stockage et
+navigué dans le même geste. Vérifié ensuite : elle est en allemand.
