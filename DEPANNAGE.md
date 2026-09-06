@@ -1376,3 +1376,48 @@ redemandait « Quel nom donnez-vous à cet itinéraire ? ». L'adresse primait s
 travail en cours. `tourId` voyage désormais avec la fiche : si le voyage en cours
 vient DE CE circuit et porte au moins une étape, on le reprend. Mesuré : « Notre
 Carthage », 3 étapes, aucune redemande de nom.
+
+## 06/09/2026 — les exports, éprouvés un par un en ligne
+
+Album **baroudeur** : couverture au nom du voyage, carte réelle, 6 pages, photo
+et légende par étape. **Passeport** : deux pages face à face, tampon « VISITÉ »
+avec gouvernorat et date, posé SOUS le nom (point 52). **Dépliant** : bande de
+7 panneaux, `#depStrip` en `overflow-x:auto` — elle se déplie bien jusqu'à la
+6ᵉ étape (mesuré : scrollWidth 1892 pour 684 visibles).
+
+**Impression** : les quatre règles connues sont en place — `.album-doc` en
+`overflow:visible` (§12), `break-inside:avoid` sur pages et photos,
+`object-fit:contain` (point 42). La boîte d'impression du système n'est pas
+ouverte : elle fige le navigateur.
+
+**Planche-contact** : `Sur-les-pas-de-Rome-planche-contact.jpg`, 6 photos.
+
+**Fichier de l'album** : `Sur-les-pas-de-Rome-2026-09-06.html`, 377 Ko,
+**entièrement autonome** — aucun Leaflet, aucun script externe, 7 images
+incorporées, carte en SVG. Le défaut du 04/09 est bien mort : sommets du tracé
+`64.453,21.523` et pastille `64.45/21.52` — **les mêmes chiffres**, une seule
+projection.
+
+**Google Maps** : départ + 5 étapes intermédiaires + arrivée, `travelmode=driving`.
+**Découpage à 30 étapes** : 4 tronçons de 10 · 10 · 10 · 4 points, tous sous la
+limite de Google.
+
+### Ce qui a été réparé
+**Le KML portait le nom du PAYS.** Le GPX sortait
+`Sur-les-pas-de-Rome-2026-09-06.gpx` et le KML, à côté, `Tunisia-Heritage.kml` :
+trois voyages exportés, trois fois le même nom, le troisième écrasant les deux
+autres. Pire, son repli était **`Estonia-Heritage`** — le nom d'une AUTRE
+édition, resté du clonage. `the-sorties-carte.js` publie son outil de nommage au
+lieu qu'un second soit écrit. Vérifié en ligne :
+`Sur-les-pas-de-Rome-2026-09-06.kml`, document nommé « Sur les pas de Rome ».
+
+### Deux erreurs de MESURE, de ma main, dites pour ne pas les refaire
+- J'ai annoncé « Google Maps perd les étapes du milieu » : **ma sonde coupait
+  l'adresse à 110 caractères**. Les points étaient tous là.
+- J'ai annoncé « le GPX n'a pas de tracé » en comptant des `<trkpt>` : un
+  itinéraire PLANIFIÉ s'écrit `<rte>/<rtept>`, `<trkpt>` étant la trace de ce
+  qu'on a réellement parcouru. Le GPX est juste.
+
+### Signalé, non touché
+**« 🌍 Publier sur le site »** répond « à venir » — un bouton qui promet sans
+tenir, offert au voyageur à côté de trois sorties qui, elles, fonctionnent.
