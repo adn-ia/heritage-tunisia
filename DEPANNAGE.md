@@ -1686,3 +1686,30 @@ Et DeepL a dérivé deux fois : « **Stelle** abgelehnt » et « الوظيفة 
 poste de travail, pas un lieu ; puis « not available or unavailable », qui perdait
 « refusée ». Source reformulée : « L'appareil a refusé la position GPS, ou elle
 est introuvable. »
+
+## 06/09/2026 — le dépôt Git supprimé des SIX autres webroots
+
+**Ordre de Helmy** : « les 7 autres webroots aussi, supprime le git ». Ce geste
+sort du périmètre Tunisie ; c'est son ordre direct qui l'autorise.
+
+**Inventaire d'abord — et ce n'étaient pas 7, mais SIX.** Relevé des 16 webroots :
+
+| `.git` présent | `.git` absent |
+|---|---|
+| maroc `6fc4deea` · portugal `a4a4f7eb` · italie `64f34465` · tchequie `912ca193` · irlande `1786c260` · croatie `8a24870a` | estonia, norvege, europa, quebec, support, roadtrip, agro, animaticforge, boutique, menus-maman |
+
+**Avant / après**, mesuré avec un agent navigateur :
+
+| Site | Accueil avant | `/.git/HEAD` avant | Accueil après | sw.js | manifest | assetlinks |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|
+| maroc · portugal · italy · czechia · ireland · croatia | 200 | 403 | **200** | 200 | 200 | 200 |
+
+Après suppression, chaque racine ne contient plus que `.enrichissement` et
+`.well-known`. La Tunisie, faite plus tôt le même jour, reste en 200 partout.
+
+### Deux choses trouvées à l'inventaire, NON touchées
+- **`.enrichissement` est sur NEUF webroots** : maroc, estonia, norvege, portugal,
+  italie, tchequie, irlande, croatie, quebec. Celui de la Tunisie était vide ;
+  ceux-là n'ont pas été ouverts. L'ordre portait sur `.git`.
+- **`.interne` sur le webroot de l'Estonie** (`de449928`) — un dossier dont ni la
+  mémoire ni les notes ne parlent. Non ouvert, non touché.
