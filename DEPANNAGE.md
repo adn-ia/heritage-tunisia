@@ -1344,3 +1344,35 @@ trois rangements bougent ensemble.
 monter la 3 · descendre la 1 · intercaler en tête · retirer la 2. Chaque photo et
 chaque légende est restée sur SON lieu, et « Bulla Regia.jpg » — l'étape retirée —
 est gardée non allouée dans la base.
+
+## 06/09/2026 — les trois défauts signalés pendant le parcours complet
+
+### ① Aucune confirmation avant de retirer une étape
+Un doigt qui glisse et l'étape partait, sans un mot et sans retour.
+`THEdemanderConfirmation(titre, texte, precision, ok)` — **même boîte que
+`THEdemanderNom`**, un seul langage visuel, pas un second. Elle nomme le lieu et
+dit ce qui reste : « Les photos et les notes que vous y avez mises resteront sur
+votre téléphone » (vrai depuis le §33 du dépannage itinéraire).
+⚠️ **DeepL a dérivé deux fois** : « Remove this **step** / Diesen **Schritt**
+überspringen » — le sens « phase d'un processus », et *überspringen* = sauter,
+pas retirer ; puis « Ja, **abheben** » = retirer de l'argent. Le vocabulaire de
+l'étape était déjà arrêté dans les dictionnaires (*stop · tappa · Etappe ·
+مرحلة*) : c'est lui qu'on remet. Et « Ce lieu **sort** de l'itinéraire » se
+traduisait par « *is off the itinerary* » — le lieu déjà dehors : reformulé au
+futur.
+
+### ② Un départ abandonné laissait un voyage vide
+Trois « Mon voyage libre · 0 étape » après trois essais. `startLibreAvecNom`
+créait la fiche au lancement « pour pouvoir y revenir » — un voyage sans halte
+n'a rien où revenir. La création anticipée est retirée.
+⚠️ **Régression trouvée dans la foulée** : seul le chemin « ajouter une étape »
+créait la fiche. Une pépite posée, un lieu venu de « ce qu'il y a autour » :
+rien. `majFicheDuVoyage()` rassemble le geste, les trois chemins l'appellent.
+Mesuré : 0 fiche après abandon, 1 fiche dès la première étape.
+
+### ③ Recharger avec `?tour=…` recommençait le circuit de zéro
+On travaillait sur « Notre Carthage », on rafraîchissait, et l'application
+redemandait « Quel nom donnez-vous à cet itinéraire ? ». L'adresse primait sur le
+travail en cours. `tourId` voyage désormais avec la fiche : si le voyage en cours
+vient DE CE circuit et porte au moins une étape, on le reprend. Mesuré : « Notre
+Carthage », 3 étapes, aucune redemande de nom.

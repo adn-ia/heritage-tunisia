@@ -1618,7 +1618,17 @@
           loadPicks(picksParam, !!rec);
         });
       }
-      else if(tourId){ (function w(){ if(TOURS) loadTour(tourId); else setTimeout(w,80); })(); }   // attendre que TOURS (async) soit chargé
+      /* ⚠️ RECHARGER NE RECOMMENCE PAS LE CIRCUIT — 06/09/2026, relevé pendant le
+         parcours complet : on travaille sur « Notre Carthage », on rafraîchit,
+         et l'application redemande « Quel nom donnez-vous à cet itinéraire ? ».
+         L'adresse porte encore `?tour=…`, et elle primait sur le voyage en
+         cours. On repart donc du travail entamé quand il vient DE CE circuit —
+         `tourId` voyage avec la fiche depuis ce jour. */
+      else if(tourId){
+        var _enCours=readCurrent();
+        if(_enCours && _enCours.tourId===tourId && (_enCours.steps||[]).length){ renderRecord(_enCours); }
+        else (function w(){ if(TOURS) loadTour(tourId); else setTimeout(w,80); })();   // attendre que TOURS (async) soit chargé
+      }
       else if(params.get('ouvrir')){                     /* le menu liste chaque itineraire par SON nom */
           const _id=params.get('ouvrir');
           const _rec=readSaved().filter(r=>r.id===_id)[0];
@@ -1894,6 +1904,17 @@
      place qu'au rendu). */
   function removeStep(i){
     if(!LASTRES || LASTRES.route.length<=1){ THEtoast(uiT('Gardez au moins une étape — ou revenez modifier vos choix.')); return; }
+    /* on demande avant de retirer — voir la note de THEdemanderConfirmation */
+    var _nom=((LASTRES.route[i]||{}).p||{}).nom||'';
+    if(window.THEdemanderConfirmation){
+      THEdemanderConfirmation(uiT('itin.etape.retirer.titre'), uiT('itin.etape.retirer.texte'),
+                              _nom, function(){ retirerEtapeMaintenant(i); });
+      return;
+    }
+    retirerEtapeMaintenant(i);
+  }
+  function retirerEtapeMaintenant(i){
+    if(!LASTRES || !LASTRES.route[i]) return;
     const avantCles = clesAvant();
     LASTRES.route.splice(i,1);
     rechainerDistances(LASTRES.route, LASTORIGIN);
@@ -2017,6 +2038,7 @@
       if(base) THEplanRattacherVisite(base, neuf);
     }
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
+    majFicheDuVoyage();          // la fiche naît ou se met à jour, quel que soit le chemin
   }
 
   // ---------- Halte / Capture : un moment non planifié, à la position GPS ----------
@@ -2133,6 +2155,7 @@
         pepites: pepites,
         tour: {titre:nom, soustitre:t.soustitre||'', duree:t.duree||''},
         mode: 'circuit',
+        tourId: id,
         libDuree: t.duree||''
       });
     }
@@ -2363,7 +2386,7 @@
           dur:{max:r.length, lib:libDuree},
           per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:'sélection'},
           forme:selF.value||opts.forme||'oneway', pepites:opts.pepites||[], manualOrder:true,
-          mode:opts.mode||'compose',
+          mode:opts.mode||'compose', tourId:opts.tourId||'',
           tour: opts.tour || {titre: nomVoulu || (addMode?T2('itin.picks.enrichi'):T2('itin.picks.defaut')),
                 soustitre:T2('itin.picks.sous')}});
         enregistrerCompose(_titre, opts.mode||'compose', opts.idCible);
@@ -2475,7 +2498,7 @@
     ENTRY=entry||rec.entry||'funnel';
     /* `_id` voyage DANS `res` : il doit être là avant que `render` n'écrive les
        `data-place`, sinon la page porte un identifiant neuf le temps d'un rendu. */
-    render(_org, {_id:rec.id, route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||uiT('iti.repris.duree')},
+    render(_org, {_id:rec.id, tourId:rec.tourId||'', route:_placees, theme:null, dur:{max:route.length, lib:(rec.tour&&rec.tour.duree)||uiT('iti.repris.duree')},
       per:{radius:(PERIM[CPKEY]||{radius:400}).radius, lib:uiT('iti.repris.perimetre')}, forme:rec.forme||'oneway', arrivee:rec.arrivee||null, pepites:[], mode:rec.mode||'',
       tour:rec.tour||{titre:rec.title, soustitre:uiT('iti.repris.soustitre')}});
   }
@@ -2495,10 +2518,38 @@
   function recordFromCurrent(){
     return { id:(LASTRES && LASTRES._id)||'',
       title:(LASTRES.tour&&LASTRES.tour.titre)||uiT('Dernier itinéraire'), forme:LASTRES.forme||'oneway', arrivee:LASTRES.arrivee||null, entry:ENTRY, mode:LASTRES.mode||'',
+      tourId:LASTRES.tourId||'',
       origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null,
       steps:LASTRES.route.map(s=>({nom:s.p.nom, c:s.c, genre:s.genre||'', halte:!!s.halte, htype:s.htype||'', nuit:!!s.nuit, sejour:s.sejour||'', ville:s.ville||'', tnote:s.tnote||'',
         desc:s.genre==='perso'?(s.p.description||''):'', src:s.genre==='perso'?(s.p.source||''):''})) };
   }
+  /* ⚠️ LA FICHE SE MET À JOUR AU MÊME ENDROIT, QUEL QUE SOIT LE CHEMIN —
+     06/09/2026. En retirant la création anticipée de la fiche d'un voyage libre
+     (pour ne plus laisser de « 0 étape » derrière un départ abandonné), j'ai
+     découvert que seul le chemin « ajouter une étape » la créait : une pépite
+     posée, un lieu venu de « ce qu'il y a autour », et la fiche n'apparaissait
+     pas. Ce bloc existait déjà, recopié dans l'écouteur `the:etape` ; il est
+     ici, et les trois chemins l'appellent.
+     La fiche ne naît qu'avec la PREMIÈRE étape : un voyage sans halte n'a rien
+     où revenir, et il encombrait la liste. */
+  function majFicheDuVoyage(){
+    try{
+      if(!LASTRES || !(LASTRES.route||[]).length) return;
+      var id=(LASTRES.mode==='libre' ? (window.THElibreId||LASTRES._id) : LASTRES._id);
+      if(!id) return;
+      var arr=readSaved(), trouve=false;
+      for(var i=0;i<arr.length;i++){
+        if(arr[i].id===id){
+          var r=recordFromCurrent(); r.id=id;
+          r.mode=arr[i].mode||LASTRES.mode||''; r.title=arr[i].title||r.title;
+          r.cree=arr[i].cree||Date.now(); arr[i]=r; trouve=true; break;
+        }
+      }
+      if(!trouve){ var r2=recordFromCurrent(); r2.id=id; r2.mode=LASTRES.mode||''; r2.cree=Date.now(); arr.unshift(r2); }
+      writeSaved(arr.slice(0,40)); renderSaved();
+    }catch(e){}
+  }
+
   function autosaveCurrent(){ try{ if(LASTRES && (LASTRES.mode==='libre' || (LASTRES.route&&LASTRES.route.length))) localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){} }
   function readCurrent(){ try{ return JSON.parse(localStorage.getItem('the_current')||'null'); }catch(e){ return null; } }
 
@@ -2646,6 +2697,38 @@
     f.addEventListener('click', function(e){ if(e.target===f) fermer(); });
     champ.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); valider(); } });
     setTimeout(function(){ try{ champ.focus(); champ.select(); }catch(e){} }, 60);
+  };
+
+  /* ⚠️ RETIRER UNE ÉTAPE SE CONFIRME — 06/09/2026, relevé pendant le parcours
+     complet : un doigt qui glisse et l'étape part, sans un mot et sans retour.
+     Le geste est irréversible pour l'itinéraire ; ses photos, elles, restent
+     sur l'appareil (voir §33 du dépannage itinéraire), et on le dit.
+     Même boîte que `THEdemanderNom` — un seul langage visuel, pas un second. */
+  window.THEdemanderConfirmation = function(titre, texte, precision, ok){
+    var vieux=document.getElementById('confModal'); if(vieux) vieux.remove();
+    var f=document.createElement('div'); f.id='confModal';
+    f.style.cssText='position:fixed;inset:0;z-index:10002;background:rgba(20,15,10,.55);'
+      + 'display:flex;align-items:center;justify-content:center;padding:18px';
+    f.innerHTML='<div style="background:#fffdf8;border-radius:12px;max-width:420px;width:100%;padding:20px">'
+      + '<div id="confT" style="font-family:\'Cormorant Garamond\',serif;font-weight:700;font-size:20px;color:#4b3f2a;margin-bottom:8px"></div>'
+      + '<div id="confP" style="font-size:16px;color:#4b3f2a;margin-bottom:6px;font-weight:600"></div>'
+      + '<div id="confX" style="font-size:14px;color:#6b5a39;margin-bottom:14px;line-height:1.45"></div>'
+      + '<div style="display:flex;gap:8px">'
+      + '<button id="confOui" type="button" style="flex:1;border:none;background:#a4442f;color:#fff;border-radius:8px;padding:12px;font:inherit;font-size:15px;cursor:pointer"></button>'
+      + '<button id="confNon" type="button" style="flex:1;border:1px solid #e3d8c4;background:#fff;color:#6b5a39;border-radius:8px;padding:12px;font:inherit;font-size:15px;cursor:pointer"></button>'
+      + '</div></div>';
+    document.body.appendChild(f);
+    f.querySelector('#confT').textContent=titre;
+    f.querySelector('#confP').textContent=precision||'';
+    f.querySelector('#confX').textContent=texte;
+    f.querySelector('#confOui').textContent=uiT('itin.etape.retirer.oui');
+    f.querySelector('#confNon').textContent=uiT('itin.etape.retirer.non');
+    function fermer(){ f.remove(); }
+    f.querySelector('#confOui').onclick=function(){ fermer(); ok(); };
+    f.querySelector('#confNon').onclick=fermer;
+    f.addEventListener('click', function(e){ if(e.target===f) fermer(); });
+    document.addEventListener('keydown', function esc(e){
+      if(e.key!=='Escape') return; document.removeEventListener('keydown', esc); fermer(); });
   };
 
   function requirePass(feat, onOk){ if(isPremium() || (window.THEPass&&THEPass.hasFeature&&THEPass.hasFeature(feat))){ onOk(); return; }
@@ -3398,6 +3481,14 @@
     }, 350);
     /* enregistré tout de suite : il apparaît dans le menu, on peut y revenir */
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
+    /* ⚠️ PAS DE FICHE AVANT LA PREMIÈRE ÉTAPE — 06/09/2026, relevé pendant le
+       parcours complet : trois « Mon voyage libre · 0 étape » dans les
+       itinéraires sauvegardés, laissés par trois départs abandonnés. On créait
+       la fiche au lancement « pour pouvoir y revenir » — mais un voyage sans
+       une seule halte n'a rien où revenir, et il encombre la liste.
+       L'identité naît quand même ici (les photos en dépendent, §10 du dépannage) ;
+       c'est la FICHE qui attend. Le chemin d'ajout d'étape la crée si elle
+       n'existe pas (l. 4866, `if(!trouve && id)`) : rien d'autre à écrire. */
     (function(){ var arr=readSaved();
        /* on retient l'identifiant : chaque étape ajoutée met À JOUR cette fiche,
           au lieu d'en laisser une vide à côté du voyage réel. */
@@ -3405,9 +3496,7 @@
           se rangerait sous une clé et la fiche en porterait une autre. */
        var _idLibre=(LASTRES && LASTRES._id) || 'it'+Date.now();
        if(LASTRES) LASTRES._id=_idLibre;
-       arr.unshift({ id:_idLibre, cree:Date.now(), title:_nomLibre, forme:'oneway', mode:'libre',
-         origin:{coord:LASTORIGIN.coord, label:LASTORIGIN.label}, tour:LASTRES.tour||null, steps:[] });
-       writeSaved(arr.slice(0,40)); renderSaved();
+       /* la fiche s'écrira à la première étape, pas ici */
        /* render() remplace LASTRES : l'identifiant ne peut pas y vivre. Chaque
           étape ajoutée met à jour CETTE fiche, au lieu d'en laisser une vide. */
        window.THElibreId=_idLibre; })();
@@ -4629,6 +4718,7 @@
           if(b) neufs.forEach(function(n){ THEplanRattacherVisite(b, n); });
         }
         try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
+        majFicheDuVoyage();
         if(typeof showGuide==='function') showGuide(T('autour.ajoutes'), 8000);
       }
       go.onclick=function(){
@@ -4860,12 +4950,7 @@
            composé a son propre identifiant. Et il garde SON mode — l'écraser
            avec « libre » transformait un parcours composé en voyage libre à
            la première étape ajoutée. */
-        var arr=readSaved(),
-            id=(LASTRES.mode==='libre' ? (window.THElibreId||LASTRES._id) : LASTRES._id);
-        var trouve=false;
-        for(var i=0;i<arr.length;i++){ if(arr[i].id===id){ var r=recordFromCurrent(); r.id=id; r.mode=arr[i].mode||LASTRES.mode||''; r.title=arr[i].title||r.title; r.cree=arr[i].cree||Date.now(); arr[i]=r; trouve=true; break; } }
-        if(!trouve && id){ var r2=recordFromCurrent(); r2.id=id; r2.mode=LASTRES.mode||''; r2.cree=Date.now(); arr.unshift(r2); }
-        writeSaved(arr); renderSaved();
+        majFicheDuVoyage();       /* le même geste, écrit une seule fois */
       }catch(err){}
     });
 
