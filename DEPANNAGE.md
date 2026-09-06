@@ -1552,3 +1552,39 @@ passe par « 📍 Un autre point de départ », qui, lui, existe.
 
 **Vérifié à l'écran** : trois sorties de partage, aucun bouton « publier »,
 aucun champ mort, et le choix libre du départ toujours proposé.
+
+## 06/09/2026 — B7 : le dépôt Git supprimé du serveur (Tunisie)
+
+**Ordre direct de Helmy** ce jour : « b7 : supprimer par sftp ». La procédure
+écrite au 19/08 a été suivie à la lettre : inventaire d'abord sans rien toucher ·
+ne supprimer que `.git` · **ne pas toucher au `.htaccess`** · recontrôler
+l'accueil après.
+
+**Inventaire.** `/webroots/93f13c21/.git` était bien là, **en entier** :
+`COMMIT_EDITMSG`, `HEAD`, `ORIG_HEAD`, `config`, `description`, `hooks/`,
+`index`, `info/`, `logs/`, `objects/`, `refs/`. Un dépôt sur une racine web se
+reconstitue en entier, y compris ce qui en a été retiré depuis.
+
+**Avant / après**, mesuré avec un agent navigateur (le pare-feu one.com bannit
+celui de curl par défaut) :
+
+| Adresse | Avant | Après |
+|---|:--:|:--:|
+| `/` · `/itineraire.html` · `/sw.js` · `/.well-known/assetlinks.json` | 200 | **200** |
+| `/.git/HEAD` · `/.git/config` · `/.git/index` · `/.git/logs/HEAD` | 403 | **403, dossier supprimé** |
+
+Après suppression, la racine ne contient plus que `. .. .enrichissement
+.well-known` — `.git` a disparu.
+
+### Deux constats à corriger dans les notes
+- ⚠️ **Il n'y a AUCUN `.htaccess` à la racine du webroot Tunisie.** La fiche
+  mémoire du 19/08 affirme qu'un bloc y avait été ajouté sur 8 dossiers : c'est
+  faux pour celui-ci. Le 403 vient d'ailleurs — vraisemblablement une règle
+  one.com sur les fichiers cachés. La protection tient, et le dossier est
+  maintenant parti pour de bon, ce qui vaut mieux qu'une porte fermée.
+- ⚠️ **`.enrichissement` est toujours en ligne** — dossier de travail, exclu par
+  le déployeur, sans rien à faire sur un serveur. Même classe que `.git`, en 403.
+  **Non touché** : l'ordre portait sur `.git`.
+
+⚠️ **Périmètre** : Tunisie SEULE. Les sept autres webroots cités par la fiche du
+19/08 n'ont pas été touchés et ne l'ont pas été vérifiés.
