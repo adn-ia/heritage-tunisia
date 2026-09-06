@@ -1713,3 +1713,44 @@ Après suppression, chaque racine ne contient plus que `.enrichissement` et
   ceux-là n'ont pas été ouverts. L'ordre portait sur `.git`.
 - **`.interne` sur le webroot de l'Estonie** (`de449928`) — un dossier dont ni la
   mémoire ni les notes ne parlent. Non ouvert, non touché.
+
+## 06/09/2026 — `.enrichissement` supprimé des neuf webroots
+
+**Ordre de Helmy** : « supprime .enrichissement partout aussi ».
+
+**Inventaire d'abord — et deux n'étaient PAS vides.** Celui de la Tunisie l'était ;
+ceux-là non :
+
+| Webroot | Contenu | Poids |
+|---|---|---|
+| **estonia** `de449928` | matière première : `full_articles.json`, `desc_merged.json`, musées, phares, circuits | **6,2 Mo** |
+| **norvege** `ec356442` | sauvegardes d'avant purge : `sites.geojson.bak` ×2, `fr/en/nb.json.bak`, `photo_credits.json`, `osm_nature_brut.json` | **35 Mo** |
+| portugal · italie · tchequie · irlande · croatie | la chaîne d'outils Python (14 scripts + README) | 76 Ko chacun |
+| maroc · quebec | vides | 0 |
+
+**Vérifié AVANT de supprimer** — la règle « on regarde la cible avant d'effacer » :
+la chaîne d'outils existe en **7 à 8 exemplaires** sur le disque ; les données
+brutes existent **une fois**, dans `Estonie-Heritage-Experience/` et
+`Norvege-Heritage-Experience/`, et leurs tailles sont **identiques à l'octet
+près** — `full_articles.json` 2 043 379 · `sites.geojson.bak` 10 738 449 ·
+`photo_credits.json` 841 464 · `osm_nature_brut.json` 1 301 296. Le serveur
+n'avait qu'un double accidentel.
+
+**Contrôle des dix sites après** : accueil, `sw.js`, `manifest.json` et
+`.well-known/assetlinks.json` **tous en 200**, `/.enrichissement/` en 404.
+
+⚠️ **`.well-known` n'a JAMAIS été touché** — Helmy s'en est inquiété en cours de
+route, à juste titre : sans `assetlinks.json` l'application Android ne peut plus
+s'associer à son site. Contrôlé nommément sur les neuf sites, avec le bon nom de
+paquet à chaque fois.
+
+### Deux constats, non touchés
+- **Le Québec n'a AUCUN `assetlinks.json`** — et ce n'est pas de mon fait : son
+  webroot `ce26b5d8` n'avait déjà pas de `.well-known` à l'inventaire, avant
+  toute suppression. Sans ce fichier, l'application Android ne peut pas
+  s'associer au site.
+- **`.interne` sur le webroot de l'Estonie** — ni ouvert ni supprimé.
+
+⚠️ **Le domaine norvégien est `norway-heritage`, pas `norvege-heritage`.** Mon
+premier contrôle a rendu `000` et j'ai failli croire le site en panne : c'était
+mon erreur de nom. Le DNS le dit — `norvege-heritage` ne résout pas.
