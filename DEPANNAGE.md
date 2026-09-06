@@ -1307,3 +1307,40 @@ et la bibliothèque `jsQR`.
 nulle part. Elle est protégée par un garde, donc inoffensive — mais c'est une
 promesse de fonction qui n'a jamais été tenue. Le choix libre du départ passe
 désormais par l'entrée « 📍 Un autre point de départ ».
+
+## 06/09/2026 — les photos changeaient de propriétaire dès que l'ordre changeait
+
+**Symptôme, mesuré en ligne.** Photo rangée sur l'étape 3, on retire la 1re : la
+photo se retrouve sur l'étape 4, et celle de l'étape supprimée atterrit sur sa
+voisine. Idem en montant ou en descendant une étape.
+
+**Cause.** La clé d'un carnet d'étape est `<référence de la fiche>#<numéro>`
+(§10 et §12 du dépannage itinéraire, 24/08). **TROIS rangements** portent ce
+numéro, pas un seul :
+
+| rangement | contenu | suivait ? |
+|---|---|---|
+| `the_plan_meta` | dates, heures, visites | réparé le 05/09 |
+| base `the-carnet` | **les photos** | non |
+| `the-note-<clé>` | la note du voyageur | non |
+| `the-cap:<clé>` | la légende de l'album | non |
+
+Seul le premier suivait. Le carnet du voyageur devenait faux, en silence.
+
+**Réparation.** `THECarnet.renumeroter(paires)` déménage photos et note ;
+l'hôte déménage la légende. ⚠️ **On ne supprime rien** — Helmy, 05/09 : « si on
+retire une étape, les photos restent sur le téléphone, non allouées » : elles
+partent sous `<réf>#hors-<horodatage>`, un numéro qu'aucune étape ne peut porter.
+Elles sont gardées et ne réapparaîtront jamais sur la voisine.
+
+**Un second défaut, trouvé en le vérifiant.** L'insertion faisait suivre les
+photos, **le déplacement non** : `moveStep`, `dropStep` et `insertAt`
+(`roadtrip-plan.js`) appellent `THEplanRenumeroter`, qui ne déménage que la
+mémoire DU PLAN — le carnet n'était prévenu que par le chemin de l'hôte. L'hôte
+publie désormais `THErangementsSuivent(paires)` : un seul point d'appel, les
+trois rangements bougent ensemble.
+
+**Vérifié en ligne, les quatre gestes**, six étapes photographiées et légendées :
+monter la 3 · descendre la 1 · intercaler en tête · retirer la 2. Chaque photo et
+chaque légende est restée sur SON lieu, et « Bulla Regia.jpg » — l'étape retirée —
+est gardée non allouée dans la base.
