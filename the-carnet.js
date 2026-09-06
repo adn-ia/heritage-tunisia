@@ -613,5 +613,68 @@
                         repli de clé. Publié pour `the-planche.js` : sans elle, un
                         bloc extérieur rouvrirait IndexedDB pour son compte — deux
                         chemins vers la même table, dont un seul connaît le repli. */
-                     lire:getMediaLarge };
+                     lire:getMediaLarge,
+                     renumeroter:renumeroter };
+
+  /* ⚠️ LES PHOTOS SUIVENT LEUR ÉTAPE — 05/09/2026, mesuré en ligne : on range une
+     photo sur l'étape 3, on retire la 1re, et la photo se retrouve sur l'étape 4.
+     La clé d'une photo est le NUMÉRO de l'étape dans l'itinéraire
+     (`placeKey`, itineraire.html l. 1066). Toute insertion, tout retrait, tout
+     déplacement décale les numéros — et les photos changeaient de propriétaire,
+     en silence. Le carnet du voyageur devenait faux.
+
+     L'hôte, seul propriétaire du format de clé, nous donne la table de
+     correspondance ; nous déménageons ce qui est à nous : les photos et la note.
+
+     ⚠️ ON NE SUPPRIME RIEN. Helmy, 05/09 : « si on retire une étape, les photos
+     restent sur le téléphone, non allouées. » Une clé sans destination range
+     donc ses photos sous un numéro qu'aucune étape ne peut porter — elles sont
+     gardées, et elles ne réapparaîtront jamais sur le voisin.
+
+     ⚠️ ON LIT TOUT AVANT D'ÉCRIRE. Avec #1→#2 et #2→#3, écrire au fil de la
+     lecture écraserait #2 avant de l'avoir déménagé. */
+  function renumeroter(paires){
+    try{
+      if(!Array.isArray(paires) || !paires.length) return Promise.resolve(false);
+      var trad={}, bouge=false;
+      paires.forEach(function(x){
+        if(!x || !x[0]) return;
+        trad[x[0]] = x[1] || "";
+        if(x[0] !== x[1]) bouge = true;
+      });
+      if(!bouge) return Promise.resolve(false);
+      var garage = function(k){ return String(k).split("#")[0] + "#hors-" + Date.now(); };
+
+      /* ① la note de l'étape */
+      var notes = {};
+      Object.keys(trad).forEach(function(k){
+        var v = localStorage.getItem("the-note-" + k);
+        if (v != null) notes[k] = v;
+        localStorage.removeItem("the-note-" + k);
+      });
+      Object.keys(notes).forEach(function(k){
+        localStorage.setItem("the-note-" + (trad[k] || garage(k)), notes[k]);
+      });
+
+      /* ② les photos */
+      return db().then(function(d){ return new Promise(function(res){
+        var tx = d.transaction("photos", "readwrite"), os = tx.objectStore("photos");
+        var aFaire = [], c = os.openCursor();
+        c.onsuccess = function(){
+          var cur = c.result;
+          if (cur){
+            var v = cur.value;
+            if (v && (v.place in trad)) aFaire.push([cur.primaryKey, trad[v.place] || garage(v.place)]);
+            cur.continue(); return;
+          }
+          aFaire.forEach(function(x){
+            var g = os.get(x[0]);
+            g.onsuccess = function(){ var v = g.result; if (!v) return; v.place = x[1]; os.put(v); };
+          });
+        };
+        tx.oncomplete = function(){ res(true); };
+        tx.onerror    = function(){ res(false); };
+      }); });
+    }catch(e){ return Promise.resolve(false); }
+  }
 })();

@@ -667,6 +667,12 @@
         neuf[nk] = v;
       });
       metaSave(neuf);
+      /* ⚠️ LES AUTRES RANGEMENTS SUIVENT AUSSI — 06/09/2026. Le numéro d'étape ne
+         sert pas qu'à nous : le carnet du voyageur (photos, note) et la légende
+         de l'album sont rangés dessous. Monter une étape ne déplaçait que NOTRE
+         mémoire, et la photo restait au numéro — donc sur le voisin. Mesuré à
+         l'écran. On prévient l'hôte, qui déménage ce qui est à lui. */
+      try{ if(window.THErangementsSuivent) THErangementsSuivent(paires); }catch(e){}
       rerender();
       return true;
     }catch(e){ return false; }

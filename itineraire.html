@@ -1938,11 +1938,52 @@
     try{
       if(!avant || !avant.length || !window.THEplanRenumeroter) return false;
       const apres = (LASTRES && LASTRES.route || []);
-      return THEplanRenumeroter(avant.map(a => {
+      const paires = avant.map(a => {
         const s = apres.indexOf(a.s) >= 0 ? a.s : apres.find(x => norm(x.p.nom) === a.nom);
         return [a.cle, s ? placeKey(s) : ''];
-      }));
+      });
+      /* ⚠️ TOUT CE QUI EST RANGÉ SOUS CE NUMÉRO DÉMÉNAGE — 05/09/2026. Trois
+         rangements portent la clé de l'étape, pas un seul : la mémoire du plan
+         (dates, heures, visites), le carnet (photos et note du voyageur), et la
+         légende de l'album. Seule la première suivait. Mesuré en ligne : une
+         photo rangée sur l'étape 3, on retire la 1re, la photo se retrouve sur
+         l'étape 4. Chacun déménage ce qui est à lui ; l'hôte ne fait que donner
+         la table de correspondance. */
+      const bouge = THEplanRenumeroter(paires);   /* il prévient les autres rangements lui-même */
+      return bouge;
     }catch(e){ return false; }
+  }
+  /* La légende de l'album est à nous : on la déménage ici. On lit TOUT avant
+     d'écrire — avec #1→#2 et #2→#3, écrire au fil de la lecture écraserait #2
+     avant de l'avoir déménagé. Une clé sans destination n'est pas effacée : sa
+     légende part sous un numéro qu'aucune étape ne peut porter, comme les
+     photos (Helmy, 05/09 : « les photos restent sur le téléphone, non allouées »). */
+  /* ⚠️ UN SEUL POINT D'APPEL POUR LES AUTRES RANGEMENTS — 06/09/2026, mesuré à
+     l'écran : on intercale un lieu, les photos suivent ; on DÉPLACE une étape,
+     elles ne suivent pas — Le Kef portait la photo de Dougga.
+     La cause : `moveStep`, `dropStep` et `insertAt` (`roadtrip-plan.js`)
+     appellent `THEplanRenumeroter`, qui ne déménage que la mémoire DU PLAN. Le
+     carnet et les légendes n'étaient prévenus que par le chemin de l'hôte.
+     On publie donc le geste : quiconque renumérote appelle ceci, et les trois
+     rangements bougent ensemble. Une seule vérité, un seul appel. */
+  window.THErangementsSuivent = function(paires){
+    try{ if(window.THECarnet && THECarnet.renumeroter) THECarnet.renumeroter(paires); }catch(e){}
+    try{ renumeroterLegendes(paires); }catch(e){}
+  };
+
+  function renumeroterLegendes(paires){
+    try{
+      const trad={}; let bouge=false;
+      paires.forEach(p=>{ if(!p||!p[0]) return; trad[p[0]]=p[1]||''; if(p[0]!==p[1]) bouge=true; });
+      if(!bouge) return;
+      const garage = k => String(k).split('#')[0] + '#hors-' + Date.now();
+      const lues={};
+      Object.keys(trad).forEach(k=>{
+        const v=localStorage.getItem('the-cap:'+k);
+        if(v!=null){ lues[k]=v; localStorage.removeItem('the-cap:'+k); }
+      });
+      Object.keys(lues).forEach(k=>{ localStorage.setItem('the-cap:'+(trad[k]||garage(k)), lues[k]); });
+    }catch(e){}
   }
 
   function insertStop(stop, placer){
