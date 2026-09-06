@@ -1668,9 +1668,16 @@ deux autres dépendent du navigateur, et c'est lui qui défaille.
   et ils ne bloquent aucune attente ;
 - le premier essai de `brique-etape.js`, déjà en basse précision depuis le 23/08.
 
-**Mesuré à l'écran**, géolocalisation remplacée par une qui ne rappelle JAMAIS :
-la promesse **rend la main** au lieu de figer l'écran. Avant ce garde, elle ne
-serait jamais revenue.
+**Mesuré à l'écran, en local puis EN LIGNE**, géolocalisation remplacée par une
+qui ne rappelle JAMAIS : la promesse **rend la main** au lieu de figer l'écran.
+Avant ce garde, elle ne serait jamais revenue.
+
+⚠️ **Sur l'écart de mesure, pour ne pas s'y tromper la prochaine fois.** Le garde
+est réglé à 7 s ; j'ai relevé 10,3 s en local et 13 s en ligne. Ce n'est pas le
+garde : l'onglet piloté est **en arrière-plan** (`visibilityState = hidden`, sans
+focus), et Chrome ralentit alors les minuteries — **mesuré : une minuterie d'1 s
+a mis 3,4 s**, une de 7 s en a mis 7,8. Au premier plan sur un téléphone, le
+garde tombe à 7 s. On vérifie le ralentissement avant de conclure à un défaut.
 
 ⚠️ **Une erreur de ma main, en chemin** : j'ai remplacé le texte en dur
 « Position refusée ou indisponible » par une clé `index.position.refusee` **qui
