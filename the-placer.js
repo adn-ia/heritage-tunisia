@@ -61,7 +61,16 @@
          PAR-DESSUS la fenêtre théorique, et le dernier bouton d'une fenêtre haute
          devient intouchable. C'est la panne du bouton « Fermer » du carnet,
          réparée le même jour — on ne la refait pas ici. */
-            /* ⚠️ AU-DESSUS DE CE QUI L'OUVRE — 06/09/2026, Helmy sur son téléphone :
+            /* ⚠️ NOS IDENTIFIANTS COMMENCENT PAR `plc-`, PAS `pl-` — 06/09/2026.
+         `the-planche.js` (planche-contact) crée depuis longtemps un élément
+         `#pl-modal` : en écrivant cette brique j'ai repris le même nom. Deux
+         briques auto-portées ne partagent JAMAIS un identifiant — chacune
+         recréait l'élément de l'autre, et mon `z-index` remontait la planche
+         sans que personne l'ait demandé. Mesuré à l'écran : après un passage par
+         l'écran de placement, la planche-contact réutilisait MON élément.
+         Ici, tout est préfixé `plc-` : rien ne peut plus se croiser.
+
+         ⚠️ AU-DESSUS DE CE QUI L'OUVRE — 06/09/2026, Helmy sur son téléphone :
          « la proposition de où placer les lieux apparaît DERRIÈRE et est cachée
          au lieu d'apparaître devant ».
          C'est ma faute : j'avais écrit 1600 sans regarder l'échelle de la page.
@@ -72,33 +81,33 @@
          bandeau de message (100002), qui doivent rester visibles quoi qu'il
          arrive. C'est le défaut derrière « ma sélection jusqu'à 4 ne marche
          pas » : l'écran s'ouvrait, invisible, et rien ne semblait répondre. */
-      "#pl-modal{position:fixed;inset:0;height:100dvh;z-index:10050;display:none;" +
+      "#plc-modal{position:fixed;inset:0;height:100dvh;z-index:10050;display:none;" +
       "align-items:center;justify-content:center;background:rgba(20,15,10,.78);" +
       "padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));overflow:auto}" +
-      "#pl-modal.on{display:flex}" +
-      "#pl-modal .pl-box{background:var(--paper,#fffdf8);color:var(--ink,#2b2318);border-radius:14px;" +
+      "#plc-modal.on{display:flex}" +
+      "#plc-modal .plc-box{background:var(--paper,#fffdf8);color:var(--ink,#2b2318);border-radius:14px;" +
       "padding:18px;max-width:440px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5);" +
       "max-height:calc(100dvh - 36px - env(safe-area-inset-bottom,0px));overflow:auto}" +
-      "#pl-modal h3{font-family:'Cormorant Garamond',Georgia,serif;margin:0 0 12px;font-size:20px}" +
-      "#pl-modal select{width:100%;padding:11px;border:1px solid var(--line,#e3d8c4);border-radius:8px;" +
+      "#plc-modal h3{font-family:'Cormorant Garamond',Georgia,serif;margin:0 0 12px;font-size:20px}" +
+      "#plc-modal select{width:100%;padding:11px;border:1px solid var(--line,#e3d8c4);border-radius:8px;" +
       "font:inherit;font-size:16px;background:#fff;color:var(--ink,#2b2318);margin-bottom:14px}" +
       /* 44 px de haut : la règle du doigt, et celle d'Apple. */
-      "#pl-modal .pl-go{display:block;width:100%;min-height:44px;margin-bottom:9px;padding:12px;" +
+      "#plc-modal .plc-go{display:block;width:100%;min-height:44px;margin-bottom:9px;padding:12px;" +
       "border:none;border-radius:9px;font:inherit;font-weight:700;cursor:pointer;" +
       "background:var(--gold,#a8884f);color:#fff}" +
-      "#pl-modal .pl-go.pl-second{background:var(--ivory,#f6f0e4);color:var(--ink,#2b2318);" +
+      "#plc-modal .plc-go.plc-second{background:var(--ivory,#f6f0e4);color:var(--ink,#2b2318);" +
       "border:1px solid var(--line,#e3d8c4);font-weight:400}" +
-      "#pl-modal .pl-no{display:block;width:100%;min-height:44px;padding:11px;border:none;" +
+      "#plc-modal .plc-no{display:block;width:100%;min-height:44px;padding:11px;border:none;" +
       "background:none;color:var(--stone,#8a7c66);font:inherit;cursor:pointer}";
     document.head.appendChild(s);
   }
 
   function boite() {
-    var m = document.getElementById("pl-modal");
+    var m = document.getElementById("plc-modal");
     if (m) return m;
     m = document.createElement("div");
-    m.id = "pl-modal";
-    m.innerHTML = '<div class="pl-box"></div>';
+    m.id = "plc-modal";
+    m.innerHTML = '<div class="plc-box"></div>';
     document.body.appendChild(m);
     /* Un seul écouteur, posé une fois — la leçon du carnet, 05/09 : trois
        câblages pour un geste, c'est trois pannes possibles. */
@@ -111,7 +120,7 @@
   var RESOUDRE = null;
 
   function fermer(choix) {
-    var m = document.getElementById("pl-modal");
+    var m = document.getElementById("plc-modal");
     if (m) m.classList.remove("on");
     var f = RESOUDRE; RESOUDRE = null;
     if (f) f(choix);
@@ -142,29 +151,29 @@
       });
 
       var m = boite();
-      m.querySelector(".pl-box").innerHTML =
+      m.querySelector(".plc-box").innerHTML =
         "<h3>" + ech(opts.nb > 1 ? L("titre.n") : L("titre.un")) + "</h3>" +
         '<div style="font-size:13px;color:var(--stone,#8a7c66);margin:-6px 0 8px">' +
         ech(L("inserer")) + "</div>" +
-        '<select id="pl-ou">' + options + "</select>" +
-        '<button type="button" class="pl-go" id="pl-etape">' + ech(L("comme.etape")) + "</button>" +
-        '<button type="button" class="pl-go pl-second" id="pl-visite">' + ech(L("comme.visite")) + "</button>" +
-        '<button type="button" class="pl-no" id="pl-non">' + ech(L("annuler")) + "</button>";
+        '<select id="plc-ou">' + options + "</select>" +
+        '<button type="button" class="plc-go" id="plc-etape">' + ech(L("comme.etape")) + "</button>" +
+        '<button type="button" class="plc-go plc-second" id="plc-visite">' + ech(L("comme.visite")) + "</button>" +
+        '<button type="button" class="plc-no" id="plc-non">' + ech(L("annuler")) + "</button>";
       m.classList.add("on");
 
       function lu() {
-        var s = document.getElementById("pl-ou");
+        var s = document.getElementById("plc-ou");
         var n = parseInt(s && s.value, 10);
         return isNaN(n) ? -1 : n;
       }
-      document.getElementById("pl-etape").onclick = function () { fermer({ apres: lu(), role: "etape" }); };
-      document.getElementById("pl-visite").onclick = function () {
+      document.getElementById("plc-etape").onclick = function () { fermer({ apres: lu(), role: "etape" }); };
+      document.getElementById("plc-visite").onclick = function () {
         var n = lu();
         /* ⚠️ « Au début » n'a pas d'étape d'où partir : une visite doit se
            rattacher à quelque chose. On la rattache alors à la première. */
         fermer({ apres: n, role: "visite", base: n < 0 ? 0 : n });
       };
-      document.getElementById("pl-non").onclick = function () { fermer(null); };
+      document.getElementById("plc-non").onclick = function () { fermer(null); };
 
       return new Promise(function (res) { RESOUDRE = res; });
     });

@@ -1505,3 +1505,32 @@ accordée → `rgb(46,158,91)` vert ; retour au refus → rouge.
 ⚠️ La réponse « accordée » est **simulée** : une page ne peut pas s'accorder la
 géolocalisation. Le chemin est éprouvé, le comportement réel reste à confirmer
 sur le téléphone.
+
+## 06/09/2026 — deux briques partageaient l'identifiant `#pl-modal`
+
+**Trouvé en cherchant la même classe de défaut que le z-index**, par un relevé
+mécanique de toutes les fenêtres plein écran et de leur niveau d'empilement.
+
+`the-planche.js` (planche-contact) crée depuis longtemps un `#pl-modal`. En
+écrivant `the-placer.js` le 05/09, j'ai repris le même nom. **Deux briques
+auto-portées ne partagent jamais un identifiant.**
+
+**Mesuré à l'écran** : après un passage par l'écran de placement, ouvrir la
+planche-contact **réutilisait MON élément** et en remplaçait le contenu. Chacune
+recréant le sien à l'ouverture, l'écran se réparait de lui-même — le défaut ne
+se voyait pas, mais mon `z-index:10050` remontait silencieusement la planche, et
+son style `.pl-opt` s'appliquait à mon écran.
+
+**Réparation.** Tout ce qui appartient au placeur est préfixé `plc-` :
+`#plc-modal`, `.plc-box`, `#plc-ou`, `.plc-go`, `#plc-etape`, `#plc-visite`,
+`#plc-non`. Vérifié qu'aucun autre fichier ne les référence, et que la planche
+garde les siens. **Vérifié à l'écran** : les deux existent en même temps, le
+placeur à 10050, la planche à 1600.
+
+### Le relevé complet des fenêtres, pour la suite
+`#cn-modal` 1450 · `#pc-wrap` 1500 · `#pl-modal` (planche) 1600 ·
+`.the-plein` 9000 · `#bdConfirm` et les `.prem-ask` 9999 · `#dp-ov` et
+`#autourModal` 10000 · `#betModal` 10001 · `#confModal` 10002 ·
+`#plc-modal` 10050 · visite guidée 99990 · loupe 100000 · bandeau 100002.
+Les niveaux bas ne sont un défaut que pour une fenêtre qui s'ouvre DEPUIS une
+autre : c'était le cas du seul placeur.
