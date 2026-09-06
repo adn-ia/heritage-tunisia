@@ -546,6 +546,7 @@
  "index.pays.maj": "__PAYS_MAJ__",
  "index.periode.exemples": "Carthage, Rome, Islam médiéval… sur toute la Tunisie",
  "index.position.indisponible": "Position indisponible — saisissez un lieu",
+ "index.position.refusee": "L’appareil a refusé la position GPS, ou elle est introuvable.",
  "index.position.refusee.ou.indisponible": "Position refusée ou indisponible",
  "index.position.trouvee": "Position trouvée",
  "index.prem.feat": "« {feat} » fait partie des fonctions Premium.",

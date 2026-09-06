@@ -221,8 +221,18 @@
       var code = e && e.code;
       if (code === 1) { pos.textContent = L("position.refusee"); erreur(pos, true); return; }
       if (!second) {                                   // une seconde chance, en précis
-        navigator.geolocation.getCurrentPosition(reussi,
-          function (e2) { rate(e2, true); },
+        /* ⚠️ LA PRÉCISION RESTE, LE GARDE S'AJOUTE — 06/09/2026. Ce second essai
+           est délibéré : le premier a déjà eu lieu en basse précision (l. 234),
+           et on ne demande le GPS fin que parce qu'il a échoué. Ce qui manquait,
+           c'est le garde EXTÉRIEUR du §4 : dans une coque iOS les fonctions de
+           retour peuvent ne jamais être rappelées, et le champ restait à
+           « recherche… » pour toujours. */
+        var rendu = false;
+        var fini = function (f, a) { if (rendu) return; rendu = true; try { f(a); } catch (x) {} };
+        var garde = setTimeout(function () { fini(function (e3) { rate(e3, true); }, { code: 3 }); }, 20000);
+        navigator.geolocation.getCurrentPosition(
+          function (p) { clearTimeout(garde); fini(reussi, p); },
+          function (e2) { clearTimeout(garde); fini(function (x) { rate(x, true); }, e2); },
           { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
         return;
       }

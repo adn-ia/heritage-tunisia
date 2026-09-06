@@ -300,11 +300,26 @@ function activateAround(){
   const b=document.getElementById('aroundBtn');
   if(!navigator.geolocation){ alert(uiT('Géolocalisation indisponible sur cet appareil.')); return; }
   b.textContent='📍 '+uiT('Localisation…');
-  navigator.geolocation.getCurrentPosition(pos=>{
-    F.around=true; F.center=[pos.coords.longitude,pos.coords.latitude];
-    b.textContent='📍 '+uiT('Autour de moi')+' ✓'; b.style.background='var(--gold)'; b.style.color='#fff';
-    document.getElementById('radiusRow').style.display='flex'; render();
-  }, ()=>{ b.textContent='📍 '+uiT('Autour de moi'); alert(uiT('Localisation refusée ou indisponible.')); });
+  /* ⚠️ POSITION SOUS GARDE — 06/09/2026, §4 du dépannage itinéraire. Cet appel
+     n'avait NI délai NI garde : si les fonctions de retour ne sont jamais
+     rappelées — ce qui arrive dans une coque iOS pendant la demande
+     d'autorisation — le bouton restait sur « Localisation… » pour toujours.
+     Sept secondes, et on rend la main quoi qu'il arrive. */
+  (function(){
+    var rendu=false;
+    var fini=function(f,a){ if(rendu) return; rendu=true; try{ f(a); }catch(e){} };
+    var ok=function(pos){
+      F.around=true; F.center=[pos.coords.longitude,pos.coords.latitude];
+      b.textContent='📍 '+uiT('Autour de moi')+' ✓'; b.style.background='var(--gold)'; b.style.color='#fff';
+      document.getElementById('radiusRow').style.display='flex'; render();
+    };
+    var ko=function(){ b.textContent='📍 '+uiT('Autour de moi'); alert(uiT('Localisation refusée ou indisponible.')); };
+    var garde=setTimeout(function(){ fini(ko); }, 7000);
+    navigator.geolocation.getCurrentPosition(
+      function(p){ clearTimeout(garde); fini(ok,p); },
+      function(){ clearTimeout(garde); fini(ko); },
+      { enableHighAccuracy:false, timeout:7000, maximumAge:30000 });
+  })();
 }
 document.getElementById('aroundBtn').onclick=activateAround;
 document.getElementById('radius').oninput=e=>{ F.radius=+e.target.value; document.getElementById('radiusVal').textContent=e.target.value; render(); };

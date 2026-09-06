@@ -1998,6 +1998,7 @@
  "index.pays.heritage.carte.du": "__MARQUE_COURTE__ — خريطة التراث",
  "index.periode.exemples": "قرطاج، روما، الإسلام في العصور الوسطى… في جميع أنحاء تونس",
  "index.position.indisponible": "الموقع غير متاح — أدخل مكانًا",
+ "index.position.refusee": "رفض الجهاز إظهار موقع GPS، أو أنه لا يمكن العثور عليه.",
  "index.position.refusee.ou.indisponible": "الوظيفة مرفوضة أو غير متوفرة",
  "index.position.trouvee": "تم العثور على الموقع",
  "index.prem.feat": "«{feat}» هي إحدى الميزات المميزة.",

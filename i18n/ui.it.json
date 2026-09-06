@@ -1998,6 +1998,7 @@
  "index.pays.heritage.carte.du": "__MARQUE_COURTE__ — Mappa del patrimonio",
  "index.periode.exemples": "Cartagine, Roma, Islam medievale… in tutta la Tunisia",
  "index.position.indisponible": "Posizione non disponibile — inserisci una località",
+ "index.position.refusee": "Il dispositivo non ha rilevato la posizione GPS, oppure questa non è individuabile.",
  "index.position.refusee.ou.indisponible": "Posizione rifiutata o non disponibile",
  "index.position.trouvee": "Posizione trovata",
  "index.prem.feat": "«{feat}» fa parte delle funzioni Premium.",

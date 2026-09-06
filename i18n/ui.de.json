@@ -1998,6 +1998,7 @@
  "index.pays.heritage.carte.du": "__MARQUE_COURTE__ — Karte des Kulturerbes",
  "index.periode.exemples": "Karthago, Rom, der Islam im Mittelalter … in ganz Tunesien",
  "index.position.indisponible": "Standort nicht verfügbar – bitte einen Ort eingeben",
+ "index.position.refusee": "Das Gerät hat die GPS-Position abgelehnt oder sie ist nicht auffindbar.",
  "index.position.refusee.ou.indisponible": "Stelle abgelehnt oder nicht verfügbar",
  "index.position.trouvee": "Standort gefunden",
  "index.prem.feat": "„{feat}“ gehört zu den Premium-Funktionen.",

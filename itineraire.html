@@ -1723,6 +1723,27 @@
     });
   }
 
+  /* ⚠️ POSITION SOUS GARDE — 06/09/2026, correction du §4 du dépannage itinéraire
+     appliquée aux appels restants. Dans une coque iOS, `getCurrentPosition` peut
+     NE JAMAIS rappeler ses fonctions de retour, et son propre `timeout` ne court
+     pas pendant que le téléphone demande l'autorisation : la promesse reste en
+     attente et l'écran se fige — c'est la cause trouvée le 23/08.
+     La correction, telle qu'elle est écrite : `enableHighAccuracy:false` + un
+     cache + **un garde-fou EXTÉRIEUR à 7 s** qui rend la main quoi qu'il arrive.
+     Le garde est le seul des trois qui protège vraiment : les deux autres
+     dépendent du navigateur, et c'est lui qui défaille. */
+  function positionSousGarde(ok, ko, opts){
+    var rendu=false;
+    var fini=function(f, a){ if(rendu) return; rendu=true; try{ if(f) f(a); }catch(e){} };
+    var garde=setTimeout(function(){ fini(ko, {code:3, message:'garde 7s'}); }, 7000);
+    try{
+      navigator.geolocation.getCurrentPosition(
+        function(p){ clearTimeout(garde); fini(ok, p); },
+        function(e){ clearTimeout(garde); fini(ko, e); },
+        opts || { enableHighAccuracy:false, timeout:7000, maximumAge:30000 });
+    }catch(e){ clearTimeout(garde); fini(ko, e); }
+  }
+
   function resolveOrigin(silent){
     const sel=document.getElementById('origin');
     const v=sel.value;
@@ -1742,10 +1763,9 @@
     return new Promise(res=>{
       if(!navigator.geolocation){ echec('itin.position.indisponible'); res(null); return; }
       if(!silent) showGuide('📍 '+uiT('itin.position.recherche'), 9000);
-      navigator.geolocation.getCurrentPosition(
+      positionSousGarde(
         pos=>res({coord:[pos.coords.longitude,pos.coords.latitude], label:'votre position'}),
-        ()=>{ echec('itin.position.refusee'); res(null); },
-        {enableHighAccuracy:true, timeout:8000}
+        ()=>{ echec('itin.position.refusee'); res(null); }
       );
     });
   }
@@ -2087,10 +2107,10 @@
     const msg=document.getElementById('halteMsg');
     if(!navigator.geolocation){ msg.textContent=uiT('⚠️ GPS non disponible sur cet appareil.'); return; }
     msg.textContent=uiT('📡 Localisation en cours…');
-    navigator.geolocation.getCurrentPosition(
+    positionSousGarde(
       p=>{ addHalte(p.coords.longitude, p.coords.latitude); },
       ()=>{ msg.textContent=uiT('⚠️ Position indisponible/refusée. Activez la localisation, ou ajoutez le lieu par son nom (champ « Ajouter un lieu » ci-dessus).'); },
-      { enableHighAccuracy:true, timeout:10000, maximumAge:60000 });
+      undefined);
   };
 
   // ---------- circuits preset (tours.json) ----------
@@ -3530,7 +3550,7 @@
        on venait d'en désigner un, il disparaissait. On ne cale donc la position
        que si AUCUN départ n'a été choisi — le libellé « Ma position » est alors
        encore là, et c'est lui qu'on précise. */
-    if(navigator.geolocation) navigator.geolocation.getCurrentPosition(
+    if(navigator.geolocation) positionSousGarde(
       /* ⚠️ « Ma position » était EN DUR ici alors que la clé existe et sert déjà
          l. 2957. Ce libellé se lit dans l'en-tête de l'itinéraire, sur la borne
          de départ et sur la couverture de l'album : en allemand, il disait
@@ -3538,7 +3558,7 @@
       p=>{ if(LASTRES&&LASTRES.mode==='libre'
               && LASTORIGIN && LASTORIGIN.label===uiT('itin.ma.position'))
              LASTORIGIN={coord:[p.coords.longitude,p.coords.latitude],label:uiT('itin.ma.position')}; },()=>{},
-      {enableHighAccuracy:true,timeout:8000,maximumAge:120000});
+      undefined);
   }
   document.getElementById('mLibre').onclick=()=>requirePass(uiT('itin.feature.libre'), startLibre);
   // ---------- album souvenir (I6) ----------
@@ -4034,11 +4054,11 @@
       (data?('<div class="sr-link">QR&nbsp;: '+(data.replace(/</g,'&lt;')).slice(0,160)+'</div>'+(isURL?'<a class="sr-open" href="'+data+'" target="_blank" rel="noopener">'+uiT('Ouvrir le contenu officiel ↗')+'</a>':'')):'<div class="sr-link">Pas de QR lu — marquez le lieu manuellement&nbsp;:</div>')+
       '<select id="scanStep">'+opts+'</select>'+
       '<button class="sr-go" id="scanGo" data-i18n="iti.marquer.ce.lieu.comme.visite">✓ Marquer ce lieu comme visité</button>';
-    if(navigator.geolocation) navigator.geolocation.getCurrentPosition(pos=>{
+    if(navigator.geolocation) positionSousGarde(pos=>{
       const here=[pos.coords.longitude,pos.coords.latitude]; let bi=0,bd=Infinity;
       LASTRES.route.forEach((s,i)=>{ const d=haversine(here,s.c); if(d<bd){bd=d;bi=i;} });
       const sel=document.getElementById('scanStep'); if(sel) sel.value=String(bi);
-    },()=>{},{timeout:5000});
+    },()=>{},undefined);
     document.getElementById('scanGo').onclick=()=>{
       const s=LASTRES.route[+document.getElementById('scanStep').value];
       if(s){ VU.add(norm(s.p.nom)); saveVu(); }

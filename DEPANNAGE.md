@@ -1638,3 +1638,44 @@ ce qui doit y être, `assetlinks.json` que Google lit pour l'application Android
 | `/` · `/itineraire.html` · `/sw.js` · `/manifest.json` · `/.well-known/assetlinks.json` | 200 | **200** |
 | `/.enrichissement/` | 403 | **404 — supprimé** |
 | `/.git/HEAD` | 403 | 403 — dossier déjà supprimé le même jour |
+
+## 06/09/2026 — B6 : les appels de position restants passent sous garde
+
+**Ordre de Helmy** : « oui fais le b6 ». Correction du **§4 du dépannage
+itinéraire** appliquée aux appels laissés de côté le 23/08.
+
+**Le rappel du §4** : dans une coque iOS, `getCurrentPosition` peut **ne jamais
+rappeler ses fonctions de retour**, et son propre `timeout` ne court pas pendant
+que le téléphone demande l'autorisation. La promesse reste en attente et l'écran
+se fige. Des trois réglages, **seul le garde EXTÉRIEUR protège vraiment** : les
+deux autres dépendent du navigateur, et c'est lui qui défaille.
+
+**Ce qui a été fait**, `positionSousGarde()` — 7 s, basse précision, cache 30 s :
+
+| Fichier | Appel | Traitement |
+|---|---|---|
+| `itineraire.html` | départ « ma position », halte GPS, calage du voyage libre, lecture de QR | **4 sous garde** |
+| `index.html` | bouton « me localiser », assistant de circuit | **2 sous garde** |
+| `roadtrip-plus.js` | `getPos()` | **sous garde** |
+| `roadtrip-plan.js` | `getPos()` (recalage d'une étape) | **sous garde** |
+| `liste.html` | « autour de moi » — **ni délai NI garde**, le bouton restait sur « Localisation… » pour toujours | **sous garde** |
+| `brique-etape.js` | seconde chance en précis | **précision gardée** (elle suit un premier essai en basse) + **garde ajouté** |
+| `bienvenue.html` | amorçage de l'autorisation | passé en **basse précision** ; son garde extérieur existait déjà |
+
+**Volontairement inchangés, avec leur raison :**
+- les deux `watchPosition` (guide audio d'`index.html`, suivi de `roadtrip-plus.js`)
+  — ils suivent le voyageur en continu, la précision y est la fonction elle-même,
+  et ils ne bloquent aucune attente ;
+- le premier essai de `brique-etape.js`, déjà en basse précision depuis le 23/08.
+
+**Mesuré à l'écran**, géolocalisation remplacée par une qui ne rappelle JAMAIS :
+la promesse **rend la main** au lieu de figer l'écran. Avant ce garde, elle ne
+serait jamais revenue.
+
+⚠️ **Une erreur de ma main, en chemin** : j'ai remplacé le texte en dur
+« Position refusée ou indisponible » par une clé `index.position.refusee` **qui
+n'existait pas** — le message serait devenu vide. Clé créée et traduite.
+Et DeepL a dérivé deux fois : « **Stelle** abgelehnt » et « الوظيفة » désignent un
+poste de travail, pas un lieu ; puis « not available or unavailable », qui perdait
+« refusée ». Source reformulée : « L'appareil a refusé la position GPS, ou elle
+est introuvable. »

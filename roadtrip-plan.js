@@ -185,9 +185,27 @@
   }
 
   /* --- recalage GPS d'un arrêt --- */
+  /* ⚠️ POSITION SOUS GARDE — 06/09/2026, §4 du dépannage itinéraire. Dans une
+     coque iOS, `getCurrentPosition` peut ne jamais rappeler ses fonctions de
+     retour, et son `timeout` ne court pas pendant la demande d'autorisation :
+     la promesse reste en attente et l'écran se fige. Seul un garde EXTÉRIEUR
+     protège — les deux autres réglages dépendent du navigateur, et c'est lui
+     qui défaille. Chaque brique porte le sien : elle ne dépend de personne. */
+  function positionSousGarde(ok, ko, opts){
+    var rendu=false;
+    var fini=function(f,a){ if(rendu) return; rendu=true; try{ if(f) f(a); }catch(e){} };
+    var garde=setTimeout(function(){ fini(ko,{code:3,message:'garde 7s'}); }, 7000);
+    try{
+      navigator.geolocation.getCurrentPosition(
+        function(p){ clearTimeout(garde); fini(ok,p); },
+        function(e){ clearTimeout(garde); fini(ko,e); },
+        opts || { enableHighAccuracy:false, timeout:7000, maximumAge:30000 });
+    }catch(e){ clearTimeout(garde); fini(ko,e); }
+  }
+
   function getPos(){ return new Promise(function(res,rej){
     if(!navigator.geolocation) return rej();
-    navigator.geolocation.getCurrentPosition(function(p){ res([p.coords.longitude,p.coords.latitude]); }, rej, {enableHighAccuracy:true,timeout:15000,maximumAge:4000});
+    positionSousGarde(function(p){ res([p.coords.longitude,p.coords.latitude]); }, rej);
   }); }
   function recalGPS(i){
     if(!haveRoute()) return;

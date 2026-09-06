@@ -626,7 +626,27 @@
     function locate(){
       if(!navigator.geolocation){ toast('GPS non disponible'); return; }
       toast('Localisation…');
-      navigator.geolocation.getCurrentPosition(pos=>{
+    /* ⚠️ POSITION SOUS GARDE — 06/09/2026, §4 du dépannage itinéraire. Dans une
+       coque iOS, `getCurrentPosition` peut ne jamais rappeler ses fonctions de
+       retour, et son `timeout` ne court pas pendant la demande d'autorisation :
+       la promesse reste en attente et l'écran se fige. Seul un garde EXTÉRIEUR
+       protège — les deux autres réglages dépendent du navigateur, et c'est lui
+       qui défaille.
+       ⚠️ Le `watchPosition` du guide audio n'est PAS concerné : il suit le
+       voyageur en continu, la haute précision y est la fonction elle-même, et il
+       ne bloque aucune attente. */
+    function positionSousGarde(ok, ko, opts){
+      var rendu=false;
+      var fini=function(f,a){ if(rendu) return; rendu=true; try{ if(f) f(a); }catch(e){} };
+      var garde=setTimeout(function(){ fini(ko,{code:3,message:'garde 7s'}); }, 7000);
+      try{
+        navigator.geolocation.getCurrentPosition(
+          function(p){ clearTimeout(garde); fini(ok,p); },
+          function(e){ clearTimeout(garde); fini(ko,e); },
+          opts || { enableHighAccuracy:false, timeout:7000, maximumAge:30000 });
+      }catch(e){ clearTimeout(garde); fini(ko,e); }
+    }
+      positionSousGarde(pos=>{
         const {latitude,longitude,accuracy}=pos.coords; const ll=[latitude,longitude]; userPos=ll;
         if(meMarker){ meMarker.setLatLng(ll); accCircle.setLatLng(ll).setRadius(accuracy); }
         else { meMarker=L.circleMarker(ll,{radius:7,color:'#a8884f',fillColor:'#a8884f',fillOpacity:1,weight:3}).addTo(map); accCircle=L.circle(ll,{radius:accuracy,color:'#a8884f',fillColor:'#a8884f',fillOpacity:0.08,weight:1}).addTo(map); }
@@ -634,7 +654,7 @@
         if(aroundOn) applyFilters();
         if(audioOn) narrate(ll);
         toast(uiT('Position trouvée')+' (±'+Math.round(accuracy)+' m)');
-      }, ()=>toast('Position refusée ou indisponible'), {enableHighAccuracy:true,timeout:10000});
+      }, ()=>toast(uiT('index.position.refusee')));
     }
     document.getElementById('locate').addEventListener('click',locate);
 
@@ -868,7 +888,7 @@
     function chooseStart(nm,lat,lon){ tStart=[lat,lon]; tLieu=nm; renderWizard(); }
     async function pickGps(){
       tourSheet.innerHTML='<div class="sub">Localisation…</div>';
-      if(!userPos){ try{ await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(p=>{userPos=[p.coords.latitude,p.coords.longitude];res();},rej,{enableHighAccuracy:true,timeout:10000})); }catch(e){} }
+      if(!userPos){ try{ await new Promise((res,rej)=>positionSousGarde(p=>{userPos=[p.coords.latitude,p.coords.longitude];res();},rej)); }catch(e){} }
       if(!userPos){ toast('Position indisponible — saisissez un lieu'); renderStart(); return; }
       tStart=[userPos[0],userPos[1]]; tLieu='';
       try{ const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${tStart[0]}&lon=${tStart[1]}&zoom=12&accept-language=fr`); const j=await r.json(); const a=j.address||{}; tLieu=a.city||a.town||a.village||a.county||a.state||''; }catch(e){}

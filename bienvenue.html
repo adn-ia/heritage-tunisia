@@ -137,7 +137,12 @@
         // dès la réponse (accord ou refus) ou après un court délai de sécurité.
         let done = false;
         const next = () => { if(!done){ done = true; go(); } };
-        navigator.geolocation.getCurrentPosition(next, next, { enableHighAccuracy:true, timeout:8000, maximumAge:600000 });
+        /* ⚠️ BASSE PRÉCISION — 06/09/2026. Ici on ne cherche pas une position :
+           on AMORCE la demande d'autorisation, et on enchaîne quoi que réponde le
+           voyageur. Demander le GPS fin pour cela coûte du temps et de la
+           batterie sans rien apporter. Le garde extérieur, lui, existait déjà —
+           c'est le `setTimeout(next, 10000)` de la ligne suivante. */
+        navigator.geolocation.getCurrentPosition(next, next, { enableHighAccuracy:false, timeout:8000, maximumAge:600000 });
         setTimeout(next, 10000);   // filet de sécurité long : on n'enchaîne QUE si l'utilisateur ne répond pas du tout (sinon la navigation attend sa réponse à la demande de position)
       } else {
         go();
