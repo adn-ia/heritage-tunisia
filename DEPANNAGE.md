@@ -1502,9 +1502,9 @@ fois, pour que le point suive sans qu'il faille recharger la page.
 
 **Vérifié à l'écran** : autorisation refusée → `rgb(180,70,47)` rouge ; réponse
 accordée → `rgb(46,158,91)` vert ; retour au refus → rouge.
-⚠️ La réponse « accordée » est **simulée** : une page ne peut pas s'accorder la
-géolocalisation. Le chemin est éprouvé, le comportement réel reste à confirmer
-sur le téléphone.
+La réponse « accordée » ne pouvait pas se prouver depuis un ordinateur : une page
+ne peut pas s'accorder la géolocalisation. **Confirmé par Helmy sur son téléphone
+le 06/09** — le point suit bien le choix fait au lancement.
 
 ## 06/09/2026 — deux briques partageaient l'identifiant `#pl-modal`
 
