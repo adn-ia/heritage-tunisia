@@ -132,7 +132,14 @@
 
   window.THEsortiesCarte = {
     ouvrir: ouvrir, fermer: fermer,
-    google: versGoogle, osm: versOSM, apple: versApple, waze: versWaze, gpx: versGPX
+    google: versGoogle, osm: versOSM, apple: versApple, waze: versWaze, gpx: versGPX,
+    /* ⚠️ PUBLIÉ POUR LE KML — 06/09/2026. `roadtrip-plus.js` nommait son fichier
+       d'après le PAYS : trois voyages exportés, trois fois `Tunisia-Heritage.kml`,
+       le troisième écrasant les deux premiers. Le GPX, lui, porte le nom du
+       voyage et sa date depuis le 03/09. On publie donc le geste au lieu d'en
+       écrire un second : un seul endroit sait nommer un fichier — sans accent,
+       sans pictogramme en tête, daté. */
+    nomDeFichier: nomDeFichier
   };
 
   function brancher() {

@@ -195,11 +195,23 @@
     }).join("\n");
     var line = "<Placemark><name>"+T('rt.itineraire')+"</name><LineString><tessellate>1</tessellate><coordinates>" +
       pts.map(function (p) { return p.lng + "," + p.lat + ",0"; }).join(" ") + "</coordinates></LineString></Placemark>";
-    var _en = (window.HConf&&HConf.exportNom)||"Estonia-Heritage";
-    var kml = '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>' + _en + '</name>\n' + line + "\n" + marks + "\n</Document></kml>";
+    /* ⚠️ LE KML PORTE LE NOM DU VOYAGE — 06/09/2026, mesuré à l'écran : le GPX
+       sortait « Sur-les-pas-de-Rome-2026-09-06.gpx » et le KML, à côté,
+       « Tunisia-Heritage.kml ». Trois voyages exportés, trois fois le même nom,
+       le troisième écrasant les deux premiers.
+       ⚠️ Et le repli était « Estonia-Heritage » : un nom d'une AUTRE édition,
+       resté du clonage. Un repli en dur qui ment est pire qu'un repli absent.
+       On prend le titre du voyage, et l'outil de nommage de `the-sorties-carte.js`
+       (sans accent, sans pictogramme en tête, daté) — pas un second. */
+    var _v = (typeof THEvoyage === "function") ? THEvoyage() : null;
+    var _titre = (_v && _v.titre) || (window.HConf && HConf.exportNom) || "";
+    var _nomF = (window.THEsortiesCarte && THEsortiesCarte.nomDeFichier)
+              ? THEsortiesCarte.nomDeFichier(_titre, T('rt.itineraire'))
+              : _titre;
+    var kml = '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>' + xe(_titre) + '</name>\n' + line + "\n" + marks + "\n</Document></kml>";
     var a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([kml], { type: "application/vnd.google-earth.kml+xml" }));
-    a.download = ((window.HConf&&HConf.exportNom)||"Estonia-Heritage")+".kml"; document.body.appendChild(a); a.click(); a.remove();
+    a.download = _nomF + ".kml"; document.body.appendChild(a); a.click(); a.remove();
     toast(T('rt.kml.telecharge'));
   }
   function exportGmapsChunks() {
