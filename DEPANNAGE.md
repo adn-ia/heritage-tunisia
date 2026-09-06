@@ -1620,3 +1620,21 @@ se suppose pas », étendu à tout.
 en français et j'ai failli le signaler. La page avait simplement été chargée
 AVANT que le changement de langue prenne effet — j'avais vidé le stockage et
 navigué dans le même geste. Vérifié ensuite : elle est en allemand.
+
+## 06/09/2026 — `.enrichissement` supprimé du serveur (Tunisie)
+
+**Ordre de Helmy** : « supprime .enrichissement aussi ». Même procédure que
+`.git` : inventaire d'abord, suppression, contrôle du site.
+
+**Inventaire.** Le dossier était **vide** — `.` et `..` seulement, créé le
+16 août, aucun fichier. Pas de fuite de données : un reste de chantier, laissé
+par un envoi d'avant la correction de `deployer.sh` du 19/08.
+
+**Après.** La racine du webroot ne contient plus que **`.well-known`** — exactement
+ce qui doit y être, `assetlinks.json` que Google lit pour l'application Android.
+
+| Adresse | Avant | Après |
+|---|:--:|:--:|
+| `/` · `/itineraire.html` · `/sw.js` · `/manifest.json` · `/.well-known/assetlinks.json` | 200 | **200** |
+| `/.enrichissement/` | 403 | **404 — supprimé** |
+| `/.git/HEAD` | 403 | 403 — dossier déjà supprimé le même jour |
