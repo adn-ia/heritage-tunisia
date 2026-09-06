@@ -2038,7 +2038,7 @@
       if(base) THEplanRattacherVisite(base, neuf);
     }
     try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
-    majFicheDuVoyage();          // la fiche naît ou se met à jour, quel que soit le chemin
+    majFicheDuVoyage(true);      // la fiche naît ou se met à jour, quel que soit le chemin
   }
 
   // ---------- Halte / Capture : un moment non planifié, à la position GPS ----------
@@ -2532,7 +2532,13 @@
      ici, et les trois chemins l'appellent.
      La fiche ne naît qu'avec la PREMIÈRE étape : un voyage sans halte n'a rien
      où revenir, et il encombrait la liste. */
-  function majFicheDuVoyage(){
+  /* ⚠️ `creer` N'EST VRAI QUE POUR LES CHEMINS D'AJOUT — 06/09/2026. Une fiche
+     créée trop tôt fait DEUX fiches pour un voyage : `enregistrerCompose`
+     (l. 2274) ne cherche que par `idCible`, ne trouve rien, et en ajoute une
+     seconde. C'est le défaut « un circuit crée deux fiches, la copie affublée
+     d'un (2) » du dépannage itinéraire. La mise à jour, elle, est toujours sûre :
+     elle ne touche qu'une fiche qui existe déjà. */
+  function majFicheDuVoyage(creer){
     try{
       if(!LASTRES || !(LASTRES.route||[]).length) return;
       var id=(LASTRES.mode==='libre' ? (window.THElibreId||LASTRES._id) : LASTRES._id);
@@ -2545,12 +2551,24 @@
           r.cree=arr[i].cree||Date.now(); arr[i]=r; trouve=true; break;
         }
       }
-      if(!trouve){ var r2=recordFromCurrent(); r2.id=id; r2.mode=LASTRES.mode||''; r2.cree=Date.now(); arr.unshift(r2); }
+      if(!trouve){ if(!creer) return;
+        var r2=recordFromCurrent(); r2.id=id; r2.mode=LASTRES.mode||''; r2.cree=Date.now(); arr.unshift(r2); }
       writeSaved(arr.slice(0,40)); renderSaved();
     }catch(e){}
   }
 
-  function autosaveCurrent(){ try{ if(LASTRES && (LASTRES.mode==='libre' || (LASTRES.route&&LASTRES.route.length))) localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){} }
+  /* ⚠️ RETIRER UNE ÉTAPE NE S'ENREGISTRAIT PAS — 06/09/2026, mesuré en ligne :
+     à l'écran 3 étapes, dans la fiche encore 4. On fermait l'application, on la
+     rouvrait, l'étape était revenue. `retirerEtapeMaintenant`, `moveStep` et le
+     changement de borne redessinent sans réécrire la fiche : seul l'ajout d'une
+     étape la mettait à jour.
+     `autosaveCurrent` est appelé à CHAQUE rendu, quel que soit le geste : c'est
+     le seul endroit qui les voit tous. On y met à jour la fiche — sans jamais la
+     créer, pour ne pas faire deux fiches d'un voyage. */
+  function autosaveCurrent(){
+    try{ if(LASTRES && (LASTRES.mode==='libre' || (LASTRES.route&&LASTRES.route.length))) localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
+    try{ majFicheDuVoyage(false); }catch(e){}
+  }
   function readCurrent(){ try{ return JSON.parse(localStorage.getItem('the_current')||'null'); }catch(e){ return null; } }
 
   // ---------- Donner son itinéraire : QR + lien (aucun serveur) ----------
@@ -4718,7 +4736,7 @@
           if(b) neufs.forEach(function(n){ THEplanRattacherVisite(b, n); });
         }
         try{ localStorage.setItem('the_current', JSON.stringify(recordFromCurrent())); }catch(e){}
-        majFicheDuVoyage();
+        majFicheDuVoyage(true);
         if(typeof showGuide==='function') showGuide(T('autour.ajoutes'), 8000);
       }
       go.onclick=function(){
@@ -4950,7 +4968,7 @@
            composé a son propre identifiant. Et il garde SON mode — l'écraser
            avec « libre » transformait un parcours composé en voyage libre à
            la première étape ajoutée. */
-        majFicheDuVoyage();       /* le même geste, écrit une seule fois */
+        majFicheDuVoyage(true);   /* le même geste, écrit une seule fois */
       }catch(err){}
     });
 

@@ -1421,3 +1421,26 @@ lieu qu'un second soit écrit. Vérifié en ligne :
 ### Signalé, non touché
 **« 🌍 Publier sur le site »** répond « à venir » — un bouton qui promet sans
 tenir, offert au voyageur à côté de trois sorties qui, elles, fonctionnent.
+
+## 06/09/2026 — retirer ou déplacer une étape ne s'enregistrait pas
+
+**Symptôme, mesuré en ligne.** On retire une étape : à l'écran 3 étapes, dans la
+fiche encore 4. On ferme l'application, on la rouvre — **l'étape est revenue**.
+Trouvé en éprouvant la dernière façon d'entrer, « Itinéraires sauvegardés » :
+« Notre Carthage · 4 étapes » alors que j'en avais retiré une.
+
+**Cause.** Seul le chemin « ajouter une étape » réécrivait la fiche.
+`retirerEtapeMaintenant`, `moveStep` et le changement de borne redessinent
+l'itinéraire sans la toucher.
+
+**Réparation.** `autosaveCurrent()` est appelé à CHAQUE rendu, quel que soit le
+geste : c'est le seul endroit qui les voit tous. Il met désormais la fiche à jour.
+
+⚠️ **Sans jamais la créer.** `majFicheDuVoyage(creer)` ne crée que depuis les
+chemins d'ajout. Une fiche créée trop tôt ferait DEUX fiches pour un voyage :
+`enregistrerCompose` (l. 2274) ne cherche que par `idCible`, ne trouve rien, et
+en ajoute une seconde — c'est le défaut « un circuit crée deux fiches, la copie
+affublée d'un (2) » déjà écrit au dépannage itinéraire.
+
+**Vérifié** : retrait puis déplacement, la fiche suit les deux, et il n'y a
+toujours qu'**une seule** fiche.
