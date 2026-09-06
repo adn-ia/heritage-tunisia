@@ -4700,9 +4700,14 @@
       var go=document.getElementById('autourGo'); if(!go) return;
       go.disabled = !CHOISIS.length;
       go.style.opacity = CHOISIS.length ? '1' : '.45';
-      go.textContent = CHOISIS.length
-        ? T('autour.ajouter').split('{n}').join(CHOISIS.length)
-        : T('autour.ajouter.aucun');
+      /* ⚠️ « AJOUTER LES 1 LIEUX CHOISIS » — 06/09/2026, mesuré en ligne en
+         cochant une seule proposition. Même défaut que le point 45 : la clé du
+         singulier, `autour.ajouter.un`, EXISTE dans les cinq langues depuis le
+         début. Ce n'est pas la traduction qui manquait, c'est le CHOIX entre
+         les deux. */
+      go.textContent = !CHOISIS.length ? T('autour.ajouter.aucun')
+        : (CHOISIS.length === 1 ? T('autour.ajouter.un')
+                                : T('autour.ajouter').split('{n}').join(CHOISIS.length));
     }
 
     (function(){
