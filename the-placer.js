@@ -61,7 +61,18 @@
          PAR-DESSUS la fenêtre théorique, et le dernier bouton d'une fenêtre haute
          devient intouchable. C'est la panne du bouton « Fermer » du carnet,
          réparée le même jour — on ne la refait pas ici. */
-      "#pl-modal{position:fixed;inset:0;height:100dvh;z-index:1600;display:none;" +
+            /* ⚠️ AU-DESSUS DE CE QUI L'OUVRE — 06/09/2026, Helmy sur son téléphone :
+         « la proposition de où placer les lieux apparaît DERRIÈRE et est cachée
+         au lieu d'apparaître devant ».
+         C'est ma faute : j'avais écrit 1600 sans regarder l'échelle de la page.
+         Les fenêtres de l'application vivent à 10000 (« autour de moi »), 10001
+         (ajouter une étape) et 10002 (confirmer un retrait) — cet écran s'ouvre
+         DEPUIS elles, il doit donc passer devant. Au-dessus de 10002, et
+         au-dessous de la visite guidée (99990), de la loupe (100000) et du
+         bandeau de message (100002), qui doivent rester visibles quoi qu'il
+         arrive. C'est le défaut derrière « ma sélection jusqu'à 4 ne marche
+         pas » : l'écran s'ouvrait, invisible, et rien ne semblait répondre. */
+      "#pl-modal{position:fixed;inset:0;height:100dvh;z-index:10050;display:none;" +
       "align-items:center;justify-content:center;background:rgba(20,15,10,.78);" +
       "padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));overflow:auto}" +
       "#pl-modal.on{display:flex}" +

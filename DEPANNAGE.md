@@ -1444,3 +1444,38 @@ affublée d'un (2) » déjà écrit au dépannage itinéraire.
 
 **Vérifié** : retrait puis déplacement, la fiche suit les deux, et il n'y a
 toujours qu'**une seule** fiche.
+
+## 06/09/2026 — « ma sélection jusqu'à 4 ne marche pas » : deux causes
+
+Helmy, depuis son téléphone : « sur mon téléphone ça ne marche pas, et ma
+sélection jusqu'à 4 ne marche pas, et même quand je change de rayon de découverte
+mes sélections disparaissent alors que l'intitulé reste » — puis, décisif :
+« **la proposition de où placer les lieux apparaît DERRIÈRE et est cachée au lieu
+d'apparaître devant** ».
+
+### ① L'écran de placement s'ouvrait derrière — ma faute
+`the-placer.js` était écrit `z-index:1600`. Les fenêtres de l'application vivent
+à **10000** (« autour de moi »), **10001** (ajouter une étape) et **10002**
+(confirmer un retrait) : l'écran s'ouvrait DEPUIS elles et passait dessous. Il
+s'affichait, invisible, et rien ne semblait répondre.
+Il est à **10050** : au-dessus des fenêtres, au-dessous de la visite guidée
+(99990), de la loupe (100000) et du bandeau de message (100002), qui doivent
+rester visibles quoi qu'il arrive.
+
+⚠️ **Pourquoi je ne l'avais pas vu** : je cliquais ses boutons PAR SCRIPT. Un
+`click()` atteint un élément caché derrière un autre ; un doigt, non. C'est la
+règle « on ouvre l'app et on s'en sert » — je l'avais contournée sans le voir.
+
+### ② Changer le rayon perdait la sélection
+`remplir()` reconstruit la liste à chaque changement de rayon, et chaque bouton
+repartait d'un `pris = false` LOCAL alors que `CHOISIS` gardait les lieux : des
+cases vides, un intitulé qui compte encore. Et en recochant, le MÊME lieu entrait
+une seconde fois dans `CHOISIS` — l'ajout refusant les doublons par nom, on en
+posait moins qu'on n'en avait cochés.
+La case ne porte plus d'état à elle : **elle lit la sélection**.
+Vérifié : 4 lieux cochés, rayon 10 km → 25 km, **les 4 restent cochés**.
+
+### ③ « Ajouter les 1 lieux choisis »
+Même défaut que le point 45 : la clé du singulier `autour.ajouter.un` existe dans
+les cinq langues depuis le début. Ce n'était pas la traduction qui manquait,
+c'était le CHOIX entre les deux.

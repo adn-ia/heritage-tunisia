@@ -4671,10 +4671,22 @@
          proche au plus loin. Cet ordre est celui du voyageur : on ne le recalcule
          pas derrière son dos, il le remanie lui-même avec ↑ ↓ et complète chaque
          étape à sa guise (date, note, photos, visites). */
+      /* ⚠️ LA SÉLECTION SURVIT AU CHANGEMENT DE RAYON — 06/09/2026, Helmy sur son
+         téléphone : « quand je change de rayon de découverte mes sélections
+         disparaissent alors que l'intitulé reste », et « ma sélection jusqu'à 4
+         ne marche pas ».
+         Les deux n'en font qu'un. Changer de rayon rappelle `remplir()`, qui
+         reconstruit la liste : chaque bouton repartait d'un `pris = false` LOCAL,
+         alors que `CHOISIS` gardait les lieux. D'où des cases vides et un
+         intitulé qui compte encore. Et en recochant, le MÊME lieu entrait une
+         seconde fois dans `CHOISIS` — l'ajout refusant les doublons par nom, on
+         en posait moins qu'on n'en avait cochés : « ajouter quatre ne marche pas ».
+         La case ne porte plus d'état à elle : elle LIT la sélection. */
+      function estChoisi(site){ return CHOISIS.indexOf(site) >= 0; }
       proches.forEach(function(x){
         var b=document.createElement('button'); b.type='button';
-        var pris=false;
         function peindre(){
+          var pris = estChoisi(x.s);
           b.style.cssText='display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:10px 4px;'
             + 'border:none;border-bottom:1px solid #efe7d8;font:inherit;cursor:pointer;'
             + (pris?'background:#f6efe2':'background:none');
@@ -4687,8 +4699,8 @@
           + '<span class="autour-coche" style="color:#a8884f;font-weight:700;font-size:19px">☐</span>';
         peindre();
         b.onclick=function(){
-          pris=!pris;
-          if(pris) CHOISIS.push(x.s); else CHOISIS=CHOISIS.filter(function(y){ return y!==x.s; });
+          if(estChoisi(x.s)) CHOISIS=CHOISIS.filter(function(y){ return y!==x.s; });
+          else CHOISIS.push(x.s);          /* jamais deux fois : on a regardé avant */
           peindre(); majPied();
         };
         liste.appendChild(b);
