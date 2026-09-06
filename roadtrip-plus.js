@@ -279,8 +279,22 @@
     }
     var b = document.getElementById("rtq-followbar");
     if (b) b.style.display = suiviOn ? "flex" : "none";
-    pastille("rtq-suivi", suiviOn);
+    /* ⚠️ LE POINT DIT SI LA POSITION EST CONNUE — 06/09/2026, Helmy : « quand je
+       lance l'application et que j'accepte que ma position soit connue, l'icône
+       satellite doit avoir un point VERT, pas rouge ; là il est rouge et si je
+       clique dessus il me dit que ma position est déjà connue, c'est perturbant ».
+       Puis : « le point doit s'aligner sur le choix fait au début : refusé, il
+       reste rouge ; accepté, il passe au vert ».
+       Il disait jusqu'ici « le suivi tourne-t-il ? » — vrai, mais ce n'est pas la
+       question que le voyageur se pose en le regardant, et ça contredisait la
+       phrase du bouton. Il dit maintenant ce que l'application SAIT : la position
+       est connue, ou non. Le suivi reste ce qu'il est : un geste qu'on allume. */
     pastille("rtq-prox",  alerteOn);
+    if (suiviOn) { pastille("rtq-suivi", true); return; }
+    autorisationConnue(function (accepte) {
+      pastille("rtq-suivi", accepte && !gpsAbandonne);
+    });
+    suivreLAutorisation();
   }
   function stopFollow(){ suiviOn = false; alerteOn = false; majEcoute(); toast(T('rt.suivi.desactive')); }
 
@@ -317,6 +331,19 @@
      dit en toutes lettres et renvoie aux réglages pour le reste. */
   var gpsAbandonne = false;
   try{ gpsAbandonne = localStorage.getItem('the_gps_abandon') === '1'; }catch(e){}
+  /* La réponse peut changer sans nous — on autorise depuis les réglages du
+     navigateur, ou on révoque. On écoute donc ce changement, une seule fois, pour
+     que le point suive sans qu'il faille recharger la page. */
+  function suivreLAutorisation(){
+    try{
+      if (!navigator.permissions || !navigator.permissions.query) return;
+      navigator.permissions.query({name:'geolocation'}).then(function(r){
+        if (r._rtqSuivi) return; r._rtqSuivi = 1;
+        r.onchange = function(){ majEcoute(); };
+      }).catch(function(){});
+    }catch(e){}
+  }
+
   function autorisationConnue(cb){
     try{
       if (navigator.permissions && navigator.permissions.query){

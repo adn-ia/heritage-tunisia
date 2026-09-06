@@ -1479,3 +1479,29 @@ Vérifié : 4 lieux cochés, rayon 10 km → 25 km, **les 4 restent cochés**.
 Même défaut que le point 45 : la clé du singulier `autour.ajouter.un` existe dans
 les cinq langues depuis le début. Ce n'était pas la traduction qui manquait,
 c'était le CHOIX entre les deux.
+
+## 06/09/2026 — le point du satellite disait autre chose que le bouton
+
+**Symptôme.** Helmy : « quand je lance l'application et que j'accepte que ma
+position soit connue, l'icône satellite doit avoir un point VERT, pas rouge ; là
+il est rouge et si je clique dessus il me dit que ma position est déjà connue,
+c'est perturbant. » Puis, la règle : « **le point doit s'aligner sur le choix
+fait au début : refusé, il reste rouge ; accepté, il passe au vert.** »
+
+**Cause.** `majEcoute()` peignait `pastille("rtq-suivi", suiviOn)` — c'est-à-dire
+« le suivi tourne-t-il ? ». C'était vrai, mais ce n'est pas la question que le
+voyageur se pose en regardant ce point, et **ça contredisait la phrase du bouton**,
+qui lui répondait déjà « votre position est connue ».
+
+**Réparation.** Le point dit maintenant ce que l'application SAIT : la position
+est connue, ou non — `autorisationConnue()` existait déjà, elle n'était pas
+consultée pour l'affichage. Le suivi actif garde le point vert, forcément.
+Et l'autorisation peut changer sans nous — on l'accorde ou on la révoque dans les
+réglages du navigateur : `suivreLAutorisation()` écoute ce changement, une seule
+fois, pour que le point suive sans qu'il faille recharger la page.
+
+**Vérifié à l'écran** : autorisation refusée → `rgb(180,70,47)` rouge ; réponse
+accordée → `rgb(46,158,91)` vert ; retour au refus → rouge.
+⚠️ La réponse « accordée » est **simulée** : une page ne peut pas s'accorder la
+géolocalisation. Le chemin est éprouvé, le comportement réel reste à confirmer
+sur le téléphone.
