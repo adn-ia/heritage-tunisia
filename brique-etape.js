@@ -22,7 +22,7 @@
 (function () {
   "use strict";
 
-  var I18N = null, LOADING = null, POS = null, ADRESSE = "";
+  var I18N = null, LOADING = null, POS = null, ADRESSE = "", BORNE = null;
 
   /* LA LANGUE DE L'HÔTE, PAS L'ANGLAIS PAR DÉFAUT
      Tant que le voyageur n'a rien choisi, rien n'est encore rangé : la brique
@@ -159,8 +159,16 @@
       POS = coord; ADRESSE = estAdresse ? libelle : "";
       pos.textContent = "📍 " + libelle;
       res.innerHTML = "";
+      /* ⚠️ UNE BORNE N'A PAS DE TITRE À ELLE — 07/09/2026. Repris de Terralog,
+         `RoadTrip-Generique/blocs/15-lieux.js` l. 101-104 : le point choisi écrase
+         TOUJOURS le champ qui le décrit (`a.value = short`, sans condition). Ce
+         garde-« seulement si vide », Terralog ne le met qu'au TITRE d'une étape
+         (l. 146), qui appartient au voyageur. Chez nous les deux partagent le même
+         champ : au départ et à l'arrivée le nom EST le point, donc il suit ; sur
+         une étape il reste au voyageur. Sans ça, rouvrir la boîte déjà remplie et
+         choisir Tunis validait ses coordonnées sous l'étiquette « Bulla Regia ». */
       var nom = document.getElementById("bet-nom");
-      if (nom && !nom.value.trim()) nom.value = String(libelle).split(",")[0];
+      if (nom && (BORNE || !nom.value.trim())) nom.value = String(libelle).split(",")[0];
     };
     res.appendChild(b);
   }
@@ -253,6 +261,7 @@
     return load().then(function () {
       POS = v && v.coord ? v.coord : null;
       ADRESSE = (v && v.adresse) || "";
+      BORNE = opts.borne || null;
       var m = construire(!!opts.premiere, !!(v && v.index != null), opts.borne || null);
       if (v) {
         var q = function (id) { return document.getElementById(id); };

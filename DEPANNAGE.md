@@ -2441,3 +2441,51 @@ dépôt), à l'écran :
   `sw.js` (le seul tampon de version), `DEPANNAGE.md`. Le dictionnaire embarqué
   a été relu clé par clé : **2 clés ajoutées, 0 perdue, 0 modifiée**. La
   modification ne déborde pas de la fonction visée.
+
+## 🔴 Le départ se validait sous l'étiquette du départ précédent (07/09/2026)
+
+**Symptôme.** Boîte « Votre point de départ », déjà remplie par le départ en
+place. On cherche « Tunis », on choisit l'adresse, on valide : les coordonnées
+de Tunis sont enregistrées **sous le nom « Bulla Regia »**. Le voyage part alors
+d'un endroit qui ne porte pas son nom.
+
+**Cause.** `brique-etape.js`, dans `proposer()` : `if (nom && !nom.value.trim())`
+— le nom ne se remplissait **que s'il était vide**. Or la boîte d'une borne
+s'ouvre toujours pleine.
+
+**Ce que j'ai d'abord fait, et qui était une faute.** J'ai inventé un drapeau
+`dataset.saisi` posé à la frappe. Helmy : « pourquoi au lieu d'inventer vous ne
+prenez pas ce qui fonctionne ? » — retiré avant d'aller plus loin.
+
+**Le mécanisme, lu chez Terralog.** `RoadTrip-Generique/blocs/15-lieux.js` :
+
+- **l. 101-104**, `rtGeoPick` — le point choisi **écrase toujours** le champ qui
+  le décrit : `var a=document.getElementById('v-addr'); if(a) a.value=short;`
+  Aucune condition.
+- **l. 146**, `pickPlace` — le garde « seulement si vide » n'existe QUE pour le
+  TITRE d'une étape : `if(ti && !ti.value.trim()) ti.value=…` Il appartient au
+  voyageur.
+
+Chez Terralog les deux champs sont distincts ; chez nous ils sont confondus dans
+`bet-nom`. La règle portée est donc : **au départ et à l'arrivée le nom EST le
+point, donc il suit ; sur une étape il reste au voyageur.**
+
+**Correctif.** Trois lignes : `BORNE` ajoutée aux variables du module (l. 25),
+posée à chaque `ouvrir()` — donc remise à `null` dès qu'on édite une étape — et
+la condition devenue `if (nom && (BORNE || !nom.value.trim()))`.
+
+**DeepSeek** a refusé sur deux points, tous deux mesurés faux : « `BORNE` n'est
+jamais remise à null » (elle l'est à chaque ouverture, c'est la ligne qu'il
+avait sous les yeux) et « le nom tapé sur une étape sera écrasé » (en mode étape
+`BORNE` vaut `null`, le garde reprend la main — vu à l'écran). Retenu et NON
+corrigé : `split(",")[0]` peut rendre un numéro de rue sur une adresse fine.
+C'est le comportement d'avant, et c'est aussi la règle du titre chez Terralog.
+
+**Vérifié EN LOCAL d'abord** (règle 0), à l'écran : la boîte du départ ouverte
+sur « Dougga (Thugga) », recherche « Tunis », choix de l'adresse → le champ
+devient **Tunis**, validation, départ Tunis, itinéraire recalculé (Jour 1 ~9h15,
+~182 km). Puis le cas inverse : édition de l'étape « Dougga (Thugga) »,
+recherche « Kairouan », choix de l'adresse → **le nom ne bouge pas**, seule la
+position passe à Kairouan. Enfin en ligne (`heritage-944e7155`) : départ « Tunis »,
+recherche « Sousse », choix de « Médina de Sousse » → le champ devient
+**Médina de Sousse**.
