@@ -2531,3 +2531,36 @@ troisième tenait : un lieu du guide dont le nom porte des virgules ne doit pas
 - borne + lieu du guide → « Musée national du Bardo », entier ;
 - étape + adresse fine → le nom « Dougga (Thugga) » NE BOUGE PAS, seule la
   position change.
+
+## T2/27 — les carnets sont étanches : essayé en live, rien à réparer (07/09/2026)
+
+Première cellule fermée sous la **règle 0 bis** de Helmy : *« je veux des cellules
+testées en live, pas juste mesurées »*. Aucune lecture de code n'entre dans ce
+qui suit — uniquement l'application en ligne (`heritage-cd4ca023`), au doigt.
+
+**Trois questions, trois réponses à l'écran**, sur « Sur les pas de Rome en
+Afrique », 6 étapes :
+
+1. **Une note coule-t-elle chez la voisine ?** Écrit « Note d'essai » sur
+   l'étape 1 (Bulla Regia). L'étape 2 (Dougga) est restée **vide**. Non.
+2. **Survit-elle au rechargement ?** Page rechargée : la note est **toujours
+   là**, à sa place. Oui.
+3. **Suit-elle son étape quand l'ordre change ?** « ⇧ En faire le point de
+   départ » sur Dougga : Bulla Regia descend en étape 2 — et **elle emporte sa
+   note**. Oui. C'est `THEplanRenumeroter` qui fait ce travail, et il le fait.
+
+**⚠️ MA FAUSSE ALERTE, à retenir.** Au premier essai j'ai cru la note perdue :
+j'avais écrit dans l'étape 1, cliqué **directement dans le champ de l'étape 2**,
+écrit encore, et rechargé dans la foulée. Rien n'était enregistré. En reprenant
+lentement — écrire, cliquer ailleurs dans la page, puis recharger — tout tient.
+**Le défaut était ma séquence, pas l'application.** Refait deux fois avant d'en
+dire un mot.
+
+**⚠️ ET UN PIÈGE D'OUTIL.** L'outil de recherche par arbre d'accessibilité a
+annoncé **les six champs de note vides** alors que « Note d'essai » était bien à
+l'écran : il ne rend pas la valeur d'une zone de saisie. Une capture d'écran l'a
+démenti. À ne jamais utiliser comme preuve — c'est exactement ce que la règle
+« on regarde l'écran » interdit.
+
+**Remis en état après l'essai** : note effacée, Bulla Regia rendue à l'étape 1,
+départ remis sur Tunis. L'itinéraire est tel qu'il était.
