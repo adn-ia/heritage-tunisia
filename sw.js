@@ -3,7 +3,7 @@
    - précache la coquille (pages + données sourcées)
    - met en cache au fil de l'eau les tuiles de carte déjà consultées
    - cache-first : une fois visité, ça remarche sans réseau. */
-const VERSION = 'heritage-65405560';
+const VERSION = 'heritage-697dac71';
 const CORE    = 'the-core-' + VERSION;
 const RUNTIME = 'the-runtime-' + VERSION;
 /* ⚠️ LE CACHE DES TUILES NE PORTE PAS DE VERSION, ET SURVIT AUX MISES À JOUR.
@@ -44,7 +44,7 @@ const CORE_ASSETS = [
   // Le rendu du fond de carte. SANS LUI, la carte ne se peint pas hors-ligne :
   // les tuiles seraient en cache et personne pour les dessiner. `tuile.php`, lui,
   // n'est PAS précaché — c'est voulu : ce sont les TUILES qui se gardent, une à une.
-  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'the-bornes.js', 'the-bornes.data.json', 'the-carte-plein.js', 'the-carte-plein.data.json', 'the-placer.js', 'the-placer.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
+  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'the-bornes.js', 'the-bornes.data.json', 'the-carte-plein.js', 'the-carte-plein.data.json', 'the-placer.js', 'the-placer.data.json', 'the-album-fichiers.js', 'the-album-fichiers.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
   'sites.geojson', 'sites-nature.geojson', 'tours.json', 'mer-antique.geojson', 'photos.json', 
   'musee/index.html', 'webar/index.html'
 ];

@@ -1,0 +1,57 @@
+{
+ "ar": {
+  "bouton": "🗂️ تنظيم صوري في مجلدات",
+  "echec": "لم يتم الترتيب.",
+  "en.cours": "جاري الترتيب…",
+  "fait": "تم ترتيب الصور ✓ — الصور:",
+  "fichier.legende": "ملاحظة",
+  "photo": "صورة",
+  "suffixe.legende": "مع الملاحظة",
+  "vide": "لا توجد صور أو مقاطع فيديو في هذا المسار.",
+  "voyage": "رحلتي"
+ },
+ "de": {
+  "bouton": "🗂️ Meine Fotos in Ordnern sortieren",
+  "echec": "Das Einräumen konnte nicht erfolgen.",
+  "en.cours": "Wird gerade aufgeräumt…",
+  "fait": "Fotos sortiert ✓ — Fotos:",
+  "fichier.legende": "Anmerkung",
+  "photo": "Foto",
+  "suffixe.legende": "mit der Anmerkung",
+  "vide": "Diese Route enthält keine Fotos oder Videos.",
+  "voyage": "Meine Reise"
+ },
+ "en": {
+  "bouton": "🗂️ Organising my photos into folders",
+  "echec": "The storage operation could not be carried out.",
+  "en.cours": "Tidying up…",
+  "fait": "Photos sorted ✓ — photos:",
+  "fichier.legende": "note",
+  "photo": "photo",
+  "suffixe.legende": "with the note",
+  "vide": "There are no photos or videos in this itinerary.",
+  "voyage": "My journey"
+ },
+ "fr": {
+  "bouton": "🗂️ Ranger mes photos en répertoires",
+  "echec": "Le rangement n’a pas pu se faire.",
+  "en.cours": "Rangement en cours…",
+  "fait": "Photos rangées ✓ — photos :",
+  "fichier.legende": "note",
+  "photo": "photo",
+  "suffixe.legende": "avec la note",
+  "vide": "Aucune photo ni vidéo dans cet itinéraire.",
+  "voyage": "Mon voyage"
+ },
+ "it": {
+  "bouton": "🗂️ Organizzare le mie foto in cartelle",
+  "echec": "Non è stato possibile riporre gli oggetti.",
+  "en.cours": "Si sta riordinando…",
+  "fait": "Foto ordinate ✓ — foto:",
+  "fichier.legende": "nota",
+  "photo": "foto",
+  "suffixe.legende": "con la nota",
+  "vide": "In questo itinerario non ci sono foto né video.",
+  "voyage": "Il mio viaggio"
+ }
+}

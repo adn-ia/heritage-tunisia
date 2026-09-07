@@ -1754,3 +1754,56 @@ paquet à chaque fois.
 ⚠️ **Le domaine norvégien est `norway-heritage`, pas `norvege-heritage`.** Mon
 premier contrôle a rendu `000` et j'ai failli croire le site en panne : c'était
 mon erreur de nom. Le DNS le dit — `norvege-heritage` ne résout pas.
+
+## 07/09/2026 — « Ranger mes photos en répertoires » (brique auto-portée)
+
+**Demande de Helmy** : « la répartition en répertoires spécifiques sur le
+téléphone des photos prises et des médias : sous-répertoire par nom d'étape […]
+le répertoire est le nom du voyage, le sous-répertoire le nom de l'étape, et
+dedans la photo d'origine, la photo modifiée y compris celle où il y a une
+légende, les sons et vidéos », **sans alourdir le téléphone** ni dupliquer ce qui
+est déjà dans la galerie. Puis : « ce sera un bloc en lui-même, et surtout ne me
+cassez rien d'autre ».
+
+**Ce qui était déjà vrai, et qu'il fallait dire avant de coder :**
+- les médias vivent **déjà** dans l'application, rangés par étape (clé
+  `<voyage>#<n° d'étape>`) — ils ne sont ni dans la pellicule ni en double :
+  c'est le bouton ⬇️ qui les y met, **à la demande** ;
+- **le lien vers la photo de la galerie est impossible** — §10 du dépannage
+  itinéraire : « un navigateur n'a pas accès au chemin d'un fichier, la référence
+  meurt avec la page ». Retenir « la photo n° 4237 » ne marche pas dans une PWA.
+  Sa seconde idée — « tout mettre dans le répertoire de l'application » — est
+  donc la seule voie, et c'était déjà le cas. Ce qui manquait : pouvoir les SORTIR.
+
+**La brique.** `the-album-fichiers.js` + `the-album-fichiers.data.json` (5 langues).
+Elle produit un ZIP :
+
+    Sur les pas de Rome/1 - Bulla Regia/Bulla Regia.jpg
+    Sur les pas de Rome/1 - Bulla Regia/Bulla Regia - avec la note.jpg
+    Sur les pas de Rome/1 - Bulla Regia/note.txt
+
+Choix de Helmy, 07/09 : **le chiffre puis le nom**, et la légende **en bandeau
+SOUS la photo** — l'image reste entière, on ajoute une bande, on ne recouvre rien.
+
+**Auto-portée stricte, règle 4.11** : son code, sa donnée, ses traductions ; elle
+lit **uniquement** deux gestes publics — `THEvoyage()` et `THECarnet.lire()` — et
+n'écrit nulle part. Le ZIP est écrit dans le fichier, **sans bibliothèque**
+(méthode « stockage » : photos et vidéos sont déjà compressées) avec le drapeau
+UTF-8 pour les accents des dossiers.
+
+⚠️ **L'ordre du bouton est posé EN LIGNE sur l'élément**, pas dans la feuille de
+l'hôte : la barre du document range ses gestes par `order` CSS, et une brique
+sans ordre tomberait en tête de barre.
+
+**Ce que ça a coûté à la page : DEUX lignes.** Une balise `<script>` dans
+`itineraire.html`, une entrée de précache dans `sw.js`. `git diff --stat` :
+`2 files changed, 2 insertions(+), 1 deletion(-)`. Effacer la ligne rend
+l'application identique à avant.
+
+⚠️ **DeepL a dérivé DEUX fois** : « dossier » lu comme un dossier administratif
+(*Unterlagen*, *fascicolo*, *الملف*), puis « étape » en *step by step /
+Schritt für Schritt* — le contresens déjà tranché. Source reformulée en
+« répertoires », qui rend *folders · cartelle · Ordnern · مجلدات*.
+
+**Vérifié à l'écran** : 18 entrées, arborescence exacte, et le bandeau regardé sur
+l'image produite — pas seulement compté.
