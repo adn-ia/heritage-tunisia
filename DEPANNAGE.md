@@ -2192,3 +2192,84 @@ décision à Helmy. Le texte de la carte du voyage libre dit toujours que
 « 📍 J'ai fait une halte ici » est **ci-dessous**, alors qu'il est remonté dans le
 bandeau du haut le 31/08. **Signalé, pas corrigé** : c'est une autre chose, elle
 attend un ordre.
+
+---
+
+## Quatre textes, et deux mécanismes qui ne marchaient pas (07/09/2026)
+
+Sur ordre de Helmy, les points 1, 2, 3 et 7 de la liste d'attente, faits d'un
+seul geste. Chacun cachait plus que son énoncé.
+
+### ① « ci-dessous » — le texte du voyage libre mentait, et il était traduit en miettes
+
+La carte du voyage libre disait que le bouton « 📍 J'ai fait une halte ici » est
+**ci-dessous**. Il est remonté dans le bandeau du haut le **31/08**.
+
+En cherchant à le corriger, trois défauts de plus, tous mesurés au dictionnaire :
+
+- **« halte » n'avait de traduction dans AUCUNE langue.** L'allemand affichait
+  « Markiert einen **halte** ». Le mot est en `<b>`, donc le balayage en faisait
+  un nœud de texte à part, et personne ne l'avait jamais traduit.
+- **L'arabe rendait « Pas de plan » par « لا توجد خريطة » — « il n'y a pas de
+  CARTE ».** Contresens, lu à l'écran.
+- **L'allemand tutoyait au pluriel** (« Geht in eurem eigenen Tempo ») quand tout
+  le reste de l'application vouvoie.
+
+Les trois viennent de la même cause : **le bloc était traduit fragment par
+fragment**, coupé sur les `<b>`. Une clé existait pourtant depuis toujours pour le
+bloc entier — `itin.voyage.librepas.de.plan.avancez`, dans les cinq
+dictionnaires — et elle n'était **branchée nulle part**. Elle l'est maintenant.
+
+### ② 🔴 UN `data-i18n-html` SUR LE NŒUD AJOUTÉ N'EST JAMAIS VU
+
+Premier essai : j'ai mis l'attribut sur le `<div>` que `rsum.innerHTML` insère.
+**Rien ne s'est passé**, et l'écran l'a montré — le bloc restait à moitié français.
+
+La cause est dans `the-i18n.js` l. 198-201 : l'observateur de mutations appelle
+`applyUI(noeud)` sur le nœud **ajouté**, et `applyUI` fait
+`root.querySelectorAll('[data-i18n-html]')` — qui ne regarde que les
+**descendants**, jamais `root` lui-même. Le balayage des nœuds de texte, lui, part
+d'un `TreeWalker` sur `root` : il voyait le texte, pas l'attribut. D'où le mélange.
+
+**La règle qui en sort : l'attribut se pose sur un DESCENDANT, jamais sur la racine
+de ce qu'on insère.** Une enveloppe suffit.
+
+### ③ 🔴 UN `textContent` N'EST JAMAIS TRADUIT
+
+Même observateur, même ligne : il ne rappelle `applyUI` que sur les nœuds
+**ÉLÉMENTS** (`nodeType===1`). Un `element.textContent = '…'` produit un nœud de
+TEXTE : il passe au travers.
+
+C'est pourquoi « ‹ Modifier mes choix (sans tout refaire) » et « ‹ Retour à la
+composition » restaient en français dans les quatre autres langues — alors que
+leurs **deux branches voisines**, dans le même ternaire, passaient déjà par
+`uiT()`. Et « ‹ Retour à la composition » **avait ses quatre traductions au
+dictionnaire depuis toujours** : elles n'étaient simplement jamais demandées.
+Les deux branches passent maintenant par `uiT`, comme leurs voisines.
+
+### ④ Le compteur : l'espace ne se prend pas dans une traduction
+
+`a-propos.html` construisait « plus de 500 » en concaténant `THEi18n.ui('plus de ')`
+— une clé **avec espace final** — et le nombre. **Aucune** des quatre valeurs
+traduites ne garde cet espace : `'mehr als'`, `'more'`, `'più di'`, `'أكثر من'`.
+L'allemand affichait donc « mehr als500 », et les trois autres langues faisaient
+pareil. Le français ne le montrait pas, parce que `ui.fr.json` n'a pas la clé et
+retombe sur le littéral, qui a son espace.
+
+**La valeur est détourée et l'espace posé par le code.** Vérifié : « mehr als 500 ».
+
+### ⑤ « Premium » en arabe : six formes, une seule fautive
+
+Relevé : البرميوم · البريميوم · بريميوم · «Premium» · الاشتراك المميز · الإصدار المميز.
+Mais la plupart traduisent des expressions françaises **différentes** (« le passe
+premium », « la version premium ») — ce ne sont pas des variantes fautives.
+Pour « **Le Premium** » seul, l'application écrivait **البرميوم** trois fois contre
+une : `menu.premium` disait « الاشتراك «Premium» ». Aligné, sans arbitrage
+éditorial. Vérifié à l'écran, menu en arabe : **البرميوم**.
+
+### Vérifié à l'écran, en local
+
+Allemand : le bloc du voyage libre entièrement traduit, « Pause » comprise, et
+« ganz oben in der Symbolleiste » à la place de « ci-dessous » · le bouton du
+voyage vide « Einen ersten Halt hinzufügen » · le retour traduit · le compteur
+« mehr als 500 ». Arabe : le menu affiche البرميوم. Les 12 contrôles passent.

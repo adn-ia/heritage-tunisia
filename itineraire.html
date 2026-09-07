@@ -2930,13 +2930,38 @@
     const rb=document.getElementById('restart');
     rb.textContent = ENTRY==='picks' ? uiT('‹ Retour à la carte (choisir d\'autres lieux)')
                    : ENTRY==='tour'  ? uiT('‹ Modifier / voir d\'autres circuits')
-                   : ENTRY==='saved' ? '‹ Retour à la composition'
-                   : '‹ Modifier mes choix (sans tout refaire)';
+                   : ENTRY==='saved' ? uiT('‹ Retour à la composition')
+                   /* ⚠️ `textContent` n'est PAS traduit : l'observateur de
+                      `the-i18n.js` ne rappelle `applyUI` que sur les nœuds
+                      ÉLÉMENTS (nodeType===1), jamais sur un nœud de texte. Ces
+                      deux branches restaient donc en français dans les quatre
+                      autres langues, alors que leurs deux voisines passaient
+                      déjà par `uiT`. */
+                   : uiT('‹ Modifier mes choix (sans tout refaire)');
     const rsum=document.getElementById('rsum');
 
     if(!route.length){
       rsum.innerHTML = res.mode==='libre'
-        ? '<h2 data-i18n="iti.voyage.libre">🎒 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> (bouton « 📍 J\'ai fait une halte ici » ci-dessous), ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div>'
+        /* ⚠️ LE BLOC PASSE PAR UNE SEULE CLÉ — 07/09/2026. Il était traduit
+           FRAGMENT PAR FRAGMENT par le balayage des nœuds de texte, coupé sur
+           les <b>. Trois défauts en sortaient, tous vus au dictionnaire :
+             · « halte » n'avait de traduction dans AUCUNE langue — l'allemand
+               affichait « Markiert einen halte » ;
+             · l'arabe rendait « Pas de plan » par « il n'y a pas de CARTE » ;
+             · l'allemand tutoyait au pluriel (« Geht in eurem Tempo ») quand le
+               reste de l'application vouvoie.
+           La clé `itin.voyage.librepas.de.plan.avancez` existait dans les cinq
+           dictionnaires depuis toujours — et n'était BRANCHÉE NULLE PART. Elle
+           l'est maintenant, en `data-i18n-html`, et le texte est corrigé : le
+           bouton de halte est dans le bandeau du haut depuis le 31/08, il n'est
+           plus « ci-dessous ». */
+        /* ⚠️ L'ATTRIBUT VA SUR UN DESCENDANT, JAMAIS SUR LE NŒUD AJOUTÉ — 07/09.
+           `the-i18n.js` l. 198-201 observe les ajouts et appelle `applyUI(noeud)`
+           sur le nœud ajouté ; or `applyUI` fait `root.querySelectorAll(...)`, qui
+           ne regarde QUE les descendants. Un `data-i18n-html` posé sur le nœud
+           ajouté lui-même n'est donc jamais vu — mesuré à l'écran : le bloc
+           restait à moitié français. Il lui faut une enveloppe. */
+        ? '<div class="libre-wrap"><div data-i18n-html="itin.voyage.librepas.de.plan.avancez"><h2>🎒 Voyage libre</h2><div class="meta">Pas de plan : avancez à votre rythme. Marquez une <b>halte</b> — le bouton « 📍 J\'ai fait une halte ici », dans le bandeau tout en haut. Ajoutez un lieu, ou découvrez <b>ce qui est près de vous</b>. Chaque moment rejoint votre carnet de voyage.</div></div></div>'
         : '<h2 data-i18n="iti.rien.trouve.pour.ces.criteres">Rien trouvé pour ces critères</h2><div class="meta">'+uiT('itin.rien.trouve.conseil')+'.</div>';
       /* ── LE VOYAGE LIBRE A DROIT À SA CARTE ────────────────────────────────
          Helmy, 30/08/2026 : « dans la Tunisie la carte n'apparaît pas quand

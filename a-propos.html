@@ -420,7 +420,14 @@ html{scroll-behavior:smooth;}
     fetch('sites-nature.geojson').then(r=>r.json()).catch(()=>({features:[]}))
   ]).then(([h,n])=>{
     const tot=(h.features?.length||0)+(n.features?.length||0);
-    if(tot>=100){ const floor=Math.floor(tot/100)*100; document.getElementById('count').textContent=((window.THEi18n&&THEi18n.ui('plus de '))||'plus de ')+floor; }
+    if(tot>=100){ const floor=Math.floor(tot/100)*100; /* ⚠️ L'ESPACE NE SE PREND PAS DANS LA TRADUCTION — 07/09/2026. La clé porte
+         un espace final (« plus de ») mais AUCUNE des quatre valeurs traduites
+         ne le garde : l'allemand affichait « mehr als500 », et l'anglais,
+         l'italien et l'arabe faisaient pareil. Le français ne le montrait pas,
+         parce que `ui.fr.json` n'a pas cette clé et retombe sur le littéral.
+         On détoure la valeur et on pose l'espace nous-mêmes. */
+      var quantite=((window.THEi18n&&THEi18n.ui('plus de '))||'plus de ').trim();
+      document.getElementById('count').textContent=quantite+' '+floor; }
   }).catch(()=>{});
 
   // ---- Narration vocale (synthèse vocale du navigateur) ----
