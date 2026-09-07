@@ -1,5 +1,5 @@
 {
- "_note": "Visite guidée — THE. Libellés (labels) ET étapes (steps) dans SA donnée, langues fr/en/de/it/ar. Auto-portée stricte : le .js est générique, ne les lit qu'ici. Langue = the_lang → repli anglais. Étape sans cible [data-tour-step] = sautée. NE PAS mettre dans ui.*.json.",
+ "_note": "Visite guidée — THE. Libellés (labels) ET étapes (steps) dans SA donnée, langues fr/en/de/it/ar. Auto-portée : elle se retire en effaçant sa ligne <script>. ⚠️ RÉÉCRITE LE 07/09/2026 — la version du 16/08 décrivait une application qui n'existait plus. Une étape ne s'affiche que si elle est `always` OU si un élément `data-tour-step=\"<id>\"` existe sur la page ouverte (brique-tour.js l. 131) : la visite se taille donc d'elle-même selon l'écran. ⚠️ L'ID EST LE NOM DU FICHIER AUDIO — `voix/tour/<id>-<langue>.mp3` — et la DURÉE de la voix commande l'avance. Changer un id sans refaire son MP3 laisse l'étape sans voix.",
  "_config": {},
  "labels": {
   "skip": {
@@ -75,125 +75,51 @@
     "fr": "Bienvenue 👋",
     "en": "Welcome 👋",
     "de": "Herzlich willkommen 👋",
-    "it": "Benvenuto 👋",
-    "ar": "مرحبًا 👋"
+    "it": "Benvenuti 👋",
+    "ar": "مرحبًا بكم 👋"
    },
    "body": {
-    "fr": "L'application vous accompagne pas à pas. En quelques étapes, découvrez ses fonctions clés — vous pourrez revoir cette visite à tout moment.",
-    "en": "The app is here to help. In a few steps, discover its key features — you can replay this tour anytime.",
-    "de": "Die App soll Ihnen helfen. Entdecken Sie in wenigen Schritten die wichtigsten Funktionen – Sie können diese Führung jederzeit erneut ansehen.",
-    "it": "L&#x27;app è qui per aiutarti. In pochi passaggi, scopri le sue funzionalità principali: puoi rivedere questa guida in qualsiasi momento.",
-    "ar": "هذا التطبيق موجود لمساعدتك. اكتشف ميزاته الرئيسية في بضع خطوات — ويمكنك إعادة مشاهدة هذه الجولة في أي وقت."
+    "fr": "L'application vous accompagne pas à pas. En quelques cartes, voici ce qu'elle sait faire — vous pourrez revoir cette visite à tout moment depuis le menu.",
+    "en": "The app guides you step by step. Here’s what it can do, illustrated with a few maps — you can revisit this tour at any time via the menu.",
+    "de": "Die App führt Sie Schritt für Schritt durch den Rundgang. Auf wenigen Karten sehen Sie, was sie alles kann – Sie können diesen Rundgang jederzeit über das Menü erneut aufrufen.",
+    "it": "L'applicazione vi guida passo dopo passo. Ecco, in poche schermate, cosa è in grado di fare: potrete rivedere questo tour in qualsiasi momento dal menu.",
+    "ar": "يرافقك التطبيق خطوة بخطوة. وإليك ما يمكنه فعله من خلال بضع خرائط — ويمكنك إعادة مشاهدة هذه الجولة في أي وقت من خلال القائمة."
    }
   },
   {
    "id": "recit",
    "icon": "📖",
    "title": {
-    "fr": "Le récit à lire ou écouter",
-    "en": "The story to read or hear",
-    "de": "Die Geschichte zum Lesen oder Anhören",
-    "it": "La storia da leggere o da ascoltare",
-    "ar": "القصة التي يمكن قراءتها أو الاستماع إليها"
+    "fr": "Le récit, à lire ou à écouter",
+    "en": "The story – to read or listen to",
+    "de": "Die Geschichte – zum Lesen oder Anhören",
+    "it": "Il racconto, da leggere o da ascoltare",
+    "ar": "القصة، للقراءة أو الاستماع"
    },
    "body": {
-    "fr": "Commencez par le récit : une présentation vivante, à lire à votre rythme ou à écouter en narration audio.",
-    "en": "Start with the story: a lively introduction, to read at your own pace or hear as audio narration.",
-    "de": "Beginnen Sie mit der Geschichte: eine lebhafte Einleitung, die Sie in Ihrem eigenen Tempo lesen oder als Hörbuch anhören können.",
-    "it": "Inizia dalla storia: un’introduzione vivace, da leggere al proprio ritmo o da ascoltare come narrazione audio.",
-    "ar": "ابدأ بالقصة: مقدمة مفعمة بالحيوية، يمكنك قراءتها بالسرعة التي تناسبك أو الاستماع إليها في شكل سرد صوتي."
-   }
-  },
-  {
-   "id": "itineraire",
-   "icon": "🧭",
-   "title": {
-    "fr": "Créer un itinéraire",
-    "en": "Build an itinerary",
-    "de": "Reiseroute erstellen",
-    "it": "Crea un itinerario",
-    "ar": "وضع خط سير الرحلة"
-   },
-   "body": {
-    "fr": "Composez un parcours sur mesure — votre départ, votre temps, vos thèmes — et l'application dessine le circuit et sa carte.",
-    "en": "Create a tailor-made route — your start, your time, your themes — and the app draws the trip and its map.",
-    "de": "Erstellen Sie eine maßgeschneiderte Route – Ihr Startpunkt, Ihre Zeit, Ihre Themen – und die App erstellt die Reise und die dazugehörige Karte.",
-    "it": "Crea un itinerario su misura — il punto di partenza, l&#x27;orario, i temi — e l&#x27;app ti proporrà il percorso e la relativa mappa.",
-    "ar": "قم بإنشاء مسار مخصص — من حيث نقطة الانطلاق والوقت والمواضيع التي تختارها — وسيقوم التطبيق برسم مسار الرحلة وخريطتها."
-   }
-  },
-  {
-   "id": "souvenirs",
-   "icon": "📸",
-   "always": true,
-   "title": {
-    "fr": "Gardez vos souvenirs",
-    "en": "Keep your memories",
-    "de": "Bewahre deine Erinnerungen",
-    "it": "Conserva i tuoi ricordi",
-    "ar": "احتفظ بذكرياتك"
-   },
-   "body": {
-    "fr": "Ajoutez photos et notes à chaque étape de votre itinéraire, puis exportez-les (carte postale, PDF).",
-    "en": "Add photos and notes to each stop of your itinerary, then export them (postcard, souvenir file).",
-    "de": "Fügen Sie zu jedem Halt Ihrer Reiseroute Fotos und Notizen hinzu und exportieren Sie diese anschließend (als Postkarte oder Souvenir-Datei).",
-    "it": "Aggiungi foto e note a ciascuna tappa del tuo itinerario, quindi esportale (cartolina, cartella dei ricordi).",
-    "ar": "أضف الصور والملاحظات إلى كل محطة في خط سير رحلتك، ثم قم بتصديرها (بطاقة بريدية، ملف تذكاري)."
-   }
-  },
-  {
-   "id": "hors-ligne",
-   "icon": "📥",
-   "always": true,
-   "title": {
-    "fr": "Emportez tout hors-ligne",
-    "en": "Take it all offline",
-    "de": "Alles offline schalten",
-    "it": "Metti tutto in modalità offline",
-    "ar": "انقل كل شيء إلى وضع عدم الاتصال"
-   },
-   "body": {
-    "fr": "Choisissez ce que vous téléchargez (voix, photos) et voyez le poids de chaque option, pour consulter sans réseau.",
-    "en": "Choose what to download (voices, photos) and see the size of each option, to use without a connection.",
-    "de": "Wählen Sie aus, was Sie herunterladen möchten (Stimmen, Fotos), und sehen Sie sich die Größe der einzelnen Optionen an, um sie offline zu nutzen.",
-    "it": "Scegli cosa scaricare (voci, foto) e controlla la dimensione di ciascuna opzione, per poterle utilizzare senza connessione.",
-    "ar": "اختر ما تريد تنزيله (الأصوات، الصور) واطلع على حجم كل خيار، لاستخدامه دون اتصال بالإنترنت."
+    "fr": "Trois mille ans en un seul texte, des Berbères à aujourd'hui. Il se lit à votre rythme, et le bouton Écouter le raconte à voix haute.",
+    "en": "Three thousand years in a single text, from the Berbers to the present day. You can read it at your own pace, and the ‘Listen’ button reads it aloud.",
+    "de": "Dreitausend Jahre in einem einzigen Text – von den Berbern bis heute. Sie können ihn in Ihrem eigenen Tempo lesen, und über die Schaltfläche „Anhören“ wird er Ihnen vorgelesen.",
+    "it": "Tremila anni racchiusi in un unico testo, dai Berberi ai giorni nostri. Lo si può leggere al proprio ritmo, mentre il pulsante “Ascolta” lo riproduce ad alta voce.",
+    "ar": "ثلاثة آلاف عام في نص واحد، من البربر حتى يومنا هذا. يمكنك قراءته بالسرعة التي تناسبك، كما أن زر «الاستماع» يقرأه بصوت عالٍ."
    }
   },
   {
    "id": "carte",
    "icon": "🗺️",
    "title": {
-    "fr": "Explorer la carte",
-    "en": "Explore the map",
-    "de": "Entdecke die Karte",
-    "it": "Esplora la mappa",
-    "ar": "استكشف الخريطة"
+    "fr": "La carte",
+    "en": "The map",
+    "de": "Die Karte",
+    "it": "La mappa",
+    "ar": "الخريطة"
    },
    "body": {
-    "fr": "Ouvrez la carte interactive pour repérer les lieux autour de vous et parcourir tout d'un coup d'œil.",
-    "en": "Open the interactive map to spot places around you and browse everything at a glance.",
-    "de": "Öffnen Sie die interaktive Karte, um Orte in Ihrer Umgebung zu entdecken und alles auf einen Blick zu sehen.",
-    "it": "Apri la mappa interattiva per individuare i luoghi nelle tue vicinanze e dare un&#x27;occhiata a tutto in un colpo d&#x27;occhio.",
-    "ar": "افتح الخريطة التفاعلية لتتعرف على الأماكن المحيطة بك وتستعرض كل شيء في لمحة سريعة."
-   }
-  },
-  {
-   "id": "voyage",
-   "icon": "🎞️",
-   "title": {
-    "fr": "Voyage immersif",
-    "en": "Immersive journey",
-    "de": "Eine fesselnde Reise",
-    "it": "Un viaggio coinvolgente",
-    "ar": "رحلة غامرة"
-   },
-   "body": {
-    "fr": "Un diaporama plein écran, pour se laisser porter d'un lieu à l'autre.",
-    "en": "A full-screen slideshow, drifting from one place to the next.",
-    "de": "Eine Vollbild-Diashow, die von einem Ort zum nächsten gleitet.",
-    "it": "Una presentazione a schermo intero, che passa da un luogo all’altro.",
-    "ar": "عرض شرائح بملء الشاشة، يتنقل من مكان إلى آخر."
+    "fr": "Elle ne s'ouvre jamais couverte de repères : elle demande d'abord ce que vous voulez voir — autour de vous, par période, par région ou par thème.",
+    "en": "It never opens with a list of suggestions: first, it asks what you want to see — in your local area, by period, by region or by theme.",
+    "de": "Die App öffnet sich nie mit einer Vielzahl von Markierungen: Sie fragt zunächst, was Sie sehen möchten – in Ihrer Umgebung, nach Epochen, nach Regionen oder nach Themen.",
+    "it": "Non si apre mai con una serie di indicazioni prestabilite: chiede innanzitutto cosa desiderate vedere — ciò che vi circonda, per periodo, per regione o per tema.",
+    "ar": "لا تظهر أبدًا مليئة بالعلامات المرجعية: فهي تسألك أولاً عما تريد رؤيته — حولك، حسب الفترة الزمنية، أو حسب المنطقة، أو حسب الموضوع."
    }
   },
   {
@@ -207,65 +133,196 @@
     "ar": "جميع الأماكن"
    },
    "body": {
-    "fr": "Parcourez tous les sites en liste, classés par genre, sans passer par la carte.",
-    "en": "Browse every site as a list, sorted by type, without opening the map.",
-    "de": "Alle Standorte als Liste anzeigen, sortiert nach Typ, ohne die Karte zu öffnen.",
-    "it": "Visualizza tutti i siti sotto forma di elenco, ordinati per tipo, senza aprire la mappa.",
-    "ar": "تصفح كل موقع في شكل قائمة، مرتبة حسب النوع، دون فتح الخريطة."
+    "fr": "Le même contenu sans la carte, avec la recherche et les filtres. Cochez ce qui vous plaît : l'application en fait un itinéraire.",
+    "en": "The same content without the map, but with search and filters. Tick the options you’d like: the app will then create a route for you.",
+    "de": "Der gleiche Inhalt ohne Karte, mit Suchfunktion und Filtern. Markieren Sie die gewünschten Optionen: Die App erstellt daraus eine Route.",
+    "it": "Lo stesso contenuto senza la mappa, con la funzione di ricerca e i filtri. Selezionate ciò che preferite: l’applicazione vi fornirà un itinerario.",
+    "ar": "نفس المحتوى بدون الخريطة، مع ميزة البحث والفلاتر. حدد ما يناسبك: وسيقوم التطبيق بإنشاء مسار لك."
+   }
+  },
+  {
+   "id": "itineraire",
+   "icon": "🧭",
+   "title": {
+    "fr": "Cinq façons de partir",
+    "en": "Five ways to set off",
+    "de": "Fünf Möglichkeiten, aufzubrechen",
+    "it": "Cinque modi per partire",
+    "ar": "خمس طرق للسفر"
+   },
+   "body": {
+    "fr": "Voyage libre, composer soi-même, se laisser surprendre, suivre un circuit tracé, ou reprendre un voyage enregistré. Et le point de départ, c'est toujours vous qui le choisissez.",
+    "en": "Independent travel, plan your own itinerary, let yourself be surprised, follow a pre-planned tour, or choose a pre-booked tour. And you always get to choose the starting point.",
+    "de": "Reisen Sie auf einer individuellen Reise, erstellen Sie Ihre eigene Route, lassen Sie sich überraschen, folgen Sie einer vorgegebenen Rundreise oder greifen Sie auf eine gespeicherte Reise zurück. Und den Ausgangspunkt wählen immer Sie selbst.",
+    "it": "Un viaggio libero: crea il proprio itinerario, lasciarsi sorprendere, seguire un percorso prestabilito o riprendere un itinerario salvato. E il punto di partenza lo scegliete sempre voi.",
+    "ar": "سافر بحرية، أو صمم رحلتك بنفسك، أو دع المفاجآت تأخذك، أو اتبع مسارًا محددًا، أو استأنف رحلة مسجلة. أما نقطة الانطلاق، فأنت دائمًا من يختارها."
    }
   },
   {
    "id": "autour",
-   "icon": "📍",
+   "icon": "🔎",
    "title": {
-    "fr": "Autour de moi",
-    "en": "Around me",
-    "de": "Um mich herum",
-    "it": "Intorno a me",
-    "ar": "من حولي"
+    "fr": "Ce qu'il y a autour",
+    "en": "What’s nearby",
+    "de": "Was es in der Umgebung gibt",
+    "it": "Cosa c'è nei dintorni",
+    "ar": "ما يوجد في الجوار"
    },
    "body": {
-    "fr": "Activez la localisation pour voir en priorité ce qu'il y a à visiter tout près de vous.",
-    "en": "Turn on location to see what's worth visiting right near you first.",
-    "de": "Aktiviere die Standortbestimmung, um zuerst zu sehen, was es in deiner unmittelbaren Umgebung zu entdecken gibt.",
-    "it": "Attiva la localizzazione per scoprire subito cosa vale la pena visitare proprio nelle tue vicinanze.",
-    "ar": "قم بتشغيل ميزة تحديد الموقع لترى أولاً ما يستحق الزيارة بالقرب منك."
+    "fr": "À chaque étape, l'application cherche les lieux voisins dans le rayon que vous réglez — puis vous demande où les placer dans le parcours.",
+    "en": "At each stop, the app searches for nearby places within the radius you set — then asks you where to place them along the route.",
+    "de": "Bei jeder Etappe sucht die App nach Orten in der von Ihnen festgelegten Umkreisung – und fragt Sie anschließend, an welcher Stelle der Route diese eingefügt werden sollen.",
+    "it": "Ad ogni tappa, l’applicazione cerca i luoghi vicini entro il raggio da voi impostato, per poi chiedervi dove inserirli nel percorso.",
+    "ar": "في كل مرحلة، يبحث التطبيق عن الأماكن المجاورة ضمن النطاق الذي تحدده — ثم يسألك عن المكان الذي تريد وضعها فيه ضمن المسار."
+   }
+  },
+  {
+   "id": "souvenirs",
+   "icon": "📷",
+   "always": true,
+   "title": {
+    "fr": "Vos photos et vos notes",
+    "en": "Your photos and notes",
+    "de": "Ihre Fotos und Notizen",
+    "it": "Le vostre foto e le vostre note",
+    "ar": "صورك وملاحظاتك"
+   },
+   "body": {
+    "fr": "Photos, vidéos et notes se rangent sous l'étape où vous les avez prises. Chacune peut recevoir une légende, et tout s'enregistre au fur et à mesure.",
+    "en": "Photos, videos and notes are organised under the stop where you took them. Each one can be given a caption, and everything is saved as you go along.",
+    "de": "Fotos, Videos und Notizen werden unter der Etappe abgelegt, auf der Sie sie aufgenommen haben. Jedes Element kann mit einer Bildunterschrift versehen werden, und alles wird fortlaufend gespeichert.",
+    "it": "Foto, video e appunti vengono archiviati nella tappa in cui sono stati realizzati. A ciascuno è possibile aggiungere una didascalia e tutto viene salvato man mano.",
+    "ar": "يتم تنظيم الصور ومقاطع الفيديو والملاحظات تحت المرحلة التي التقطتها فيها. يمكن إضافة تعليق لكل منها، ويتم تسجيل كل شيء فورًا."
+   }
+  },
+  {
+   "id": "albums",
+   "icon": "📔",
+   "always": true,
+   "title": {
+    "fr": "Trois albums, un seul voyage",
+    "en": "Three albums, one journey",
+    "de": "Drei Alben, eine einzige Reise",
+    "it": "Tre album, un unico viaggio",
+    "ar": "ثلاثة ألبومات، رحلة واحدة"
+   },
+   "body": {
+    "fr": "Le carnet de route, le passeport à tampons, le dépliant qui se déplie. Plus le PDF, le diaporama et la planche-contact de toutes vos photos.",
+    "en": "The travel log, the stamped Passport, the fold-out Leaflet. Plus the PDF, the slideshow and the contact sheet of all your photos.",
+    "de": "Das Reisetagebuch, der Reisepass, das Faltblatt. Dazu noch die PDF-Datei, die Diashow und die Kontaktabzüge all Ihrer Fotos.",
+    "it": "Il diario di viaggio, il passaporto con i timbri, l'opuscolo pieghevole. E poi il PDF, la presentazione e il foglio di provini di tutte le vostre foto.",
+    "ar": "دفتر الرحلة، وجواز السفر المليء بالأختام، والنشرة القابلة للطي. بالإضافة إلى ملف PDF، وعرض الشرائح، وألبوم الصور الذي يضم جميع صورك."
+   }
+  },
+  {
+   "id": "emporter",
+   "icon": "📤",
+   "always": true,
+   "title": {
+    "fr": "Emporter l'itinéraire",
+    "en": "Take the itinerary with you",
+    "de": "Die Reiseroute mitnehmen",
+    "it": "Portare con sé l'itinerario",
+    "ar": "حفظ مسار الرحلة"
+   },
+   "body": {
+    "fr": "Vers Google Maps, OpenStreetMap, Apple Plans ou Waze. Ou en fichier GPX et en carte partageable, pour l'avoir avec soi sans réseau.",
+    "en": "To Google Maps, OpenStreetMap, Apple Maps or Waze. Or as a GPX file and a shareable map, so you can have it with you even without a network connection.",
+    "de": "Auf Google Maps, OpenStreetMap, Apple Maps oder Waze. Oder als GPX-Datei und als teilbare Karte, damit Sie diese auch ohne Internetverbindung zur Hand haben.",
+    "it": "Su Google Maps, OpenStreetMap, Apple Maps o Waze. Oppure come file GPX e mappa condivisibile, per averla sempre a portata di mano anche senza connessione.",
+    "ar": "إلى خرائط Google أو OpenStreetMap أو Apple Maps أو Waze. أو كملف GPX وخريطة قابلة للمشاركة، لتتمكن من حملها معك حتى في حالة انقطاع الاتصال بالإنترنت."
+   }
+  },
+  {
+   "id": "ranger",
+   "icon": "🗂️",
+   "always": true,
+   "title": {
+    "fr": "Vos photos, déjà triées",
+    "en": "Your photos, already sorted",
+    "de": "Ihre Fotos, bereits sortiert",
+    "it": "Le vostre foto, già selezionate",
+    "ar": "صوركم، التي تم فرزها بالفعل"
+   },
+   "body": {
+    "fr": "En un geste, l'application range tous vos médias par voyage et par étape — la photo d'origine, celle avec sa légende, les sons et les vidéos.",
+    "en": "In a single action, the app organises all your media by trip and by stop — the original photo, the one with its caption, audio files and videos.",
+    "de": "Mit nur einer Aktion ordnet die App alle Ihre Medien nach Reisen und Etappen – das Originalfoto, das Foto mit Bildunterschrift, die Audiodateien und die Videos.",
+    "it": "Con un’unica azione, l’applicazione ordina tutti i vostri contenuti multimediali per viaggio e per tappa: la foto originale, quella con la didascalia, i file audio e i video.",
+    "ar": "بلمسة واحدة، يقوم التطبيق بترتيب جميع ملفاتك السمعية والبصرية حسب الرحلة والمرحلة — الصورة الأصلية، والصورة المصحوبة بتعليق، والمقاطع الصوتية، ومقاطع الفيديو."
+   }
+  },
+  {
+   "id": "voyage",
+   "icon": "🎞️",
+   "title": {
+    "fr": "Voyage immersif",
+    "en": "Immersive journey",
+    "de": "Immersive Reise",
+    "it": "Viaggio immersivo",
+    "ar": "رحلة غامرة"
+   },
+   "body": {
+    "fr": "Un diaporama plein écran, et deux documentaires : Rome en Afrique, et la Médina de Tunis. À regarder, simplement.",
+    "en": "A full-screen slideshow and two documentaries: ‘Rome in Africa’ and ‘The Medina of Tunis’. Just sit back and enjoy.",
+    "de": "Eine Vollbild-Diashow und zwei Dokumentarfilme: „Rom in Afrika“ und „Die Medina von Tunis“. Einfach nur zum Anschauen.",
+    "it": "Una presentazione a schermo intero e due documentari: “Roma in Africa” e “La Medina di Tunisi”. Da guardare, semplicemente.",
+    "ar": "عرض شرائح بملء الشاشة، وفيلمان وثائقيان: «روما في إفريقيا»، و«المدينة القديمة في تونس». ما عليك سوى مشاهدتهما."
    }
   },
   {
    "id": "patrimoine",
    "icon": "🏛️",
    "title": {
-    "fr": "Contribuer au patrimoine",
-    "en": "Contribute to heritage",
-    "de": "Zum Kulturerbe beitragen",
-    "it": "Contribuisci alla tutela del patrimonio culturale",
-    "ar": "المساهمة في الحفاظ على التراث"
+    "fr": "Veille citoyenne",
+    "en": "Citizen watch",
+    "de": "Bürgerinitiativen",
+    "it": "Monitoraggio civico",
+    "ar": "المراقبة المدنية"
    },
    "body": {
-    "fr": "Documentez ou signalez un site : une contribution citoyenne, ouverte à tous.",
-    "en": "Document or report a site: a citizen contribution, open to everyone.",
-    "de": "Einen Ort dokumentieren oder melden: ein Bürgerbeitrag, an dem sich jeder beteiligen kann.",
-    "it": "Segnalare o documentare un sito: un contributo dei cittadini, aperto a tutti.",
-    "ar": "توثيق موقع أو الإبلاغ عنه: مساهمة مدنية، متاحة للجميع."
+    "fr": "Les sites répertoriés et leur état, en accès libre. Vous pouvez documenter un lieu ou signaler ce que vous y avez vu.",
+    "en": "The listed places and their condition, freely accessible. You can provide information about a place or report what you saw there.",
+    "de": "Die aufgelisteten Orte und ihr Zustand – frei zugänglich. Sie können einen Ort dokumentieren oder mitteilen, was Sie dort gesehen haben.",
+    "it": "I siti elencati e le loro condizioni, accessibili a tutti. Potete fornire informazioni su un luogo o segnalare ciò che avete visto in loco.",
+    "ar": "المواقع المدرجة وحالتها، متاحة للجميع. يمكنك توثيق أحد الأماكن أو الإبلاغ عما رأيته فيه."
    }
   },
   {
-   "id": "voix",
-   "icon": "🔊",
+   "id": "premium",
+   "icon": "💛",
    "title": {
-    "fr": "Écouter",
-    "en": "Listen",
-    "de": "Anhören",
-    "it": "Ascolta",
-    "ar": "استمع"
+    "fr": "Le Premium",
+    "en": "The Premium",
+    "de": "Das Premium",
+    "it": "Il Premium",
+    "ar": "البريميوم"
    },
    "body": {
-    "fr": "Ce bouton lit le récit à voix haute. Beaucoup de fiches proposent aussi une narration audio.",
-    "en": "This button reads the story aloud. Many entries also offer audio narration.",
-    "de": "Über diese Schaltfläche wird die Geschichte vorgelesen. Viele Einträge bieten zudem eine Audio-Erzählung an.",
-    "it": "Questo pulsante legge la storia ad alta voce. Molte voci offrono anche una narrazione audio.",
-    "ar": "يقرأ هذا الزر القصة بصوت عالٍ. كما تتضمن العديد من المقالات سردًا صوتيًا."
+    "fr": "Deux semaines pour tout essayer, puis un seul tarif à l'année. Il ouvre les circuits prêts, les albums, le diaporama et la narration audio.",
+    "en": "Two weeks to try everything out, then a single annual subscription fee. It unlocks the ready-made tours, photo albums, slideshows and audio commentary.",
+    "de": "Zwei Wochen, um alles auszuprobieren, danach ein einziger Jahrespreis. Damit erhalten Sie Zugriff auf die vorgefertigten Rundreisen, die Alben, die Diashow und die Audiokommentare.",
+    "it": "Due settimane per provare tutto, poi un'unica tariffa annuale. Consente di accedere agli itinerari già pronti, agli album, alla presentazione e alla narrazione audio.",
+    "ar": "أسبوعان لتجربة كل الميزات، ثم اشتراك سنوي واحد. يتيح لك الوصول إلى المسارات الجاهزة والألبومات وعرض الشرائح والتعليق الصوتي."
+   }
+  },
+  {
+   "id": "hors-ligne",
+   "icon": "🔒",
+   "always": true,
+   "title": {
+    "fr": "Tout reste sur votre appareil",
+    "en": "Everything stays on your device",
+    "de": "Alles verbleibt auf Ihrem Gerät",
+    "it": "Tutto rimane sul vostro dispositivo",
+    "ar": "كل شيء يبقى على جهازك"
+   },
+   "body": {
+    "fr": "L'application marche au milieu du désert comme en mode avion. Vos récits, vos trajets et vos photos vivent sur votre appareil — aucun serveur, aucun compte.",
+    "en": "The app works in the middle of the desert just as it does in flight mode. Your stories, journeys and photos are stored on your device — no servers, no account.",
+    "de": "Die App funktioniert mitten in der Wüste genauso wie im Flugmodus. Ihre Berichte, Ihre Routen und Ihre Fotos werden auf Ihrem Gerät gespeichert – ohne Server, ohne Konto.",
+    "it": "L'applicazione funziona anche in mezzo al deserto, proprio come in modalità aereo. I vostri racconti, i vostri percorsi e le vostre foto rimangono sul vostro dispositivo: nessun server, nessun account.",
+    "ar": "يعمل التطبيق في وسط الصحراء تمامًا كما لو كان في وضع الطيران. تُحفظ قصصك ورحلاتك وصورك على جهازك — دون الحاجة إلى خادم أو حساب."
    }
   },
   {
@@ -273,18 +330,18 @@
    "icon": "✨",
    "always": true,
    "title": {
-    "fr": "À vous de jouer ✨",
-    "en": "You're all set ✨",
-    "de": "Das war&#x27;s schon ✨",
-    "it": "È tutto pronto ✨",
-    "ar": "كل شيء جاهز الآن ✨"
+    "fr": "Le pays vous attend ✨",
+    "en": "The country is waiting for you ✨",
+    "de": "Das Land erwartet Sie ✨",
+    "it": "Il Paese vi aspetta ✨",
+    "ar": "البلد في انتظاركم ✨"
    },
    "body": {
-    "fr": "Tout fonctionne hors-ligne et vos contenus restent sur votre appareil. Bonne découverte ! Pour revoir cette visite, retrouvez-la dans le menu.",
-    "en": "Everything works offline and your content stays on your device. Enjoy exploring! To replay this tour, find it in the menu.",
-    "de": "Alles funktioniert offline und Ihre Inhalte bleiben auf Ihrem Gerät gespeichert. Viel Spaß beim Entdecken! Um diese Tour erneut anzusehen, suchen Sie sie einfach im Menü.",
-    "it": "Tutto funziona offline e i tuoi contenuti rimangono sul tuo dispositivo. Divertiti a esplorare! Per rivedere questo tour, cercalo nel menu.",
-    "ar": "كل شيء يعمل دون اتصال بالإنترنت، ويبقى المحتوى الخاص بك مخزّنًا على جهازك. استمتع بالتجول! لإعادة مشاهدة هذه الجولة، ابحث عنها في القائمة."
+    "fr": "Bonne découverte. Pour revoir cette visite, elle vous attend dans le menu, tout en bas de la première partie.",
+    "en": "Enjoy exploring. If you’d like to revisit this tour, you’ll find it in the menu, right at the bottom of the first section.",
+    "de": "Viel Spaß beim Entdecken. Wenn Sie diesen Rundgang noch einmal ansehen möchten, finden Sie ihn im Menü ganz unten im ersten Teil.",
+    "it": "Buona visita. Per rivedere questo tour, lo troverete nel menu, in fondo alla prima parte.",
+    "ar": "نتمنى لكم استمتاعاً بالاستكشاف. إذا أردتم إعادة مشاهدة هذه الجولة، فستجدونها في القائمة، في أسفل الجزء الأول تماماً."
    }
   }
  ]

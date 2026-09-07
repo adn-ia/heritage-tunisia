@@ -2027,3 +2027,84 @@ pas fait.
 **Ce qu'il n'a pas pu trancher** : la lisibilité réelle sur un téléphone, et la
 justesse sémantique des traductions qu'il ne voit pas. Deux « BORNE INCONNUE »
 honnêtes — le protocole fonctionne quand il répond ça plutôt que de deviner.
+
+---
+
+## La visite guidée refaite, et sa voix (07/09/2026)
+
+La visite datait du **16/08** et décrivait une application qui n'existait plus :
+ni les cinq façons de partir, ni le départ qu'on choisit soi-même, ni le bandeau
+de huit icônes, ni le vrai tracé routier, ni les trois albums, ni les sept
+sorties de carte, ni « ce qu'il y a autour », ni le rangement des photos.
+
+**12 étapes → 15.** Neuves : `albums`, `emporter`, `ranger`, `premium`.
+Abandonnée : `voix` (fondue dans `recit`).
+
+### Ce que le chantier a appris
+
+**① Le parcours court existait déjà, et personne ne s'en servait.**
+`brique-tour.js` l. 131 : une étape ne s'affiche que si elle est `always` **ou**
+si un élément `data-tour-step="<id>"` existe **sur la page ouverte**. La visite se
+taille donc d'elle-même selon l'écran — il n'y avait rien à coder pour ça.
+⚠️ Corollaire : une étape neuve sans ancre et sans `always` **ne s'afficherait
+jamais**, en silence.
+
+**② Une ancre orpheline traînait depuis le 16/08.** `decouvrir.html` portait
+`data-tour-step="premium"` alors qu'**aucune étape ne s'appelait `premium`** :
+l'ancre ne servait à rien. Elle a maintenant son étape.
+
+**③ 🔴 DeepSeek a refusé sur un motif qui était faux, et la mesure l'a montré.**
+Il tenait qu'un MP3 manquant **bloque** la visite — « aucune gestion d'erreur
+n'apparaît […] la visite reste bloquée sur l'étape » — et que cela imposait de
+modifier `brique-tour.js`. **Mesuré à l'écran**, sur l'étape 8 « Trois albums »
+dont le fichier n'existait pas encore : la carte s'affiche, ses trois boutons sont
+là, et **le doigt sur « Suivant » fait passer à l'étape 9**. La visite ne bloque
+pas ; elle cesse seulement d'avancer toute seule, ce que le commentaire du code
+disait déjà l. 222. **`brique-tour.js` n'a pas été touché.**
+
+⚠️ **Ce que je n'ai PAS pu mesurer** : l'avance automatique elle-même. Dans ce
+navigateur piloté, aucun MP3 ne se joue — `welcome-fr.mp3` répond pourtant 200,
+55 872 o, `audio/mpeg`, et la page a bien eu son geste utilisateur. La visite est
+donc restée sur l'étape 1 pendant 100 s, bouton ⏸ affiché. **Le rythme à la voix
+reste à constater sur un vrai téléphone.**
+
+**④ Ce que DeepSeek a vu juste, et qui a été suivi** : ne pas effacer les MP3 des
+étapes abandonnées. Un voyageur qui n'a pas encore reçu la nouvelle donnée cherche
+encore `voix/tour/voix-<langue>.mp3`. Les cinq fichiers restent.
+
+**⑤ Le narrateur est écrit, cette fois.** Les 60 MP3 du 1er août avaient été faits
+avec une voix que personne n'avait notée — impossible d'en ajouter sans changer de
+narrateur en cours de route. Les 75 nouveaux sont donc **tous** régénérés, un
+narrateur par langue, déclaré dans `/tmp/_faire_voix.py` et ici :
+
+| langue | voix |
+|---|---|
+| français | `fr-FR-DeniseNeural` |
+| anglais | `en-GB-SoniaNeural` |
+| allemand | `de-DE-KatjaNeural` |
+| italien | `it-IT-ElsaNeural` |
+| **arabe** | **`ar-TN-ReemNeural` — arabe TUNISIEN**, choix éditorial pour une application sur la Tunisie |
+
+⚠️ **Les emojis se retirent avant de parler** — leçon du 04/09 : les MP3 disaient
+« bienvenue waving hand ».
+
+**⑥ Cinq rendus repris à la main après lecture** : « Tout reste chez vous » devenait
+*Everything stays at home* et *Tutto rimane a casa vostra* — faux, il s'agit de
+l'appareil : la source française a été reformulée. « À vous de jouer » donnait
+*It's up to you to find out* : devenu « Le pays vous attend ». Et **trois libellés
+repris des dictionnaires de l'application** au lieu de DeepL — *Voyage immersif*,
+*veille citoyenne* (DeepL disait « Bürgerbeobachtung », la surveillance DES
+citoyens) et *Le Premium*.
+
+### Mesures
+
+- 15 étapes × 5 langues : **0 texte manquant**.
+- 75 MP3 : **0 manquant, 0 durée douteuse** (toutes entre 3 et 25 s).
+- Visite entière : **2 min 44** (en) à **3 min 36** (ar).
+- `voix/tour/` passe de 4,0 à 8,2 Mo — **hors précache**, chargé à la demande.
+
+### Ce qui reste ouvert
+
+- l'avance à la voix, à constater sur un téléphone ;
+- l'application écrit « Premium » de deux façons en arabe — البريميوم (clé
+  « Le Premium ») et البرميوم (`premium.h1`). Signalé, non corrigé.
