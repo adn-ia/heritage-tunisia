@@ -2680,3 +2680,56 @@ août : **la suppression au serveur est un geste de Helmy**, et je vérifierai l
 
 **Clés désormais orphelines**, laissées : `menu.musee`, `menu.ar`,
 `menu.en.developpement` dans les cinq dictionnaires. Poids mort, pas un défaut.
+
+## Les accents manquants du corpus (07/09/2026)
+
+**Ordre de Helmy** : *« corriger le voyage immersif »* — après avoir vu, sur sa
+fiche des Aiguilles de Tabarka, « la **cote** de Tabarka » et « aiguilles de
+**gres dressees** ».
+
+**Le défaut n'était pas sur cette fiche : il était dans tout le corpus.**
+`sites.geojson` (425 fiches) et `sites-nature.geojson` (142) portaient des
+descriptions au français amputé de ses accents — « edifies a Carthage sous le
+regne », « les Pheniciens », « Prevoyez de l'eau », « acces », « carrieres ».
+
+**⚠️ LE PIÈGE, ÉCARTÉ AVANT D'ÉCRIRE.** La moitié des occurrences trouvées
+étaient le champ **`type` valant « cote »** — ce n'est pas un mot mais une
+**clé de code**, lue par trois tables : l'emoji 🏖️ (`index.html` l. 266) et deux
+tables de score (l. 822, `itineraire.html` l. 1906). L'accentuer aurait cassé les
+filtres. **`type` et `nom` n'ont jamais été touchés.**
+
+**Quatre passes, sur les champs de PROSE uniquement** (`description`, `a_voir`,
+`conseil`, `epoque`, `resume`, `sejour`, `note`) :
+1. mots dont la forme sans accent **n'existe pas** en français ;
+2. seconde liste vérifiée mot à mot ;
+3. ` a ` → ` à ` **uniquement** devant article, déterminant, chiffre, majuscule
+   ou infinitif d'une liste courte ;
+4. les mêmes listes, **casse comprise** — ma lacune : les mots en début de phrase
+   avaient été manqués aux passes 1 et 2.
+
+**Résultat prouvé, champ par champ, contre la version d'avant** :
+**567 fiches · 0 géométrie modifiée · 0 champ hors prose modifié · 478 champs de
+prose corrigés.**
+
+**DeepSeek** a été saisi en lui demandant de refuser. Il a confirmé qu'aucun des
+mots de la liste n'existe sans accent avec un autre sens, et a soulevé le vrai
+risque : le verbe *avoir* transformé en préposition devant un nom propre — « ce
+gouvernorat **a** Bizerte comme port ». **Mesuré au lieu d'être cru** : les 194
+champs concernés ont été relus un par un, aux 10 emplacements « à + infinitif »
+et aux 40 « à + nom propre ». **Tous corrects** : « dédiées à Baal Hammon »,
+« édifiés à Carthage », « à Sidi Bou Said », « à observer à distance ». La phrase
+qu'il redoutait n'existe pas dans ce corpus.
+
+**Essayé à l'écran, en local puis en ligne** (`heritage-ad32cdc7`) : la fiche des
+Thermes d'Antonin dit « Vastes thermes publics **édifiés à** Carthage sous le
+**règne** d'Antonin le Pieux » ; celle du Musée national de Carthage, « Musée
+**archéologique** sur la colline de Byrsa : collections puniques et romaines des
+fouilles de Carthage (**stèles**, sarcophages, **mosaïques**) ».
+
+**CE QUI RESTE, ET QUE JE N'AI PAS TOUCHÉ :**
+- **les NOMS de lieux** — « Musée oceanographique de Bizerte », « Musée regional
+  des arts et traditions du Kef ». Le champ `nom` sert d'identifiant à plusieurs
+  endroits ; le corriger demande son propre contrôle.
+- **les formes ambiguës** — « expose » (exposé ou il expose), « limite », « sale »,
+  « garde », et « cote » en prose (côte ou côté). Elles réclament l'œil, pas une
+  règle.
