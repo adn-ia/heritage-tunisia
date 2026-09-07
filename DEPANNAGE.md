@@ -2672,11 +2672,11 @@ entrées ont disparu des deux menus, le pied de page dit « Prochainement :
 itinéraires de randonnée · reconstitutions sur site », et le reste du menu est
 intact — dont Patrimoine, Documentaires, Premium et la visite guidée.
 
-**⚠️ RESTE À FAIRE, ET CE N'EST PAS MOI** : `musee/` et `webar/` répondent encore
-**200 au serveur**. `deployer.sh` n'efface jamais à distance — `--forcer` passe
-outre le garde, il ne supprime pas. C'est le même cas que `brique-modules` en
-août : **la suppression au serveur est un geste de Helmy**, et je vérifierai le
-404 après.
+**Les fichiers restent au serveur, et c'est une décision.** Helmy, 07/09 :
+*« musee et webar ne fonctionnent pas et ne mènent nulle part, donc ils peuvent
+y rester pour le moment. »* Plus aucune page ni aucun menu n'y renvoie ; ils ne
+sont plus atteignables autrement qu'en tapant l'adresse. `deployer.sh` n'efface
+jamais à distance de toute façon. **Point clos — ne pas le rouvrir.**
 
 **Clés désormais orphelines**, laissées : `menu.musee`, `menu.ar`,
 `menu.en.developpement` dans les cinq dictionnaires. Poids mort, pas un défaut.
