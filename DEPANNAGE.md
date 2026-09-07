@@ -1807,3 +1807,98 @@ Schritt für Schritt* — le contresens déjà tranché. Source reformulée en
 
 **Vérifié à l'écran** : 18 entrées, arborescence exacte, et le bandeau regardé sur
 l'image produite — pas seulement compté.
+
+---
+
+## Ranger les photos en répertoires — six défauts trouvés par la revue, un par la mesure (07/09/2026)
+
+La brique `the-album-fichiers.js` a été soumise à DeepSeek en lui demandant de la
+**refuser**, pas de l'approuver (règle 15). Il a rendu six motifs ; cinq tiennent,
+un est écarté. Un septième défaut est sorti du banc d'essai, que personne n'avait vu.
+
+### 1. Deux photos du même nom : une disparaissait — MESURÉ
+
+Une étape peut contenir deux médias portant le même `name` (l'iPhone recycle
+`IMG_0001.jpg`). La brique écrivait alors **deux entrées au chemin identique**.
+
+Mesure du 07/09, archive fabriquée exprès avec deux contenus différents au même
+chemin, puis déballée pour de vrai :
+
+```
+$ unzip -l doublon.zip
+       31  Sur les pas de Rome/1 - Bulla Regia/IMG_0001.jpg
+       32  Sur les pas de Rome/1 - Bulla Regia/IMG_0001.jpg
+$ unzip -o doublon.zip -d sortie   &&  cat sortie/…/IMG_0001.jpg
+PHOTO NUMERO DEUX, celle du soir          ← la photo du matin a disparu
+$ ditto -x -k doublon.zip sortie2 &&  cat sortie2/…/IMG_0001.jpg
+PHOTO NUMERO DEUX, celle du soir          ← même perte chez Apple
+```
+
+**Correction** : `cheminLibre()` numérote le doublon — `IMG_0001 (2).jpg` — et se
+rappelle récursivement au cas où ce nom-là serait pris aussi.
+**Vérifié après** : les cinq photos homonymes d'un même lieu ressortent toutes.
+
+### 2. Tous les octets étaient gardés en mémoire vive
+
+Chaque média était lu en `Uint8Array`, **empilé**, puis rassemblé en un `Blob`.
+Un voyage de trente étapes avec des vidéos fait plusieurs gigaoctets : le
+téléphone tue la page **sans erreur rattrapable** — aucun `catch` ne la voit.
+
+**Correction** : on lit chaque média une fois, juste le temps d'en calculer la
+somme de contrôle, puis on relâche les octets et on ne garde que le `Blob`
+d'origine — que le navigateur laisse sur le disque. `zipper()` assemble des
+`Blob`, plus des tableaux d'octets.
+
+### 3. Aucun garde-fou de format : archive corrompue en silence
+
+Les champs du ZIP sont sur 32 bits, le compteur d'entrées sur 16. Au-delà, ils
+débordent et l'archive est illisible **sans que rien ne le dise**.
+**Correction** : `MAX_ENTREES = 65000`, `MAX_POIDS = 3,9 Go`, et on **refuse** de
+produire l'archive avec un message clair plutôt que d'en donner une cassée.
+
+### 4. Une étape illisible était annoncée comme un succès
+
+`.catch(function(){})` avalait l'erreur d'une étape : l'archive sortait
+incomplète et le message disait « rangé ✓ ». Pour des souvenirs de voyage, c'est
+le pire défaut possible.
+**Correction** : les lieux en échec sont collectés et **nommés** à la fin.
+
+### 5. L'observateur écoutait tout le document
+
+`MutationObserver` sur `document.body` en `subtree` : il se réveillait à chaque
+marqueur que Leaflet redessine.
+**Correction** : il s'arrête dès que le bouton est posé, et renonce au bout d'une
+minute si la page n'a pas de barre d'album.
+
+### 6. L'en-tête central : rien à corriger
+
+Les offsets 30 à 41 laissés à zéro (extra field, commentaire, disque, attributs)
+sont **légaux**. `unzip`, le Finder et l'Explorateur Windows lisent l'archive.
+Écarté après examen — ce n'était pas un défaut.
+
+### 7. 🔴 Le défaut que la revue n'avait pas vu : le décodage sans fin
+
+`avecBandeau()` ne se terminait que sur `onload` **ou** `onerror`. Un moteur qui
+ne fait ni l'un ni l'autre — le cas d'une photo **HEIC d'iPhone** — laissait la
+promesse en suspens **pour toujours** : le bouton restait grisé, l'export ne
+finissait jamais. C'est exactement le §4 du dépannage itinéraire (« seule une
+garde EXTÉRIEURE protège »), appliqué à un décodage d'image au lieu d'une
+position.
+
+Trouvé non pas en lisant le code, mais en le **faisant tourner** sur un banc où
+l'image ne répond pas : le bouton est resté sur `⏳` après quatorze secondes.
+
+**Correction en deux temps** :
+- une garde extérieure de 12 s rend la main sans bandeau (l'originale est déjà rangée) ;
+- au **deuxième** renoncement on cesse d'essayer : sinon trois cents photos
+  illisibles coûteraient douze secondes chacune, soit une heure. Mesuré : le coût
+  total est plafonné à 24 s, quel que soit le nombre de photos.
+
+### Ce qui reste à prouver sur un vrai iPhone
+
+Motif 1 de DeepSeek, que **je ne peux pas mesurer ici** : en coque iOS, un
+`a.download` sur une URL `blob:` peut ne rien produire. La brique passe donc
+d'abord par `navigator.share` avec le fichier — la feuille de partage sait écrire
+dans Fichiers — et ne retombe sur le lien que si le partage est absent. Un partage
+annulé n'est pas traité comme un échec. **Cela demande un essai sur l'iPhone de
+Helmy ; aucun banc ne le remplace.**
