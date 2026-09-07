@@ -2564,3 +2564,60 @@ démenti. À ne jamais utiliser comme preuve — c'est exactement ce que la règ
 
 **Remis en état après l'essai** : note effacée, Bulla Regia rendue à l'étape 1,
 départ remis sur Tunis. L'itinéraire est tel qu'il était.
+
+## 🔴 Un « s » français collé aux mots traduits (07/09/2026)
+
+**Symptôme, vu à l'écran en ligne.** Le compteur de souvenirs affichait
+« 📷 15**تذكارs** في ملاحظاتكم » en arabe et « 📷 15**Erinnerungs** in Ihren
+Notizen » en allemand : un « s » de pluriel FRANÇAIS soudé à un mot traduit, et
+le nombre collé au mot faute d'espace.
+
+**Cause.** `itineraire.html`, deux lignes :
+
+```js
+l.1419  cnt.textContent = list.length ? '· '+list.length+' souvenir'+(list.length>1?'s':'') : '';
+l.1476  el.textContent  = n ? ' · 📷 '+n+uiT(' souvenir')+(n>1?'s':'')+uiT('itineraire.dans.votre.carnet') : '';
+```
+
+Le pluriel se fabriquait dans le code. Pire, l. 1419 le mot « souvenir » était
+**écrit en dur**, sans i18n du tout : il restait français dans les cinq langues.
+
+**Ce qu'il fallait faire, et que j'ai failli manquer.** La clé `itin.n.souvenirs`
+**existait déjà** dans les cinq dictionnaires — importée du socle, appelée par
+personne. J'ai d'abord interrogé DeepL pour la retraduire : inutile, il suffisait
+de regarder. *Chercher avant de traduire.*
+
+**Correctif.**
+- `uiT` accepte un second argument. L'idiome est celui de la maison :
+  `contribuer.html` l. 67 et `hors-ligne.html` l. 56.
+- Les deux appels passent par la clé : `uiT('itin.n.souvenirs',{n:…})`.
+- Le « · » qui préfixait la valeur au dictionnaire est retiré : chaque appelant
+  garde sa ponctuation. Personne d'autre ne lisait la clé — vérifié.
+- L'arabe passe de **تذكار** à **ذكرى** — le mot employé dans 42 autres valeurs,
+  contre 11 pour l'autre.
+
+**⚠️ CE QUE LE DIFF A ATTRAPÉ.** Ma première écriture des JSON les a **reformatés
+en entier** : 6 900 lignes changées par fichier pour une clé ajoutée. Rétabli,
+puis refait avec le format d'origine (`indent=1`, `sort_keys=True`,
+`ensure_ascii=False`) — éprouvé par un aller-retour à vide qui ne produit AUCUNE
+ligne de diff. **Le diff avant/après n'est pas une formalité : c'est lui qui a vu
+ma faute.**
+
+**DeepSeek** a été saisi en lui demandant de refuser. Une objection retenue et
+adoptée : la substitution ne valait que dans la branche « clé abstraite », ce qui
+aurait fait ignorer en silence un futur `uiT('… {n} …', {n:3})` écrit en français.
+Elle vaut désormais pour les deux branches.
+
+**Essayé à l'écran — en local d'abord, puis en ligne** (`heritage-6b1bc222`) :
+- français : « · 📷 15 souvenir(s) dans vos notes »
+- arabe : « · 📷 15 ذكرى (ذكريات) في ملاحظاتكم »
+- anglais (local) : « · 📷 1 memory(ies) in your notes »
+
+**Conséquence à connaître** : en français, « 1 souvenir(s) » remplace
+« 1 souvenir ». C'est la convention du socle, appliquée aux cinq langues ; une
+seule valeur de dictionnaire à changer si elle déplaît.
+
+**NON RÉPARÉ, dans le même écran** : « 4 jours / 3 nuits » reste français dans
+les cinq langues. Ce n'est pas du code — la chaîne vit dans `tours.json`, avec
+**tout le contenu des 14 circuits** (titres, sous-titres, notes, séjours,
+pépites). C'est un chantier de traduction, pas une étiquette. Il attend un ordre.

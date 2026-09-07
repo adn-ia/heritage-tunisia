@@ -2354,7 +2354,7 @@
  "itin.mon.itineraire.enrichi": "مسار رحلتي المُحسّن",
  "itin.mon.itineraire.pays.heritage": "مساري __العلامة_المختصرة__",
  "itin.n.ncompose.avec.pays.heritage": "\\n\\nمُركّب مع __MARQUE_COURTE__",
- "itin.n.souvenirs": "· {n} تذكار(ات)",
+ "itin.n.souvenirs": "{n} ذكرى (ذكريات)",
  "itin.nom.annuler": "إلغاء",
  "itin.nom.compose": "مساري",
  "itin.nom.demande": "ما الاسم الذي تريده لهذا المسار؟",

@@ -2402,7 +2402,7 @@
  "itin.mon.itineraire.enrichi": "My enhanced itinerary",
  "itin.mon.itineraire.pays.heritage": "My __MARQUE_COURTE__ itinerary",
  "itin.n.ncompose.avec.pays.heritage": "\n\nComposed with __MARQUE_COURTE__",
- "itin.n.souvenirs": "· {n} memory(ies)",
+ "itin.n.souvenirs": "{n} memory(ies)",
  "itin.nom.annuler": "Cancel",
  "itin.nom.compose": "My itinerary",
  "itin.nom.demande": "What would you like to call this itinerary?",

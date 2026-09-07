@@ -2354,7 +2354,7 @@
  "itin.mon.itineraire.enrichi": "Meine erweiterte Reiseroute",
  "itin.mon.itineraire.pays.heritage": "Meine Route __MARQUE_COURTE__",
  "itin.n.ncompose.avec.pays.heritage": "\\n\\nZusammengestellt mit __MARQUE_COURTE__",
- "itin.n.souvenirs": "· {n} Erinnerung(en)",
+ "itin.n.souvenirs": "{n} Erinnerung(en)",
  "itin.nom.annuler": "Abbrechen",
  "itin.nom.compose": "Meine Reiseroute",
  "itin.nom.demande": "Wie möchten Sie diese Route nennen?",

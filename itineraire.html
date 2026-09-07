@@ -1416,7 +1416,7 @@
     let list=[];
     try{ list=await photosFor(phEl.dataset.place); }catch(e){ grid.innerHTML='<span class="ph-empty">'+uiT('Carnet indisponible sur ce navigateur.')+'</span>'; return; }
     list.sort((a,b)=>a.ts-b.ts);
-    cnt.textContent = list.length ? '· '+list.length+' souvenir'+(list.length>1?'s':'') : '';
+    cnt.textContent = list.length ? '· '+uiT('itin.n.souvenirs',{n:list.length}) : '';
     grid.innerHTML = list.length ? '' : '<span class="ph-empty">'+uiT('Aucun souvenir ici pour l\'instant.')+'</span>';
     list.forEach(ph=>{
       const url=URL.createObjectURL(ph.blob); PHOTO_URLS.push(url);
@@ -1473,7 +1473,7 @@
   async function updateCarnetTotal(){
     const el=document.getElementById('carnet-total'); if(!el) return;
     const n=await countAll();
-    el.textContent = n ? ' · 📷 '+n+uiT(' souvenir')+(n>1?'s':'')+uiT('itineraire.dans.votre.carnet') : '';
+    el.textContent = n ? ' · 📷 '+uiT('itin.n.souvenirs',{n:n})+uiT('itineraire.dans.votre.carnet') : '';
   }
 
   // ---------- thèmes (regroupement des 161 époques) ----------
@@ -1879,14 +1879,25 @@
   }
 
   // ---------- planification réaliste en journées (vaut pour TOUT itinéraire) ----------
-  function uiT(fr){ try{
+  /* ⚠️ SECOND ARGUMENT — 07/09/2026. Une clé peut porter un nombre : « {n} souvenir(s) ».
+     Sans lui, le pluriel se fabriquait dans le code (`+(n>1?'s':'')`) et collait un « s »
+     français à un mot traduit — « تذكارs », « Erinnerungs ». L'idiome est déjà celui de
+     la maison : `contribuer.html` l. 67 et `hors-ligne.html` l. 56. Purement additif :
+     les 131 appels à un seul argument ne changent pas. */
+  function uiT(fr, v){ try{
     if(!window.THEi18n || !THEi18n.ui) return fr;
     /* une CLÉ abstraite (« prem.ask.titre ») se cherche dans TOUTES les langues,
        français compris ; un texte français reste traité à l'ancienne. */
+    var t;
     if(typeof fr==='string' && /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(fr)){
-      var v=THEi18n.ui(fr); return (v==null||v===fr) ? fr : v;
+      t=THEi18n.ui(fr); t=(t==null||t===fr) ? fr : t;
+    } else {
+      t=(!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
     }
-    return (!THEi18n.isFr() && THEi18n.ui(fr)) || fr;
+    /* le paramètre vaut pour LES DEUX branches — objection retenue de DeepSeek le
+       07/09 : le limiter aux clés abstraites aurait fait ignorer en silence un
+       futur `uiT('… {n} …', {n:3})` écrit en français. */
+    return v ? String(t).replace(/\{(\w+)\}/g,function(_,n){ return v[n]!=null ? v[n] : '{'+n+'}'; }) : t;
   }catch(e){ return fr; } }
   function trCat(v){ return (window.THEi18n && !THEi18n.isFr()) ? THEi18n.cat(v) : v; }
   function fmtDur(m){ m=Math.round(m); if(m<60) return m+' min'; const h=Math.floor(m/60), r=m%60; return r? h+'h'+(r<10?'0'+r:r) : h+'h'; }

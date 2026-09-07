@@ -2354,7 +2354,7 @@
  "itin.mon.itineraire.enrichi": "Il mio itinerario arricchito",
  "itin.mon.itineraire.pays.heritage": "Il mio itinerario __MARQUE_COURTE__",
  "itin.n.ncompose.avec.pays.heritage": "\\n\\nRealizzato con __MARQUE_COURTE__",
- "itin.n.souvenirs": "· {n} ricordo(i)",
+ "itin.n.souvenirs": "{n} ricordo(i)",
  "itin.nom.annuler": "Annulla",
  "itin.nom.compose": "Il mio itinerario",
  "itin.nom.demande": "Che nome vorresti dare a questo itinerario?",
