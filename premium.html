@@ -54,6 +54,16 @@ section h2{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:23px
   <!-- ═══ L'OFFRE ═══ -->
   <section id="offer">
     <h2 data-i18n="premium.passez.au.premium">💛 Passez au Premium</h2>
+    <!-- ⚠️ LE NOM DU PRODUIT — 07/09/2026, mesuré à l'écran : la page montrait la
+         durée, le prix, l'EULA et la confidentialité, mais JAMAIS le nom de
+         l'abonnement. Apple exige les cinq : « Title of auto-renewing
+         subscription… ». C'est le point 166 du canon, corrigé le 26/08 sur le
+         socle, la Croatie, le Portugal, l'Estonie, puis l'Irlande, l'Italie et la
+         Tchéquie — la Tunisie n'y était pas.
+         ⚠️ La balise est RECOPIÉE du socle (`premium.html` l. 67), pas réécrite.
+         Et la leçon du 166 est qu'il en faut DEUX : la clé au dictionnaire ET la
+         balise ici. Ce jour-là, poser la clé seule n'avait rien changé à l'écran. -->
+    <p class="abo-nom" data-i18n="premium.abo.nom" style="margin:2px 0 0;font-weight:600;color:#5a4420"></p>
     <p class="price"><b id="priceVal">14,99 €</b> <span data-i18n="premium.par.an">par an</span></p>
     <p class="fs" id="offerSub" style="color:#5a4d3a" data-i18n="premium.essai.puis.abo">Essai gratuit de 2 semaines, puis 14,99 €/an. Sans engagement, annulable à tout moment.</p>
 

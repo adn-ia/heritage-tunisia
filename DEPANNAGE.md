@@ -2339,3 +2339,43 @@ l'écran qui l'a dit — jamais la relecture.
 **Prouvé en ligne** : circuit « Sud berbère & ksour », bouton « Tracer » sans avoir
 choisi → la boîte reste ouverte, le menu encadré, le message affiché, **aucun
 itinéraire tracé**.
+
+---
+
+## 🔴 Le nom du produit manquait au bloc d'abonnement (07/09/2026)
+
+Vu à l'écran, en ligne, sur `premium.html` : la page montrait **quatre** des cinq
+informations qu'Apple exige d'un abonnement auto-renouvelable — la durée, le prix,
+l'EULA, la confidentialité — mais **jamais le nom du produit**.
+
+C'est le **point 166 du canon**, mot pour mot : *« Apple rappelle les cinq
+informations qu'un abonnement doit montrer DANS l'app : titre, durée, prix, lien
+confidentialité, lien EULA. Le Portugal en montrait quatre : le nom du produit
+manquait. »* Corrigé le **26/08** sur le socle, la Croatie, le Portugal, l'Estonie,
+puis l'Irlande, l'Italie et la Tchéquie. **La Tunisie n'y était pas** — et
+personne ne l'avait regardée depuis, parce qu'elle était gelée.
+
+### Il en fallait DEUX, et le point 166 le disait déjà
+
+*« Le correctif s'est révélé en deux temps, et c'est la leçon : la clé
+`premium.abo.nom` était absente de neuf dictionnaires — posée, déployée… et l'écran
+n'a pas changé ; le vrai défaut était que `premium.html` n'avait pas la balise. »*
+
+En Tunisie, **les deux manquaient** :
+
+1. la clé `premium.abo.nom`, absente des cinq dictionnaires → posée à
+   **« Tunisia Heritage Premium »**, la valeur que donne `heritage.config.js`
+   (`marqueCourte: "Tunisia Heritage"`) suivie de « Premium ». Un nom de produit
+   ne se traduit pas : la même valeur dans les cinq langues, comme le socle qui
+   porte le jeton `__MARQUE_COURTE__ Premium` ;
+2. la balise, **recopiée du socle** (`premium.html` l. 67) et non réécrite :
+   `<p class="abo-nom" data-i18n="premium.abo.nom" style="margin:2px 0 0;font-weight:600;color:#5a4420"></p>`,
+   posée entre le titre et le prix.
+
+**Vérifié en ligne** (`heritage-47aaebcc`) : « 💛 Passez au Premium » ·
+**Tunisia Heritage Premium** · 14,99 € par an · Essai gratuit de 2 semaines ·
+Conditions d'utilisation (EULA) · Confidentialité. **Cinq sur cinq.**
+
+⚠️ Trouvé en mesurant les cellules du canon que personne n'avait regardées depuis
+le 25/08. C'est le quatrième vrai défaut sorti de ce relevé, après le GPS
+présélectionné, « en faire le point de départ » absent et le journal de bord.
