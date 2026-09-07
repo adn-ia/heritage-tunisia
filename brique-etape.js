@@ -159,16 +159,37 @@
       POS = coord; ADRESSE = estAdresse ? libelle : "";
       pos.textContent = "📍 " + libelle;
       res.innerHTML = "";
-      /* ⚠️ UNE BORNE N'A PAS DE TITRE À ELLE — 07/09/2026. Repris de Terralog,
-         `RoadTrip-Generique/blocs/15-lieux.js` l. 101-104 : le point choisi écrase
-         TOUJOURS le champ qui le décrit (`a.value = short`, sans condition). Ce
-         garde-« seulement si vide », Terralog ne le met qu'au TITRE d'une étape
-         (l. 146), qui appartient au voyageur. Chez nous les deux partagent le même
+      /* ⚠️ UNE BORNE N'A PAS DE TITRE À ELLE — 07/09/2026. La règle est celle de
+         la maison, et la Tunisie est la PREMIÈRE application qui l'applique :
+         `roadtrip-plan.js` l. 308-310, depuis le 24/07. Le point choisi décrit le
+         champ qui le porte ; le garde « seulement si vide » ne protège que le NOM
+         d'une étape, qui appartient au voyageur. RoadTrip Foss et Terralog
+         fonctionnent de même (`blocs/15-lieux.js` l. 101-104 et l. 146), ce qui
+         confirme la règle sans en être la source. Ici les deux partagent le même
          champ : au départ et à l'arrivée le nom EST le point, donc il suit ; sur
          une étape il reste au voyageur. Sans ça, rouvrir la boîte déjà remplie et
          choisir Tunis validait ses coordonnées sous l'étiquette « Bulla Regia ». */
       var nom = document.getElementById("bet-nom");
-      if (nom && (BORNE || !nom.value.trim())) nom.value = String(libelle).split(",")[0];
+      /* Une adresse fine — « 12, rue de la Liberté, Tunis, … » — ne se résume pas
+         à son premier segment : ça donnerait « 12 ». La Tunisie sait le faire
+         DEPUIS LE 24/07, et elle l'a fait la première : `roadtrip-plan.js` l. 308
+         découpe déjà l'adresse d'un lieu cherché en
+         `split(",").slice(0,3).join(", ")`, et ne réduit à `[0]` que le NOM de
+         l'étape (l. 310). On reprend son expression, mot pour mot : une borne
+         reçoit les trois segments, une étape garde son titre. Un lieu du guide
+         n'a pas de virgule, il passe entier. */
+      if (nom && BORNE) {
+        /* Un LIEU DU GUIDE n'est pas une adresse : « Musée national du Bardo, Le
+           Bardo » porte ses virgules dans son nom, on ne le coupe pas. C'est déjà
+           la règle de la maison — `roadtrip-plan.js` ne découpe que les réponses
+           de Nominatim (l. 308), ses lieux passent entiers (l. 269). */
+        nom.value = estAdresse
+          ? String(libelle).split(",").slice(0, 3)
+              .map(function (x) { return x.trim(); }).filter(Boolean).join(", ")
+          : String(libelle);
+      } else if (nom && !nom.value.trim()) {
+        nom.value = String(libelle).split(",")[0];
+      }
     };
     res.appendChild(b);
   }

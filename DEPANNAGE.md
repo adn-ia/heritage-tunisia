@@ -2457,7 +2457,11 @@ s'ouvre toujours pleine.
 `dataset.saisi` posé à la frappe. Helmy : « pourquoi au lieu d'inventer vous ne
 prenez pas ce qui fonctionne ? » — retiré avant d'aller plus loin.
 
-**Le mécanisme, lu chez Terralog.** `RoadTrip-Generique/blocs/15-lieux.js` :
+**Le mécanisme est celui de la maison — et la Tunisie l'applique la PREMIÈRE.**
+`roadtrip-plan.js` l. 308-310, depuis le 24/07 : l'adresse d'un lieu cherché est
+découpée en `split(",").slice(0,3).join(", ")` pour ce qui la décrit, et réduite
+à `[0]` seulement pour le NOM de l'étape. RoadTrip Foss et Terralog fonctionnent
+de même — ça confirme la règle, ça n'en est pas la source :
 
 - **l. 101-104**, `rtGeoPick` — le point choisi **écrase toujours** le champ qui
   le décrit : `var a=document.getElementById('v-addr'); if(a) a.value=short;`
@@ -2489,3 +2493,41 @@ recherche « Kairouan », choix de l'adresse → **le nom ne bouge pas**, seule 
 position passe à Kairouan. Enfin en ligne (`heritage-944e7155`) : départ « Tunis »,
 recherche « Sousse », choix de « Médina de Sousse » → le champ devient
 **Médina de Sousse**.
+
+### Suite du même point : une adresse fine ne se résume pas à son premier mot
+
+Helmy, dans la foulée : *« bien sûr qu'on a des adresses très fines, c'est dès le
+début qu'on a posé ça »*, puis *« l'application Tunisia avait déjà cette fonction
+tout au début — remonter dans vos git, md, commits, mémoire et autres versions »*.
+
+Il avait raison sur les deux : c'est un vrai défaut, et la réponse était déjà
+chez nous. `git log -S` la trouve au **24/07/2026** (commit `8067913`), toujours
+en place : **`roadtrip-plan.js` l. 308-310**
+
+```js
+var name=String(x.display_name||"").split(",").slice(0,3).join(", ");
+b.onclick=function(){ pick(stopFromAddress(…, name.split(",")[0])); };
+```
+
+Trois segments pour ce qui décrit le point, le premier seulement pour le NOM
+d'une étape. Les lieux du guide, eux, passent entiers (l. 269).
+
+**⚠️ Antériorité — Helmy, 07/09 :** *« RoadTrip Foss et Terralog fonctionnent
+ainsi ; la première application fonctionnelle ainsi est Tunisia Heritage. »*
+Les mentions « repris de Terralog » écrites plus haut ce jour-là ont été
+corrigées : ils confirment la règle, ils n'en sont pas la source.
+
+**Correctif.** Dans `proposer()`, la branche de la borne reprend l'expression de
+`roadtrip-plan.js` mot pour mot, avec la distinction que DeepSeek a soulevée et
+qui est déjà la nôtre : `estAdresse ? trois segments : le libellé entier`.
+
+**DeepSeek** a été saisi en lui demandant de refuser. Il s'est réfuté lui-même
+sur deux de ses trois pistes (« identique », écrit-il en cours de route). La
+troisième tenait : un lieu du guide dont le nom porte des virgules ne doit pas
+être coupé. Adopté.
+
+**Essayé à l'écran, en local puis en ligne** (`heritage-cd4ca023`) :
+- borne + adresse fine → « Bardo, Délégation Le Bardo, Tunis » (3 segments sur 6) ;
+- borne + lieu du guide → « Musée national du Bardo », entier ;
+- étape + adresse fine → le nom « Dougga (Thugga) » NE BOUGE PAS, seule la
+  position change.
