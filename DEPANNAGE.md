@@ -2421,3 +2421,23 @@ les 6 numéros se renumérotent, l'en-tête passe de « ~504 km depuis Tunis » 
 **Relevé en chemin, NON corrigé** — boîte « Votre point de départ » : choisir un
 nouveau point par la recherche ne met pas à jour le champ du NOM au-dessus. On
 peut donc valider les coordonnées de Tunis sous l'étiquette « Bulla Regia ».
+
+### Rattrapage du 07/09 — la vérification locale, faite après coup
+
+Helmy a posé ce jour-là la règle 0 : **le local d'abord**. J'avais déployé puis
+vérifié en ligne. Repassé en local (`python3 -m http.server 8765` depuis le
+dépôt), à l'écran :
+
+- **le geste** : menu de Dougga → « ⇧ En faire le point de départ ». Départ
+  Dougga, en-tête « ~359 km depuis Dougga (Thugga) », route 462 km / 8 h 19,
+  Jour 1 recalculé, message « Départ posé sur cette étape. » — identique au
+  résultat en ligne ;
+- **la porte de l'étape 1** : l'entrée est ABSENTE du menu de la première étape,
+  présente sur les cinq autres — le `if(i>0)` tient ;
+- **l'application entière** : accueil (567 lieux, 14 circuits), carte, page de
+  bienvenue, changement de langue FR → EN → FR, une fiche « Découvrir ce lieu »
+  ouverte et refermée par sa croix. Rien d'autre n'a bougé ;
+- **le diff avant/après** : trois fichiers. `roadtrip-plan.js` (+30/−1),
+  `sw.js` (le seul tampon de version), `DEPANNAGE.md`. Le dictionnaire embarqué
+  a été relu clé par clé : **2 clés ajoutées, 0 perdue, 0 modifiée**. La
+  modification ne déborde pas de la fonction visée.
