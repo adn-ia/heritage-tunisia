@@ -2379,3 +2379,45 @@ Conditions d'utilisation (EULA) · Confidentialité. **Cinq sur cinq.**
 ⚠️ Trouvé en mesurant les cellules du canon que personne n'avait regardées depuis
 le 25/08. C'est le quatrième vrai défaut sorti de ce relevé, après le GPS
 présélectionné, « en faire le point de départ » absent et le journal de bord.
+
+## ⇧ En faire le point de départ — le geste manquait à la Tunisie (07/09/2026)
+
+**Symptôme.** Le menu d'une étape savait la monter d'un cran, pas la porter en
+tête ET caler le départ du voyage sur elle. Demandé plusieurs fois par Helmy :
+« c'est utile pour préparer son voyage avec son départ ».
+
+**Cause.** La fonction existe au socle depuis le 24/08 — `HERITAGE-SOCLE/
+roadtrip-plan.js` l. 109, accrochée au menu l. 331 — et n'a jamais été portée.
+Aucune trace de `enFaireLeDepart` dans la Tunisie.
+
+**Correctif.** `roadtrip-plan.js` l. 136 `enFaireLeDepart(i)`, accroché au menu
+l. 557 juste au-dessus de « ↑ Monter ». Deux adaptations sur la version du socle :
+
+- **les numéros.** Ici la clé de rangement d'une étape est son NUMÉRO. On relève
+  les clés AVANT le déplacement et on referme APRÈS avec `renumeroterDepuis`,
+  comme `moveStep`. `THEplanRenumeroter` traduit au passage les `baseKey` : les
+  liens base↔visite suivent tout seuls. Le socle ne fait ni l'un ni l'autre.
+- **la visite portée en tête.** Une étape marquée `kind:"visite"` garderait un
+  `baseKey` désignant une base passée derrière elle. L'app a déjà le geste :
+  `metaPatch(s,{kind:"",baseKey:""})` — elle redevient une étape normale,
+  exactement ce que fait « ⤴ Détacher de la base ».
+
+L'origine du parcours se réécrit AVANT `recompute()` : c'est de `LASTORIGIN.coord`
+que part le premier tronçon (l. 96).
+
+**DeepSeek** a été saisi en lui demandant de refuser. Trois objections, une seule
+retenue : celle de la visite, corrigée ci-dessus. Rejetées : « l'ordre LASTORIGIN
+puis recompute est incohérent » — c'est précisément la fonction ; « le toast ment
+si rien n'a bougé » — les gardes `i<=0 || i>=r.length` interdisent ce cas.
+
+**Vérifié en ligne, au doigt** (heritage-3b88d19f, itinéraire « Sur les pas de
+Rome en Afrique », 6 étapes, départ Tunis) : menu de l'étape 2 → « ⇧ En faire le
+point de départ ». Dougga passe étape 1, la maison de la carte se pose dessus,
+les 6 numéros se renumérotent, l'en-tête passe de « ~504 km depuis Tunis » à
+« ~359 km depuis Dougga (Thugga) », la route réelle de 645 km/11 h 19 à
+462 km/8 h 19, le Jour 1 se recalcule, et le message « Départ posé sur cette
+étape. » s'affiche. Le geste refait dans l'autre sens rétablit l'ordre.
+
+**Relevé en chemin, NON corrigé** — boîte « Votre point de départ » : choisir un
+nouveau point par la recherche ne met pas à jour le champ du NOM au-dessus. On
+peut donc valider les coordonnées de Tunis sous l'étiquette « Bulla Regia ».
