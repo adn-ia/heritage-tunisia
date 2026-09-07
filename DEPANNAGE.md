@@ -2621,3 +2621,62 @@ seule valeur de dictionnaire à changer si elle déplaît.
 les cinq langues. Ce n'est pas du code — la chaîne vit dans `tours.json`, avec
 **tout le contenu des 14 circuits** (titres, sous-titres, notes, séjours,
 pépites). C'est un chantier de traduction, pas une étiquette. Il attend un ordre.
+
+## 🔴 Deux modules « aperçu » retirés de la page publique (07/09/2026)
+
+**Ordre de Helmy** : *« la page publique ne devrait rien montrer du chantier —
+on a déjà adressé ce problème et je le pensais réglé depuis longtemps »*, puis
+*« le scanner musée on est censé l'avoir supprimé et nettoyé, pareil pour la
+réalité augmentée »*.
+
+**Il avait raison, et l'historique le dit.** Canon, point 285 : la brique
+`brique-modules` servait trois entrées — *Scanner au musée* (`musee/`),
+*Réalité augmentée* (`webar/`), *Documentaires*. Elle a été **retirée du code le
+25/08** (`c44dd82`, « the modules brique goes while the guided tour stays »), et
+Helmy a effacé ses orphelins à la main sur six éditions le 26/08. **Mais en
+Tunisie ces deux entrées vivaient EN DUR dans le menu** : elles y étaient
+encore, `accueil.html` l. 85 et 90, avec les deux dossiers.
+
+**Ce que les pages montraient au public** : « *VIDEO DE DEMONSTRATION
+(placeholder CC0) - a remplacer par ta mini-video d'usage* », « *Exemple - Musee
+national (a preciser)* », « *Source : A completer* », le tout sans accents. Le
+canon du 19/08 avait déjà tranché ce genre de cas : *« un placeholder qui allait
+partir en ligne »*, bloc retiré, **Apple avait bloqué**.
+
+**Retiré** : les deux cartes d'`accueil.html`, les deux entrées de menu de
+`decouvrir.html`, la ligne de précache de `sw.js`, les dossiers `musee/` (16 Ko)
+et `webar/` (8 Ko). Copie de sauvegarde prise avant suppression.
+
+**GARDÉ, et pourquoi** : « Documentaires thématiques », troisième entrée du même
+trio, **a du code derrière elle** — `decouvrir.html` l. 529, elle ouvre une
+fenêtre. Vérifié avant d'y toucher. Et le **plugin patrimoine** (`contribuer.html`,
+6 135 o, 12 clés, atteignable l. 163) n'a **pas** été touché : il est
+auto-porté, ne tient à l'hôte que par son lien d'entrée, et ne passe pas le
+paywall.
+
+**Au passage, même écran** : le pied de page annonçait « Prochainement : **version
+arabe** » alors que l'arabe est en ligne depuis longtemps. Le texte était **écrit
+en dur** ; la clé `accueil.prochainement.itineraires.de.randonnee` existait déjà
+dans les cinq langues **et disait déjà la bonne chose**. Le `<span>` passe donc
+par sa clé — vide, comme les sept autres du même fichier.
+
+**DeepSeek** a soulevé quatre objections. **Deux mesurées fausses** : (a) le `sw.js`
+nettoie déjà les vieux caches à l'`activate` — il supprime tout cache dont le nom
+ne finit pas par la nouvelle version, en gardant délibérément les tuiles et
+l'emport hors ligne ; (b) il voulait remettre du français dans le `<span>` comme
+repli — **la règle en granit l'interdit** et la convention du fichier est le span
+vide. **Une retenue** : le SFTP ne supprime rien à distance.
+
+**Essayé à l'écran, en local puis en ligne** (`heritage-35c6bc20`) : les deux
+entrées ont disparu des deux menus, le pied de page dit « Prochainement :
+itinéraires de randonnée · reconstitutions sur site », et le reste du menu est
+intact — dont Patrimoine, Documentaires, Premium et la visite guidée.
+
+**⚠️ RESTE À FAIRE, ET CE N'EST PAS MOI** : `musee/` et `webar/` répondent encore
+**200 au serveur**. `deployer.sh` n'efface jamais à distance — `--forcer` passe
+outre le garde, il ne supprime pas. C'est le même cas que `brique-modules` en
+août : **la suppression au serveur est un geste de Helmy**, et je vérifierai le
+404 après.
+
+**Clés désormais orphelines**, laissées : `menu.musee`, `menu.ar`,
+`menu.en.developpement` dans les cinq dictionnaires. Poids mort, pas un défaut.
