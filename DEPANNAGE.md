@@ -1986,3 +1986,44 @@ le dictionnaire d'avant. On vide `caches` et on désinscrit avant de conclure.
   sont des photographies datées, la légende le dit — mais un lecteur arabe ne
   verra jamais cet écran-là.
 - **Pas encore en ligne** : rien ne part sans le « oui » de Helmy.
+
+### La revue DeepSeek, et ce qu'elle a changé (07/09/2026)
+
+Soumise en lui demandant de **refuser**. Il a refusé, deux motifs bloquants.
+
+**① Les 700 Ko de captures étaient dans `CORE_ASSETS` — il a raison, c'est corrigé.**
+*« Le précache est réservé au squelette de l'application. Tous les utilisateurs
+payent 700 Ko au premier lancement, même ceux qui n'ouvriront jamais cette page. »*
+Elles suivent désormais la règle déjà écrite pour `/img/` : **rien au démarrage**,
+gardées dès la première visite dans un cache dédié `heritage-captures` **sans
+version** — les images ne changent pas à chaque correctif. La page reste donc
+lisible hors ligne après une première consultation, et le premier lancement ne
+coûte plus rien.
+
+**② Le balayage peut écraser un bloc `data-i18n-html` — vrai en principe, mesuré nul.**
+Il propose de modifier `applyUI` pour que le balayage saute les sous-arbres déjà
+traduits. **Je ne l'ai pas fait, et voici pourquoi** : `the-i18n.js` est le moteur
+de TOUTES les pages d'une application publiée et éprouvée par douze testeurs ; le
+défaut est hypothétique et la mesure le dit — **0 collision sur 117 clés × 5
+langues, français compris** (mon premier relevé avait oublié le français, il a été
+refait).
+
+À la place, **contrôle n° 12** : `.controle-balayage-ecrase-blocs.py` mesure la
+collision à chaque déploiement. Un danger qu'on ne sait pas supprimer sans risque
+se rend *détectable*. ⚠️ Il ne signale que ce qui **changerait** le texte : sa
+première version criait sur « Hafsia » → « Hafsia », et un contrôle qui échoue sur
+des cas sains apprend à être ignoré (point 72 du canon).
+
+**③ La page avait doublé — un sommaire a été posé.** Vingt entrées cliquables, qui
+**réemploient les clés des titres** : aucun texte de plus à traduire. Et sur
+téléphone les captures passent de 620 à **400 px** de haut.
+
+**Ce qu'il conteste et que j'assume, en le disant** : les captures montrent
+l'interface **en français** quelle que soit la langue de lecture. Ce sont des
+photographies datées de l'application, la légende le dit, et la numérotation
+permet de suivre. Des captures localisées seraient mieux — c'est noté, ce n'est
+pas fait.
+
+**Ce qu'il n'a pas pu trancher** : la lisibilité réelle sur un téléphone, et la
+justesse sémantique des traductions qu'il ne voit pas. Deux « BORNE INCONNUE »
+honnêtes — le protocole fonctionne quand il répond ça plutôt que de deviner.

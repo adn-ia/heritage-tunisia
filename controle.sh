@@ -234,9 +234,19 @@ R=$(python3 .controle-i18n-enfants.py 2>/dev/null)
 if [ -z "$R" ]; then ok "aucun data-i18n sur un élément qui porte des enfants"
 else ko "data-i18n sur un porteur d'enfants — ils seront effacés à chaque langue :"; echo "$R" | sed 's/^/      /'; fi
 
+# 12. Le balayage des nœuds de texte peut-il écraser un bloc `data-i18n-html` ?
+# Né le 07/09/2026 : `applyUI` pose d'abord les blocs, PUIS balaie tous les nœuds
+# de texte — y compris ceux qu'il vient de créer. Si un fragment de la traduction
+# est lui-même une clé, il est retraduit par-dessus, en silence.
+# Mesuré ce jour-là : 0 collision sur 117 clés × 5 langues. Le contrôle est là pour
+# que ça le reste, sans avoir à toucher au moteur partagé.
+R=$(python3 .controle-balayage-ecrase-blocs.py 2>/dev/null)
+if [ -z "$R" ]; then ok "aucun bloc traduit ne sera réécrit par le balayage"
+else ko "le balayage réécrira des blocs déjà traduits :"; echo "$R" | sed 's/^/      /'; fi
+
 printf "\n"
 if [ "$ECHECS" -eq 0 ]; then
-  printf "${VERT}═══ les 11 contrôles passent ═══${FIN}\n"
+  printf "${VERT}═══ les 12 contrôles passent ═══${FIN}\n"
   printf "${JAUNE}Il reste le seul qui compte : ouvrir l'application et s'en servir.${FIN}\n"
   printf "  Composer un itinéraire · ouvrir une étape · l'album · changer de langue.\n\n"
   exit 0

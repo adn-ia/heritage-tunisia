@@ -44,8 +44,7 @@ const CORE_ASSETS = [
   // Le rendu du fond de carte. SANS LUI, la carte ne se peint pas hors-ligne :
   // les tuiles seraient en cache et personne pour les dessiner. `tuile.php`, lui,
   // n'est PAS précaché — c'est voulu : ce sont les TUILES qui se gardent, une à une.
-  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'the-bornes.js', 'the-bornes.data.json', 'the-carte-plein.js', 'the-carte-plein.data.json', 'the-placer.js', 'the-placer.data.json', 'the-album-fichiers.js', 'the-album-fichiers.data.json',
-  'captures/album-baroudeur.jpg', 'captures/album-depliant.jpg', 'captures/album-passeport.jpg', 'captures/barre-album.jpg', 'captures/carte-choix.jpg', 'captures/carte-plein.jpg', 'captures/entete.jpg', 'captures/etape.jpg', 'captures/facons.jpg', 'captures/fiche.jpg', 'captures/garde.jpg', 'captures/liste.jpg', 'captures/menu-bas.jpg', 'captures/menu-haut.jpg', 'captures/planche.jpg', 'captures/premium.jpg', 'captures/sorties.jpg', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
+  'vendor/protomaps-leaflet.js', 'brique-note.js', 'brique-contact.js', 'brique-tour.js', 'brique-etape.js', 'brique-etape.data.json', 'the-bornes.js', 'the-bornes.data.json', 'the-carte-plein.js', 'the-carte-plein.data.json', 'the-placer.js', 'the-placer.data.json', 'the-album-fichiers.js', 'the-album-fichiers.data.json', 'roadtrip-plus.js', 'roadtrip-plan.js', 'brique-modes.js', 'brique-modes.data.json', 'brique-hors-ligne.js', 'brique-hors-ligne.data.json', 'brique-tour.data.json', 'brique-note.data.json', 'brique-contact.data.json', 'immersion-rome.mp3',
   'sites.geojson', 'sites-nature.geojson', 'tours.json', 'mer-antique.geojson', 'photos.json', 
   'musee/index.html', 'webar/index.html'
 ];
@@ -89,6 +88,27 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       caches.open('heritage-offline').then(c => c.match(req, { ignoreVary: true }))
         .then(hit => hit || fetch(req)).catch(() => fetch(req))
+    );
+    return;
+  }
+
+  /* ── LES CAPTURES DE LA PAGE « À QUOI SERT » — 07/09/2026 ───────────────────
+     Elles étaient dans CORE_ASSETS : 700 Ko payés au PREMIER lancement par tout
+     le monde, y compris ceux qui n'ouvriront jamais cette page. Motif de refus de
+     DeepSeek, et il a raison — le précache est le squelette de l'application, pas
+     ses illustrations.
+     Elles suivent donc la règle des photos hors-ligne (`/img/` ci-dessus) : rien
+     au démarrage, gardées dès la première visite de la page, disponibles hors
+     réseau ensuite. Le cache ne porte pas de version : les images ne changent pas
+     à chaque correctif, il serait absurde de les retélécharger. */
+  if (/\/captures\//.test(req.url)) {
+    e.respondWith(
+      caches.open('heritage-captures').then(c =>
+        c.match(req).then(hit => hit || fetch(req).then(res => {
+          if (res && res.ok) c.put(req, res.clone());
+          return res;
+        }).catch(() => hit))
+      )
     );
     return;
   }
