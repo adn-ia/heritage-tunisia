@@ -1902,3 +1902,87 @@ d'abord par `navigator.share` avec le fichier — la feuille de partage sait éc
 dans Fichiers — et ne retombe sur le lien que si le partage est absent. Un partage
 annulé n'est pas traité comme un échec. **Cela demande un essai sur l'iPhone de
 Helmy ; aucun banc ne le remplace.**
+
+---
+
+## « À quoi sert cette application » : le tour complet, en captures (07/09/2026)
+
+Demande de Helmy : *« remettre à jour l'ensemble du contenu du lien : à quoi sert
+cette application, y décrire les fonctions, TOUTES les fonctions, en y incluant des
+captures d'écran pour montrer où est quoi — et pas par script : en visuel. »*
+
+**Fait en visuel** : l'application a été parcourue EN LIGNE écran par écran et
+photographiée. 17 captures réelles, datées du 07/09, rangées dans `captures/`.
+La page gagne une section « la visite complète de l'application » : 20 blocs
+numérotés, chacun avec **où c'est**, ce que ça fait, et l'image.
+
+### Ce que le chantier a appris
+
+**① Le balayage des nœuds de texte coupe les phrases sur les `<strong>`.**
+`applyUI` (`the-i18n.js`) prend pour clé le nœud de texte détouré. Une phrase
+comme « On y choisit sa **langue** parmi cinq » produit donc TROIS clés :
+« On y choisit sa », « langue », « parmi cinq… ». Mesuré : 223 fragments pour 20
+blocs. Traduire ces morceaux séparément donne de l'allemand cassé — l'ordre des
+mots n'est pas le même. C'est le §23 (« DeepL trahit sur les phrases courtes »)
+à l'échelle d'une page entière.
+
+**Correction** : le nouveau contenu passe par **`data-i18n-html` avec une clé
+pointée par bloc** — une phrase entière, une clé, `tag_handling=html` chez DeepL.
+117 clés au lieu de 240 fragments.
+
+⚠️ **Les deux mécanismes cohabitent sur la même page**, et le balayage s'exécute
+APRÈS. Mesuré, pour les quatre langues : **0 fragment traduit ne correspond à une
+clé du dictionnaire**, donc rien n'est réécrit par-dessus. À remesurer si l'on
+ajoute des clés dont la valeur serait une phrase allemande, anglaise, italienne
+ou arabe complète.
+
+**② Le numéro d'un titre ne doit pas entrer dans la clé.**
+`<h3><span class="n">11</span>Une étape</h3>` keyé en entier donnait « 11A stop »,
+« 11 Das Reisetagebuch » — DeepL déplace ou colle le nombre. Le numéro vit
+désormais HORS de l'élément traduit.
+
+**③ Sans glossaire, DeepL défait le vocabulaire déjà arrêté.**
+Relevé avant/après sur les mots de l'application :
+
+| | sans glossaire | avec glossaire (le mot de l'app) |
+|---|---|---|
+| Circuits (IT) | *pacchetti turistici* — des forfaits | **Itinerari** |
+| Circuits (EN/DE) | *Routes / Routen* | **Tours / Rundreisen** |
+| étapes (EN) | *stages* | **stops** |
+| Voyage libre (EN) | *A spontaneous trip* | **Independent travel** |
+| fil rouge (DE) | *Leitfaden* | **roter Faden** |
+
+Le glossaire se construit **en relisant `i18n/ui.<lang>.json`**, pas de mémoire.
+⚠️ **DeepL n'accepte pas de glossaire pour l'arabe** : l'arabe se relit à la main.
+
+**④ Cinq rendus corrigés après lecture** — la traduction ne se pose jamais sans
+être regardée : « Der Rest der **Speisekarte** » (la carte du restaurant) pour
+« le reste du menu » · « Das Ortsblatt eines Ortes » (redondant) · « The menu »
+laissé en anglais dans l'italien · « الطرق الخمس **للرحيل** » (le départ au sens
+du trépas) · « البرنامج المميز » là où l'application écrit **البرميوم**.
+
+**⑤ Une expression imagée ne se traduit pas, elle se reformule à la source.**
+« Le tour du propriétaire » devenait « Ein Rundgang durch das **Haus** », « A tour
+of the **property** », « جولة مع **المالك** ». Remplacé en français par « la visite
+complète de l'application », qui passe partout. Même geste pour « sept **sorties** »
+(rendu « seven routes ») et « le reste du menu ».
+
+**⑥ Le service worker fait mentir le premier contrôle** — encore (§24). La page
+est restée en français à l'écran alors que les clés étaient posées : le SW servait
+le dictionnaire d'avant. On vide `caches` et on désinscrit avant de conclure.
+
+### Vérifié
+
+- **À l'écran, en local** : français · allemand (**0 reste français** sur 94 lignes
+  balayées, `alt` compris) · arabe (**RTL correct**, le numéro passe à droite).
+- **Les 11 contrôles** passent, dont « toutes les clés existent dans les 5 langues ».
+- 117 clés × 5 langues : **0 manquante, 0 vide**.
+
+### Ce qui reste ouvert
+
+- **700 Ko de captures ajoutées au précache.** L'application promet de tenir hors
+  ligne : la page serait trouée sans elles. Le coût est assumé, il est écrit ici.
+- Les captures montrent l'interface **en français** quel que soit le lecteur. Ce
+  sont des photographies datées, la légende le dit — mais un lecteur arabe ne
+  verra jamais cet écran-là.
+- **Pas encore en ligne** : rien ne part sans le « oui » de Helmy.

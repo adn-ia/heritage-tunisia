@@ -53,6 +53,30 @@ section p strong{color:var(--ink);}
 .cats .tx b{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;}
 .cats .tx span{display:block;font-size:14.5px;color:var(--stone);margin-top:2px;line-height:1.4;}
 
+/* ── LE TOUR DU PROPRIÉTAIRE — ajouté le 07/09/2026 ─────────────────────────
+   Helmy : « remettre à jour l'ensemble du contenu : à quoi sert cette
+   application, y décrire les fonctions, TOUTES les fonctions, en y incluant des
+   captures d'écran pour montrer où est quoi. »
+   Les captures sont de vraies photographies de l'application EN LIGNE, prises
+   écran par écran le 07/09/2026 — pas des dessins, pas des maquettes. */
+.tour{margin:38px 0;}
+.tour .intro{font-size:17px;color:#332a1d;margin:12px 0 26px;}
+.fn{background:var(--paper);border:1px solid var(--line);border-radius:8px;
+  padding:16px 16px 6px;margin:0 0 22px;box-shadow:0 4px 16px rgba(43,35,24,.07);}
+.fn > h3{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:21px;
+  line-height:1.15;margin:0 0 2px;display:flex;align-items:baseline;gap:9px;}
+.fn > h3 .n{flex:0 0 auto;font-size:12px;letter-spacing:2px;color:var(--gold);
+  text-transform:uppercase;font-family:'EB Garamond',serif;font-weight:400;}
+.fn .ou{font-size:13.5px;color:var(--stone);margin:0 0 10px;font-style:italic;}
+.fn p{font-size:16px;margin:9px 0;color:#332a1d;}
+.fn ul{margin:9px 0;padding-left:20px;font-size:16px;color:#332a1d;}
+.fn ul li{margin:5px 0;}
+.shot{margin:14px 0 4px;padding:0;}
+.shot img{display:block;max-width:100%;width:auto;height:auto;max-height:620px;margin:0 auto;
+  border:1px solid var(--line);border-radius:6px;background:#26201a;
+  box-shadow:0 6px 22px rgba(43,35,24,.16);}
+.shot figcaption{font-size:13px;color:var(--stone);margin-top:7px;line-height:1.45;}
+
 /* Étapes "garder une trace" */
 .steps{counter-reset:s;list-style:none;padding:0;margin:18px 0;}
 .steps li{position:relative;padding:6px 0 16px 46px;}
@@ -132,6 +156,176 @@ html{scroll-behavior:smooth;}
       <li><span class="i">🧭</span><span class="tx"><b>Créer le vôtre de A à Z</b><span>Votre départ, votre temps, votre thème — l'application compose le parcours et sa carte.</span></span></li>
     </ul>
     <p>De quoi <strong>organiser vos visites et planifier au mieux les petits détours</strong> — ceux qu'on ne soupçonne pas et qui font tout le sel d'un voyage. Le séjour prend un <strong>côté ludique</strong> : on suit la piste, on coche les étapes, on se laisse surprendre. Et surtout, on s'offre une <strong>vraie immersion dans le pays et ses habitants</strong>, au plus près de ce qui le fait vivre.</p>
+  </section>
+
+  <div class="rule"></div>
+
+  <section class="tour">
+    <div class="kicker">La visite complète de l'application</div>
+    <h2 data-i18n-html="apr.tour.001">Toutes les fonctions, et où les trouver</h2>
+    <p data-i18n-html="apr.tour.002" class="intro">Ce qui suit fait le tour complet de l'application, écran par écran, dans l'ordre où on la rencontre. Chaque image est une photographie de l'application telle qu'elle est aujourd'hui — pas une maquette.</p>
+
+    <div class="fn">
+      <h3><span class="n">1</span><span data-i18n-html="apr.tour.003">La page d'accueil</span></h3>
+      <p data-i18n-html="apr.tour.004" class="ou">Le premier écran, à chaque ouverture tant qu'on n'est pas entré.</p>
+      <p data-i18n-html="apr.tour.005">On y choisit sa <strong>langue</strong> parmi cinq — français, anglais, arabe, allemand, italien — et tout l'écran bascule aussitôt. Le bouton <strong>Entrer</strong> ouvre l'application ; le lien du dessus mène à la page que vous lisez. La ligne du bas rappelle que la localisation, si vous l'acceptez, sert à vous situer parmi les sites et à vous raconter les lieux dont vous approchez.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.01" src="captures/garde.jpg" alt="La page d'accueil : le titre, les cinq drapeaux de langue et le bouton Entrer." loading="lazy"><figcaption data-i18n-html="apr.tour.006">La page d'accueil. Le choix de langue vaut pour toute l'application, y compris les récits et les fiches.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">2</span><span data-i18n-html="apr.tour.007">Le menu</span></h3>
+      <p data-i18n-html="apr.tour.008" class="ou">Page « Découvrir » — c'est le sommaire de l'application.</p>
+      <p data-i18n-html="apr.tour.009">Dix-neuf entrées, en deux groupes. Le premier rassemble ce qui se visite et se compose ; le second, ce qui est pratique — sauvegarde, aide, confidentialité, sources.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.02" src="captures/menu-haut.jpg" alt="Le haut du menu : Découvrir la Tunisie, Voyage immersif, Créer un itinéraire, Itinéraires sauvegardés, Explorer la carte, Tous les lieux, Autour de moi, Patrimoine, Documentaires." loading="lazy"><figcaption data-i18n-html="apr.tour.010">Le haut du menu : découvrir, composer, explorer.</figcaption></figure>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.03" src="captures/menu-bas.jpg" alt="Le bas du menu : Le Premium, Scanner au musée et Réalité augmentée en développement, Visite guidée." loading="lazy"><figcaption data-i18n-html="apr.tour.011">Le bas du menu. Deux entrées portent la mention « en développement » : elles ne sont pas encore ouvertes, et le disent.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">3</span><span data-i18n-html="apr.tour.012">Découvrir la Tunisie — le récit</span></h3>
+      <p data-i18n-html="apr.tour.013" class="ou">Première entrée du menu.</p>
+      <p data-i18n-html="apr.tour.014">Un récit continu qui remonte le pays des Berbères et des Numides jusqu'à aujourd'hui, illustré, avec chaque strate à sa place. Il se <strong>lit</strong>, et il s'<strong>écoute</strong> : le bouton « 🔊 Écouter » en haut à droite le fait dire à voix haute et suit le texte à mesure.</p>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">4</span><span data-i18n-html="apr.tour.015">La carte</span></h3>
+      <p data-i18n-html="apr.tour.016" class="ou">Menu → « Explorer la carte ».</p>
+      <p data-i18n-html="apr.tour.017">La carte ne s'ouvre jamais couverte de repères : elle demande d'abord <strong>ce que vous voulez voir</strong>. Cinq portes : autour de vous dans un rayon au choix, par thème et par période, un gouvernorat à la fois, par thème seul, ou tout afficher. En haut, les filtres restent à portée : Histoire ou Nature, gouvernorat, fil rouge, et un bouton pour tout remettre à zéro.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.04" src="captures/carte-choix.jpg" alt="La carte demande « Que voulez-vous voir ? » avec cinq entrées : autour de moi, par thème et période, par région, par thème, tout afficher." loading="lazy"><figcaption data-i18n-html="apr.tour.018">« La carte part vide : choisissez pour l'afficher peu à peu. » Le fond de carte est embarqué dans l'application — il fonctionne sans réseau.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">5</span><span data-i18n-html="apr.tour.019">La liste</span></h3>
+      <p data-i18n-html="apr.tour.020" class="ou">Menu → « Tous les lieux (liste) ».</p>
+      <p data-i18n-html="apr.tour.021">Le même contenu sans la carte, pour parcourir vite. Une recherche par nom, les filtres — région, type, fil rouge, avec photo seulement — et une <strong>case à cocher par lieu</strong> : cochez ce qui vous plaît, l'application en fait un itinéraire.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.05" src="captures/liste.jpg" alt="La liste de tous les lieux, avec la recherche, les filtres et une case à cocher par lieu." loading="lazy"><figcaption data-i18n-html="apr.tour.022">Le compteur annonce le nombre exact de lieux. Chaque vignette montre la photo du lieu quand il y en a une.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">6</span><span data-i18n-html="apr.tour.023">La fiche descriptive d'un lieu</span></h3>
+      <p data-i18n-html="apr.tour.024" class="ou">En touchant un lieu, sur la carte comme dans la liste.</p>
+      <p data-i18n-html="apr.tour.025">Sa photo, sa région, son type et sa période. Puis trois choses qui ne se trouvent pas dans un guide ordinaire : <strong>ce qu'il faut regarder</strong>, un <strong>conseil de visite</strong>, et <strong>le détail</strong> — l'anecdote ou le chiffre qui rend le lieu vivant. En bas, les sources : chaque fiche dit d'où elle tient ce qu'elle affirme, et la photo porte son crédit.</p>
+      <p data-i18n-html="apr.tour.026">Trois gestes ferment la fiche : la situer sur la carte, en faire le départ d'un <strong>nouvel itinéraire</strong>, ou l'<strong>ajouter au parcours</strong> en cours.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.06" src="captures/fiche.jpg" alt="La fiche de l'amphithéâtre d'El Jem : photo, description, à voir, conseil, le détail, sources, et trois boutons." loading="lazy"><figcaption data-i18n-html="apr.tour.027">Une fiche complète. « Source : Wikidata ; Wikipédia ; UNESCO » — rien n'est affirmé sans dire d'où ça vient.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">7</span><span data-i18n-html="apr.tour.028">Les cinq façons de partir</span></h3>
+      <p data-i18n-html="apr.tour.029" class="ou">Menu → « Créer un itinéraire ».</p>
+      <p data-i18n-html="apr.tour.030">Il n'y a pas une seule manière de faire un voyage, il y en a cinq, et elles mènent toutes au même itinéraire modifiable :</p>
+      <ul>
+        <li data-i18n-html="apr.tour.031"><strong>Voyage libre</strong> — aucun plan. On part, et on ajoute les étapes au fil de la route.</li>
+        <li data-i18n-html="apr.tour.032"><strong>Composer</strong> — vous choisissez les lieux vous-même, sur la carte ou dans la liste.</li>
+        <li data-i18n-html="apr.tour.033"><strong>Surprenez-moi</strong> — vous donnez vos critères, le hasard compose le parcours.</li>
+        <li data-i18n-html="apr.tour.034"><strong>Circuits</strong> — des parcours déjà tracés, à suivre tels quels ou à modifier.</li>
+        <li data-i18n-html="apr.tour.035"><strong>Itinéraires sauvegardés</strong> — ceux que vous avez déjà créés.</li>
+      </ul>
+      <p data-i18n-html="apr.tour.036">Dans tous les cas, <strong>le point de départ se choisit</strong> : il n'est jamais imposé.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.07" src="captures/facons.jpg" alt="Les cinq façons de partir : voyage libre, composer, surprenez-moi, circuits, itinéraires sauvegardés." loading="lazy"><figcaption data-i18n-html="apr.tour.037">Les cinq portes d'entrée. Le lien du bas explique à quoi sert chacune.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">8</span><span data-i18n-html="apr.tour.038">L'itinéraire</span></h3>
+      <p data-i18n-html="apr.tour.039" class="ou">Le cœur de l'application.</p>
+      <p data-i18n-html="apr.tour.040">En haut, huit gestes en icônes : revenir au menu, <strong>signaler une halte</strong> là où vous êtes, <strong>enregistrer</strong>, prendre une <strong>photo</strong> ou une <strong>vidéo</strong>, allumer le <strong>suivi GPS</strong>, l'<strong>alerte de proximité</strong> qui vous prévient quand vous approchez d'un lieu, et la <strong>sortie</strong>. Un menu « Documents » ouvre l'album, la duplication et les sauvegardes.</p>
+      <p data-i18n-html="apr.tour.041">Dessous : le nom du voyage, le nombre d'étapes, la durée, la distance à vol d'oiseau <em>et</em> <strong>par la route</strong> — le vrai temps de trajet, pas une estimation. Puis la carte, et la fiche du <strong>départ</strong>, modifiable d'un bouton.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.08" src="captures/entete.jpg" alt="Le haut de l'itinéraire : les huit icônes, le menu Documents, le résumé du voyage, la carte du parcours et la fiche du départ." loading="lazy"><figcaption data-i18n-html="apr.tour.042">« Par la route (réel) : 626 km · 10 h 39 » — le tracé suit les routes, il ne relie pas les points en ligne droite.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">9</span><span data-i18n-html="apr.tour.043">La carte en grand</span></h3>
+      <p data-i18n-html="apr.tour.044" class="ou">Le bouton ⛶ en bas à gauche de la carte.</p>
+      <p data-i18n-html="apr.tour.045">La carte prend tout l'écran sans quitter l'itinéraire, avec le tracé routier et les étapes numérotées. On revient par la croix ou par la touche d'échappement.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.09" src="captures/carte-plein.jpg" alt="La carte en plein écran, avec le tracé routier et les six étapes numérotées." loading="lazy"><figcaption data-i18n-html="apr.tour.046">Le parcours entier d'un seul coup d'œil.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">10</span><span data-i18n-html="apr.tour.047">Emporter l'itinéraire</span></h3>
+      <p data-i18n-html="apr.tour.048" class="ou">Bouton « Emporter l'itinéraire », en haut à droite de la carte.</p>
+      <p data-i18n-html="apr.tour.049">Sept façons d'emporter le parcours, rangées par usage. <strong>Ouvrir dans une application</strong> : Google Maps, OpenStreetMap, Apple Plans, Waze. <strong>Emporter avec soi</strong> : un fichier GPX qui fonctionne hors ligne, une carte KML partageable. Et pour les longs parcours, <strong>découper le trajet</strong> en tronçons — parce que les applications de navigation refusent au-delà d'un certain nombre d'étapes. Chaque sortie s'explique avant d'être lancée.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.10" src="captures/sorties.jpg" alt="Les sept sorties de carte : Google Maps, OpenStreetMap, Apple Plans, Waze, fichier GPX, carte KML, découper le parcours." loading="lazy"><figcaption data-i18n-html="apr.tour.050">Le fichier porte le nom de votre voyage, pas celui du pays.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">11</span><span data-i18n-html="apr.tour.051">Une étape</span></h3>
+      <p data-i18n-html="apr.tour.052" class="ou">Chaque bloc de l'itinéraire.</p>
+      <p data-i18n-html="apr.tour.053">Son numéro, son nom, sa région. Une <strong>photo d'en-tête</strong> à choisir. La date et l'heure. Le temps que vous comptez y passer. Un mot sur ce qu'il faut y voir, et l'indication d'un hébergement possible sur place. Les sources, encore.</p>
+      <p data-i18n-html="apr.tour.054">Puis <strong>votre part</strong> : un champ de note libre, vos photos et vidéos en vignettes, et six gestes — gérer les médias, envoyer une carte postale, ouvrir dans une application de navigation, modifier, la météo, découvrir le lieu, et voir <strong>ce qu'il y a autour</strong>.</p>
+      <p data-i18n-html="apr.tour.055">Le menu ✏️ permet de <strong>monter ou descendre</strong> l'étape, d'en faire une <strong>base de séjour</strong> — les visites s'y rattachent alors —, de <strong>recaler votre position</strong> ici, ou de la retirer, avec confirmation.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.11" src="captures/etape.jpg" alt="Une carte d'étape complète : photo d'en-tête, région, temps sur place, conseil, sources, champ de note, vignettes photos et rangée de gestes." loading="lazy"><figcaption data-i18n-html="apr.tour.056">« Vos médias restent sur votre téléphone tant que vous ne les avez pas partagés. »</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">12</span><span data-i18n-html="apr.tour.057">Ce qu'il y a autour</span></h3>
+      <p data-i18n-html="apr.tour.058" class="ou">La loupe 🔎 sur chaque étape, et « Autour de moi » au menu.</p>
+      <p data-i18n-html="apr.tour.059">L'application cherche les lieux à proximité, dans un rayon que vous réglez. Vous en cochez un, deux, trois — autant que vous voulez — et elle vous demande <strong>où les placer</strong> dans le parcours, et <strong>ce qu'ils sont</strong> : une étape à part entière, ou une visite au départ de l'étape en cours. Rien ne se range tout seul à la fin.</p>
+      <p data-i18n-html="apr.tour.060">Entre deux étapes, l'application propose déjà d'elle-même ce qui se trouve <strong>sur le chemin</strong>, avec le détour en minutes.</p>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">13</span><span data-i18n-html="apr.tour.061">Le carnet de voyage</span></h3>
+      <p data-i18n-html="apr.tour.062" class="ou">Sur chaque étape, et dans l'album.</p>
+      <p data-i18n-html="apr.tour.063">Photos et vidéos se rangent <strong>sous l'étape où vous les avez prises</strong>. Chacune peut recevoir une légende. Les notes s'écrivent à même l'étape et s'enregistrent au fur et à mesure — rien à valider.</p>
+      <p data-i18n-html="apr.tour.064">Une photo prise depuis l'application ne part pas d'elle-même dans la pellicule du téléphone : c'est vous qui décidez, d'un bouton. Et si vous retirez une étape, <strong>ses photos ne sont pas effacées</strong> : elles restent sur l'appareil.</p>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">14</span><span data-i18n-html="apr.tour.065">Les documents</span></h3>
+      <p data-i18n-html="apr.tour.066" class="ou">Bandeau de l'itinéraire → « 📄 Documents » → « Album souvenir ».</p>
+      <p data-i18n-html="apr.tour.067">Une barre range tout ce qui sort de l'application : le <strong>style</strong> de l'album dans un menu déroulant, l'impression et le <strong>PDF</strong> ; le <strong>diaporama</strong> et la <strong>planche-contact</strong> ; le <strong>partage</strong> du récit et des photos et l'<strong>enregistrement</strong> de l'album sur l'appareil ; et le <strong>rangement des photos en répertoires</strong>.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.12" src="captures/barre-album.jpg" alt="La barre de l'album : style, PDF/Imprimer, projeter, planche-contact, partager, enregistrer, ranger les photos." loading="lazy"><figcaption data-i18n-html="apr.tour.068">Les gestes sont rangés par nature : imprimer, puis regarder, puis emporter.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">15</span><span data-i18n-html="apr.tour.069">Les trois albums</span></h3>
+      <p data-i18n-html="apr.tour.070" class="ou">Le menu « Style » de la barre des documents.</p>
+      <p data-i18n-html="apr.tour.071">Le même voyage, trois documents entièrement différents.</p>
+      <p data-i18n-html="apr.tour.072"><strong>Baroudeur</strong> — le carnet de route : la couverture au nom que vous avez donné au voyage, la carte réelle du parcours, puis chaque étape avec sa note et ses photos en polaroïd.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.13" src="captures/album-baroudeur.jpg" alt="L'album Baroudeur : les étapes numérotées, la note et les photos en polaroïd." loading="lazy"><figcaption data-i18n-html="apr.tour.073">Baroudeur.</figcaption></figure>
+      <p data-i18n-html="apr.tour.074"><strong>Passeport</strong> — un carnet à tampons, deux pages en vis-à-vis, chaque lieu tamponné « VISITÉ » avec sa région et sa date.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.14" src="captures/album-passeport.jpg" alt="L'album Passeport : deux pages face à face, chaque lieu tamponné VISITÉ avec sa région et sa date." loading="lazy"><figcaption data-i18n-html="apr.tour.075">Passeport.</figcaption></figure>
+      <p data-i18n-html="apr.tour.076"><strong>Dépliant</strong> — une bande qui se déplie, panneau après panneau, avec les distances entre les étapes.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.15" src="captures/album-depliant.jpg" alt="L'album Dépliant : une bande de panneaux qui se déplie, avec les distances entre les étapes." loading="lazy"><figcaption data-i18n-html="apr.tour.077">Dépliant.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">16</span><span data-i18n-html="apr.tour.078">Le diaporama et la planche-contact</span></h3>
+      <p data-i18n-html="apr.tour.079" class="ou">Deuxième ligne de la barre des documents.</p>
+      <p data-i18n-html="apr.tour.080">Le <strong>diaporama</strong> projette le carnet en grand — photos, vidéos, notes et voix — pour le montrer autour de soi.</p>
+      <p data-i18n-html="apr.tour.081">La <strong>planche-contact</strong> rassemble toutes vos photos en vignettes sur une seule image, sans un mot de texte, en JPEG ou en PNG. C'est le format qu'attendent les éditeurs photo.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.16" src="captures/planche.jpg" alt="La planche-contact propose deux formats : JPEG plus léger, PNG sans perte de qualité." loading="lazy"><figcaption data-i18n-html="apr.tour.082">Chaque choix dit ce qu'il implique, avant d'être fait.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">17</span><span data-i18n-html="apr.tour.083">Ranger ses photos en répertoires</span></h3>
+      <p data-i18n-html="apr.tour.084" class="ou">Dernier bouton de la barre des documents.</p>
+      <p data-i18n-html="apr.tour.085">L'application fabrique une archive où <strong>le dossier porte le nom du voyage</strong> et chaque <strong>sous-dossier le numéro et le nom de l'étape</strong>. Dedans : la photo d'origine, la photo avec sa légende en bandeau, la note, les sons et les vidéos. De quoi retrouver ses vacances déjà triées, sans avoir à fouiller la pellicule du téléphone.</p>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">18</span><span data-i18n-html="apr.tour.086">Sauvegarder et restaurer</span></h3>
+      <p data-i18n-html="apr.tour.087" class="ou">Menu « Documents », et « Sauvegarder mes données » au menu principal.</p>
+      <p data-i18n-html="apr.tour.088">Tous vos itinéraires partent dans un fichier que vous gardez où vous voulez, et qui les remet en place sur un autre appareil. L'album, lui, s'enregistre en <strong>un seul fichier autonome</strong> : photos comprises, il s'ouvre dans n'importe quel navigateur, sans l'application et sans réseau.</p>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">19</span><span data-i18n-html="apr.tour.089">Le Premium</span></h3>
+      <p data-i18n-html="apr.tour.090" class="ou">Menu → « Le Premium ».</p>
+      <p data-i18n-html="apr.tour.091">Deux semaines pour tout essayer, puis <strong>14,99 € par an</strong>. Un seul tarif. Ce qu'il ouvre : les circuits prêts, l'album souvenir et le passeport, le diaporama, le lien d'itinéraire partageable, la narration audio des récits, la carte hors ligne, et pas de publicité.</p>
+      <figure class="shot"><img data-i18n-alt="apr.tour.alt.17" src="captures/premium.jpg" alt="La page Premium : essai en cours, 14,99 € par an, s'abonner, et la liste de ce que le Premium ouvre." loading="lazy"><figcaption data-i18n-html="apr.tour.092">Le compte à rebours de l'essai est affiché en clair, et l'abonnement s'annule à tout moment.</figcaption></figure>
+    </div>
+
+    <div class="fn">
+      <h3><span class="n">20</span><span data-i18n-html="apr.tour.093">Les autres entrées du menu</span></h3>
+      <p data-i18n-html="apr.tour.094" class="ou">Groupe « Pratique », en bas du menu.</p>
+      <ul>
+        <li data-i18n-html="apr.tour.095"><strong>Voyage immersif</strong> et <strong>Documentaires thématiques</strong> — « Rome en Afrique » et « La Médina de Tunis », à regarder.</li>
+        <li data-i18n-html="apr.tour.096"><strong>Patrimoine · veille citoyenne</strong> — les sites répertoriés et leur état, en accès libre.</li>
+        <li data-i18n-html="apr.tour.097"><strong>Visite guidée</strong> — la présentation en douze étapes, à revoir quand on veut.</li>
+        <li data-i18n-html="apr.tour.098"><strong>Contribuer &amp; signaler</strong> — un défaut, une photo à proposer.</li>
+        <li data-i18n-html="apr.tour.099"><strong>Aide &amp; contact</strong>, <strong>Confidentialité</strong>, <strong>Soutien</strong>, <strong>Sources &amp; crédits</strong>.</li>
+      </ul>
+      <p data-i18n-html="apr.tour.100">Deux entrées portent la mention « en développement » — <strong>Scanner au musée</strong> et <strong>Réalité augmentée</strong> : elles ne sont pas encore ouvertes, et l'application le dit plutôt que de le laisser croire.</p>
+    </div>
   </section>
 
   <section>
