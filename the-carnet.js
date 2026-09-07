@@ -607,7 +607,14 @@
      réécrire l'accès à IndexedDB : deux chemins vers la même table, dont un seul
      compresse. `the-prise.js` s'en sert pour poser la photo prise au bandeau
      dans le carnet de l'étape choisie. Rien d'autre ne change ici. */
-  window.THECarnet={ open:openManager, close:closeModal, render:renderSection, enTete:choisirEnTete, panneauEnTete:panneauEnTete,
+  /* ⚠️ `rafraichir` PUBLIÉ LE 07/09/2026. `render` vaut `renderSection(el)`, qui attend
+     un ÉLÉMENT du DOM et lit `el.dataset.place`. `the-prise.js` lui passait une CHAÎNE :
+     l'erreur partait dans un `catch(e){}` vide, et la vignette d'une photo ajoutée
+     n'apparaissait qu'au rechargement. `refreshSections(place)` est ce que la brique
+     s'applique déjà à elle-même après CHAQUE mutation — ajout, suppression, légende,
+     ordre, en-tête (l. 406, 428, 432, 434, 435, 440, 445). */
+  window.THECarnet={ open:openManager, close:closeModal, render:renderSection,
+                     rafraichir:refreshSections, enTete:choisirEnTete, panneauEnTete:panneauEnTete,
                      ajouter:addMedia, compresser:compresser,
                      /* `lire` rend les médias d'une étape, dans l'ordre, avec le
                         repli de clé. Publié pour `the-planche.js` : sans elle, un

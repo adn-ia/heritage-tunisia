@@ -94,8 +94,11 @@
       return THECarnet.ajouter(etape.place, fichier.name || "", f, estVideo ? "video" : "image");
     }).then(function () {
       dire(T("prise.rangee") + " " + etape.nom);
-      /* la vignette doit apparaître sans qu'on recharge : on redessine ce carnet-là */
-      if (THECarnet.render) { try { THECarnet.render(etape.place); } catch (e) {} }
+      /* la vignette doit apparaître sans qu'on recharge : on redessine ce carnet-là.
+         ⚠️ 07/09/2026 — on visait `render`, qui attend un ÉLÉMENT du DOM ; on lui
+         passait une chaîne, et l'erreur mourait dans le `catch` vide ci-dessous.
+         `rafraichir` prend la clé de l'étape, comme partout dans la brique. */
+      if (THECarnet.rafraichir) { try { THECarnet.rafraichir(etape.place); } catch (e) {} }
     }).catch(function () { dire(T("prise.echec")); });
   }
 

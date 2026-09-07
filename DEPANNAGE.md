@@ -2733,3 +2733,44 @@ fouilles de Carthage (**stèles**, sarcophages, **mosaïques**) ».
 - **les formes ambiguës** — « expose » (exposé ou il expose), « limite », « sale »,
   « garde », et « cote » en prose (côte ou côté). Elles réclament l'œil, pas une
   règle.
+
+## 🔴 La vignette d'une photo n'apparaissait qu'après rechargement (07/09/2026)
+
+**Symptôme, trouvé en me servant de l'application.** On dépose une photo,
+l'application demande « À quelle étape ? », range et l'annonce — « Rangée dans
+Bulla Regia » — **et la bande de vignettes ne bouge pas**. Il fallait recharger.
+Le voyageur croit que ça n'a pas marché et recommence : doublons.
+
+**Ce qui a cerné le défaut** : la même bande **se met à jour toute seule à la
+SUPPRESSION**. Le rafraîchissement existait donc ; il n'était pas appelé à
+l'ajout.
+
+**La cause, et elle est instructive.** `the-prise.js` appelait DÉJÀ un
+rafraîchissement, avec le commentaire juste : *« la vignette doit apparaître sans
+qu'on recharge »*. Mais il appelait `THECarnet.render`, qui vaut
+`renderSection(el)` — une fonction qui attend **un ÉLÉMENT du DOM** et lit
+`el.dataset.place`. On lui passait **une chaîne**. `el.dataset` sur une chaîne
+lève une `TypeError`… **avalée par un `catch(e){}` vide**. L'intention était là,
+l'appel visait à côté, et rien ne le disait.
+
+**Le correctif, pris là où ça marche.** `refreshSections(place)` est ce que la
+brique s'applique à elle-même après CHAQUE mutation — ajout (l. 406), suppression
+(428, 432), légende (434), en-tête (435), ordre (440), audio (445). Elle est
+maintenant publiée : `THECarnet.rafraichir`, et `the-prise.js` l'appelle.
+Deux fichiers, une ligne d'export élargie, un appel redirigé.
+
+**DeepSeek** a refusé sur trois points, tous **mesurés** :
+- *course IndexedDB* : `addMedia` résout sur `rq.onsuccess`, pas sur
+  `tx.oncomplete`. Mais **l'ajout interne de la brique fait exactement pareil
+  depuis toujours** et sa bande se met à jour : IndexedDB ordonne les
+  transactions, la lecture qui suit ne peut pas voir un état antérieur. Vu à
+  l'écran, deux fois.
+- *section absente du DOM, à marquer « sale »* : inutile — `grid(g,place)` relit
+  la base à chaque appel et `renderSection` l'appelle ; une section reconstruite
+  est à jour. Le mécanisme proposé aurait été une invention.
+- *`render` resté exporté* : poids mort, pas un risque. Un proxy avec
+  avertissement en console serait une invention de plus.
+
+**Essayé à l'écran, en local puis en ligne** (`heritage-3fe5ebf8`) : la vignette
+apparaît **immédiatement**, en même temps que le message, sans rechargement.
+Photo d'essai retirée après coup.
