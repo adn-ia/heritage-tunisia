@@ -2108,3 +2108,67 @@ citoyens) et *Le Premium*.
 - l'avance à la voix, à constater sur un téléphone ;
 - l'application écrit « Premium » de deux façons en arabe — البريميوم (clé
   « Le Premium ») et البرميوم (`premium.h1`). Signalé, non corrigé.
+
+---
+
+## 🔴 Le voyage libre ne pouvait plus démarrer (07/09/2026)
+
+Helmy, sur son téléphone, capture à l'appui : *« le voyage libre bloque à la
+composition des étapes, et l'itinéraire de mon itinéraire aucune option pour
+ajouter une étape. Ça marchait, ça doit marcher. »*
+
+**Reproduit à l'écran**, à l'identique de sa capture : la carte du voyage libre
+promet en toutes lettres « ajoutez un lieu », et il n'y a **aucun bouton** entre
+la carte et « ‹ Modifier mes choix ».
+
+### La cause, et c'est ma régression
+
+Les boutons « ＋ Ajouter une étape ici » s'accrochent aux étapes **existantes**
+(`roadtrip-plan.js`) : à zéro étape, il n'y en a aucun. Et le « ➕ Ajouter une
+étape » du bas de page avait été retiré le **31/08** parce qu'il faisait
+doublon — *il ne l'était plus dans ce cas-là*. Or **un voyage libre commence
+toujours à zéro étape**. Il ne pouvait plus démarrer du tout.
+
+**⚠️ La leçon, et elle est générale : retirer un doublon ne se vérifie pas sur le
+cas courant, mais sur le cas VIDE.** C'est là qu'un geste redondant redevient le
+seul.
+
+### Et une deuxième leçon, sur ma façon de corriger
+
+**Mon premier correctif ne s'exécutait jamais.** Je l'avais posé à l'endroit que
+la lecture désignait — juste après `var cards = …` — sans voir qu'il y avait une
+sortie **plus haut** :
+
+    function inject(){
+      if(!haveRoute()) return;        ← ici
+      …
+
+`haveRoute()` rend `LASTRES.route.length`, donc **0** pour un voyage vide : la
+fonction sortait avant d'arriver à mon code. Déployé tel quel, le défaut serait
+resté entier **avec un correctif dans le dépôt**. C'est l'écran qui l'a dit, pas
+la relecture.
+
+### Le correctif
+
+La porte se pose **avant** la garde, et n'exige que deux choses : que le
+conteneur existe, et qu'un voyage soit ouvert — même vide.
+
+    function inject(){
+      var stopsWrap = document.getElementById("stops"); if(!stopsWrap) return;
+      if (typeof LASTRES !== "undefined" && LASTRES && (!LASTRES.route || !LASTRES.route.length)) {
+        porteDeDepart(stopsWrap); return;
+      }
+      if(!haveRoute()) return;
+      …
+
+`porteDeDepart()` pose un seul bouton, « ＋ Ajouter une première étape », qui ouvre
+**le même écran de saisie** que « Ajouter une étape ici », à la position −1.
+Le libellé vit dans le dictionnaire embarqué de la brique, six langues.
+
+### Vérifié à l'écran, de bout en bout
+
+Voyage libre → nommer → **annuler le départ** (le geste exact de Helmy) → le bouton
+« ＋ Ajouter une première étape » est là, sous la carte → il ouvre « 📍 Votre
+première étape » → un lieu cherché et ajouté → **le voyage démarre** : « 1 étape ·
+libre · aller simple · ~14 km », tracé routier réel **16 km · 15 min**, et les
+suggestions en chemin s'affichent.
