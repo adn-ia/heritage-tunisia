@@ -2172,3 +2172,23 @@ Voyage libre → nommer → **annuler le départ** (le geste exact de Helmy) →
 première étape » → un lieu cherché et ajouté → **le voyage démarre** : « 1 étape ·
 libre · aller simple · ~14 km », tracé routier réel **16 km · 15 min**, et les
 suggestions en chemin s'affichent.
+
+### La revue DeepSeek de ce correctif — refusé, et les deux motifs tombent à la mesure
+
+**① « La porte peut se poser sous un itinéraire en construction. »** Il suppose que
+`LASTRES` puisse exister avec une route encore vide pendant que les six étapes se
+construisent. **Mesuré** : `itineraire.html` l. 2918, `LASTORIGIN=origin; LASTRES=res;`
+— une **affectation unique**, la route est déjà dans `res` quand `LASTRES` devient
+vrai. Avant, il vaut `null` (l. 1521), et ma condition exige qu'il soit vrai. Le cas
+qu'il décrit n'existe pas. ⚠️ Le correctif qu'il proposait lisait `LASTRES.stops`,
+**un champ qui n'existe pas** : l'appliquer aurait ajouté un défaut.
+
+**② « Un `.rtp-ins` résiduel empêchera la porte de se poser quand on passe de 1 à 0
+étape. »** **Mesuré** : `#stops` est **vidé à chaque rendu** — `stops.innerHTML=''`,
+l. 2981 et 3122. Aucun résidu ne traverse un rendu.
+
+**③ Le texte « bouton ci-dessous »** — il répond BORNE INCONNUE et renvoie la
+décision à Helmy. Le texte de la carte du voyage libre dit toujours que
+« 📍 J'ai fait une halte ici » est **ci-dessous**, alors qu'il est remonté dans le
+bandeau du haut le 31/08. **Signalé, pas corrigé** : c'est une autre chose, elle
+attend un ordre.
