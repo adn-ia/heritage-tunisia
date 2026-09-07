@@ -2277,6 +2277,7 @@
  "itin.decors.de.cinema": "Filmkulissen",
  "itin.decouvrir.ce.lieu": "Diesen Ort entdecken",
  "itin.depart.3": "<div class=\"dep-connect dep-start\"><span class=\"dep-km\">Abfahrt</span></div>",
+ "itin.depart.a.choisir": "Wählen Sie zunächst Ihren Ausgangspunkt oben auf diesem Bildschirm aus.",
  "itin.depart.adresse": "Eine genaue Adresse…",
  "itin.depart.adresse.echec": "Suche nicht möglich – bitte überprüfen Sie die Verbindung.",
  "itin.depart.adresse.exemple": "Adresse, Hotel, Bahnhof, Stadtteil…",

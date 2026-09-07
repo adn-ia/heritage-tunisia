@@ -2273,3 +2273,44 @@ Allemand : le bloc du voyage libre entièrement traduit, « Pause » comprise, e
 « ganz oben in der Symbolleiste » à la place de « ci-dessous » · le bouton du
 voyage vide « Einen ersten Halt hinzufügen » · le retour traduit · le compteur
 « mehr als 500 ». Arabe : le menu affiche البرميوم. Les 12 contrôles passent.
+
+---
+
+## 🔴 Le point de départ était présélectionné sur le GPS (07/09/2026)
+
+Vu à l'écran, en ligne, sur « Vos réglages » : le menu « Vous partez d'où ? »
+affichait **« 📍 Ma position (GPS) »**, première des 26 options, cochée d'office.
+
+**C'est deux fautes en une :**
+
+- **La consigne de Helmy du 05/09**, qu'il a fallu qu'il redonne : *« le point de
+  départ, on doit le définir nous-mêmes, il n'est jamais défini automatiquement —
+  même chose pour n'importe quelle option d'ailleurs. »*
+- **La cause de rejet Apple 2.1(a)**, écrite au point 129 du canon : *« le point de
+  départ était présélectionné sur Ma position (GPS), et Apple refuse toujours la
+  géolocalisation en revue »*. Le socle l'a corrigé le **24/08** ; la Tunisie ne
+  l'avait jamais reçu.
+
+⚠️ Le point 59 du canon Tunisie disait le départ réglé. Il l'était pour le **voyage
+libre** (qui demande son départ d'abord) et pour le bouton **« Changer »** de la
+carte. **Pas** pour l'écran « Vos réglages » de Composer et des circuits.
+
+### Le correctif, en trois endroits
+
+1. `itineraire.html` l. 551 — le menu s'ouvre sur **« Choisir un point de départ »**,
+   `value=""`, et le GPS passe en deuxième. La clé
+   `index.choisir.un.point.de.depart` **existait déjà, traduite dans les cinq
+   langues** : rien à faire traduire.
+2. `resolveOrigin` — un départ vide ne se devine pas : le voyageur est renvoyé au
+   menu avec « Choisissez d'abord votre point de départ, en haut de cet écran ».
+3. l. 1711 — un départ libre abandonné revient au **choix vide**, plus au GPS.
+
+### Ce qui aurait pu casser, et qui ne casse pas
+
+**« Surprenez-moi »** appelle `resolveOrigin` en mode **silencieux**. Un départ vide
+y rend `null` sans un mot, et le mode tire alors **un gouvernorat au hasard**
+(l. 3313) — c'est exactement son travail. Vérifié avant d'écrire : le tirage au
+sort de `rnd()` (l. 3290) ne s'applique qu'à `#forme`, jamais au menu de départ.
+
+⚠️ **Un seul rendu DeepL corrigé** : l'italien disait « Scelga innanzitutto » —
+vouvoiement de politesse, alors que l'application tutoie. Remis en « Scegli ».

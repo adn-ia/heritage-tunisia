@@ -548,7 +548,18 @@
           </div>
       <div class="q" id="critStart">
         <div class="lbl"><span class="n">1</span> Vous partez d'où ?</div>
-        <select id="origin"><option value="gps" data-i18n="iti.ma.position.gps">📍 Ma position (GPS)</option></select>
+        <!-- ⚠️ LE DÉPART NE SE PRÉSÉLECTIONNE PAS — 07/09/2026.
+             Helmy, 05/09 : « le point de départ, on doit le définir nous-mêmes, il
+             n'est jamais défini automatiquement — même chose pour n'importe quelle
+             option d'ailleurs. » Or « 📍 Ma position (GPS) » était la PREMIÈRE
+             option, donc cochée d'office parmi 26, et l'écran « Vos réglages »
+             l'affichait telle quelle. C'est aussi la cause de rejet Apple 2.1(a)
+             écrite au point 129 du canon : Apple refuse la géolocalisation en revue.
+             Le socle l'a corrigé le 24/08 ; la Tunisie ne l'avait pas reçu.
+             ⚠️ « Surprenez-moi » n'en souffre pas : `resolveOrigin` y est appelée en
+             silence, un départ vide y rend null, et le mode tire alors un
+             gouvernorat au hasard (l. 3313) — c'est précisément son travail. -->
+        <select id="origin"><option value="" data-i18n="index.choisir.un.point.de.depart">Choisir un point de départ</option><option value="gps" data-i18n="iti.ma.position.gps">📍 Ma position (GPS)</option></select>
         <!-- Le champ d'adresse libre et son message ont été retirés le 06/09/2026 :
              ils ne servaient qu'à la branche `adr` de `resolveOrigin`, qui appelait
              une fonction inexistante. Rien ne les lisait, rien ne les montrait. -->
@@ -1708,7 +1719,7 @@
       var une=function(ev){
         document.removeEventListener('the:borne', une);
         var x=ev.detail;
-        if(!x||!x.coord){ sel.value='gps'; return; }
+        if(!x||!x.coord){ sel.value=''; return; }   /* on revient au choix vide, jamais au GPS */
         DEPART_CHOISI={ coord:x.coord, label:x.nom||x.adresse||'' };
         /* le choix reste sous les yeux, sur TOUS les menus de départ */
         ['origin','pkOrigin'].forEach(function(id){
@@ -1747,6 +1758,9 @@
   function resolveOrigin(silent){
     const sel=document.getElementById('origin');
     const v=sel.value;
+    /* aucun départ choisi : on ne devine pas à sa place, on le lui demande.
+       En mode surprise (`silent`), on rend null sans un mot — le hasard prendra. */
+    if(!v){ if(!silent) showGuide('📍 '+uiT('itin.depart.a.choisir')); return Promise.resolve(null); }
     if(v==='lieu' && DEPART_CHOISI) return Promise.resolve({coord:DEPART_CHOISI.coord, label:DEPART_CHOISI.label});
     if(v.startsWith('g:')) return Promise.resolve({coord:GOUV[v.slice(2)], label:v.slice(2)});
     /* ⚠️ LA BRANCHE `adr` A ÉTÉ RETIRÉE — 06/09/2026, sur ordre de Helmy.

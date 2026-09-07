@@ -2319,6 +2319,7 @@
  "itin.dejeuner": "Lunch",
  "itin.depart.2": "<b>Start</b><br>",
  "itin.depart.3": "<div class=\"dep-connect dep-start\"><span class=\"dep-km\">start</span></div>",
+ "itin.depart.a.choisir": "First, choose your starting point at the top of this screen.",
  "itin.depart.adresse": "A specific address…",
  "itin.depart.adresse.echec": "Search failed — please check your connection.",
  "itin.depart.adresse.exemple": "Address, hotel, railway station, neighbourhood…",

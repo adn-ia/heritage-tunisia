@@ -2277,6 +2277,7 @@
  "itin.decors.de.cinema": "ديكورات السينما",
  "itin.decouvrir.ce.lieu": "اكتشف هذا المكان",
  "itin.depart.3": "<div class=\"dep-connect dep-start\"><span class=\"dep-km\">انطلاق</span></div>",
+ "itin.depart.a.choisir": "اختر أولاً نقطة انطلاقك، في الجزء العلوي من هذه الشاشة.",
  "itin.depart.adresse": "عنوان دقيق…",
  "itin.depart.adresse.echec": "لا يمكن إجراء البحث — يرجى التحقق من الاتصال.",
  "itin.depart.adresse.exemple": "العنوان، الفندق، محطة القطار، الحي...",
