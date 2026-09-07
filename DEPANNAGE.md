@@ -2314,3 +2314,28 @@ sort de `rnd()` (l. 3290) ne s'applique qu'à `#forme`, jamais au menu de dépar
 
 ⚠️ **Un seul rendu DeepL corrigé** : l'italien disait « Scelga innanzitutto » —
 vouvoiement de politesse, alors que l'application tutoie. Remis en « Scegli ».
+
+### Et le correctif était incomplet — l'écran l'a dit, encore
+
+Premier jet livré : le menu s'ouvrait bien sur « Choisir un point de départ », le
+message s'affichait… **et l'itinéraire se traçait quand même** — « Carthage la
+punique, ~3 km depuis Carthage (colline de Byrsa) ». Vu en ligne, au doigt.
+
+La cause était plus bas, dans l'appelant :
+
+    resolveOrigin(false).then(function(orig){
+      var dep = orig || originAuto;      // ← le repli
+
+`resolveOrigin` rendait bien `null`, mais l'appelant reprenait le départ calculé.
+**Ce repli garde tout son sens quand le voyageur A choisi le GPS et que le GPS
+échoue** ; il n'en a aucun quand il n'a rien choisi. On s'arrête donc **avant de
+fermer la boîte** : elle reste ouverte, le menu prend le focus.
+
+⚠️ **Troisième fois aujourd'hui qu'un correctif relu ne suffit pas.** Le premier du
+voyage libre ne s'exécutait pas, le premier `data-i18n-html` n'était pas vu, et
+celui-ci s'exécutait mais un repli plus bas le contournait. À chaque fois, c'est
+l'écran qui l'a dit — jamais la relecture.
+
+**Prouvé en ligne** : circuit « Sud berbère & ksour », bouton « Tracer » sans avoir
+choisi → la boîte reste ouverte, le menu encadré, le message affiché, **aucun
+itinéraire tracé**.

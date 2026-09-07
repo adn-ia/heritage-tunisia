@@ -2401,6 +2401,17 @@
       document.getElementById('origin').value=selO.value;
       var libDuree=(selD.options[selD.selectedIndex]||{}).textContent||'';
       if(opts.libDuree) libDuree=opts.libDuree;
+      /* ⚠️ RIEN NE SE TRACE TANT QUE LE DÉPART N'EST PAS CHOISI — 07/09/2026.
+         Vu à l'écran après mon premier correctif : le menu s'ouvrait bien sur
+         « Choisir un point de départ », le message s'affichait… et l'itinéraire
+         se traçait quand même, « ~3 km depuis Carthage (colline de Byrsa) ».
+         La cause est plus bas : `var dep = orig || originAuto` — un repli qui
+         reprend le départ calculé quand `resolveOrigin` rend null. Ce repli garde
+         tout son sens quand le voyageur A choisi le GPS et que le GPS échoue ; il
+         n'en a aucun quand il n'a rien choisi du tout.
+         On s'arrête donc AVANT de fermer la boîte : elle reste ouverte, sous les
+         yeux, avec le menu qu'il faut renseigner. */
+      if(!selO.value){ showGuide('📍 '+uiT('itin.depart.a.choisir')); try{ selO.focus(); }catch(e){} return; }
       boite.style.display='none';
       resolveOrigin(false).then(function(orig){
         var dep = orig || originAuto;                        // sans position : on garde le départ calculé
